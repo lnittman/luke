@@ -1,0 +1,165 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+@layer base {
+  :root {
+    /* Palette 1 - Zen Garden (Soft sage and stone) */
+    --p1-background-start: 235 238 235;
+    --p1-background-end: 228 232 228;
+    --p1-accent-1: 125 145 125;
+    --p1-accent-2: 145 165 145;
+    --p1-text-primary: 45 55 45;
+    --p1-text-secondary: 95 105 95;
+    --p1-surface-1: 240 243 240;
+    --p1-surface-2: 235 238 235;
+    --p1-border: 210 215 210;
+    --p1-glow: 145 165 145;
+
+    /* Palette 2 - Night Rain (Deep indigo with mist) */
+    --p2-background-start: 22 28 36;
+    --p2-background-end: 18 24 32;
+    --p2-accent-1: 145 165 195;
+    --p2-accent-2: 165 185 215;
+    --p2-text-primary: 220 230 240;
+    --p2-text-secondary: 170 180 200;
+    --p2-surface-1: 30 36 44;
+    --p2-surface-2: 26 32 40;
+    --p2-border: 40 46 54;
+    --p2-glow: 165 185 215;
+
+    /* Palette 3 - Morning Mist (Warm clay and fog) */
+    --p3-background-start: 238 235 232;
+    --p3-background-end: 232 228 225;
+    --p3-accent-1: 180 155 140;
+    --p3-accent-2: 200 175 160;
+    --p3-text-primary: 60 50 45;
+    --p3-text-secondary: 120 110 105;
+    --p3-surface-1: 242 238 235;
+    --p3-surface-2: 238 235 232;
+    --p3-border: 215 210 205;
+    --p3-glow: 200 175 160;
+
+    /* Default theme variables */
+    --background-start: var(--p1-background-start);
+    --background-end: var(--p1-background-end);
+    --accent-1: var(--p1-accent-1);
+    --accent-2: var(--p1-accent-2);
+    --text-primary: var(--p1-text-primary);
+    --text-secondary: var(--p1-text-secondary);
+    --surface-1: var(--p1-surface-1);
+    --surface-2: var(--p1-surface-2);
+    --border: var(--p1-border);
+    --glow: var(--p1-glow);
+  }
+
+  /* Base styles */
+  html {
+    @apply min-h-screen antialiased;
+    background: linear-gradient(
+      135deg,
+      rgb(var(--background-start)),
+      rgb(var(--background-end))
+    );
+  }
+
+  body {
+    min-height: 100vh;
+    color: rgb(var(--text-primary));
+    background: transparent;
+  }
+
+  /* Theme transitions */
+  html {
+    transition: background 700ms ease-in-out;
+  }
+
+  body * {
+    transition: background-color 700ms ease-in-out,
+                border-color 700ms ease-in-out,
+                color 700ms ease-in-out,
+                box-shadow 700ms ease-in-out;
+  }
+
+  /* Utility classes */
+  .glass-effect {
+    background: rgb(var(--surface-1) / 0.08);
+    backdrop-filter: blur(12px);
+    border: 1px solid rgb(var(--border) / 0.08);
+    box-shadow: 0 4px 6px -1px rgb(var(--surface-1) / 0.05);
+  }
+
+  .glass-effect-strong {
+    background: rgb(var(--surface-1) / 0.12);
+    backdrop-filter: blur(12px);
+    border: 1px solid rgb(var(--border) / 0.12);
+    box-shadow: 
+      0 4px 6px -1px rgb(var(--surface-1) / 0.1),
+      0 2px 4px -2px rgb(var(--surface-1) / 0.05);
+  }
+
+  .glow-effect {
+    background: radial-gradient(
+      circle at center,
+      rgb(var(--glow) / 0.2),
+      transparent 70%
+    );
+  }
+
+  .text-gradient {
+    background: linear-gradient(
+      to right bottom,
+      rgb(var(--accent-1)),
+      rgb(var(--accent-2))
+    );
+    -webkit-background-clip: text;
+    color: transparent;
+  }
+}
+
+@layer components {
+  .glass {
+    @apply backdrop-blur-md bg-glass border border-glass-light rounded-xl;
+    transition: all 500ms cubic-bezier(0.4, 0, 0.2, 1);
+  }
+  
+  .glass-dark {
+    @apply backdrop-blur-md bg-glass-dark border border-glass rounded-xl;
+    transition: all 500ms cubic-bezier(0.4, 0, 0.2, 1);
+  }
+}
+
+@layer utilities {
+  .bg-gradient-custom {
+    background: linear-gradient(
+      135deg,
+      rgb(var(--background-start)),
+      rgb(var(--background-end))
+    );
+  }
+
+  .text-gradient {
+    @apply bg-clip-text text-transparent bg-gradient-to-r;
+    --tw-gradient-from: rgb(var(--text-primary));
+    --tw-gradient-to: rgb(var(--text-secondary));
+    transition: --tw-gradient-from 500ms cubic-bezier(0.4, 0, 0.2, 1),
+                --tw-gradient-to 500ms cubic-bezier(0.4, 0, 0.2, 1);
+  }
+
+  .glass-effect {
+    @apply backdrop-blur-xl border;
+    background-color: rgb(var(--surface-1) / 0.05);
+    border-color: rgb(var(--border) / 0.1);
+  }
+
+  .glass-effect-strong {
+    @apply backdrop-blur-xl border;
+    background-color: rgb(var(--surface-1) / 0.1);
+    border-color: rgb(var(--border) / 0.2);
+  }
+
+  .glow-effect {
+    --glow-color: rgb(var(--glow) / 0.15);
+    background: radial-gradient(circle at center, var(--glow-color), transparent 70%);
+  }
+} 
