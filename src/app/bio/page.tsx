@@ -119,7 +119,7 @@ function SectionTitle({ children }: { children: string }) {
   return (
     <motion.h2 
       ref={ref}
-      className="text-sm font-mono text-[rgb(var(--text-secondary))] mb-8"
+      className="text-xs sm:text-sm font-mono text-[rgb(var(--text-secondary))] mb-6 sm:mb-8"
     >
       {children}
     </motion.h2>
@@ -198,31 +198,18 @@ function Bio() {
 
       {/* Hero Section */}
       <motion.section 
-        className="min-h-screen flex items-center justify-center relative z-10"
+        className="min-h-[calc(100vh-4rem)] pt-24 sm:pt-32 flex items-center justify-center relative z-10"
         initial={{ opacity: 0 }}
         animate={{ opacity: 1 }}
         transition={{ duration: 0.4, ease: [0.23, 1, 0.32, 1] }}
       >
-        <div className="w-full max-w-2xl mx-auto px-6">
+        <div className="w-full max-w-2xl mx-auto px-4 sm:px-6">
           <motion.div 
-            className="relative p-8 rounded-2xl overflow-hidden"
+            className="relative p-6 sm:p-8"
             initial={{ opacity: 0, y: 10 }}
             animate={{ opacity: 1, y: 0 }}
             transition={{ duration: 0.4, ease: [0.23, 1, 0.32, 1] }}
           >
-            {/* Persistent glass background */}
-            <motion.div
-              className="absolute inset-0 glass-effect-strong"
-              layoutId="hero-glass"
-              initial={{ opacity: 0 }}
-              animate={{ opacity: 1 }}
-              transition={{
-                type: "spring",
-                bounce: 0,
-                duration: 0.6
-              }}
-            />
-
             <div className="relative z-10 space-y-6">
               <motion.div 
                 className="w-24 h-24 mx-auto mb-6"
@@ -246,7 +233,7 @@ function Bio() {
               
               <div className="space-y-4 text-center font-mono">
                 <motion.p 
-                  className="text-[rgb(var(--text-primary))] leading-relaxed text-base mt-12"
+                  className="text-[rgb(var(--text-primary))] leading-relaxed text-sm sm:text-base mt-8 sm:mt-12 flex flex-col sm:block gap-2"
                   initial={{ opacity: 0, y: 5 }}
                   animate={{ opacity: 1, y: 0 }}
                   transition={{ 
@@ -255,7 +242,8 @@ function Bio() {
                     delay: 0.3
                   }}
                 >
-                  i enjoy making, using, and talking about tools that feel <GlowingText text="powerful" /> / <GlowingText text="effortless" />
+                  <span>i enjoy making, using, and talking about tools that feel</span>
+                  <span><GlowingText text="powerful" /> / <GlowingText text="effortless" /></span>
                 </motion.p>
               </div>
             </div>
@@ -265,7 +253,7 @@ function Bio() {
 
       {/* Philosophy Section */}
       <motion.section 
-        className="min-h-screen flex items-center justify-center py-24 px-4"
+        className="min-h-[calc(100vh-4rem)] flex items-center justify-center py-16 sm:py-24 px-4"
         initial={{ opacity: 0 }}
         whileInView={{ opacity: 1 }}
         viewport={{ once: true, margin: "-20%" }}
@@ -275,31 +263,17 @@ function Bio() {
           <SectionTitle>philosophy</SectionTitle>
           
           <motion.div 
-            className="relative p-8 rounded-2xl overflow-hidden"
+            className="relative p-6 sm:p-8"
             initial={{ opacity: 0, y: 10 }}
-            whileInView={{ opacity: 1, y: 0 }}
-            viewport={{ once: true, margin: "-20%" }}
+            animate={{ opacity: 1, y: 0 }}
             transition={{ duration: 0.4, ease: [0.23, 1, 0.32, 1] }}
           >
-            {/* Persistent glass background */}
-            <motion.div
-              className="absolute inset-0 glass-effect-strong"
-              layoutId="philosophy-glass"
-              initial={{ opacity: 0 }}
-              animate={{ opacity: 1 }}
-              transition={{
-                type: "spring",
-                bounce: 0,
-                duration: 0.6
-              }}
-            />
-
             <div className="relative z-10 font-mono">
-              <p className="text-[rgb(var(--text-primary))] leading-relaxed">
+              <p className="text-[rgb(var(--text-primary))] leading-relaxed text-sm sm:text-base">
                 i believe the best tools disappear into the creative process. they should 
                 feel natural and intuitive, yet powerful enough to bring ideas to life.
               </p>
-              <p className="text-[rgb(var(--text-primary))] leading-relaxed mt-4">
+              <p className="text-[rgb(var(--text-primary))] leading-relaxed text-sm sm:text-base mt-4">
                 my work spans from low-level audio systems to intuitive user interfaces,
                 always seeking the balance between technical depth and human experience.
               </p>
@@ -310,7 +284,7 @@ function Bio() {
 
       {/* Timeline & Skills Section */}
       <motion.section 
-        className="min-h-screen flex items-center justify-center py-24 px-4"
+        className="min-h-[calc(100vh-4rem)] flex items-center justify-center py-16 sm:py-24 px-4"
         initial={{ opacity: 0 }}
         whileInView={{ opacity: 1 }}
         viewport={{ once: true, margin: "-20%" }}
@@ -333,21 +307,24 @@ function Bio() {
                 }}
               >
                 <div className="relative z-10 font-mono">
-                  <div className="flex items-baseline justify-between">
-                    <h3 className="text-lg">{item.role} @ {item.company}</h3>
-                    <span className="text-[rgb(var(--text-secondary))] text-sm">{item.period}</span>
+                  <div className="flex items-start justify-between">
+                    <div className="space-y-0.5">
+                      <h3 className="text-sm sm:text-lg">{item.role}</h3>
+                      <div className="text-[rgb(var(--text-secondary))] text-xs sm:text-sm">@ {item.company}</div>
+                    </div>
+                    <span className="text-[rgb(var(--text-secondary))] text-xs sm:text-sm ml-4">{item.period}</span>
                   </div>
                   <ul className="space-y-2 mt-4">
                     {item.description.map((desc, i) => (
-                      <li key={i} className="text-[rgb(var(--text-primary))] text-sm">{desc}</li>
+                      <li key={i} className="text-[rgb(var(--text-primary))] text-xs sm:text-sm">{desc}</li>
                     ))}
                   </ul>
                   {item.tech && (
-                    <div className="flex flex-wrap gap-2 mt-4">
+                    <div className="flex flex-wrap gap-1.5 sm:gap-2 mt-4">
                       {item.tech.map(tech => (
                         <span 
                           key={tech}
-                          className="px-2 py-1 text-xs rounded-full glass-effect"
+                          className="px-1.5 sm:px-2 py-0.5 sm:py-1 text-[0.65rem] sm:text-xs rounded-full glass-effect"
                         >
                           {tech}
                         </span>

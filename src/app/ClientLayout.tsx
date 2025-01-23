@@ -3,7 +3,7 @@
 import { motion, AnimatePresence } from 'framer-motion';
 import { useEffect, useState, useRef } from 'react';
 import { clsx } from 'clsx';
-import { Header } from '@/components/header';
+import { Header } from '@/components/header/Header';
 import ReactPlayer from 'react-player';
 
 // Add type for valid theme numbers
