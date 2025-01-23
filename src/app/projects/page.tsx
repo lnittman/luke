@@ -448,52 +448,48 @@ function VideoPlayer({ src, title, onClose, onNext, onPrev, hasNext, hasPrev }: 
     }
   };
 
-  const handleSeek = (e: React.MouseEvent<HTMLDivElement>) => {
+  const handleSeek = (clientX: number) => {
     const seekBar = seekBarRef.current;
-    if (!seekBar || !videoRef.current || !duration) return;
+    const video = videoRef.current;
+    if (!seekBar || !video || !duration) return;
 
     const rect = seekBar.getBoundingClientRect();
-    const percent = Math.max(0, Math.min(1, (e.clientX - rect.left) / rect.width));
+    const percent = Math.max(0, Math.min(1, (clientX - rect.left) / rect.width));
+    const wasPlaying = !video.paused;
     const newTime = percent * duration;
-    const wasPlaying = !videoRef.current.paused;
     
-    videoRef.current.currentTime = newTime;
+    video.currentTime = newTime;
     setProgress(percent);
     progressSpring.set(percent);
 
     if (wasPlaying) {
-      videoRef.current.play();
+      video.play();
     }
   };
 
-  const handleDragStart = (e: React.MouseEvent<HTMLDivElement>) => {
+  const handleDragStart = (e: React.MouseEvent<HTMLDivElement> | React.TouchEvent<HTMLDivElement>) => {
     setIsDragging(true);
-    handleSeek(e);
+    const clientX = 'touches' in e ? e.touches[0].clientX : e.clientX;
+    handleSeek(clientX);
 
-    const handleDrag = (e: MouseEvent) => {
-      const seekBar = seekBarRef.current;
-      if (!seekBar || !videoRef.current || !duration) return;
-
-      const rect = seekBar.getBoundingClientRect();
-      const percent = Math.max(0, Math.min(1, (e.clientX - rect.left) / rect.width));
-      const newTime = percent * duration;
-      
-      videoRef.current.currentTime = newTime;
-      setProgress(percent);
-      progressSpring.set(percent);
+    const handleDrag = (e: MouseEvent | TouchEvent) => {
+      e.preventDefault(); // Prevent text selection while dragging
+      const clientX = 'touches' in e ? e.touches[0].clientX : e.clientX;
+      handleSeek(clientX);
     };
 
     const handleDragEnd = () => {
       setIsDragging(false);
       document.removeEventListener('mousemove', handleDrag);
+      document.removeEventListener('touchmove', handleDrag);
       document.removeEventListener('mouseup', handleDragEnd);
-      if (videoRef.current && isPlaying) {
-        videoRef.current.play();
-      }
+      document.removeEventListener('touchend', handleDragEnd);
     };
 
-    document.addEventListener('mousemove', handleDrag);
+    document.addEventListener('mousemove', handleDrag, { passive: false });
+    document.addEventListener('touchmove', handleDrag, { passive: false });
     document.addEventListener('mouseup', handleDragEnd);
+    document.addEventListener('touchend', handleDragEnd);
   };
 
   return (
@@ -536,87 +532,91 @@ function VideoPlayer({ src, title, onClose, onNext, onPrev, hasNext, hasPrev }: 
 
       {/* Main content */}
       <div className="flex-1 flex items-center justify-center">
-        {/* Video container */}
-        <div className="relative w-full max-w-5xl mx-4">
-          <video
-            ref={videoRef}
-            src={src}
-            className="w-full rounded-lg"
-            playsInline
-            onClick={togglePlay}
-            onEnded={() => setIsPlaying(false)}
-          />
-          
-          {/* Play/Pause overlay */}
-          <motion.div
-            initial={false}
-            animate={{ opacity: isPlaying ? 0 : 1 }}
-            transition={{ duration: 0.2 }}
-            className="absolute inset-0 flex items-center justify-center cursor-pointer"
-            onClick={togglePlay}
-          >
-            {!isPlaying && (
-              <div className="rounded-full bg-white/10 p-4">
-                <span className="text-4xl">▶️</span>
-              </div>
-            )}
-          </motion.div>
-
-          {/* Controls container */}
-          <div className="absolute -bottom-16 left-0 right-0 flex flex-col items-center gap-4">
-            {/* Seek bar container */}
-            <div 
-              ref={seekBarRef}
-              className="w-full max-w-[40rem] pt-4 px-2 mx-auto"
-              onMouseEnter={() => setIsHovering(true)}
-              onMouseLeave={() => setIsHovering(false)}
+        {/* Video container with controls */}
+        <div className="relative w-full max-w-5xl mx-4 flex flex-col items-center">
+          {/* Video wrapper */}
+          <div className="relative w-full max-h-[70vh] flex items-center justify-center mb-20">
+            <video
+              ref={videoRef}
+              src={src}
+              className="max-h-full max-w-full rounded-lg"
+              playsInline
+              onClick={togglePlay}
+              onEnded={() => setIsPlaying(false)}
+            />
+            
+            {/* Play/Pause overlay */}
+            <motion.div
+              initial={false}
+              animate={{ opacity: isPlaying ? 0 : 1 }}
+              transition={{ duration: 0.2 }}
+              className="absolute inset-0 flex items-center justify-center cursor-pointer"
+              onClick={togglePlay}
             >
-              {/* Seek bar */}
-              <motion.div 
-                className={clsx(
-                  "relative h-1 rounded-full bg-white/10 cursor-pointer transition-transform duration-200",
-                  isHovering && "scale-y-150"
-                )}
-                onClick={handleSeek}
-                onMouseDown={handleDragStart}
-              >
-                <motion.div 
-                  className="absolute inset-y-0 left-0 rounded-full bg-white/30 origin-left"
-                  style={{ 
-                    width: `${progress * 100}%`,
-                  }}
-                />
-              </motion.div>
-            </div>
+              {!isPlaying && (
+                <div className="rounded-full bg-white/10 p-4">
+                  <span className="text-4xl">▶️</span>
+                </div>
+              )}
+            </motion.div>
 
-            {/* Play/Pause button with navigation */}
-            <div className="flex items-center gap-4 text-xl">
-              <button
-                onClick={onPrev}
-                disabled={!hasPrev}
-                className={clsx(
-                  "transition-opacity",
-                  hasPrev ? "text-white/60 hover:text-white" : "text-white/20 cursor-not-allowed"
-                )}
+            {/* Controls container */}
+            <div className="absolute bottom-[-5rem] left-0 right-0 flex flex-col items-center gap-4">
+              {/* Seek bar container */}
+              <div 
+                ref={seekBarRef}
+                className="w-full max-w-[40rem] pt-4 px-2 mx-auto"
+                onMouseEnter={() => setIsHovering(true)}
+                onMouseLeave={() => setIsHovering(false)}
               >
-                ⬅️
-              </button>
-              <button
-                onClick={togglePlay}
-                className="text-white/60 hover:text-white transition-opacity"
-              >
-                {isPlaying ? "⏸️" : "▶️"}
-              </button>
-              <button
-                onClick={onNext}
-                disabled={!hasNext}
-                className={clsx(
-                  "transition-opacity",
-                  hasNext ? "text-white/60 hover:text-white" : "text-white/20 cursor-not-allowed"
-                )}
-              >
-                ➡️
-              </button>
+                {/* Seek bar */}
+                <motion.div 
+                  className={clsx(
+                    "relative h-1 rounded-full bg-white/10 cursor-pointer transition-transform duration-200",
+                    isHovering && "scale-y-150"
+                  )}
+                  onClick={(e) => handleSeek(e.clientX)}
+                  onMouseDown={handleDragStart}
+                  onTouchStart={handleDragStart}
+                >
+                  <motion.div 
+                    className="absolute inset-y-0 left-0 rounded-full bg-white/30 origin-left"
+                    style={{ 
+                      width: `${progress * 100}%`,
+                    }}
+                  />
+                </motion.div>
+              </div>
+
+              {/* Play/Pause button with navigation */}
+              <div className="flex items-center gap-4 text-xl">
+                <button
+                  onClick={onPrev}
+                  disabled={!hasPrev}
+                  className={clsx(
+                    "transition-opacity",
+                    hasPrev ? "text-white/60 hover:text-white" : "text-white/20 cursor-not-allowed"
+                  )}
+                >
+                  ⬅️
+                </button>
+                <button
+                  onClick={togglePlay}
+                  className="text-white/60 hover:text-white transition-opacity"
+                >
+                  {isPlaying ? "⏸️" : "▶️"}
+                </button>
+                <button
+                  onClick={onNext}
+                  disabled={!hasNext}
+                  className={clsx(
+                    "transition-opacity",
+                    hasNext ? "text-white/60 hover:text-white" : "text-white/20 cursor-not-allowed"
+                  )}
+                >
+                  ➡️
+                </button>
+              </div>
             </div>
           </div>
         </div>
