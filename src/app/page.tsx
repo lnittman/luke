@@ -11,17 +11,17 @@ function Hero() {
     <div className="relative w-full h-[100dvh] flex items-center justify-center px-4 py-4 sm:p-0">
       {/* Main card */}
       <motion.div
-        className="relative rounded-2xl p-3 sm:p-6 md:p-12 w-full max-w-2xl mx-auto overflow-hidden"
+        className="relative rounded-2xl p-3 sm:p-4 md:p-8 w-full max-w-2xl mx-auto overflow-hidden"
         style={{
           transformStyle: 'preserve-3d',
           transformPerspective: '1200px',
         }}
       >
         {/* Content */}
-        <div className="relative z-10 flex flex-col items-center gap-4 sm:gap-6 md:gap-8">
+        <div className="relative z-10 flex flex-col items-center gap-3 sm:gap-6 md:gap-8">
           {/* Logo section */}
           <motion.div
-            className="relative mb-2 sm:mb-4 md:mb-6 cursor-pointer"
+            className="relative mb-1 sm:mb-2 md:mb-4 cursor-pointer"
             initial={{ opacity: 0, x: -60 }}
             animate={{ opacity: 1, x: 0 }}
             transition={{ 
@@ -53,7 +53,7 @@ function Hero() {
             <Image 
               src="/assets/logo.png"
               alt="Luke Nittmann"
-              className="w-20 h-20 sm:w-32 sm:h-32 md:w-40 md:h-40 object-contain relative z-10"
+              className="w-16 h-16 landscape:w-20 landscape:h-20 sm:w-28 sm:h-28 md:w-32 md:h-32 object-contain relative z-10"
               width={160}
               height={160}
               priority
@@ -75,17 +75,17 @@ function Hero() {
           */}
 
           {/* Personal narrative */}
-          <div className="relative z-10 w-full space-y-2 sm:space-y-4 md:space-y-6 font-mono text-[10px] sm:text-sm">
+          <div className="relative z-10 w-full space-y-1.5 landscape:space-y-2 sm:space-y-3 md:space-y-4 font-mono text-[10px] landscape:text-[9px] sm:text-sm">
             {['essence', 'craft', 'resonance'].map((section, i) => (
               <motion.div 
                 key={section}
-                className="flex flex-col gap-1 sm:gap-2 px-2 sm:px-4 md:px-6 py-1.5 sm:py-3 md:py-4"
+                className="flex flex-col gap-0.5 landscape:gap-1 sm:gap-2 px-2 sm:px-4 md:px-6 py-1 landscape:py-1 sm:py-2 md:py-3"
                 initial={{ opacity: 0, x: -20 }}
                 animate={{ opacity: 1, x: 0 }}
                 transition={{ delay: 0.3 + i * 0.1 }}
               >
                 <motion.span 
-                  className="text-sm sm:text-lg font-mono tracking-tight relative"
+                  className="text-sm landscape:text-xs sm:text-lg font-mono tracking-tight relative"
                   style={{
                     color: `rgb(${getZenColor(section, i).text})`,
                     textShadow: `0 0 15px rgb(${getZenColor(section, i).glow} / 0.4),
@@ -137,17 +137,17 @@ function Hero() {
                 </motion.span>
                 {/* Section content based on type */}
                 {section === 'essence' && (
-                  <span className="text-[rgb(var(--text-primary))] leading-relaxed">
+                  <span className="text-[rgb(var(--text-primary))] leading-relaxed landscape:text-[9px]">
                     crafting digital experiences through code and intuition 
                   </span>
                 )}
                 {section === 'craft' && (
-                  <span className="text-[rgb(var(--text-primary))] leading-relaxed">
+                  <span className="text-[rgb(var(--text-primary))] leading-relaxed landscape:text-[9px]">
                     making tools feel like magic, interfaces like poetry
                   </span>
                 )}
                 {section === 'resonance' && (
-                  <div className="flex flex-wrap gap-1 sm:gap-1.5 md:gap-2">
+                  <div className="flex flex-wrap gap-1 landscape:gap-0.5 sm:gap-1.5 md:gap-2">
                     {['product', 'engineering', 'design', 'ai', 'audio', 'web3', 'vim'].map((tag, i) => (
                       <TechPill key={tag} text={tag} index={i} />
                     ))}
@@ -158,15 +158,15 @@ function Hero() {
             
             {/* Standalone quote */}
             <motion.div
-              className="text-[rgb(var(--text-primary))] leading-relaxed italic text-center px-3 sm:px-4 pt-3 sm:pt-4 md:pt-6 flex flex-col items-center gap-1.5 sm:gap-2"
+              className="text-[rgb(var(--text-primary))] leading-relaxed italic text-center px-2 sm:px-4 pt-1 landscape:pt-1.5 sm:pt-4 flex flex-col items-center gap-0.5 landscape:gap-1 sm:gap-2"
               initial={{ opacity: 0 }}
               animate={{ opacity: 1 }}
               transition={{ delay: 0.6 }}
             >
-              <span className="text-xs sm:text-sm whitespace-normal sm:whitespace-nowrap">
+              <span className="text-[9px] landscape:text-[8px] sm:text-xs whitespace-normal sm:whitespace-nowrap">
                 "now his dream was a dream of shadows gathering like storm clouds"
               </span>
-              <span className="text-[rgb(var(--text-secondary))] text-[0.65rem] sm:text-xs not-italic">
+              <span className="text-[rgb(var(--text-secondary))] text-[8px] landscape:text-[7px] sm:text-xs not-italic">
                 — roberto bolaño, 2666
               </span>
             </motion.div>
