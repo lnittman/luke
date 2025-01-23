@@ -91,17 +91,17 @@ function Hero() {
           */}
 
           {/* Personal narrative */}
-          <div className="relative z-10 w-full space-y-3 sm:space-y-4 md:space-y-6 font-mono text-xs sm:text-sm">
+          <div className="relative z-10 w-full space-y-2.5 sm:space-y-4 md:space-y-6 font-mono text-[11px] sm:text-sm">
             {['essence', 'craft', 'resonance'].map((section, i) => (
               <motion.div 
                 key={section}
-                className="flex flex-col gap-1.5 sm:gap-2 px-3 sm:px-4 md:px-6 py-2.5 sm:py-3 md:py-4"
+                className="flex flex-col gap-1 sm:gap-2 px-2.5 sm:px-4 md:px-6 py-2 sm:py-3 md:py-4"
                 initial={{ opacity: 0, x: -20 }}
                 animate={{ opacity: 1, x: 0 }}
                 transition={{ delay: 0.3 + i * 0.1 }}
               >
                 <motion.span 
-                  className="text-base sm:text-lg font-mono tracking-tight relative"
+                  className="text-sm sm:text-lg font-mono tracking-tight relative"
                   style={{
                     color: `rgb(${getZenColor(section, i).text})`,
                     textShadow: `0 0 15px rgb(${getZenColor(section, i).glow} / 0.4),
