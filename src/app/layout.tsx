@@ -19,6 +19,12 @@ export const metadata: Metadata = {
     minimumScale: 1,
     maximumScale: 1,
   },
+  icons: {
+    icon: '/assets/logo.png',
+    shortcut: '/assets/logo.png',
+    apple: '/assets/logo.png',
+  },
+  themeColor: '#ffffff',
 };
 
 export default function RootLayout({
