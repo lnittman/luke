@@ -8,20 +8,20 @@ import { getZenColor } from '@/utils/colors';
 
 function Hero() {
   return (
-    <div className="relative w-full min-h-[calc(100vh-4rem)] pt-20 sm:pt-0 flex items-center justify-center px-4 py-8 sm:p-0">
+    <div className="relative w-full h-[100dvh] flex items-center justify-center px-4 py-4 sm:p-0">
       {/* Main card */}
       <motion.div
-        className="relative rounded-2xl p-4 sm:p-6 md:p-12 w-full max-w-2xl mx-auto overflow-hidden"
+        className="relative rounded-2xl p-3 sm:p-6 md:p-12 w-full max-w-2xl mx-auto overflow-hidden"
         style={{
           transformStyle: 'preserve-3d',
           transformPerspective: '1200px',
         }}
       >
         {/* Content */}
-        <div className="relative z-10 flex flex-col items-center gap-6 sm:gap-8">
+        <div className="relative z-10 flex flex-col items-center gap-4 sm:gap-6 md:gap-8">
           {/* Logo section */}
           <motion.div
-            className="relative mb-4 sm:mb-6 cursor-pointer"
+            className="relative mb-2 sm:mb-4 md:mb-6 cursor-pointer"
             initial={{ opacity: 0, x: -60 }}
             animate={{ opacity: 1, x: 0 }}
             transition={{ 
@@ -50,26 +50,10 @@ function Hero() {
               }
             }}
           >
-            <motion.div 
-              className="absolute inset-0 rounded-2xl"
-              whileHover={{
-                opacity: 0.8,
-                transition: { duration: 0.15 }
-              }}
-              whileTap={{
-                scale: 0.85,
-                opacity: 0.4,
-                transition: {
-                  type: "spring",
-                  stiffness: 400,
-                  damping: 10
-                }
-              }}
-            />
             <Image 
               src="/assets/logo.png"
               alt="Luke Nittmann"
-              className="w-24 h-24 sm:w-32 sm:h-32 md:w-40 md:h-40 object-contain relative z-10"
+              className="w-20 h-20 sm:w-32 sm:h-32 md:w-40 md:h-40 object-contain relative z-10"
               width={160}
               height={160}
               priority
@@ -91,11 +75,11 @@ function Hero() {
           */}
 
           {/* Personal narrative */}
-          <div className="relative z-10 w-full space-y-2.5 sm:space-y-4 md:space-y-6 font-mono text-[11px] sm:text-sm">
+          <div className="relative z-10 w-full space-y-2 sm:space-y-4 md:space-y-6 font-mono text-[10px] sm:text-sm">
             {['essence', 'craft', 'resonance'].map((section, i) => (
               <motion.div 
                 key={section}
-                className="flex flex-col gap-1 sm:gap-2 px-2.5 sm:px-4 md:px-6 py-2 sm:py-3 md:py-4"
+                className="flex flex-col gap-1 sm:gap-2 px-2 sm:px-4 md:px-6 py-1.5 sm:py-3 md:py-4"
                 initial={{ opacity: 0, x: -20 }}
                 animate={{ opacity: 1, x: 0 }}
                 transition={{ delay: 0.3 + i * 0.1 }}

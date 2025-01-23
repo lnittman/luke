@@ -3,10 +3,8 @@ import { Inter } from 'next/font/google';
 import dynamic from 'next/dynamic';
 import './globals.css';
 import { ClientLayout } from './ClientLayout';
-import { DynamicFavicon } from '@/components/DynamicFavicon';
 
 const inter = Inter({ subsets: ['latin'] });
-
 const Navigation = dynamic(() => import('@/components/navigation/Navigation'), { ssr: false });
 
 export const metadata: Metadata = {
@@ -36,12 +34,8 @@ export default function RootLayout({
         <meta name="theme-color" content="rgb(242, 242, 242)" />
         <meta name="apple-mobile-web-app-capable" content="yes" />
         <meta name="apple-mobile-web-app-status-bar-style" content="default" />
-        <link rel="icon" href="/assets/luke-home.png" />
-        <link rel="shortcut icon" href="/assets/luke-home.png" />
-        <link rel="apple-touch-icon" href="/assets/luke-home.png" />
       </head>
       <body className={inter.className}>
-        <DynamicFavicon />
         <ClientLayout>
           {children}
           <Navigation />
