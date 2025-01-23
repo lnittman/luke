@@ -16,7 +16,7 @@ const CONTACT_INFO: ContactInfo = {
   name: "luke nittmann",
   phone: "(313) 500-1244",
   email: "luke.nittmann@gmail.com",
-  address: "3038 Isabel Dr, Los Angeles 90065",
+  address: "3038 isabel dr, los angeles ca 90065",
 };
 
 export function Header() {
