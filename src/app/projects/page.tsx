@@ -379,19 +379,34 @@ function VideoPlayer({ src, title, onClose, onNext, onPrev, hasNext, hasPrev }: 
   hasNext?: boolean;
   hasPrev?: boolean;
 }) {
+  const videoRef = useRef<HTMLVideoElement>(null);
+  const seekBarRef = useRef<HTMLDivElement>(null);
   const [isPlaying, setIsPlaying] = useState(false);
   const [progress, setProgress] = useState(0);
   const [duration, setDuration] = useState(0);
-  const videoRef = useRef<HTMLVideoElement>(null);
-  const controlsColor = getZenColor('/controls');
+  const [isDragging, setIsDragging] = useState(false);
+  const [isHovering, setIsHovering] = useState(false);
+  const progressSpring = useSpring(0, { damping: 20, stiffness: 300 });
 
   useEffect(() => {
     const video = videoRef.current;
     if (!video) return;
 
+    video.currentTime = 0;
+    setIsPlaying(false);
+    progressSpring.set(0);
+
+    video.load();
+    
     const handlePlay = () => setIsPlaying(true);
     const handlePause = () => setIsPlaying(false);
-    const handleTimeUpdate = () => setProgress(video.currentTime);
+    const handleTimeUpdate = () => {
+      if (!isDragging) {
+        const progress = video.currentTime / video.duration;
+        setProgress(progress);
+        progressSpring.set(progress);
+      }
+    };
     const handleLoadedMetadata = () => setDuration(video.duration);
     
     video.addEventListener('play', handlePlay);
@@ -399,42 +414,10 @@ function VideoPlayer({ src, title, onClose, onNext, onPrev, hasNext, hasPrev }: 
     video.addEventListener('timeupdate', handleTimeUpdate);
     video.addEventListener('loadedmetadata', handleLoadedMetadata);
     
-    return () => {
-      video.removeEventListener('play', handlePlay);
-      video.removeEventListener('pause', handlePause);
-      video.removeEventListener('timeupdate', handleTimeUpdate);
-      video.removeEventListener('loadedmetadata', handleLoadedMetadata);
-    };
-  }, []);
-
-  const togglePlay = async () => {
-    if (!videoRef.current) return;
-    try {
-      if (isPlaying) {
-        await videoRef.current.pause();
-      } else {
-        await videoRef.current.play();
-      }
-    } catch (error) {
-      console.error('Error toggling video:', error);
-    }
-  };
-
-  const handleSeek = (e: React.MouseEvent<HTMLDivElement>) => {
-    if (!videoRef.current || !duration) return;
-    const rect = e.currentTarget.getBoundingClientRect();
-    const x = e.clientX - rect.left;
-    const percent = x / rect.width;
-    const newTime = percent * duration;
-    videoRef.current.currentTime = newTime;
-    setProgress(newTime);
-  };
-
-  useEffect(() => {
     const handleKeyDown = (e: KeyboardEvent) => {
       if (e.key === 'Escape') onClose();
-      if (e.key === 'ArrowRight' && onNext && hasNext) onNext();
-      if (e.key === 'ArrowLeft' && onPrev && hasPrev) onPrev();
+      if (e.key === 'ArrowRight' && hasNext && onNext) onNext();
+      if (e.key === 'ArrowLeft' && hasPrev && onPrev) onPrev();
       if (e.key === ' ') {
         e.preventDefault();
         togglePlay();
@@ -442,8 +425,76 @@ function VideoPlayer({ src, title, onClose, onNext, onPrev, hasNext, hasPrev }: 
     };
 
     window.addEventListener('keydown', handleKeyDown);
-    return () => window.removeEventListener('keydown', handleKeyDown);
-  }, [onClose, onNext, onPrev, hasNext, hasPrev]);
+    
+    return () => {
+      video.removeEventListener('play', handlePlay);
+      video.removeEventListener('pause', handlePause);
+      video.removeEventListener('timeupdate', handleTimeUpdate);
+      video.removeEventListener('loadedmetadata', handleLoadedMetadata);
+      window.removeEventListener('keydown', handleKeyDown);
+    };
+  }, [src, onClose, onNext, onPrev, hasNext, hasPrev, isDragging]);
+
+  const togglePlay = () => {
+    const video = videoRef.current;
+    if (!video) return;
+
+    if (video.paused) {
+      video.play();
+      setIsPlaying(true);
+    } else {
+      video.pause();
+      setIsPlaying(false);
+    }
+  };
+
+  const handleSeek = (e: React.MouseEvent<HTMLDivElement>) => {
+    const seekBar = seekBarRef.current;
+    if (!seekBar || !videoRef.current || !duration) return;
+
+    const rect = seekBar.getBoundingClientRect();
+    const percent = Math.max(0, Math.min(1, (e.clientX - rect.left) / rect.width));
+    const newTime = percent * duration;
+    const wasPlaying = !videoRef.current.paused;
+    
+    videoRef.current.currentTime = newTime;
+    setProgress(percent);
+    progressSpring.set(percent);
+
+    if (wasPlaying) {
+      videoRef.current.play();
+    }
+  };
+
+  const handleDragStart = (e: React.MouseEvent<HTMLDivElement>) => {
+    setIsDragging(true);
+    handleSeek(e);
+
+    const handleDrag = (e: MouseEvent) => {
+      const seekBar = seekBarRef.current;
+      if (!seekBar || !videoRef.current || !duration) return;
+
+      const rect = seekBar.getBoundingClientRect();
+      const percent = Math.max(0, Math.min(1, (e.clientX - rect.left) / rect.width));
+      const newTime = percent * duration;
+      
+      videoRef.current.currentTime = newTime;
+      setProgress(percent);
+      progressSpring.set(percent);
+    };
+
+    const handleDragEnd = () => {
+      setIsDragging(false);
+      document.removeEventListener('mousemove', handleDrag);
+      document.removeEventListener('mouseup', handleDragEnd);
+      if (videoRef.current && isPlaying) {
+        videoRef.current.play();
+      }
+    };
+
+    document.addEventListener('mousemove', handleDrag);
+    document.addEventListener('mouseup', handleDragEnd);
+  };
 
   return (
     <motion.div 
@@ -477,49 +528,96 @@ function VideoPlayer({ src, title, onClose, onNext, onPrev, hasNext, hasPrev }: 
         </div>
         <button 
           onClick={onClose}
-          className="p-2 hover:text-white transition-colors font-mono"
+          className="text-white/50 hover:text-white transition-colors font-mono"
         >
           esc
         </button>
       </div>
 
       {/* Main content */}
-      <div className="flex-1 flex items-center justify-center relative">
-        {/* Video */}
-        <div className="relative max-w-6xl w-full mx-4">
+      <div className="flex-1 flex items-center justify-center">
+        {/* Video container */}
+        <div className="relative w-full max-w-5xl mx-4">
           <video
             ref={videoRef}
             src={src}
             className="w-full rounded-lg"
-            loop
             playsInline
             onClick={togglePlay}
+            onEnded={() => setIsPlaying(false)}
           />
-        </div>
-      </div>
-
-      {/* Controls */}
-      <div className="p-4">
-        <div className="max-w-6xl mx-auto space-y-2">
-          {/* Progress bar */}
-          <div 
-            className="w-full h-1 rounded-full bg-white/10 cursor-pointer"
-            onClick={handleSeek}
+          
+          {/* Play/Pause overlay */}
+          <motion.div
+            initial={false}
+            animate={{ opacity: isPlaying ? 0 : 1 }}
+            transition={{ duration: 0.2 }}
+            className="absolute inset-0 flex items-center justify-center cursor-pointer"
+            onClick={togglePlay}
           >
-            <motion.div 
-              className="h-full rounded-full bg-white/30"
-              style={{ width: `${(progress / duration) * 100}%` }}
-            />
-          </div>
+            {!isPlaying && (
+              <div className="rounded-full bg-white/10 p-4">
+                <span className="text-4xl">▶️</span>
+              </div>
+            )}
+          </motion.div>
 
-          {/* Buttons */}
-          <div className="flex items-center gap-4">
-            <button
-              onClick={togglePlay}
-              className="text-white/60 hover:text-white transition-colors"
+          {/* Controls container */}
+          <div className="absolute -bottom-16 left-0 right-0 flex flex-col items-center gap-4">
+            {/* Seek bar container */}
+            <div 
+              ref={seekBarRef}
+              className="w-full max-w-[40rem] pt-4 px-2 mx-auto"
+              onMouseEnter={() => setIsHovering(true)}
+              onMouseLeave={() => setIsHovering(false)}
             >
-              {isPlaying ? '⏸️' : '▶️'}
-            </button>
+              {/* Seek bar */}
+              <motion.div 
+                className={clsx(
+                  "relative h-1 rounded-full bg-white/10 cursor-pointer transition-transform duration-200",
+                  isHovering && "scale-y-150"
+                )}
+                onClick={handleSeek}
+                onMouseDown={handleDragStart}
+              >
+                <motion.div 
+                  className="absolute inset-y-0 left-0 rounded-full bg-white/30 origin-left"
+                  style={{ 
+                    width: `${progress * 100}%`,
+                  }}
+                />
+              </motion.div>
+            </div>
+
+            {/* Play/Pause button with navigation */}
+            <div className="flex items-center gap-4 text-xl">
+              <button
+                onClick={onPrev}
+                disabled={!hasPrev}
+                className={clsx(
+                  "transition-opacity",
+                  hasPrev ? "text-white/60 hover:text-white" : "text-white/20 cursor-not-allowed"
+                )}
+              >
+                ⬅️
+              </button>
+              <button
+                onClick={togglePlay}
+                className="text-white/60 hover:text-white transition-opacity"
+              >
+                {isPlaying ? "⏸️" : "▶️"}
+              </button>
+              <button
+                onClick={onNext}
+                disabled={!hasNext}
+                className={clsx(
+                  "transition-opacity",
+                  hasNext ? "text-white/60 hover:text-white" : "text-white/20 cursor-not-allowed"
+                )}
+              >
+                ➡️
+              </button>
+            </div>
           </div>
         </div>
       </div>
@@ -626,11 +724,11 @@ function ProjectContent({ project, onShowDemo }: { project: Project; onShowDemo:
 
   useEffect(() => {
     // Start preloading as soon as component mounts
-    const videoElements = project.videos?.map(src => {
-      const video = document.createElement('video');
-      video.src = src;
-      video.preload = 'auto';
-      return video;
+    const videoElements = project.videos?.map(video => {
+      const videoEl = document.createElement('video');
+      videoEl.src = video.src;
+      videoEl.preload = 'auto';
+      return videoEl;
     }) || [];
 
     // Cleanup

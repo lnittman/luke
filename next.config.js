@@ -1,14 +1,14 @@
 /** @type {import('next').NextConfig} */
 const nextConfig = {
+  transpilePackages: ['@repo/ui'],
   images: {
     formats: ['image/avif', 'image/webp'],
     dangerouslyAllowSVG: true,
     contentSecurityPolicy: "default-src 'self'; script-src 'none'; sandbox;",
-    domains: [],
+    domains: ['github.com'],
   },
   experimental: {
-    optimizeImages: true,
-    optimizeCss: true,
+    serverActions: true,
   },
 }
 
