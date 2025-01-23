@@ -87,6 +87,7 @@ function Hero() {
                   {section.split('').map((char, charIndex) => (
                     <motion.span
                       key={charIndex}
+                      className="inline-block"
                       initial={{ opacity: 0, y: -10 }}
                       animate={{ 
                         opacity: 1, 
@@ -98,7 +99,7 @@ function Hero() {
                         }
                       }}
                       whileHover={{
-                        y: -1,
+                        y: -2,
                         transition: {
                           duration: 0.1,
                           ease: "easeInOut"
