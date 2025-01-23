@@ -5,112 +5,65 @@ import Link from 'next/link';
 import { usePathname } from 'next/navigation';
 import { motion, useMotionValue, useSpring, useTransform } from 'framer-motion';
 import { useRef, useEffect } from 'react';
+import Image from 'next/image';
 
 interface NavigationItem {
   href: string;
   label: string;
-  // Will be replaced with your Genmoji PNGs
-  placeholder: string;
+  icon: string;
 }
 
 const NAVIGATION_ITEMS: NavigationItem[] = [
   {
     href: '/',
     label: 'Home',
-    placeholder: '🏠',
+    icon: '/assets/luke-home.png',
   },
   {
     href: '/bio',
     label: 'Bio',
-    placeholder: '👨‍💻',
+    icon: '/assets/luke-bio.png',
   },
   {
     href: '/projects',
     label: 'Projects',
-    placeholder: '✨',
+    icon: '/assets/luke-projects.png',
   },
 ];
 
 function NavigationIcon({ item, isActive }: { item: NavigationItem; isActive: boolean }) {
-  const ref = useRef<HTMLDivElement>(null);
-  const mouseX = useMotionValue(0);
-  const mouseY = useMotionValue(0);
-
-  const rotateX = useSpring(useTransform(mouseY, [-15, 15], [8, -8]), {
-    stiffness: 150,
-    damping: 15,
-  });
-  const rotateY = useSpring(useTransform(mouseX, [-15, 15], [-8, 8]), {
-    stiffness: 150,
-    damping: 15,
-  });
-
-  function handleMouseMove(event: React.MouseEvent<HTMLDivElement>) {
-    if (!ref.current) return;
-    const rect = ref.current.getBoundingClientRect();
-    const centerX = rect.left + rect.width / 2;
-    const centerY = rect.top + rect.height / 2;
-    mouseX.set((event.clientX - centerX) / 4);
-    mouseY.set((event.clientY - centerY) / 4);
-  }
-
-  function handleMouseLeave() {
-    mouseX.set(0);
-    mouseY.set(0);
-  }
-
   return (
     <motion.div
-      ref={ref}
-      onMouseMove={handleMouseMove}
-      onMouseLeave={handleMouseLeave}
       className={clsx(
-        "relative p-3 rounded-xl transition-all duration-300",
+        "relative p-3 rounded-xl transition-colors duration-300",
         "hover:bg-[rgb(var(--surface-1)/0.1)]",
         isActive && "bg-[rgb(var(--surface-1)/0.15)]"
       )}
-      style={{
-        transformStyle: 'preserve-3d',
-        rotateX,
-        rotateY,
-      }}
-      whileHover={{ scale: 1.1 }}
-      whileTap={{ scale: 0.95 }}
     >
-      {/* Icon container with 3D transform */}
-      <motion.div
-        className="relative z-10"
-        style={{ transform: 'translateZ(8px)' }}
-      >
-        <span className="block text-2xl select-none">
-          {item.placeholder}
-        </span>
-      </motion.div>
+      <Image
+        src={item.icon}
+        alt={item.label}
+        width={40}
+        height={40}
+        className="w-12 h-12 relative z-10"
+        priority
+      />
 
-      {/* Glass effect base */}
       <div className="absolute inset-0 rounded-xl glass-effect" />
 
-      {/* Active state glow */}
       {isActive && (
         <motion.div
-          layoutId="glow"
-          className="absolute inset-0 rounded-xl glow-effect"
-          style={{ transform: 'translateZ(-4px)' }}
-          transition={{
-            type: "spring",
-            stiffness: 380,
-            damping: 30
+          initial={{ opacity: 0 }}
+          animate={{ opacity: 1 }}
+          exit={{ opacity: 0 }}
+          transition={{ duration: 0.2 }}
+          className="absolute inset-0 rounded-xl"
+          style={{ 
+            background: 'radial-gradient(circle at center, rgb(var(--accent-1) / 0.15) 0%, transparent 70%)',
+            boxShadow: '0 0 30px rgb(var(--accent-1) / 0.3)'
           }}
         />
       )}
-
-      {/* Hover glow effect */}
-      <div className="absolute inset-0 rounded-xl opacity-0 group-hover:opacity-100 transition-opacity">
-        <div 
-          className="absolute inset-0 bg-gradient-to-r from-[rgb(var(--accent-1)/0.1)] to-transparent"
-          style={{ transform: 'translateZ(-2px)' }}
-        />
-      </div>
     </motion.div>
   );
 }

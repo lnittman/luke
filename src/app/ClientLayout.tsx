@@ -1,11 +1,21 @@
 'use client';
 
 import { motion, AnimatePresence } from 'framer-motion';
-import { useEffect, useState } from 'react';
+import { useEffect, useState, useRef } from 'react';
 import { clsx } from 'clsx';
 import { Header } from '@/components/header';
+import ReactPlayer from 'react-player';
 
-const THEME_BACKGROUNDS = {
+// Add type for valid theme numbers
+type ThemeNumber = 1 | 2 | 3;
+
+const THEME_BACKGROUNDS: Record<ThemeNumber, {
+  video: string;
+  fallback: string;
+  blur: string;
+  opacity: number;
+  overlay: string;
+}> = {
   1: { 
     video: '/water.mp4',
     fallback: '/assets/zen-garden.jpg',
@@ -28,83 +38,6 @@ const THEME_BACKGROUNDS = {
     overlay: 'linear-gradient(to bottom, rgba(var(--background-start), 0.15), rgba(var(--background-end), 0.35))'
   },
 } as const;
-
-function BackgroundVideo({ activeTheme }: { activeTheme: number }) {
-  const theme = THEME_BACKGROUNDS[activeTheme as keyof typeof THEME_BACKGROUNDS];
-  const [videoError, setVideoError] = useState(false);
-  
-  useEffect(() => {
-    console.log('Debug: BackgroundVideo mounted');
-    console.log('Debug: Current theme:', activeTheme);
-    console.log('Debug: Video path:', theme.video);
-    setVideoError(false); // Reset error state on theme change
-  }, [activeTheme, theme.video]);
-
-  return (
-    <AnimatePresence mode="sync" initial={false}>
-      <motion.div
-        key={activeTheme}
-        className="fixed inset-0 -z-50 bg-black"
-        initial={{ opacity: 0 }}
-        animate={{ opacity: 1 }}
-        exit={{ opacity: 0 }}
-        transition={{ 
-          duration: 0.8,
-          ease: [0.4, 0, 0.2, 1],
-        }}
-      >
-        <div className="absolute inset-0">
-          {!videoError ? (
-            <video
-              key={theme.video}
-              src={theme.video}
-              poster={theme.fallback}
-              autoPlay
-              loop
-              muted
-              playsInline
-              className="object-cover w-full h-full"
-              style={{ 
-                filter: `blur(${theme.blur})`,
-                opacity: theme.opacity,
-              }}
-              onLoadedData={() => console.log('Debug: Video loaded successfully:', theme.video)}
-              onError={(e) => {
-                console.error('Debug: Video failed to load:', e);
-                console.error('Debug: Video path that failed:', theme.video);
-                setVideoError(true);
-              }}
-            />
-          ) : (
-            <div 
-              className="w-full h-full bg-cover bg-center"
-              style={{
-                backgroundImage: `url(${theme.fallback})`,
-                filter: `blur(${theme.blur})`,
-                opacity: theme.opacity,
-              }}
-            />
-          )}
-        </div>
-        
-        <motion.div 
-          className="absolute inset-0"
-          initial={{ opacity: 0 }}
-          animate={{ opacity: 1 }}
-          exit={{ opacity: 0 }}
-          transition={{ 
-            duration: 0.8,
-            ease: [0.4, 0, 0.2, 1],
-          }}
-          style={{
-            background: theme.overlay,
-            mixBlendMode: 'soft-light',
-          }}
-        />
-      </motion.div>
-    </AnimatePresence>
-  );
-}
 
 export function ClientLayout({ children }: { children: React.ReactNode }) {
   const [activeTheme, setActiveTheme] = useState(1);
@@ -151,7 +84,6 @@ export function ClientLayout({ children }: { children: React.ReactNode }) {
       "transition-colors duration-700"
     )}>
       <Header />
-      <BackgroundVideo activeTheme={activeTheme} />
       {children}
     </div>
   );

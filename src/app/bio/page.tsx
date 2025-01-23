@@ -3,6 +3,7 @@
 import { motion, useScroll, useTransform, useSpring, MotionValue } from 'framer-motion';
 import { useRef, useEffect, useState } from 'react';
 import Image from 'next/image';
+import { zenPalette, getZenColor } from '@/utils/colors';
 
 interface TimelineItem {
   period: string;
@@ -15,13 +16,25 @@ interface TimelineItem {
 const TIMELINE: TimelineItem[] = [
   {
     period: "2023 - present",
-    role: "founder",
-    company: "sine labs",
+    role: "making stuff",
+    company: "myself",
     description: [
-      "building tools for music creation that abstract away complexity",
-      "exploring the intersection of ai and audio production",
+      "building tools that feel powerful and effortless",
+      "exploring novel applications of multimodal ai in audio and web",
+      "crafting intuitive digital experiences",
     ],
-    tech: ["swift", "python", "fastapi", "postgres", "gcp"]
+    tech: ["swift", "typescript", "python", "gemini"]
+  },
+  {
+    period: "2024",
+    role: "senior engineer",
+    company: "titles, inc",
+    description: [
+      "architected cross-platform notification system for web3 image generation platform",
+      "built semantic and file-based image search visualization system",
+      "developed full-stack features across ios, web, and backend systems",
+    ],
+    tech: ["typescript", "react", "firebase", "swift", "tailwind"]
   },
   {
     period: "2022 - present",
@@ -43,6 +56,17 @@ const TIMELINE: TimelineItem[] = [
       "built self-service tools for delivery operations",
     ],
     tech: ["typescript", "react native", "aws"]
+  },
+  {
+    period: "2018 - 2019",
+    role: "software engineer",
+    company: "aws elemental",
+    description: [
+      "developed features for c++ based video transcoding engine",
+      "rewrote quicktime decoder for enhanced metadata parsing",
+      "built automated testing framework components",
+    ],
+    tech: ["c++", "python", "aws"]
   }
 ];
 
@@ -91,13 +115,10 @@ function useScrollSnap() {
 
 function SectionTitle({ children }: { children: string }) {
   const ref = useRef<HTMLDivElement>(null);
-  const { scrollYProgress } = useScroll({ target: ref });
-  const y = useParallax(scrollYProgress, 50);
 
   return (
     <motion.h2 
       ref={ref}
-      style={{ y }}
       className="text-sm font-mono text-[rgb(var(--text-secondary))] mb-8"
     >
       {children}
@@ -105,232 +126,240 @@ function SectionTitle({ children }: { children: string }) {
   );
 }
 
+function GlowingText({ text }: { text: string }) {
+  return (
+    <motion.span 
+      className="relative inline-block group"
+      whileHover={{ scale: 1.05 }}
+    >
+      {text.split('').map((char, i) => (
+        <motion.span
+          key={i}
+          className="relative inline-block"
+          animate={{
+            textShadow: [
+              `0 0 20px rgb(${getZenColor(char, i).glow} / 0.7)`,
+              `0 0 35px rgb(${getZenColor(char, i).glow} / 0.9)`,
+              `0 0 20px rgb(${getZenColor(char, i).glow} / 0.7)`
+            ],
+            y: [0, -2, 0]
+          }}
+          whileHover={{
+            textShadow: `0 0 40px rgb(${getZenColor(char, i).glow})`,
+            transition: { duration: 0.2 }
+          }}
+          transition={{
+            textShadow: {
+              duration: 3,
+              repeat: Infinity,
+              repeatType: "reverse",
+              delay: i * 0.2
+            },
+            y: {
+              duration: 2,
+              repeat: Infinity,
+              repeatType: "reverse",
+              delay: i * 0.1
+            }
+          }}
+        >
+          {char}
+        </motion.span>
+      ))}
+      <motion.span
+        className="absolute inset-0 -z-10 opacity-50 group-hover:opacity-80 blur-xl transition-opacity duration-300"
+        style={{
+          background: zenPalette.map(color => 
+            `radial-gradient(circle, rgb(${color.glow} / 0.5) 0%, transparent 70%)`
+          ).join(', ')
+        }}
+        animate={{
+          opacity: [0.5, 0.8, 0.5]
+        }}
+        transition={{
+          duration: 5,
+          repeat: Infinity,
+          repeatType: "reverse"
+        }}
+      />
+    </motion.span>
+  );
+}
+
 function Bio() {
-  const { sectionRefs, currentSection, scrollToSection, setRef } = useScrollSnap();
   const containerRef = useRef<HTMLDivElement>(null);
-  const { scrollYProgress } = useScroll({
-    target: containerRef,
-    offset: ["start start", "end end"]
-  });
   
-  const smoothProgress = useSpring(scrollYProgress, {
-    stiffness: 100,
-    damping: 30,
-    restDelta: 0.001
-  });
-
-  const heroOpacity = useTransform(smoothProgress, [0, 0.2], [1, 0]);
-  const heroScale = useTransform(smoothProgress, [0, 0.2], [1, 0.8]);
-  const heroY = useTransform(smoothProgress, [0, 0.2], [0, -50]);
-
-  const scaleX = useSpring(scrollYProgress, {
-    stiffness: 100,
-    damping: 30,
-    restDelta: 0.001
-  });
-
   return (
     <div className="relative" ref={containerRef}>
       {/* Scroll Progress Bar */}
       <motion.div
         className="fixed top-0 left-0 right-0 h-[2px] bg-[rgb(var(--accent-1))] origin-left z-50"
-        style={{ scaleX }}
       />
 
-      {/* Fixed Background Glass Effect */}
-      <div className="fixed inset-0 backdrop-blur-xl bg-black/20 z-0" />
-
       {/* Hero Section */}
-      <section 
-        ref={setRef(0)}
+      <motion.section 
         className="min-h-screen flex items-center justify-center relative z-10"
+        initial={{ opacity: 0 }}
+        animate={{ opacity: 1 }}
+        transition={{ duration: 0.4, ease: [0.23, 1, 0.32, 1] }}
       >
-        <motion.div 
-          style={{ opacity: heroOpacity, scale: heroScale, y: heroY }}
-          className="w-full max-w-2xl mx-auto px-6"
-        >
+        <div className="w-full max-w-2xl mx-auto px-6">
           <motion.div 
-            className="relative p-8 rounded-2xl bg-black/40 border border-white/10 overflow-hidden"
-            initial={{ opacity: 0, y: 20 }}
+            className="relative p-8 rounded-2xl overflow-hidden"
+            initial={{ opacity: 0, y: 10 }}
             animate={{ opacity: 1, y: 0 }}
-            transition={{ duration: 0.7 }}
-            whileHover={{ 
-              scale: 1.02,
-              transition: { duration: 0.2 }
-            }}
+            transition={{ duration: 0.4, ease: [0.23, 1, 0.32, 1] }}
           >
-            <div className="absolute inset-0 backdrop-blur-xl" />
+            {/* Persistent glass background */}
+            <motion.div
+              className="absolute inset-0 glass-effect-strong"
+              layoutId="hero-glass"
+              initial={{ opacity: 0 }}
+              animate={{ opacity: 1 }}
+              transition={{
+                type: "spring",
+                bounce: 0,
+                duration: 0.6
+              }}
+            />
+
             <div className="relative z-10 space-y-6">
               <motion.div 
                 className="w-24 h-24 mx-auto mb-6"
-                initial={{ scale: 0 }}
-                animate={{ scale: 1 }}
-                transition={{ delay: 0.2, type: "spring" }}
+                initial={{ opacity: 0, scale: 0.9 }}
+                animate={{ opacity: 1, scale: 1 }}
+                transition={{ 
+                  duration: 0.4,
+                  ease: [0.23, 1, 0.32, 1],
+                  delay: 0.1
+                }}
               >
                 <Image
-                  src="/assets/motorcycle.png"
-                  alt="Motorcycle emoji"
+                  src="/assets/digital-craftsman.png"
+                  alt="Digital Craftsman"
                   width={96}
                   height={96}
                   className="w-full h-full object-contain"
+                  priority
                 />
               </motion.div>
               
-              <div className="space-y-4 text-center">
-                <p className="text-base font-mono text-[rgb(var(--text-secondary))]">
-                  digital craftsman
-                </p>
-                <p className="text-lg leading-relaxed">
-                  building tools at the intersection of music, code, and design. focused on 
-                  creating experiences that feel both powerful and effortless.
-                </p>
+              <div className="space-y-4 text-center font-mono">
+                <motion.p 
+                  className="text-[rgb(var(--text-primary))] leading-relaxed text-base mt-12"
+                  initial={{ opacity: 0, y: 5 }}
+                  animate={{ opacity: 1, y: 0 }}
+                  transition={{ 
+                    duration: 0.4,
+                    ease: [0.23, 1, 0.32, 1],
+                    delay: 0.3
+                  }}
+                >
+                  i enjoy making, using, and talking about tools that feel <GlowingText text="powerful" /> / <GlowingText text="effortless" />
+                </motion.p>
               </div>
             </div>
           </motion.div>
-        </motion.div>
-      </section>
+        </div>
+      </motion.section>
 
-      {/* Content Sections */}
-      <div className="relative z-10">
-        {/* Philosophy */}
-        <section 
-          ref={setRef(1)}
-          className="min-h-screen flex items-center justify-center py-24 px-4"
-        >
-          <div className="w-full max-w-4xl">
-            <SectionTitle>philosophy</SectionTitle>
-            <motion.div 
-              className="relative p-8 rounded-2xl bg-black/40 border border-white/10 overflow-hidden"
-              initial={{ opacity: 0, y: 100 }}
-              whileInView={{ opacity: 1, y: 0 }}
-              viewport={{ once: true, margin: "-100px" }}
-              transition={{ 
-                duration: 0.8,
+      {/* Philosophy Section */}
+      <motion.section 
+        className="min-h-screen flex items-center justify-center py-24 px-4"
+        initial={{ opacity: 0 }}
+        whileInView={{ opacity: 1 }}
+        viewport={{ once: true, margin: "-20%" }}
+        transition={{ duration: 0.4, ease: [0.23, 1, 0.32, 1] }}
+      >
+        <div className="w-full max-w-2xl mx-auto space-y-8">
+          <SectionTitle>philosophy</SectionTitle>
+          
+          <motion.div 
+            className="relative p-8 rounded-2xl overflow-hidden"
+            initial={{ opacity: 0, y: 10 }}
+            whileInView={{ opacity: 1, y: 0 }}
+            viewport={{ once: true, margin: "-20%" }}
+            transition={{ duration: 0.4, ease: [0.23, 1, 0.32, 1] }}
+          >
+            {/* Persistent glass background */}
+            <motion.div
+              className="absolute inset-0 glass-effect-strong"
+              layoutId="philosophy-glass"
+              initial={{ opacity: 0 }}
+              animate={{ opacity: 1 }}
+              transition={{
                 type: "spring",
-                bounce: 0.2
+                bounce: 0,
+                duration: 0.6
               }}
-            >
-              <div className="absolute inset-0 backdrop-blur-xl" />
-              <div className="relative z-10">
-                <p className="text-lg leading-relaxed">
-                  i believe the best tools disappear into the creative process. they should 
-                  feel natural and intuitive, yet powerful enough to bring ideas to life.
-                </p>
-                <p className="text-lg leading-relaxed">
-                  my work spans from low-level audio systems to intuitive user interfaces,
-                  always seeking the balance between technical depth and human experience.
-                </p>
-              </div>
-            </motion.div>
-          </div>
-        </section>
+            />
 
-        {/* Timeline */}
-        <section 
-          ref={setRef(2)}
-          className="min-h-screen flex items-center justify-center py-24 px-4"
-        >
-          <div className="w-full max-w-4xl">
-            <SectionTitle>timeline</SectionTitle>
-            <div className="space-y-6">
-              {TIMELINE.map((item, i) => (
-                <motion.div 
-                  key={item.company}
-                  className="relative p-8 rounded-2xl bg-black/40 border border-white/10 overflow-hidden"
-                  initial={{ opacity: 0, x: -100 }}
-                  whileInView={{ opacity: 1, x: 0 }}
-                  viewport={{ once: true, margin: "-100px" }}
-                  transition={{ 
-                    duration: 0.5,
-                    delay: i * 0.1,
-                    type: "spring",
-                    bounce: 0.2
-                  }}
-                  whileHover={{ 
-                    scale: 1.02,
-                    transition: { duration: 0.2 }
-                  }}
-                >
-                  <div className="absolute inset-0 backdrop-blur-xl" />
-                  <div className="relative z-10">
-                    <div className="flex items-baseline justify-between">
-                      <h3 className="text-lg">{item.role} @ {item.company}</h3>
-                      <span className="text-sm text-[rgb(var(--text-secondary))]">{item.period}</span>
-                    </div>
-                    <ul className="space-y-2 text-[rgb(var(--text-secondary))]">
-                      {item.description.map((desc, i) => (
-                        <li key={i} className="text-sm">{desc}</li>
-                      ))}
-                    </ul>
-                    {item.tech && (
-                      <div className="flex flex-wrap gap-2">
-                        {item.tech.map(tech => (
-                          <span 
-                            key={tech}
-                            className="px-2 py-1 text-xs rounded-full glass-effect-strong"
-                          >
-                            {tech}
-                          </span>
-                        ))}
-                      </div>
-                    )}
-                  </div>
-                </motion.div>
-              ))}
+            <div className="relative z-10 font-mono">
+              <p className="text-[rgb(var(--text-primary))] leading-relaxed">
+                i believe the best tools disappear into the creative process. they should 
+                feel natural and intuitive, yet powerful enough to bring ideas to life.
+              </p>
+              <p className="text-[rgb(var(--text-primary))] leading-relaxed mt-4">
+                my work spans from low-level audio systems to intuitive user interfaces,
+                always seeking the balance between technical depth and human experience.
+              </p>
             </div>
-          </div>
-        </section>
+          </motion.div>
+        </div>
+      </motion.section>
 
-        {/* Interests */}
-        <section 
-          ref={setRef(3)}
-          className="min-h-screen flex items-center justify-center py-24 px-4"
-        >
-          <div className="w-full max-w-4xl">
-            <SectionTitle>interests</SectionTitle>
-            <div className="grid grid-cols-1 sm:grid-cols-3 gap-6">
-              {INTERESTS.map((category, i) => (
-                <motion.div 
-                  key={category.label}
-                  className="relative p-8 rounded-2xl bg-black/40 border border-white/10 overflow-hidden"
-                  initial={{ opacity: 0, y: 50 }}
-                  whileInView={{ opacity: 1, y: 0 }}
-                  viewport={{ once: true, margin: "-50px" }}
-                  transition={{ 
-                    duration: 0.5,
-                    delay: i * 0.1,
-                    type: "spring",
-                    bounce: 0.2
-                  }}
-                  whileHover={{ 
-                    scale: 1.05,
-                    rotateX: 5,
-                    rotateY: 5,
-                    transition: { duration: 0.2 }
-                  }}
-                >
-                  <div className="absolute inset-0 backdrop-blur-xl" />
-                  <div className="relative z-10">
-                    <h3 className="text-sm font-mono text-[rgb(var(--text-secondary))]">
-                      {category.label}
-                    </h3>
-                    <div className="flex flex-wrap gap-2">
-                      {category.items.map(item => (
+      {/* Timeline & Skills Section */}
+      <motion.section 
+        className="min-h-screen flex items-center justify-center py-24 px-4"
+        initial={{ opacity: 0 }}
+        whileInView={{ opacity: 1 }}
+        viewport={{ once: true, margin: "-20%" }}
+        transition={{ duration: 0.4, ease: [0.23, 1, 0.32, 1] }}
+      >
+        <div className="w-full max-w-2xl mx-auto space-y-12">
+          {/* Timeline */}
+          <div className="space-y-6">
+            <SectionTitle>timeline</SectionTitle>
+            {TIMELINE.map((item, i) => (
+              <motion.div 
+                key={item.company}
+                className="relative p-8 rounded-2xl glass-effect-strong overflow-hidden"
+                initial={{ opacity: 0, y: 20 }}
+                whileInView={{ opacity: 1, y: 0 }}
+                viewport={{ once: true, margin: "-20px" }}
+                transition={{ 
+                  duration: 0.4,
+                  delay: i * 0.1
+                }}
+              >
+                <div className="relative z-10 font-mono">
+                  <div className="flex items-baseline justify-between">
+                    <h3 className="text-lg">{item.role} @ {item.company}</h3>
+                    <span className="text-[rgb(var(--text-secondary))] text-sm">{item.period}</span>
+                  </div>
+                  <ul className="space-y-2 mt-4">
+                    {item.description.map((desc, i) => (
+                      <li key={i} className="text-[rgb(var(--text-primary))] text-sm">{desc}</li>
+                    ))}
+                  </ul>
+                  {item.tech && (
+                    <div className="flex flex-wrap gap-2 mt-4">
+                      {item.tech.map(tech => (
                         <span 
-                          key={item}
-                          className="px-2 py-1 text-xs rounded-full glass-effect-strong"
+                          key={tech}
+                          className="px-2 py-1 text-xs rounded-full glass-effect"
                         >
-                          {item}
+                          {tech}
                         </span>
                       ))}
                     </div>
-                  </div>
-                </motion.div>
-              ))}
-            </div>
+                  )}
+                </div>
+              </motion.div>
+            ))}
           </div>
-        </section>
-      </div>
+        </div>
+      </motion.section>
     </div>
   );
 }

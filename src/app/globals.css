@@ -115,6 +115,15 @@
     -webkit-background-clip: text;
     color: transparent;
   }
+
+  /* Mask fade gradient */
+  .mask-fade-bottom {
+    mask-image: linear-gradient(
+      to bottom,
+      black calc(100% - 40px),
+      transparent 100%
+    );
+  }
 }
 
 @layer components {
