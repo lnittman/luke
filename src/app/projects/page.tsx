@@ -380,13 +380,9 @@ function VideoPlayer({ src, title, onClose, onNext, onPrev, hasNext, hasPrev }: 
   hasPrev?: boolean;
 }) {
   const videoRef = useRef<HTMLVideoElement>(null);
-  const seekBarRef = useRef<HTMLDivElement>(null);
   const [isPlaying, setIsPlaying] = useState(false);
-  const [progress, setProgress] = useState(0);
-  const [duration, setDuration] = useState(0);
-  const [isDragging, setIsDragging] = useState(false);
-  const [isHovering, setIsHovering] = useState(false);
-  const progressSpring = useSpring(0, { damping: 20, stiffness: 300 });
+  const [isRewinding, setIsRewinding] = useState(false);
+  const [isForwarding, setIsForwarding] = useState(false);
 
   useEffect(() => {
     const video = videoRef.current;
@@ -394,30 +390,25 @@ function VideoPlayer({ src, title, onClose, onNext, onPrev, hasNext, hasPrev }: 
 
     video.currentTime = 0;
     setIsPlaying(false);
-    progressSpring.set(0);
-
     video.load();
     
     const handlePlay = () => setIsPlaying(true);
     const handlePause = () => setIsPlaying(false);
-    const handleTimeUpdate = () => {
-      if (!isDragging) {
-        const progress = video.currentTime / video.duration;
-        setProgress(progress);
-        progressSpring.set(progress);
+    const handleEnded = () => {
+      setIsPlaying(false);
+      if (hasNext && onNext) {
+        onNext();
       }
     };
-    const handleLoadedMetadata = () => setDuration(video.duration);
     
     video.addEventListener('play', handlePlay);
     video.addEventListener('pause', handlePause);
-    video.addEventListener('timeupdate', handleTimeUpdate);
-    video.addEventListener('loadedmetadata', handleLoadedMetadata);
+    video.addEventListener('ended', handleEnded);
     
     const handleKeyDown = (e: KeyboardEvent) => {
       if (e.key === 'Escape') onClose();
       if (e.key === 'ArrowRight' && hasNext && onNext) onNext();
-      if (e.key === 'ArrowLeft' && hasPrev && onPrev) onPrev();
+      if (e.key === 'ArrowLeft') restartOrPrev();
       if (e.key === ' ') {
         e.preventDefault();
         togglePlay();
@@ -429,11 +420,10 @@ function VideoPlayer({ src, title, onClose, onNext, onPrev, hasNext, hasPrev }: 
     return () => {
       video.removeEventListener('play', handlePlay);
       video.removeEventListener('pause', handlePause);
-      video.removeEventListener('timeupdate', handleTimeUpdate);
-      video.removeEventListener('loadedmetadata', handleLoadedMetadata);
+      video.removeEventListener('ended', handleEnded);
       window.removeEventListener('keydown', handleKeyDown);
     };
-  }, [src, onClose, onNext, onPrev, hasNext, hasPrev, isDragging]);
+  }, [src, onClose, onNext, onPrev, hasNext, hasPrev]);
 
   const togglePlay = () => {
     const video = videoRef.current;
@@ -448,48 +438,17 @@ function VideoPlayer({ src, title, onClose, onNext, onPrev, hasNext, hasPrev }: 
     }
   };
 
-  const handleSeek = (clientX: number) => {
-    const seekBar = seekBarRef.current;
+  const restartOrPrev = () => {
     const video = videoRef.current;
-    if (!seekBar || !video || !duration) return;
+    if (!video) return;
 
-    const rect = seekBar.getBoundingClientRect();
-    const percent = Math.max(0, Math.min(1, (clientX - rect.left) / rect.width));
-    const wasPlaying = !video.paused;
-    const newTime = percent * duration;
-    
-    video.currentTime = newTime;
-    setProgress(percent);
-    progressSpring.set(percent);
-
-    if (wasPlaying) {
-      video.play();
+    if (video.currentTime > 3) {
+      // If we're more than 3 seconds in, restart the video
+      video.currentTime = 0;
+    } else if (hasPrev && onPrev) {
+      // If we're at the start and there's a previous video, go to it
+      onPrev();
     }
-  };
-
-  const handleDragStart = (e: React.MouseEvent<HTMLDivElement> | React.TouchEvent<HTMLDivElement>) => {
-    setIsDragging(true);
-    const clientX = 'touches' in e ? e.touches[0].clientX : e.clientX;
-    handleSeek(clientX);
-
-    const handleDrag = (e: MouseEvent | TouchEvent) => {
-      e.preventDefault(); // Prevent text selection while dragging
-      const clientX = 'touches' in e ? e.touches[0].clientX : e.clientX;
-      handleSeek(clientX);
-    };
-
-    const handleDragEnd = () => {
-      setIsDragging(false);
-      document.removeEventListener('mousemove', handleDrag);
-      document.removeEventListener('touchmove', handleDrag);
-      document.removeEventListener('mouseup', handleDragEnd);
-      document.removeEventListener('touchend', handleDragEnd);
-    };
-
-    document.addEventListener('mousemove', handleDrag, { passive: false });
-    document.addEventListener('touchmove', handleDrag, { passive: false });
-    document.addEventListener('mouseup', handleDragEnd);
-    document.addEventListener('touchend', handleDragEnd);
   };
 
   return (
@@ -503,24 +462,6 @@ function VideoPlayer({ src, title, onClose, onNext, onPrev, hasNext, hasPrev }: 
       <div className="p-4 flex items-center justify-between text-white/80">
         <div className="flex items-center gap-4">
           <h2 className="text-sm font-mono">{title}</h2>
-          <div className="flex items-center gap-2 text-white/60">
-            {hasPrev && (
-              <button
-                onClick={onPrev}
-                className="hover:text-white transition-colors"
-              >
-                ←
-              </button>
-            )}
-            {hasNext && (
-              <button
-                onClick={onNext}
-                className="hover:text-white transition-colors"
-              >
-                →
-              </button>
-            )}
-          </div>
         </div>
         <button 
           onClick={onClose}
@@ -531,11 +472,19 @@ function VideoPlayer({ src, title, onClose, onNext, onPrev, hasNext, hasPrev }: 
       </div>
 
       {/* Main content */}
-      <div className="flex-1 flex items-center justify-center">
+      <div 
+        className="flex-1 flex items-center justify-center"
+        onClick={(e) => {
+          // Only close if clicking the background, not the video or controls
+          if (e.target === e.currentTarget) {
+            onClose();
+          }
+        }}
+      >
         {/* Video container with controls */}
         <div className="relative w-full max-w-5xl mx-4 flex flex-col items-center">
           {/* Video wrapper */}
-          <div className="relative w-full max-h-[70vh] flex items-center justify-center mb-20">
+          <div className="relative w-full max-h-[70vh] flex items-center justify-center mb-28">
             <video
               ref={videoRef}
               src={src}
@@ -544,61 +493,16 @@ function VideoPlayer({ src, title, onClose, onNext, onPrev, hasNext, hasPrev }: 
               onClick={togglePlay}
               onEnded={() => setIsPlaying(false)}
             />
-            
-            {/* Play/Pause overlay */}
-            <motion.div
-              initial={false}
-              animate={{ opacity: isPlaying ? 0 : 1 }}
-              transition={{ duration: 0.2 }}
-              className="absolute inset-0 flex items-center justify-center cursor-pointer"
-              onClick={togglePlay}
-            >
-              {!isPlaying && (
-                <div className="rounded-full bg-white/10 p-4">
-                  <span className="text-4xl">▶️</span>
-                </div>
-              )}
-            </motion.div>
 
             {/* Controls container */}
-            <div className="absolute bottom-[-5rem] left-0 right-0 flex flex-col items-center gap-4">
-              {/* Seek bar container */}
-              <div 
-                ref={seekBarRef}
-                className="w-full max-w-[40rem] pt-4 px-2 mx-auto"
-                onMouseEnter={() => setIsHovering(true)}
-                onMouseLeave={() => setIsHovering(false)}
-              >
-                {/* Seek bar */}
-                <motion.div 
-                  className={clsx(
-                    "relative h-1 rounded-full bg-white/10 cursor-pointer transition-transform duration-200",
-                    isHovering && "scale-y-150"
-                  )}
-                  onClick={(e) => handleSeek(e.clientX)}
-                  onMouseDown={handleDragStart}
-                  onTouchStart={handleDragStart}
-                >
-                  <motion.div 
-                    className="absolute inset-y-0 left-0 rounded-full bg-white/30 origin-left"
-                    style={{ 
-                      width: `${progress * 100}%`,
-                    }}
-                  />
-                </motion.div>
-              </div>
-
+            <div className="absolute bottom-[-8rem] left-0 right-0 flex justify-center px-4 py-8">
               {/* Play/Pause button with navigation */}
-              <div className="flex items-center gap-4 text-xl">
+              <div className="flex items-center gap-8 text-3xl">
                 <button
-                  onClick={onPrev}
-                  disabled={!hasPrev}
-                  className={clsx(
-                    "transition-opacity",
-                    hasPrev ? "text-white/60 hover:text-white" : "text-white/20 cursor-not-allowed"
-                  )}
+                  onClick={restartOrPrev}
+                  className="text-white/60 hover:text-white transition-opacity"
                 >
-                  ⬅️
+                  ⏮️
                 </button>
                 <button
                   onClick={togglePlay}
@@ -614,7 +518,7 @@ function VideoPlayer({ src, title, onClose, onNext, onPrev, hasNext, hasPrev }: 
                     hasNext ? "text-white/60 hover:text-white" : "text-white/20 cursor-not-allowed"
                   )}
                 >
-                  ➡️
+                  ⏭️
                 </button>
               </div>
             </div>
