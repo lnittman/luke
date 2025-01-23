@@ -22,9 +22,12 @@ function Hero() {
           {/* Logo section */}
           <motion.div
             className="relative mb-4 sm:mb-6 cursor-pointer"
-            initial={{ opacity: 0, y: 20 }}
-            animate={{ opacity: 1, y: 0 }}
-            transition={{ duration: 0.7 }}
+            initial={{ opacity: 0, x: -60 }}
+            animate={{ opacity: 1, x: 0 }}
+            transition={{ 
+              duration: 0.8,
+              ease: [0.23, 1, 0.32, 1]
+            }}
             style={{ transform: 'translateZ(40px)' }}
             whileHover={{ 
               scale: 1.05,
@@ -35,12 +38,32 @@ function Hero() {
                 restDelta: 0.001
               }
             }}
+            whileTap={{
+              scale: 0.95,
+              rotate: -8,
+              x: 10,
+              transition: {
+                type: "spring",
+                stiffness: 400,
+                damping: 8,
+                mass: 0.8
+              }
+            }}
           >
             <motion.div 
               className="absolute inset-0 rounded-2xl"
               whileHover={{
                 opacity: 0.8,
                 transition: { duration: 0.15 }
+              }}
+              whileTap={{
+                scale: 0.85,
+                opacity: 0.4,
+                transition: {
+                  type: "spring",
+                  stiffness: 400,
+                  damping: 10
+                }
               }}
             />
             <Image 
@@ -50,6 +73,7 @@ function Hero() {
               width={160}
               height={160}
               priority
+              draggable={false}
             />
           </motion.div>
 
