@@ -22,6 +22,7 @@ const CONTACT_INFO: ContactInfo = {
 export function Header() {
   const [isExpanded, setIsExpanded] = useState(false);
   const [currentTime, setCurrentTime] = useState(new Date());
+  const [colonVisible, setColonVisible] = useState(true);
   const pathname = usePathname();
   const pageName = pathname === '/' ? 'home' : pathname.slice(1);
   const headerRef = useRef<HTMLDivElement>(null);
@@ -29,7 +30,11 @@ export function Header() {
   useEffect(() => {
     const timer = setInterval(() => {
       setCurrentTime(new Date());
-    }, 60000);
+    }, 1000);
+
+    const blinkTimer = setInterval(() => {
+      setColonVisible(prev => !prev);
+    }, 1000);
 
     const handleClickOutside = (event: MouseEvent) => {
       if (headerRef.current && !headerRef.current.contains(event.target as Node)) {
@@ -41,9 +46,16 @@ export function Header() {
 
     return () => {
       clearInterval(timer);
+      clearInterval(blinkTimer);
       document.removeEventListener('mousedown', handleClickOutside);
     };
   }, []);
+
+  const hours = currentTime.getHours();
+  const minutes = currentTime.getMinutes();
+  const period = hours >= 12 ? 'pm' : 'am';
+  const displayHours = hours % 12 || 12;
+  const displayMinutes = minutes.toString().padStart(2, '0');
 
   const formattedTime = currentTime.toLocaleTimeString('en-US', {
     hour: 'numeric',
@@ -103,7 +115,9 @@ export function Header() {
             layout="position"
           >
             <span className="hidden sm:inline text-xs font-mono text-[rgb(var(--text-secondary))] hover:text-[rgb(var(--text-primary))] transition-colors">
-              local time: {formattedTime}
+              local time: {displayHours}
+              <span style={{ opacity: colonVisible ? 1 : 0, transition: 'opacity 0.1s' }}>:</span>
+              {displayMinutes} {period}
             </span>
             <div className="w-[36px] sm:w-[44px] h-[36px] sm:h-[44px] flex items-center justify-center">
               <motion.div

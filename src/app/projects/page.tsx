@@ -40,7 +40,7 @@ const PROJECTS: Project[] = [
     id: 'squish',
     name: 'squish',
     emoji: '🐙',
-    description: 'semantic social network for sharing and discovering multimedia through natural connections',
+    description: 'semantic social network for content sharing and discovery',
     demoUrl: 'https://squish.app',
     sourceUrl: 'https://github.com/nithya/squish',
     videos: [
@@ -51,28 +51,27 @@ const PROJECTS: Project[] = [
       overview: {
         title: 'overview',
         items: [
-          'semantic multimedia sharing + discovery',
-          'embedding-based content organization',
-          'real-time collaborative boards',
+          'fun file storage',
+          'abstract content discovery pain with AI',
+          'customizable, column-based home page',
           'fluid animations + interactions'
         ]
       },
       core: {
         title: 'core',
         items: [
-          'multimodal content processing',
+          'embedding-based content organization',
           'semantic search engine',
           'interactive boards + comments',
-          'real-time collaboration'
+          'real-time collaborative boards',
         ]
       },
       architecture: {
         title: 'architecture',
         items: [
-          'monorepo with shared packages',
-          'end-to-end type safety',
-          'global edge deployment',
-          'interactive documentation'
+          'monorepo webapp with shared packages',
+          'modular, service-based fastapi backend',
+          'interactive + living documentation',
         ]
       },
       tech: {
@@ -87,10 +86,17 @@ const PROJECTS: Project[] = [
           'liveblocks',
           'mintlify',
           'resend',
+          'twilio',
           'biome',
           'turbo',
           'cmdk',
-          'gcp'
+          'gcp',
+          'sqlmodel',
+          'alembic',
+          'postgres',
+          'pgvector',
+          'vertexai',
+          'redis'
         ]
       }
     }
@@ -112,7 +118,7 @@ const PROJECTS: Project[] = [
           'natural language development',
           'vision-driven architecture',
           'context-aware tooling',
-          'seamless abstractions'
+          'seamless abstraction of best practices'
         ]
       },
       core: {
@@ -143,7 +149,8 @@ const PROJECTS: Project[] = [
           'vertexai',
           'redis',
           'turborepo',
-          'postgres'
+          'postgres',
+          'markdown',
         ]
       }
     }
@@ -340,7 +347,7 @@ function ProjectPicker({ currentProject, onProjectChange }: {
                   "hover:bg-white/5",
                   currentProject.id === project.id 
                     ? "[text-shadow:0_0_10px_rgba(255,255,255,0.5)]" 
-                    : "text-white/40 blur-[0.2px]"
+                    : "opacity-40 hover:opacity-60 transition-opacity duration-300"
                 )}
               >
                 <span className="text-[26px] relative">

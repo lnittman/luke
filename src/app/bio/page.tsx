@@ -48,7 +48,7 @@ const TIMELINE: TimelineItem[] = [
     tech: ["swift", "react", "python", "fastapi", "openai", "vst3"]
   },
   {
-    period: "2019 - 2020",
+    period: "2019 - 2021",
     role: "sde ii",
     company: "amazon",
     description: [

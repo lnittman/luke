@@ -1,12 +1,67 @@
 'use client';
 
-import { motion } from 'framer-motion';
+import { motion, AnimatePresence } from 'framer-motion';
 import {  useEffect, useState, useMemo } from 'react';
 import Image from 'next/image';
 import { TechPill } from '@/components/TechPill';
 import { getZenColor } from '@/utils/colors';
+import { defaultQuote, techQuotes } from '@/utils/quotes';
 
 function Hero() {
+  const [currentQuote, setCurrentQuote] = useState(defaultQuote);
+  const [isQuoteChanging, setIsQuoteChanging] = useState(false);
+  const [activeItem, setActiveItem] = useState<string | null>(null);
+  const [autoRotatePaused, setAutoRotatePaused] = useState(false);
+  const [rotationOrder, setRotationOrder] = useState<string[]>([]);
+
+  const resonanceItems = ['books', 'product', 'engineering', 'design', 'ux', 'ai', 'audio', 'vim'];
+
+  // Initialize with a random resonance item and rotation order
+  useEffect(() => {
+    // Shuffle the resonance items for rotation order
+    const shuffled = [...resonanceItems]
+      .sort(() => Math.random() - 0.5);
+    setRotationOrder(shuffled);
+    
+    // Set initial active item
+    const randomItem = shuffled[0];
+    setActiveItem(randomItem);
+    handleItemChange(randomItem);
+  }, []);
+
+  // Auto-rotate through items
+  useEffect(() => {
+    if (autoRotatePaused || !activeItem || rotationOrder.length === 0) return;
+    
+    const interval = setInterval(() => {
+      const currentIndex = rotationOrder.indexOf(activeItem);
+      const nextIndex = (currentIndex + 1) % rotationOrder.length;
+      const nextItem = rotationOrder[nextIndex];
+      setActiveItem(nextItem);
+      handleItemChange(nextItem);
+    }, 8000);
+
+    return () => clearInterval(interval);
+  }, [activeItem, autoRotatePaused, rotationOrder]);
+
+  const handleItemChange = (item: string) => {
+    if (!techQuotes[item]) return;
+    
+    setIsQuoteChanging(true);
+    setTimeout(() => {
+      const quotes = techQuotes[item];
+      const randomQuote = quotes[Math.floor(Math.random() * quotes.length)];
+      setCurrentQuote(randomQuote);
+      setIsQuoteChanging(false);
+    }, 300);
+  };
+
+  const handleTechClick = (item: string) => {
+    setAutoRotatePaused(true);
+    setActiveItem(item);
+    handleItemChange(item);
+  };
+
   return (
     <div className="relative w-full h-[100dvh] flex items-center justify-center px-4 py-4 sm:p-0">
       {/* Main card */}
@@ -60,19 +115,6 @@ function Hero() {
               draggable={false}
             />
           </motion.div>
-
-          {/* Title under logo
-          <motion.div
-            className="text-[rgb(var(--text-primary))] text-sm sm:text-base md:text-lg text-center mb-4 sm:mb-8 font-mono"
-            initial={{ opacity: 0 }}
-            animate={{ opacity: 1 }}
-            transition={{ delay: 0.2 }}
-          >
-            <span className="whitespace-normal sm:whitespace-nowrap">
-              craftsman • product poet • digital alchemist
-            </span>
-          </motion.div>
-          */}
 
           {/* Personal narrative */}
           <div className="relative z-10 w-full space-y-1.5 landscape:space-y-2 sm:space-y-3 md:space-y-4 font-mono text-[10px] landscape:text-[9px] sm:text-sm">
@@ -148,8 +190,14 @@ function Hero() {
                 )}
                 {section === 'resonance' && (
                   <div className="flex flex-wrap gap-1 landscape:gap-0.5 sm:gap-1.5 md:gap-2">
-                    {['product', 'engineering', 'design', 'ai', 'audio', 'web3', 'vim'].map((tag, i) => (
-                      <TechPill key={tag} text={tag} index={i} />
+                    {resonanceItems.map((tag, i) => (
+                      <TechPill 
+                        key={tag} 
+                        text={tag} 
+                        index={i} 
+                        onClick={() => handleTechClick(tag)}
+                        isActive={tag === activeItem}
+                      />
                     ))}
                   </div>
                 )}
@@ -158,17 +206,28 @@ function Hero() {
             
             {/* Standalone quote */}
             <motion.div
-              className="text-[rgb(var(--text-primary))] leading-relaxed italic text-center px-2 sm:px-4 pt-1 landscape:pt-1.5 sm:pt-4 flex flex-col items-center gap-0.5 landscape:gap-1 sm:gap-2"
+              className="text-[rgb(var(--text-primary))] leading-relaxed italic px-2 sm:px-4 md:px-6 pt-1 landscape:pt-1.5 sm:pt-4 flex flex-col items-center gap-0.5 landscape:gap-1 sm:gap-2 h-[4.5rem] landscape:h-[4rem] sm:h-[5rem]"
               initial={{ opacity: 0 }}
               animate={{ opacity: 1 }}
               transition={{ delay: 0.6 }}
             >
-              <span className="text-[9px] landscape:text-[8px] sm:text-xs whitespace-normal sm:whitespace-nowrap">
-                "now his dream was a dream of shadows gathering like storm clouds"
-              </span>
-              <span className="text-[rgb(var(--text-secondary))] text-[8px] landscape:text-[7px] sm:text-xs not-italic">
-                — roberto bolaño, 2666
-              </span>
+              <AnimatePresence mode="wait">
+                <motion.div
+                  key={currentQuote.text}
+                  initial={{ opacity: 0, y: 10 }}
+                  animate={{ opacity: 1, y: 0 }}
+                  exit={{ opacity: 0, y: -10 }}
+                  transition={{ duration: 0.6 }}
+                  className="flex flex-col items-center gap-1.5 landscape:gap-1 sm:gap-2"
+                >
+                  <span className="text-[9px] landscape:text-[8px] sm:text-xs whitespace-pre-line text-center">
+                    "{currentQuote.text}"
+                  </span>
+                  <span className="text-[rgb(var(--text-secondary))] text-[8px] landscape:text-[7px] sm:text-xs not-italic">
+                    — {currentQuote.author}{currentQuote.year ? ` (${currentQuote.year})` : ''}{currentQuote.source ? `,\n${currentQuote.source}` : ''}
+                  </span>
+                </motion.div>
+              </AnimatePresence>
             </motion.div>
           </div>
         </div>

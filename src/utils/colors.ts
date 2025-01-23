@@ -1,29 +1,29 @@
 // Zen-inspired pastel colors with harmonious combinations
 export const zenPalette = [
   { 
-    bg: '255, 241, 232',    // Soft Peach
-    text: '98, 87, 77',
-    glow: '255, 200, 180'
+    bg: '245, 240, 235',    // Warm Sand
+    text: '95, 85, 75',
+    glow: '235, 200, 180'
   },
   { 
-    bg: '232, 246, 255',    // Sky Blue
-    text: '77, 87, 98',
-    glow: '180, 220, 255'
+    bg: '235, 240, 245',    // Soft Sky
+    text: '75, 85, 95',
+    glow: '180, 210, 235'
   },
   { 
-    bg: '241, 255, 232',    // Mint Green
-    text: '87, 98, 77',
-    glow: '200, 255, 180'
+    bg: '240, 245, 235',    // Sage Mist
+    text: '85, 95, 75',
+    glow: '200, 235, 180'
   },
   { 
-    bg: '255, 232, 246',    // Rose Pink
-    text: '98, 77, 87',
-    glow: '255, 180, 220'
+    bg: '245, 235, 240',    // Rose Fog
+    text: '95, 75, 85',
+    glow: '235, 180, 210'
   },
   { 
-    bg: '246, 232, 255',    // Soft Lavender
-    text: '87, 77, 98',
-    glow: '220, 180, 255'
+    bg: '240, 235, 245',    // Lavender Haze
+    text: '85, 75, 95',
+    glow: '210, 180, 235'
   }
 ];
 
