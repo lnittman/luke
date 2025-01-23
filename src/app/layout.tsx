@@ -10,7 +10,15 @@ const Navigation = dynamic(() => import('@/components/navigation/Navigation'), {
 
 export const metadata: Metadata = {
   title: 'luke nittmann',
-  description: 'Personal portfolio and projects showcase',
+  description: 'digital craftsman',
+  viewport: {
+    width: 'device-width',
+    initialScale: 1,
+    viewportFit: 'cover',
+    userScalable: false,
+    minimumScale: 1,
+    maximumScale: 1,
+  },
 };
 
 export default function RootLayout({
@@ -20,6 +28,14 @@ export default function RootLayout({
 }) {
   return (
     <html lang="en" className="dark">
+      <head>
+        <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover, user-scalable=no, minimum-scale=1, maximum-scale=1" />
+        <meta name="apple-mobile-web-app-capable" content="yes" />
+        <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent" />
+        <meta name="apple-mobile-web-app-title" content="luke" />
+        <link rel="apple-touch-icon" href="/icon.png" />
+        <meta name="theme-color" content="#000000" />
+      </head>
       <body className={inter.className}>
         <ClientLayout>
           {children}
