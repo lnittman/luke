@@ -3,6 +3,7 @@ import { Inter } from 'next/font/google';
 import dynamic from 'next/dynamic';
 import './globals.css';
 import { ClientLayout } from './ClientLayout';
+import { DynamicFavicon } from '@/components/DynamicFavicon';
 
 const inter = Inter({ subsets: ['latin'] });
 
@@ -14,15 +15,11 @@ export const metadata: Metadata = {
   viewport: {
     width: 'device-width',
     initialScale: 1,
-    viewportFit: 'cover',
-    userScalable: false,
-    minimumScale: 1,
-    maximumScale: 1,
   },
   icons: {
-    icon: '/assets/logo.png',
-    shortcut: '/assets/logo.png',
-    apple: '/assets/logo.png',
+    icon: '/assets/luke-home.png',
+    shortcut: '/assets/luke-home.png',
+    apple: '/assets/luke-home.png',
   },
   themeColor: '#ffffff',
 };
@@ -35,9 +32,13 @@ export default function RootLayout({
   return (
     <html lang="en" className="dark">
       <head>
-        <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover, user-scalable=no, minimum-scale=1, maximum-scale=1" />
+        <meta name="viewport" content="width=device-width, initial-scale=1" />
+        <link rel="icon" href="/assets/luke-home.png" />
+        <link rel="shortcut icon" href="/assets/luke-home.png" />
+        <link rel="apple-touch-icon" href="/assets/luke-home.png" />
       </head>
       <body className={inter.className}>
+        <DynamicFavicon />
         <ClientLayout>
           {children}
           <Navigation />
