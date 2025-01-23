@@ -53,7 +53,7 @@ function Hero() {
             />
           </motion.div>
 
-          {/* Title under logo */}
+          {/* Title under logo 
           <motion.div
             className="text-[rgb(var(--text-primary))] text-sm sm:text-base md:text-lg text-center mb-4 sm:mb-8 font-mono"
             initial={{ opacity: 0 }}
@@ -64,6 +64,7 @@ function Hero() {
               craftsman • product poet • digital alchemist
             </span>
           </motion.div>
+          */}
 
           {/* Personal narrative */}
           <div className="relative z-10 w-full space-y-3 sm:space-y-4 md:space-y-6 font-mono text-xs sm:text-sm">
