@@ -604,75 +604,146 @@ function ProjectSection({ title, items, defaultExpanded = false, isTechSection =
   );
 }
 
-function ProjectContent({ project, onShowDemo }: { project: Project; onShowDemo: () => void }) {
+function VideoPreloader({ videos }: { videos: string[] }) {
   return (
-    <div className="min-h-[calc(100vh-10rem)] sm:min-h-0 flex flex-col px-4 py-4 mt-16 sm:mt-24">
-      <div className="w-full max-w-4xl mx-auto space-y-6 overflow-y-auto sm:overflow-visible">
-        <div className="px-4 sm:px-6 md:px-8 space-y-2">
-          <h1 className="text-xl sm:text-2xl font-mono">{project.name}</h1>
-          <p className="text-sm sm:text-base font-mono text-[rgb(var(--text-primary))]">
-            {project.description}
-          </p>
-
-          {/* Action Buttons */}
-          <div className="flex gap-8 pt-4">
-            {project.videos && project.videos.length > 0 && (
-              <button 
-                onClick={onShowDemo}
-                className="text-xs sm:text-sm font-mono text-[rgb(var(--text-secondary))] hover:text-[rgb(var(--text-primary))] transition-colors"
-              >
-                demo →
-              </button>
-            )}
-            {(project.id === 'sine' || project.id === 'helios') && (
-              <a 
-                href={project.sourceUrl}
-                target="_blank"
-                rel="noopener noreferrer"
-                className="text-xs sm:text-sm font-mono text-[rgb(var(--text-secondary))] hover:text-[rgb(var(--text-primary))] transition-colors"
-              >
-                source →
-              </a>
-            )}
-          </div>
-        </div>
-
-        <motion.div
-          className="relative p-4 sm:p-6 md:p-8"
-          initial={{ opacity: 0, y: 20 }}
-          animate={{ opacity: 1, y: 0 }}
-          transition={{ duration: 0.4 }}
-        >
-          <div className="relative z-10 space-y-8">
-            {/* Content Sections */}
-            <div className="grid grid-cols-1 md:grid-cols-2 gap-6 sm:gap-8">
-              <div className="space-y-6">
-                <ProjectSection 
-                  title={project.content.overview.title} 
-                  items={project.content.overview.items}
-                />
-                <ProjectSection 
-                  title={project.content.core.title} 
-                  items={project.content.core.items}
-                />
-              </div>
-              <div className="space-y-6">
-                <ProjectSection 
-                  title={project.content.architecture.title} 
-                  items={project.content.architecture.items}
-                />
-                <ProjectSection 
-                  title={project.content.tech.title} 
-                  items={project.content.tech.items}
-                  isTechSection={true}
-                />
-              </div>
-            </div>
-          </div>
-        </motion.div>
-      </div>
+    <div className="hidden">
+      {videos.map((src, i) => (
+        <video 
+          key={i}
+          src={src}
+          preload="auto"
+          playsInline
+          muted
+        />
+      ))}
     </div>
   );
+}
+
+function ProjectContent({ project, onShowDemo }: { project: Project; onShowDemo: () => void }) {
+  const [showVideo, setShowVideo] = useState(false);
+  const [currentVideoIndex, setCurrentVideoIndex] = useState(0);
+
+  useEffect(() => {
+    // Start preloading as soon as component mounts
+    const videoElements = project.videos?.map(src => {
+      const video = document.createElement('video');
+      video.src = src;
+      video.preload = 'auto';
+      return video;
+    }) || [];
+
+    // Cleanup
+    return () => {
+      videoElements.forEach(video => {
+        video.src = '';
+        video.load();
+      });
+    };
+  }, [project.videos]);
+
+  return (
+    <>
+      {/* Add this near the start of your JSX */}
+      {project.videos && <VideoPreloader videos={project.videos.map(v => v.src)} />}
+      
+      <div className="min-h-[calc(100vh-10rem)] sm:min-h-0 flex flex-col px-4 py-4 mt-16 sm:mt-24">
+        <div className="w-full max-w-4xl mx-auto space-y-6 overflow-y-auto sm:overflow-visible">
+          <div className="px-4 sm:px-6 md:px-8 space-y-2">
+            <h1 className="text-xl sm:text-2xl font-mono">{project.name}</h1>
+            <p className="text-sm sm:text-base font-mono text-[rgb(var(--text-primary))]">
+              {project.description}
+            </p>
+
+            {/* Action Buttons */}
+            <div className="flex gap-8 pt-4">
+              {project.videos && project.videos.length > 0 && (
+                <button 
+                  onClick={onShowDemo}
+                  className="text-xs sm:text-sm font-mono text-[rgb(var(--text-secondary))] hover:text-[rgb(var(--text-primary))] transition-colors"
+                >
+                  demo →
+                </button>
+              )}
+              {(project.id === 'sine' || project.id === 'helios') && (
+                <a 
+                  href={project.sourceUrl}
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  className="text-xs sm:text-sm font-mono text-[rgb(var(--text-secondary))] hover:text-[rgb(var(--text-primary))] transition-colors"
+                >
+                  source →
+                </a>
+              )}
+            </div>
+          </div>
+
+          <motion.div
+            className="relative p-4 sm:p-6 md:p-8"
+            initial={{ opacity: 0, y: 20 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ duration: 0.4 }}
+          >
+            <div className="relative z-10 space-y-8">
+              {/* Content Sections */}
+              <div className="grid grid-cols-1 md:grid-cols-2 gap-6 sm:gap-8">
+                <div className="space-y-6">
+                  <ProjectSection 
+                    title={project.content.overview.title} 
+                    items={project.content.overview.items}
+                  />
+                  <ProjectSection 
+                    title={project.content.core.title} 
+                    items={project.content.core.items}
+                  />
+                </div>
+                <div className="space-y-6">
+                  <ProjectSection 
+                    title={project.content.architecture.title} 
+                    items={project.content.architecture.items}
+                  />
+                  <ProjectSection 
+                    title={project.content.tech.title} 
+                    items={project.content.tech.items}
+                    isTechSection={true}
+                  />
+                </div>
+              </div>
+            </div>
+          </motion.div>
+        </div>
+      </div>
+    </>
+  );
+}
+
+function ProjectVideosPreloader({ projects }: { projects: Project[] }) {
+  useEffect(() => {
+    // Create hidden video elements for all project videos
+    const videoElements = projects.flatMap(project => 
+      project.videos?.map(video => {
+        const videoEl = document.createElement('video');
+        videoEl.src = video.src;
+        videoEl.preload = 'auto';
+        videoEl.style.display = 'none';
+        videoEl.playsInline = true;
+        videoEl.muted = true;
+        document.body.appendChild(videoEl);
+        return videoEl;
+      }) || []
+    );
+
+    // Cleanup
+    return () => {
+      videoElements.forEach(video => {
+        video.src = '';
+        video.load();
+        document.body.removeChild(video);
+      });
+    };
+  }, [projects]);
+
+  return null;
 }
 
 export default function Projects() {
@@ -697,49 +768,52 @@ export default function Projects() {
   };
 
   return (
-    <div className="relative min-h-screen flex flex-col sm:justify-center">
-      {/* Sticky Project Picker */}
-      <div className="sticky top-[4.5rem] z-50 py-2 sm:absolute sm:top-[64px] sm:left-0 sm:right-0 bg-[rgb(var(--background))]">
-        <ProjectPicker 
-          currentProject={currentProject}
-          onProjectChange={(project) => {
-            setCurrentProject(project);
-            setCurrentVideo(null);
-          }}
-        />
+    <>
+      <ProjectVideosPreloader projects={PROJECTS} />
+      <div className="relative min-h-screen flex flex-col sm:justify-center">
+        {/* Sticky Project Picker */}
+        <div className="sticky top-[4.5rem] z-50 py-2 sm:absolute sm:top-[64px] sm:left-0 sm:right-0 bg-[rgb(var(--background))]">
+          <ProjectPicker 
+            currentProject={currentProject}
+            onProjectChange={(project) => {
+              setCurrentProject(project);
+              setCurrentVideo(null);
+            }}
+          />
+        </div>
+
+        {/* Project Content */}
+        <AnimatePresence mode="wait">
+          <motion.div
+            key={currentProject.id}
+            initial={{ opacity: 0 }}
+            animate={{ opacity: 1 }}
+            exit={{ opacity: 0 }}
+            transition={{ duration: 0.3 }}
+            className="pt-8 sm:pt-0"
+          >
+            <ProjectContent 
+              project={currentProject} 
+              onShowDemo={showDemo}
+            />
+          </motion.div>
+        </AnimatePresence>
+
+        {/* Full screen video player */}
+        <AnimatePresence>
+          {currentVideo !== null && currentProject.videos && (
+            <VideoPlayer
+              src={currentProject.videos[currentVideo].src}
+              title={currentProject.videos[currentVideo].title}
+              onClose={closeVideo}
+              onNext={nextVideo}
+              onPrev={prevVideo}
+              hasNext={currentVideo < currentProject.videos.length - 1}
+              hasPrev={currentVideo > 0}
+            />
+          )}
+        </AnimatePresence>
       </div>
-
-      {/* Project Content */}
-      <AnimatePresence mode="wait">
-        <motion.div
-          key={currentProject.id}
-          initial={{ opacity: 0 }}
-          animate={{ opacity: 1 }}
-          exit={{ opacity: 0 }}
-          transition={{ duration: 0.3 }}
-          className="pt-8 sm:pt-0"
-        >
-          <ProjectContent 
-            project={currentProject} 
-            onShowDemo={showDemo}
-          />
-        </motion.div>
-      </AnimatePresence>
-
-      {/* Full screen video player */}
-      <AnimatePresence>
-        {currentVideo !== null && currentProject.videos && (
-          <VideoPlayer
-            src={currentProject.videos[currentVideo].src}
-            title={currentProject.videos[currentVideo].title}
-            onClose={closeVideo}
-            onNext={nextVideo}
-            onPrev={prevVideo}
-            hasNext={currentVideo < currentProject.videos.length - 1}
-            hasPrev={currentVideo > 0}
-          />
-        )}
-      </AnimatePresence>
-    </div>
+    </>
   );
 }
