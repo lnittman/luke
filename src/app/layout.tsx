@@ -33,6 +33,9 @@ export default function RootLayout({
     <html lang="en" className="dark">
       <head>
         <meta name="viewport" content="width=device-width, initial-scale=1" />
+        <meta name="theme-color" content="rgb(242, 242, 242)" />
+        <meta name="apple-mobile-web-app-capable" content="yes" />
+        <meta name="apple-mobile-web-app-status-bar-style" content="default" />
         <link rel="icon" href="/assets/luke-home.png" />
         <link rel="shortcut icon" href="/assets/luke-home.png" />
         <link rel="apple-touch-icon" href="/assets/luke-home.png" />
