@@ -206,7 +206,7 @@ function Hero() {
             
             {/* Standalone quote */}
             <motion.div
-              className="text-[rgb(var(--text-primary))] leading-relaxed italic px-2 sm:px-4 md:px-6 pt-1 landscape:pt-1.5 sm:pt-4 flex flex-col items-center gap-0.5 landscape:gap-1 sm:gap-2 min-h-[5rem] landscape:min-h-[4.5rem] sm:min-h-[6rem]"
+              className="text-[rgb(var(--text-primary))] leading-relaxed italic px-2 sm:px-4 md:px-6 py-4 landscape:py-3 sm:py-6 flex flex-col items-center justify-center gap-0.5 landscape:gap-1 sm:gap-2 min-h-[4.5rem] landscape:min-h-[4rem] sm:min-h-[5.5rem] md:min-h-[6rem]"
               initial={{ opacity: 0 }}
               animate={{ opacity: 1 }}
               transition={{ delay: 0.6 }}
@@ -220,11 +220,11 @@ function Hero() {
                   transition={{ duration: 0.6 }}
                   className="flex flex-col items-center gap-1.5 landscape:gap-1 sm:gap-2 w-full max-w-lg"
                 >
-                  <span className="text-[9px] landscape:text-[8px] sm:text-xs whitespace-pre-line text-center">
+                  <span className="text-[9px] landscape:text-[8px] sm:text-xs text-center leading-[1.6] landscape:leading-[1.5] sm:leading-[1.7]">
                     "{currentQuote.text}"
                   </span>
-                  <span className="text-[rgb(var(--text-secondary))] text-[8px] landscape:text-[7px] sm:text-xs not-italic text-center">
-                    — {currentQuote.author}{currentQuote.year ? ` (${currentQuote.year})` : ''}{currentQuote.source ? `,\n${currentQuote.source}` : ''}
+                  <span className="text-[rgb(var(--text-secondary))] text-[8px] landscape:text-[7px] sm:text-xs not-italic text-center leading-[1.4] landscape:leading-[1.3] sm:leading-[1.5]">
+                    — {currentQuote.author}{currentQuote.year ? ` (${currentQuote.year})` : ''}{currentQuote.source ? ` • ${currentQuote.source}` : ''}
                   </span>
                 </motion.div>
               </AnimatePresence>
