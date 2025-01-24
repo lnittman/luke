@@ -74,7 +74,8 @@ export default function Navigation() {
 
   return (
     <nav 
-      className="fixed bottom-4 sm:bottom-8 left-1/2 -translate-x-1/2 px-3 sm:px-6 py-1.5 sm:py-3 glass-effect rounded-2xl z-50"
+      className="fixed bottom-4 sm:bottom-8 left-1/2 -translate-x-1/2 px-3 sm:px-6 py-1.5 sm:py-3 glass-effect rounded-2xl z-[300]"
+      style={{ pointerEvents: 'auto' }}
       data-navigation
     >
       <ul className="flex gap-1.5 sm:gap-3">
