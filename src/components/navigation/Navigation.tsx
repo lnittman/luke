@@ -35,7 +35,7 @@ function NavigationIcon({ item, isActive }: { item: NavigationItem; isActive: bo
   return (
     <motion.div
       className={clsx(
-        "relative p-2 sm:p-3 rounded-xl transition-colors duration-300",
+        "relative p-1.5 sm:p-2.5 rounded-xl transition-colors duration-300",
         "hover:bg-[rgb(var(--surface-1)/0.1)]",
         isActive && "bg-[rgb(var(--surface-1)/0.15)]"
       )}
@@ -45,11 +45,12 @@ function NavigationIcon({ item, isActive }: { item: NavigationItem; isActive: bo
         alt={item.label}
         width={40}
         height={40}
-        className="w-8 h-8 sm:w-12 sm:h-12 relative z-10"
+        className="w-7 h-7 sm:w-10 sm:h-10 relative z-10 select-none touch-none"
         priority
+        draggable={false}
       />
 
-      <div className="absolute inset-0 rounded-xl glass-effect" />
+      <div className="absolute inset-0 rounded-xl glass-effect opacity-50" />
 
       {isActive && (
         <motion.div
@@ -60,7 +61,7 @@ function NavigationIcon({ item, isActive }: { item: NavigationItem; isActive: bo
           className="absolute inset-0 rounded-xl"
           style={{ 
             background: 'radial-gradient(circle at center, rgb(var(--accent-1) / 0.15) 0%, transparent 70%)',
-            boxShadow: '0 0 30px rgb(var(--accent-1) / 0.3)'
+            boxShadow: '0 0 20px rgb(var(--accent-1) / 0.2)'
           }}
         />
       )}
@@ -73,10 +74,10 @@ export default function Navigation() {
 
   return (
     <nav 
-      className="fixed bottom-4 sm:bottom-8 left-1/2 -translate-x-1/2 px-4 sm:px-8 py-2 sm:py-4 glass-effect rounded-2xl z-50"
+      className="fixed bottom-4 sm:bottom-8 left-1/2 -translate-x-1/2 px-3 sm:px-6 py-1.5 sm:py-3 glass-effect rounded-2xl z-50"
       data-navigation
     >
-      <ul className="flex gap-2 sm:gap-4">
+      <ul className="flex gap-1.5 sm:gap-3">
         {NAVIGATION_ITEMS.map(item => {
           const isActive = pathname === item.href;
           return (
