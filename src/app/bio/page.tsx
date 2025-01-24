@@ -222,8 +222,8 @@ function Bio() {
                 }}
               >
                 <Image
-                  src="/assets/hero.png"
-                  alt="hero"
+                  src="/assets/digital-craftsman.png"
+                  alt="digital craftsman"
                   width={96}
                   height={96}
                   className="w-20 h-20 sm:w-32 sm:h-32 md:w-40 md:h-40 object-contain relative z-10 select-none touch-none pointer-events-none"
