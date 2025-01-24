@@ -343,18 +343,18 @@ function ProjectPicker({ currentProject, onProjectChange }: {
                 key={project.id}
                 onClick={() => onProjectChange(project)}
                 className={clsx(
-                  "relative p-3 rounded-lg transition-all duration-300",
-                  "hover:bg-white/5",
+                  "relative p-3 rounded-lg transition-all duration-300 select-none touch-none",
+                  "hover:bg-white/5 focus:outline-none active:scale-95",
                   currentProject.id === project.id 
                     ? "[text-shadow:0_0_10px_rgba(255,255,255,0.5)]" 
                     : "opacity-40 hover:opacity-60 transition-opacity duration-300"
                 )}
               >
-                <span className="text-[26px] relative">
+                <span className="text-[26px] relative select-none touch-none pointer-events-none">
                   {project.emoji}
                   {currentProject.id === project.id && (
                     <motion.div
-                      className="absolute inset-0 bg-white/20 blur-xl rounded-full"
+                      className="absolute inset-0 bg-white/20 blur-xl rounded-full pointer-events-none"
                       initial={{ scale: 0.8, opacity: 0 }}
                       animate={{ scale: 1.2, opacity: 1 }}
                       transition={{ duration: 0.3 }}

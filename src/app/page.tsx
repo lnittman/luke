@@ -76,7 +76,7 @@ function Hero() {
         <div className="relative z-10 flex flex-col items-center gap-3 sm:gap-6 md:gap-8">
           {/* Logo section */}
           <motion.div
-            className="relative mb-1 sm:mb-2 md:mb-4 cursor-pointer"
+            className="relative mb-2 sm:mb-4 md:mb-6 cursor-pointer"
             initial={{ opacity: 0, x: -60 }}
             animate={{ opacity: 1, x: 0 }}
             transition={{ 
@@ -105,12 +105,12 @@ function Hero() {
               }
             }}
           >
-            <Image 
+            <Image
               src="/assets/logo.png"
-              alt="Luke Nittmann"
-              className="w-16 h-16 landscape:w-20 landscape:h-20 sm:w-28 sm:h-28 md:w-32 md:h-32 object-contain relative z-10"
-              width={160}
-              height={160}
+              alt="logo"
+              width={96}
+              height={96}
+              className="w-20 h-20 sm:w-32 sm:h-32 md:w-40 md:h-40 object-contain relative z-10 select-none touch-none pointer-events-none"
               priority
               draggable={false}
             />
@@ -206,7 +206,7 @@ function Hero() {
             
             {/* Standalone quote */}
             <motion.div
-              className="text-[rgb(var(--text-primary))] leading-relaxed italic px-2 sm:px-4 md:px-6 pt-1 landscape:pt-1.5 sm:pt-4 flex flex-col items-center gap-0.5 landscape:gap-1 sm:gap-2 h-[4.5rem] landscape:h-[4rem] sm:h-[5rem]"
+              className="text-[rgb(var(--text-primary))] leading-relaxed italic px-2 sm:px-4 md:px-6 pt-1 landscape:pt-1.5 sm:pt-4 flex flex-col items-center gap-0.5 landscape:gap-1 sm:gap-2 min-h-[5rem] landscape:min-h-[4.5rem] sm:min-h-[6rem]"
               initial={{ opacity: 0 }}
               animate={{ opacity: 1 }}
               transition={{ delay: 0.6 }}
@@ -218,12 +218,12 @@ function Hero() {
                   animate={{ opacity: 1, y: 0 }}
                   exit={{ opacity: 0, y: -10 }}
                   transition={{ duration: 0.6 }}
-                  className="flex flex-col items-center gap-1.5 landscape:gap-1 sm:gap-2"
+                  className="flex flex-col items-center gap-1.5 landscape:gap-1 sm:gap-2 w-full max-w-lg"
                 >
                   <span className="text-[9px] landscape:text-[8px] sm:text-xs whitespace-pre-line text-center">
                     "{currentQuote.text}"
                   </span>
-                  <span className="text-[rgb(var(--text-secondary))] text-[8px] landscape:text-[7px] sm:text-xs not-italic">
+                  <span className="text-[rgb(var(--text-secondary))] text-[8px] landscape:text-[7px] sm:text-xs not-italic text-center">
                     — {currentQuote.author}{currentQuote.year ? ` (${currentQuote.year})` : ''}{currentQuote.source ? `,\n${currentQuote.source}` : ''}
                   </span>
                 </motion.div>
