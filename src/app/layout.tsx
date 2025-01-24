@@ -3,6 +3,7 @@ import { Inter } from 'next/font/google';
 import dynamic from 'next/dynamic';
 import './globals.css';
 import { ClientLayout } from './ClientLayout';
+import { Analytics } from '@vercel/analytics/next';
 
 const inter = Inter({ subsets: ['latin'] });
 const Navigation = dynamic(() => import('@/components/navigation/Navigation'), { ssr: false });
@@ -39,6 +40,7 @@ export default function RootLayout({
         <ClientLayout>
           {children}
           <Navigation />
+          <Analytics />
         </ClientLayout>
       </body>
     </html>
