@@ -752,6 +752,17 @@ export default function Projects() {
   const [currentProject, setCurrentProject] = useState(PROJECTS[0]);
   const [currentVideo, setCurrentVideo] = useState<number | null>(null);
 
+  useEffect(() => {
+    // Get project id from hash (e.g. #drib -> drib)
+    const projectId = window.location.hash.slice(1);
+    
+    // If hash exists and matches a project, select it
+    if (projectId && PROJECTS.some(p => p.id === projectId)) {
+      const index = PROJECTS.findIndex(p => p.id === projectId);
+      setCurrentProject(PROJECTS[index]);
+    }
+  }, []);
+
   const closeVideo = () => setCurrentVideo(null);
   const showDemo = () => setCurrentVideo(0);
   

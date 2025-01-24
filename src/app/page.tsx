@@ -206,7 +206,7 @@ function Hero() {
             
             {/* Standalone quote */}
             <motion.div
-              className="text-[rgb(var(--text-primary))] leading-relaxed italic px-2 sm:px-4 md:px-6 py-4 landscape:py-3 sm:py-6 flex flex-col items-center justify-center gap-0.5 landscape:gap-1 sm:gap-2 min-h-[4.5rem] landscape:min-h-[4rem] sm:min-h-[5.5rem] md:min-h-[6rem]"
+              className="text-[rgb(var(--text-primary))] leading-relaxed italic px-2 sm:px-4 md:px-6 py-4 landscape:py-3 sm:py-6 flex flex-col items-center justify-center gap-0.5 landscape:gap-1 sm:gap-2 relative"
               initial={{ opacity: 0 }}
               animate={{ opacity: 1 }}
               transition={{ delay: 0.6 }}

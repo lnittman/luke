@@ -115,9 +115,9 @@ export function Header() {
             layout="position"
           >
             <span className="hidden sm:inline text-xs font-mono text-[rgb(var(--text-secondary))] hover:text-[rgb(var(--text-primary))] transition-colors">
-              local time: {displayHours}
+              local time: {hours.toString().padStart(2, '0')}
               <span style={{ opacity: colonVisible ? 1 : 0, transition: 'opacity 0.1s' }}>:</span>
-              {displayMinutes} {period}
+              {displayMinutes}
             </span>
             <div className="w-[36px] sm:w-[44px] h-[36px] sm:h-[44px] flex items-center justify-center">
               <motion.div
