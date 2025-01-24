@@ -63,7 +63,7 @@ function Hero() {
   };
 
   return (
-    <div className="relative w-full h-[100dvh] flex items-center justify-center px-4 py-4 sm:p-0">
+    <div className="relative w-full h-[100dvh] flex items-center justify-center px-4 py-4 sm:p-0 overflow-hidden">
       {/* Main card */}
       <motion.div
         className="relative rounded-2xl p-3 sm:p-4 md:p-8 w-full max-w-2xl mx-auto overflow-hidden"
@@ -117,7 +117,7 @@ function Hero() {
           </motion.div>
 
           {/* Personal narrative */}
-          <div className="relative z-10 w-full space-y-1.5 landscape:space-y-2 sm:space-y-3 md:space-y-4 font-mono text-[10px] landscape:text-[9px] sm:text-sm">
+          <div className="relative z-10 w-full flex flex-col gap-1.5 landscape:gap-2 sm:gap-3 md:gap-4 font-mono text-[10px] landscape:text-[9px] sm:text-sm">
             {['essence', 'craft', 'resonance'].map((section, i) => (
               <motion.div 
                 key={section}
@@ -206,7 +206,7 @@ function Hero() {
             
             {/* Standalone quote */}
             <motion.div
-              className="text-[rgb(var(--text-primary))] leading-relaxed italic px-2 sm:px-4 md:px-6 py-4 landscape:py-3 sm:py-6 flex flex-col items-center justify-center gap-0.5 landscape:gap-1 sm:gap-2 relative"
+              className="text-[rgb(var(--text-primary))] leading-relaxed italic px-2 sm:px-4 md:px-6 py-4 landscape:py-3 sm:py-6 flex flex-col items-center justify-center gap-0.5 landscape:gap-1 sm:gap-2 h-[80px] landscape:h-[70px] sm:h-[90px] md:h-[100px]"
               initial={{ opacity: 0 }}
               animate={{ opacity: 1 }}
               transition={{ delay: 0.6 }}
