@@ -74,9 +74,9 @@ function Hero() {
       >
         {/* Content */}
         <div className="relative z-10 flex flex-col items-center gap-3 sm:gap-6 md:gap-8">
-          {/* Logo section */}
+          {/* Logo section - Option 1: Smaller fixed sizes */}
           <motion.div
-            className="relative mb-2 sm:mb-4 md:mb-6 cursor-pointer"
+            className="relative mb-2 sm:mb-4 md:mb-6 cursor-pointer w-16 h-16 sm:w-24 sm:h-24 md:w-28 md:h-28"
             initial={{ opacity: 0, x: -60 }}
             animate={{ opacity: 1, x: 0 }}
             transition={{ 
@@ -108,11 +108,12 @@ function Hero() {
             <Image
               src="/assets/logo.png"
               alt="logo"
-              width={96}
-              height={96}
-              className="w-20 h-20 sm:w-32 sm:h-32 md:w-40 md:h-40 object-contain relative z-10 select-none touch-none pointer-events-none"
+              width={112}
+              height={112}
+              className="w-full h-full object-contain relative z-10 select-none touch-none pointer-events-none"
               priority
               draggable={false}
+              quality={95}
             />
           </motion.div>
 
@@ -127,7 +128,7 @@ function Hero() {
                 transition={{ delay: 0.3 + i * 0.1 }}
               >
                 <motion.span 
-                  className="text-sm landscape:text-xs sm:text-lg font-mono tracking-tight relative"
+                  className="text-base landscape:text-sm sm:text-xl md:text-2xl lg:text-3xl font-mono tracking-tight relative"
                   style={{
                     color: `rgb(${getZenColor(section, i).text})`,
                     textShadow: `0 0 15px rgb(${getZenColor(section, i).glow} / 0.4),
@@ -179,12 +180,12 @@ function Hero() {
                 </motion.span>
                 {/* Section content based on type */}
                 {section === 'essence' && (
-                  <span className="text-[rgb(var(--text-primary))] leading-relaxed landscape:text-[9px]">
+                  <span className="text-[rgb(var(--text-primary))] leading-relaxed text-sm landscape:text-xs sm:text-lg md:text-xl lg:text-2xl">
                     crafting digital experiences through code and intuition 
                   </span>
                 )}
                 {section === 'craft' && (
-                  <span className="text-[rgb(var(--text-primary))] leading-relaxed landscape:text-[9px]">
+                  <span className="text-[rgb(var(--text-primary))] leading-relaxed text-sm landscape:text-xs sm:text-lg md:text-xl lg:text-2xl">
                     making tools feel like magic, interfaces like poetry
                   </span>
                 )}
@@ -206,7 +207,7 @@ function Hero() {
             
             {/* Standalone quote */}
             <motion.div
-              className="text-[rgb(var(--text-primary))] leading-relaxed italic px-2 sm:px-4 md:px-6 py-4 landscape:py-3 sm:py-6 flex flex-col items-center justify-center gap-0.5 landscape:gap-1 sm:gap-2 h-[80px] landscape:h-[70px] sm:h-[90px] md:h-[100px]"
+              className="text-[rgb(var(--text-primary))] leading-relaxed italic px-2 sm:px-4 md:px-6 py-4 landscape:py-3 sm:py-6 flex flex-col items-center justify-center gap-0.5 landscape:gap-1 sm:gap-2 h-auto min-h-[80px]"
               initial={{ opacity: 0 }}
               animate={{ opacity: 1 }}
               transition={{ delay: 0.6 }}
@@ -220,10 +221,10 @@ function Hero() {
                   transition={{ duration: 0.6 }}
                   className="flex flex-col items-center gap-1.5 landscape:gap-1 sm:gap-2 w-full max-w-lg"
                 >
-                  <span className="text-[9px] landscape:text-[8px] sm:text-xs text-center leading-[1.6] landscape:leading-[1.5] sm:leading-[1.7]">
+                  <span className="text-sm landscape:text-xs sm:text-base md:text-lg lg:text-xl text-center leading-[1.6] landscape:leading-[1.5] sm:leading-[1.7]">
                     "{currentQuote.text}"
                   </span>
-                  <span className="text-[rgb(var(--text-secondary))] text-[8px] landscape:text-[7px] sm:text-xs not-italic text-center leading-[1.4] landscape:leading-[1.3] sm:leading-[1.5]">
+                  <span className="text-[rgb(var(--text-secondary))] text-xs landscape:text-[10px] sm:text-sm md:text-base lg:text-lg not-italic text-center leading-[1.4] landscape:leading-[1.3] sm:leading-[1.5]">
                     — {currentQuote.author}{currentQuote.year ? ` (${currentQuote.year})` : ''}{currentQuote.source ? ` • ${currentQuote.source}` : ''}
                   </span>
                 </motion.div>
