@@ -181,12 +181,12 @@ function Hero() {
                 {/* Section content based on type */}
                 {section === 'essence' && (
                   <span className="text-[rgb(var(--text-primary))] leading-relaxed text-sm landscape:text-xs sm:text-lg md:text-xl lg:text-2xl">
-                    crafting digital experiences through code and intuition 
+                    building thoughtful digital experiences
                   </span>
                 )}
                 {section === 'craft' && (
                   <span className="text-[rgb(var(--text-primary))] leading-relaxed text-sm landscape:text-xs sm:text-lg md:text-xl lg:text-2xl">
-                    making tools feel like magic, interfaces like poetry
+                    creating intuitive tools and elegant interfaces
                   </span>
                 )}
                 {section === 'resonance' && (
