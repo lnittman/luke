@@ -41,8 +41,8 @@ const PROJECTS: Project[] = [
     name: 'squish',
     emoji: '🐙',
     description: 'semantic social network for content sharing and discovery',
-    demoUrl: 'https://squish.app',
-    sourceUrl: 'https://github.com/nithya/squish',
+    demoUrl: 'https://squish-web.vercel.app/',
+    sourceUrl: 'https://github.com/orgs/squish-xyz/repositories',
     videos: [
       { src: 'assets/squish-demo-2.mp4', title: 'asset organization' },
       { src: 'assets/squish-demo.mp4', title: 'semantic search demo' }
@@ -106,8 +106,8 @@ const PROJECTS: Project[] = [
     name: 'top',
     emoji: '🧠',
     description: 'vision-first development platform',
-    demoUrl: 'https://top.app',
-    sourceUrl: 'https://github.com/nithya/top',
+    demoUrl: 'https://top-web.vercel.app/',
+    sourceUrl: 'https://github.com/orgs/top-labs/repositories',
     videos: [
       { src: 'assets/top.mp4', title: 'platform demo' }
     ],
@@ -483,7 +483,7 @@ function VideoPlayer({ src, title, onClose, onNext, onPrev, hasNext, hasPrev }: 
 
   return (
     <motion.div 
-      className="fixed inset-0 bg-black/90 z-[300] flex flex-col"
+      className="fixed inset-0 bg-black/90 z-[400] flex flex-col"
       initial={{ opacity: 0 }}
       animate={{ opacity: 1 }}
       exit={{ opacity: 0 }}
