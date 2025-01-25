@@ -18,23 +18,23 @@ export const defaultQuote: Quote = {
 
 export const techQuotes: QuoteMap = {
   books: [{
-    text: "now his dream was a dream of shadows\ngathering like storm clouds",
+    text: "now his dream was a dream of shadows gathering like storm clouds",
     author: "roberto bolaño",
     source: "2666",
     year: "2004"
   }],
   product: [{
-    text: "the best products come from people who want to solve\ntheir own, real problems",
+    text: "the best products come from people who want to solve their own, real problems",
     author: "drew houston",
     year: "2012"
   }],
   engineering: [{
-    text: "the most profound technologies are those\nthat disappear",
+    text: "the most profound technologies are those that disappear",
     author: "mark weiser",
     year: "1991"
   }],
   design: [{
-    text: "the details are not the details.\nthey make the design",
+    text: "the details are not the details. they make the design",
     author: "charles eames",
     year: "1956"
   }],
@@ -44,18 +44,18 @@ export const techQuotes: QuoteMap = {
     year: "1976"
   }],
   ai: [{
-    text: "the question of whether a computer can think is no more interesting\nthan the question of whether a submarine can swim",
+    text: "the question of whether a computer can think is no more interesting than the question of whether a submarine can swim",
     author: "edsger dijkstra",
     year: "1984"
   }],
   audio: [{
-    text: "music is just a series of changes that take place\nin time and space",
+    text: "music is just a series of changes that take place in time and space",
     author: "j dilla",
     year: "2003"
   }],
   vim: [{
-    text: "perfection is achieved not when there is nothing more to add,\nbut when there is nothing left to take away",
-    author: "antoine de saint-exupéry",
-    year: "1939"
+    text: "make it work, make it right, make it fast. this is how vim was created",
+    author: "bram moolenaar",
+    year: "2001"
   }]
 }; 

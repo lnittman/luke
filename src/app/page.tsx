@@ -122,7 +122,7 @@ function Hero() {
             {['essence', 'craft', 'resonance'].map((section, i) => (
               <motion.div 
                 key={section}
-                className="flex flex-col gap-0.5 landscape:gap-1 sm:gap-2 px-2 sm:px-4 md:px-6 py-1 landscape:py-1 sm:py-2 md:py-3"
+                className="flex flex-col gap-0.5 landscape:gap-1 sm:gap-2 px-2 sm:px-4 md:px-6 py-1 landscape:py-1.5 sm:py-2 md:py-3"
                 initial={{ opacity: 0, x: -20 }}
                 animate={{ opacity: 1, x: 0 }}
                 transition={{ delay: 0.3 + i * 0.1 }}
@@ -180,17 +180,17 @@ function Hero() {
                 </motion.span>
                 {/* Section content based on type */}
                 {section === 'essence' && (
-                  <span className="text-[rgb(var(--text-primary))] leading-relaxed text-sm landscape:text-xs sm:text-lg md:text-xl lg:text-2xl">
+                  <span className="text-[rgb(var(--text-primary))] leading-relaxed text-xs landscape:text-[10px] sm:text-base md:text-lg lg:text-xl">
                     crafting digital experiences through code and intuition 
                   </span>
                 )}
                 {section === 'craft' && (
-                  <span className="text-[rgb(var(--text-primary))] leading-relaxed text-sm landscape:text-xs sm:text-lg md:text-xl lg:text-2xl">
+                  <span className="text-[rgb(var(--text-primary))] leading-relaxed text-xs landscape:text-[10px] sm:text-base md:text-lg lg:text-xl">
                     making tools feel like magic, interfaces like poetry
                   </span>
                 )}
                 {section === 'resonance' && (
-                  <div className="flex flex-wrap gap-1 landscape:gap-0.5 sm:gap-1.5 md:gap-2">
+                  <div className="flex flex-wrap gap-1 landscape:gap-0.5 sm:gap-1.5 md:gap-2 mt-1.5 landscape:mt-1 sm:mt-2 md:mt-3">
                     {resonanceItems.map((tag, i) => (
                       <TechPill 
                         key={tag} 
@@ -207,7 +207,7 @@ function Hero() {
             
             {/* Standalone quote */}
             <motion.div
-              className="text-[rgb(var(--text-primary))] leading-relaxed italic px-2 sm:px-4 md:px-6 py-4 landscape:py-3 sm:py-6 flex flex-col items-center justify-center gap-0.5 landscape:gap-1 sm:gap-2 h-auto min-h-[80px]"
+              className="text-[rgb(var(--text-primary))] leading-relaxed italic px-2 sm:px-4 md:px-6 py-8 landscape:py-6 sm:py-10 md:py-12 flex flex-col items-center justify-center gap-0.5 landscape:gap-1 sm:gap-2 h-[140px] landscape:h-[120px] sm:h-[160px] md:h-[180px]"
               initial={{ opacity: 0 }}
               animate={{ opacity: 1 }}
               transition={{ delay: 0.6 }}
@@ -221,10 +221,10 @@ function Hero() {
                   transition={{ duration: 0.6 }}
                   className="flex flex-col items-center gap-1.5 landscape:gap-1 sm:gap-2 w-full max-w-lg"
                 >
-                  <span className="text-sm landscape:text-xs sm:text-base md:text-lg lg:text-xl text-center leading-[1.6] landscape:leading-[1.5] sm:leading-[1.7]">
+                  <span className="text-xs landscape:text-[10px] sm:text-sm md:text-base lg:text-lg text-center leading-[1.6] landscape:leading-[1.5] sm:leading-[1.7] whitespace-pre-line">
                     "{currentQuote.text}"
                   </span>
-                  <span className="text-[rgb(var(--text-secondary))] text-xs landscape:text-[10px] sm:text-sm md:text-base lg:text-lg not-italic text-center leading-[1.4] landscape:leading-[1.3] sm:leading-[1.5]">
+                  <span className="text-[rgb(var(--text-secondary))] text-[10px] landscape:text-[9px] sm:text-xs md:text-sm lg:text-base not-italic text-center leading-[1.4] landscape:leading-[1.3] sm:leading-[1.5]">
                     — {currentQuote.author}{currentQuote.year ? ` (${currentQuote.year})` : ''}{currentQuote.source ? ` • ${currentQuote.source}` : ''}
                   </span>
                 </motion.div>
