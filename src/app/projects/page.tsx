@@ -275,7 +275,7 @@ const PROJECTS: Project[] = [
     emoji: '☀️',
     description: 'macOS menu bar utility for display temperature control',
     demoUrl: 'https://helios.app',
-    sourceUrl: 'https://github.com/nithya/helios',
+    sourceUrl: 'https://github.com/orgs/helios-xyz/repositories',
     videos: [
       { src: 'assets/helios.mp4', title: 'app demo' }
     ],
@@ -689,6 +689,46 @@ function ProjectContent({ project, onShowDemo }: { project: Project; onShowDemo:
 
             {/* Action Buttons */}
             <div className="flex gap-8 pt-4">
+              {project.id === 'squish' && (
+                <>
+                  <a 
+                    href="https://squish-web.vercel.app/"
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    className="text-xs sm:text-sm font-mono text-[rgb(var(--text-secondary))] hover:text-[rgb(var(--text-primary))] transition-colors"
+                  >
+                    app →
+                  </a>
+                  <a 
+                    href="https://squish-docs.vercel.app/"
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    className="text-xs sm:text-sm font-mono text-[rgb(var(--text-secondary))] hover:text-[rgb(var(--text-primary))] transition-colors"
+                  >
+                    docs →
+                  </a>
+                </>
+              )}
+              {project.id === 'drib' && (
+                <a 
+                  href="https://drib-web.vercel.app/"
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  className="text-xs sm:text-sm font-mono text-[rgb(var(--text-secondary))] hover:text-[rgb(var(--text-primary))] transition-colors"
+                >
+                  app →
+                </a>
+              )}
+              {project.id === 'sine' && (
+                <a 
+                  href="https://www.sine-labs.com/"
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  className="text-xs sm:text-sm font-mono text-[rgb(var(--text-secondary))] hover:text-[rgb(var(--text-primary))] transition-colors"
+                >
+                  app →
+                </a>
+              )}
               {project.videos && project.videos.length > 0 && (
                 <button 
                   onClick={onShowDemo}
