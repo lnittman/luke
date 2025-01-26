@@ -158,7 +158,7 @@ export const PROJECTS: Project[] = [
     name: 'drib',
     emoji: '⚽️',
     description: 'ai-first football platform',
-    demoUrl: 'https://drib.app',
+    demoUrl: 'https://drib-web.vercel.app/',
     sourceUrl: 'https://github.com/nithya/drib',
     videos: [
       { src: 'assets/drib-demo.mp4', title: 'platform demo' },
@@ -196,8 +196,6 @@ export const PROJECTS: Project[] = [
         items: [
           'next.js',
           'typescript',
-          'python',
-          'fastapi',
           'postgresql',
           'redis',
           'websocket',
@@ -206,12 +204,10 @@ export const PROJECTS: Project[] = [
           'vertexai',
           'openai',
           'turborepo',
-          'docker',
           'tailwind',
-          'framer',
+          'motion',
           'resend',
           'knock',
-          'gcp'
         ]
       }
     }
@@ -268,11 +264,9 @@ export const PROJECTS: Project[] = [
           'redis',
           'websocket',
           'docker',
-          'gcp',
           'vertexai',
           'openai',
-          'neon',
-          'railway',
+          'gcp',
           'vst3'
         ]
       }
@@ -325,10 +319,7 @@ export const PROJECTS: Project[] = [
           'combine',
           'appkit',
           'sqlite',
-          'keychain',
           'hotkey',
-          'docker',
-          'ci/cd'
         ]
       }
     }
