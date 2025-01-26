@@ -35,7 +35,10 @@ const TIMELINE: TimelineItem[] = [
       "ios",
       // Backend
       "firebase",
-      "node.js"
+      "node.js",
+      // AI
+      "openai",
+      "vertexai",
     ]
   },
   {
@@ -53,15 +56,24 @@ const TIMELINE: TimelineItem[] = [
       "typescript",
       "tailwind",
       "motion",
-      "webgl",
       // Mobile
       "swift",
+      "swiftui",
+      "metal",
+      "avfoundation",
       // Backend
       "python",
+      "fastapi",
+      "postgresql",
+      "sqlmodel",
+      "alembic",
+      "redis",
+      "websocket",
       // AI/ML
-      "vertexai",
+      "anthropic",
       "openai",
-      "gemini"
+      "vertexai",
+      "langchain",
     ]
   },
   {
@@ -90,7 +102,8 @@ const TIMELINE: TimelineItem[] = [
       "redis",
       "websocket",
       // AI
-      "openai"
+      "openai",
+      "langchain",
     ]
   },
   {
