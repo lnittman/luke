@@ -30,12 +30,12 @@ const TIMELINE: TimelineItem[] = [
       "react",
       "typescript",
       "tailwind",
+      "motion",
       // Mobile
       "swift",
       "ios",
       // Backend
       "firebase",
-      "node.js",
       // AI
       "openai",
       "vertexai",
@@ -53,6 +53,7 @@ const TIMELINE: TimelineItem[] = [
     tech: [
       // Frontend
       "next.js",
+      "react",
       "typescript",
       "tailwind",
       "motion",
@@ -87,8 +88,11 @@ const TIMELINE: TimelineItem[] = [
     ],
     tech: [
       // Frontend
+      "next.js",
       "react",
       "typescript",
+      "tailwind",
+      "motion",
       "threejs",
       "webgl",
       // Mobile/Desktop
@@ -116,15 +120,22 @@ const TIMELINE: TimelineItem[] = [
     ],
     tech: [
       // Frontend
-      "react native",
+      "next.js",
+      "react",
       "typescript",
+      "tailwind",
+      "react native",
       // AWS
       "aws",
       "dynamodb",
       "lambda",
       "sqs",
       "cloudformation",
-      "terraform"
+      "terraform",
+      "api gateway",
+      "route53",
+      "elasticache",
+      "ecs"
     ]
   },
   {
@@ -145,9 +156,13 @@ const TIMELINE: TimelineItem[] = [
       "aws",
       "ec2",
       "s3",
+      "mediaconvert",
+      "cloudwatch",
       // Tools
       "cmake",
-      "gdb"
+      "gdb",
+      "valgrind",
+      "clang"
     ]
   }
 ];
