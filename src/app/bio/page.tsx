@@ -4,6 +4,7 @@ import { motion, useScroll, useTransform, useSpring, MotionValue } from 'framer-
 import { useRef, useEffect, useState } from 'react';
 import Image from 'next/image';
 import { zenPalette, getZenColor } from '@/utils/colors';
+import { TechPill } from '@/components/TechPill';
 
 interface TimelineItem {
   period: string;
@@ -23,7 +24,19 @@ const TIMELINE: TimelineItem[] = [
       "built semantic and file-based image search visualization system",
       "developed full-stack features across ios, web, and backend systems",
     ],
-    tech: ["typescript", "react", "firebase", "swift", "tailwind"]
+    tech: [
+      // Frontend
+      "next.js",
+      "react",
+      "typescript",
+      "tailwind",
+      // Mobile
+      "swift",
+      "ios",
+      // Backend
+      "firebase",
+      "node.js"
+    ]
   },
   {
     period: "2023 - present",
@@ -34,7 +47,22 @@ const TIMELINE: TimelineItem[] = [
       "exploring novel applications of multimodal ai in audio and web",
       "crafting intuitive digital experiences",
     ],
-    tech: ["swift", "typescript", "python", "gemini"]
+    tech: [
+      // Frontend
+      "next.js",
+      "typescript",
+      "tailwind",
+      "motion",
+      "webgl",
+      // Mobile
+      "swift",
+      // Backend
+      "python",
+      // AI/ML
+      "vertexai",
+      "openai",
+      "gemini"
+    ]
   },
   {
     period: "2022 - 2023",
@@ -45,7 +73,25 @@ const TIMELINE: TimelineItem[] = [
       "built custom ios audio engine and cloud processing pipeline",
       "integrated ai for intelligent audio effects generation",
     ],
-    tech: ["swift", "react", "python", "fastapi", "openai", "vst3"]
+    tech: [
+      // Frontend
+      "react",
+      "typescript",
+      "threejs",
+      "webgl",
+      // Mobile/Desktop
+      "swift",
+      "coreaudio",
+      "vst3",
+      // Backend
+      "python",
+      "fastapi",
+      "postgresql",
+      "redis",
+      "websocket",
+      // AI
+      "openai"
+    ]
   },
   {
     period: "2019 - 2021",
@@ -55,7 +101,18 @@ const TIMELINE: TimelineItem[] = [
       "led development of address intelligence systems",
       "built self-service tools for delivery operations",
     ],
-    tech: ["typescript", "react native", "aws"]
+    tech: [
+      // Frontend
+      "react native",
+      "typescript",
+      // AWS
+      "aws",
+      "dynamodb",
+      "lambda",
+      "sqs",
+      "cloudformation",
+      "terraform"
+    ]
   },
   {
     period: "2018 - 2019",
@@ -66,7 +123,19 @@ const TIMELINE: TimelineItem[] = [
       "rewrote quicktime decoder for enhanced metadata parsing",
       "built automated testing framework components",
     ],
-    tech: ["c++", "python", "aws"]
+    tech: [
+      // Core
+      "c",
+      "c++",
+      "python",
+      // AWS
+      "aws",
+      "ec2",
+      "s3",
+      // Tools
+      "cmake",
+      "gdb"
+    ]
   }
 ];
 
@@ -186,6 +255,15 @@ function GlowingText({ text }: { text: string }) {
   );
 }
 
+function ProjectSection({ title, items, defaultExpanded = false, isTechSection = false }: { 
+  title: string; 
+  items: string[];
+  defaultExpanded?: boolean;
+  isTechSection?: boolean;
+}) {
+  // ... existing ProjectSection code ...
+}
+
 function Bio() {
   const containerRef = useRef<HTMLDivElement>(null);
   
@@ -283,7 +361,7 @@ function Bio() {
         </div>
       </motion.section>
 
-      {/* Timeline & Skills Section */}
+      {/* Timeline Section */}
       <motion.section 
         className="min-h-[calc(100vh-4rem)] flex items-center justify-center py-16 sm:py-24 px-4"
         initial={{ opacity: 0 }}
@@ -291,51 +369,44 @@ function Bio() {
         viewport={{ once: true, margin: "-20%" }}
         transition={{ duration: 0.4, ease: [0.23, 1, 0.32, 1] }}
       >
-        <div className="w-full max-w-2xl mx-auto space-y-12">
-          {/* Timeline */}
-          <div className="space-y-6">
-            <SectionTitle>timeline</SectionTitle>
-            {TIMELINE.map((item, i) => (
-              <motion.div 
-                key={item.company}
-                className="relative p-8 rounded-2xl glass-effect-strong overflow-hidden"
-                initial={{ opacity: 0, y: 20 }}
-                whileInView={{ opacity: 1, y: 0 }}
-                viewport={{ once: true, margin: "-20px" }}
-                transition={{ 
-                  duration: 0.4,
-                  delay: i * 0.1
-                }}
-              >
-                <div className="relative z-10 font-mono">
-                  <div className="flex items-start justify-between">
-                    <div className="space-y-0.5">
-                      <h3 className="text-sm sm:text-lg">{item.role}</h3>
-                      <div className="text-[rgb(var(--text-secondary))] text-xs sm:text-sm">@ {item.company}</div>
-                    </div>
-                    <span className="text-[rgb(var(--text-secondary))] text-xs sm:text-sm ml-4">{item.period}</span>
+        <div className="w-full max-w-2xl mx-auto space-y-8">
+          <SectionTitle>timeline</SectionTitle>
+          
+          {TIMELINE.map((item, i) => (
+            <motion.div 
+              key={item.company}
+              className="relative p-8 rounded-2xl glass-effect-strong overflow-hidden"
+              initial={{ opacity: 0, y: 20 }}
+              whileInView={{ opacity: 1, y: 0 }}
+              viewport={{ once: true, margin: "-20px" }}
+              transition={{ 
+                duration: 0.4,
+                delay: i * 0.1
+              }}
+            >
+              <div className="relative z-10 font-mono">
+                <div className="flex items-start justify-between">
+                  <div className="space-y-0.5">
+                    <h3 className="text-sm sm:text-lg">{item.role}</h3>
+                    <div className="text-[rgb(var(--text-secondary))] text-xs sm:text-sm">@ {item.company}</div>
                   </div>
-                  <ul className="space-y-2 mt-4">
-                    {item.description.map((desc, i) => (
-                      <li key={i} className="text-[rgb(var(--text-primary))] text-xs sm:text-sm">{desc}</li>
-                    ))}
-                  </ul>
-                  {item.tech && (
-                    <div className="flex flex-wrap gap-1.5 sm:gap-2 mt-4">
-                      {item.tech.map(tech => (
-                        <span 
-                          key={tech}
-                          className="px-1.5 sm:px-2 py-0.5 sm:py-1 text-[0.65rem] sm:text-xs rounded-full glass-effect"
-                        >
-                          {tech}
-                        </span>
-                      ))}
-                    </div>
-                  )}
+                  <span className="text-[rgb(var(--text-secondary))] text-xs sm:text-sm ml-4">{item.period}</span>
                 </div>
-              </motion.div>
-            ))}
-          </div>
+                <ul className="space-y-2 mt-4">
+                  {item.description.map((desc, i) => (
+                    <li key={i} className="text-[rgb(var(--text-primary))] text-xs sm:text-sm">{desc}</li>
+                  ))}
+                </ul>
+                {item.tech && (
+                  <div className="flex flex-wrap gap-1.5 sm:gap-2 mt-4">
+                    {item.tech.map((tech, i) => (
+                      <TechPill key={tech} text={tech} index={i} />
+                    ))}
+                  </div>
+                )}
+              </div>
+            </motion.div>
+          ))}
         </div>
       </motion.section>
     </div>
