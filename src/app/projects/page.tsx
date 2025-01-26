@@ -45,50 +45,50 @@ export default function Projects() {
   };
 
   return (
-      <div className="relative min-h-screen flex flex-col sm:justify-center">
-        {/* Sticky Project Picker */}
-        <div className="sticky top-[4.5rem] z-50 py-2 sm:absolute sm:top-[64px] sm:left-0 sm:right-0 bg-[rgb(var(--background))]">
-          <ProjectPicker 
-            currentProject={currentProject}
-            onProjectChange={(project) => {
-              setCurrentProject(project);
-              setCurrentVideo(null);
-            }}
+    <div className="relative min-h-screen flex flex-col sm:justify-center">
+      {/* Sticky Project Picker */}
+      <div className="sticky top-[4.5rem] z-50 py-2 sm:absolute sm:top-[64px] sm:left-0 sm:right-0 bg-[rgb(var(--background))]">
+        <ProjectPicker 
+          currentProject={currentProject}
+          onProjectChange={(project) => {
+            setCurrentProject(project);
+            setCurrentVideo(null);
+          }}
           projects={PROJECTS}
-          />
-        </div>
-
-        {/* Project Content */}
-        <AnimatePresence mode="wait">
-          <motion.div
-            key={currentProject.id}
-            initial={{ opacity: 0 }}
-            animate={{ opacity: 1 }}
-            exit={{ opacity: 0 }}
-            transition={{ duration: 0.3 }}
-            className="pt-8 sm:pt-0"
-          >
-            <ProjectContent 
-              project={currentProject} 
-              onShowDemo={showDemo}
-            />
-          </motion.div>
-        </AnimatePresence>
-
-        {/* Full screen video player */}
-        <AnimatePresence>
-          {currentVideo !== null && currentProject.videos && (
-            <VideoPlayer
-              src={currentProject.videos[currentVideo].src}
-              title={currentProject.videos[currentVideo].title}
-              onClose={closeVideo}
-              onNext={nextVideo}
-              onPrev={prevVideo}
-              hasNext={currentVideo < currentProject.videos.length - 1}
-              hasPrev={currentVideo > 0}
-            />
-          )}
-        </AnimatePresence>
+        />
       </div>
+
+      {/* Project Content */}
+      <AnimatePresence mode="wait">
+        <motion.div
+          key={currentProject.id}
+          initial={{ opacity: 0 }}
+          animate={{ opacity: 1 }}
+          exit={{ opacity: 0 }}
+          transition={{ duration: 0.3 }}
+          className="pt-8 pb-24 sm:pb-0 sm:pt-0"
+        >
+          <ProjectContent 
+            project={currentProject} 
+            onShowDemo={showDemo}
+          />
+        </motion.div>
+      </AnimatePresence>
+
+      {/* Full screen video player */}
+      <AnimatePresence>
+        {currentVideo !== null && currentProject.videos && (
+          <VideoPlayer
+            src={currentProject.videos[currentVideo].src}
+            title={currentProject.videos[currentVideo].title}
+            onClose={closeVideo}
+            onNext={nextVideo}
+            onPrev={prevVideo}
+            hasNext={currentVideo < currentProject.videos.length - 1}
+            hasPrev={currentVideo > 0}
+          />
+        )}
+      </AnimatePresence>
+    </div>
   );
 }

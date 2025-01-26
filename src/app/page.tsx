@@ -6,6 +6,7 @@ import Image from 'next/image';
 import { TechPill } from '@/components/TechPill';
 import { getZenColor } from '@/utils/colors';
 import { defaultQuote, techQuotes } from '@/utils/quotes';
+import Balancer from 'react-wrap-balancer';
 
 function Hero() {
   const [currentQuote, setCurrentQuote] = useState(defaultQuote);
@@ -74,7 +75,7 @@ function Hero() {
       >
         {/* Content */}
         <div className="relative z-10 flex flex-col items-center gap-3 sm:gap-6 md:gap-8">
-          {/* Logo section - Option 1: Smaller fixed sizes */}
+          {/* Logo section */}
           <motion.div
             className="relative mb-2 sm:mb-4 md:mb-6 cursor-pointer w-16 h-16 sm:w-24 sm:h-24 md:w-28 md:h-28"
             initial={{ opacity: 0, x: -60 }}
@@ -136,47 +137,7 @@ function Hero() {
                     letterSpacing: '-0.02em'
                   }}
                 >
-                  {section.split('').map((char, charIndex) => (
-                    <motion.span
-                      key={charIndex}
-                      className="inline-block"
-                      initial={{ opacity: 0, y: -10 }}
-                      animate={{ 
-                        opacity: 1, 
-                        y: 0,
-                        transition: {
-                          delay: 0.3 + i * 0.1 + charIndex * 0.05,
-                          duration: 0.3,
-                          ease: [0.23, 1, 0.32, 1]
-                        }
-                      }}
-                      whileHover={{
-                        y: -2,
-                        transition: {
-                          duration: 0.1,
-                          ease: "easeInOut"
-                        }
-                      }}
-                    >
-                      {char}
-                    </motion.span>
-                  ))}
-                  <motion.div
-                    className="absolute inset-0 -z-10 rounded-lg opacity-50"
-                    style={{
-                      background: `radial-gradient(circle at center, rgb(${getZenColor(section, i).glow} / 0.15), transparent 70%)`
-                    }}
-                    initial={{ scale: 0.8, opacity: 0 }}
-                    animate={{ 
-                      scale: 1.2, 
-                      opacity: 0.5,
-                      transition: {
-                        delay: 0.3 + i * 0.1,
-                        duration: 0.4,
-                        ease: [0.23, 1, 0.32, 1]
-                      }
-                    }}
-                  />
+                  {section}
                 </motion.span>
                 {/* Section content based on type */}
                 {section === 'essence' && (
@@ -207,7 +168,7 @@ function Hero() {
             
             {/* Standalone quote */}
             <motion.div
-              className="text-[rgb(var(--text-primary))] leading-relaxed italic px-2 sm:px-4 md:px-6 py-4 landscape:py-3 sm:py-6 flex flex-col items-center justify-center gap-0.5 landscape:gap-1 sm:gap-2 h-auto min-h-[80px]"
+              className="relative h-[160px] sm:h-[180px] md:h-[200px] w-full"
               initial={{ opacity: 0 }}
               animate={{ opacity: 1 }}
               transition={{ delay: 0.6 }}
@@ -219,14 +180,16 @@ function Hero() {
                   animate={{ opacity: 1, y: 0 }}
                   exit={{ opacity: 0, y: -10 }}
                   transition={{ duration: 0.6 }}
-                  className="flex flex-col items-center gap-1.5 landscape:gap-1 sm:gap-2 w-full max-w-lg"
+                  className="absolute inset-0 flex flex-col items-center justify-center px-2 sm:px-4 md:px-6 py-4 landscape:py-3 sm:py-6"
                 >
-                  <span className="text-sm landscape:text-xs sm:text-base md:text-lg lg:text-xl text-center leading-[1.6] landscape:leading-[1.5] sm:leading-[1.7]">
-                    "{currentQuote.text}"
-                  </span>
-                  <span className="text-[rgb(var(--text-secondary))] text-xs landscape:text-[10px] sm:text-sm md:text-base lg:text-lg not-italic text-center leading-[1.4] landscape:leading-[1.3] sm:leading-[1.5]">
-                    — {currentQuote.author}{currentQuote.year ? ` (${currentQuote.year})` : ''}{currentQuote.source ? ` • ${currentQuote.source}` : ''}
-                  </span>
+                  <div className="flex flex-col items-center gap-1.5 landscape:gap-1 sm:gap-2 w-full max-w-lg">
+                    <Balancer className="text-sm landscape:text-xs sm:text-base md:text-lg lg:text-xl text-center leading-[1.6] landscape:leading-[1.5] sm:leading-[1.7] italic text-[rgb(var(--text-primary))]">
+                      "{currentQuote.text}"
+                    </Balancer>
+                    <Balancer className="text-[rgb(var(--text-secondary))] text-xs landscape:text-[10px] sm:text-sm md:text-base lg:text-lg not-italic text-center leading-[1.4] landscape:leading-[1.3] sm:leading-[1.5]">
+                      — {currentQuote.author}{currentQuote.year ? ` (${currentQuote.year})` : ''}{currentQuote.source ? ` • ${currentQuote.source}` : ''}
+                    </Balancer>
+                  </div>
                 </motion.div>
               </AnimatePresence>
             </motion.div>
