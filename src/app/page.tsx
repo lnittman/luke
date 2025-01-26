@@ -63,11 +63,18 @@ function Hero() {
     handleItemChange(item);
   };
 
+  const handleLogoPress = () => {
+    // Trigger haptic feedback if available
+    if (window.navigator.vibrate) {
+      window.navigator.vibrate(50);
+    }
+  };
+
   return (
     <div className="relative w-full h-[100dvh] flex items-center justify-center px-4 py-4 sm:p-0 overflow-hidden">
       {/* Main card */}
       <motion.div
-        className="relative rounded-2xl p-3 sm:p-4 md:p-8 w-full max-w-2xl mx-auto overflow-hidden"
+        className="relative rounded-2xl p-3 sm:p-4 md:p-8 w-full max-w-2xl mx-auto overflow-hidden select-none"
         style={{
           transformStyle: 'preserve-3d',
           transformPerspective: '1200px',
@@ -105,6 +112,7 @@ function Hero() {
                 mass: 0.8
               }
             }}
+            onTapStart={handleLogoPress}
           >
             <Image
               src="/assets/logo.png"
@@ -119,7 +127,7 @@ function Hero() {
           </motion.div>
 
           {/* Personal narrative */}
-          <div className="relative z-10 w-full flex flex-col gap-1.5 landscape:gap-2 sm:gap-3 md:gap-4 font-mono text-[10px] landscape:text-[9px] sm:text-sm">
+          <div className="relative z-10 w-full flex flex-col gap-1.5 landscape:gap-2 sm:gap-3 md:gap-4 font-mono text-[10px] landscape:text-[9px] sm:text-sm select-none">
             {['essence', 'craft', 'resonance'].map((section, i) => (
               <motion.div 
                 key={section}
@@ -129,7 +137,7 @@ function Hero() {
                 transition={{ delay: 0.3 + i * 0.1 }}
               >
                 <motion.span 
-                  className="text-base landscape:text-sm sm:text-xl md:text-2xl lg:text-3xl font-mono tracking-tight relative"
+                  className="text-base landscape:text-sm sm:text-xl md:text-2xl lg:text-3xl font-mono tracking-tight relative select-none"
                   style={{
                     color: `rgb(${getZenColor(section, i).text})`,
                     textShadow: `0 0 15px rgb(${getZenColor(section, i).glow} / 0.4),
@@ -141,12 +149,12 @@ function Hero() {
                 </motion.span>
                 {/* Section content based on type */}
                 {section === 'essence' && (
-                  <span className="text-[rgb(var(--text-primary))] leading-relaxed text-sm landscape:text-xs sm:text-lg md:text-xl lg:text-2xl">
+                  <span className="text-[rgb(var(--text-primary))] leading-relaxed text-sm landscape:text-xs sm:text-lg md:text-xl lg:text-2xl select-none">
                     building thoughtful digital experiences
                   </span>
                 )}
                 {section === 'craft' && (
-                  <span className="text-[rgb(var(--text-primary))] leading-relaxed text-sm landscape:text-xs sm:text-lg md:text-xl lg:text-2xl">
+                  <span className="text-[rgb(var(--text-primary))] leading-relaxed text-sm landscape:text-xs sm:text-lg md:text-xl lg:text-2xl select-none">
                     creating intuitive tools and elegant interfaces
                   </span>
                 )}
@@ -168,7 +176,7 @@ function Hero() {
             
             {/* Standalone quote */}
             <motion.div
-              className="relative h-[160px] sm:h-[180px] md:h-[200px] w-full"
+              className="relative h-[160px] sm:h-[180px] md:h-[200px] w-full select-none"
               initial={{ opacity: 0 }}
               animate={{ opacity: 1 }}
               transition={{ delay: 0.6 }}
