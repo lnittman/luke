@@ -9,18 +9,25 @@ const inter = Inter({ subsets: ['latin'] });
 const Navigation = dynamic(() => import('@/components/navigation/Navigation'), { ssr: false });
 
 export const metadata: Metadata = {
-  title: 'luke nittmann',
-  description: 'digital craftsman',
+  title: 'luke nittmann // home',
+  description: '2025',
   viewport: {
     width: 'device-width',
     initialScale: 1,
+    viewportFit: 'cover',
   },
+  themeColor: '#FFFFFF',
+  appleWebApp: {
+    capable: true,
+    statusBarStyle: 'default',
+    title: 'luke nittmann',
+  },
+  manifest: '/manifest.json',
   icons: {
     icon: '/assets/luke-home.png',
     shortcut: '/assets/luke-home.png',
     apple: '/assets/luke-home.png',
   },
-  themeColor: '#ffffff',
 };
 
 export default function RootLayout({
