@@ -15,17 +15,6 @@ interface TimelineItem {
 
 const TIMELINE: TimelineItem[] = [
   {
-    period: "2023 - present",
-    role: "making stuff",
-    company: "myself",
-    description: [
-      "building tools that feel powerful and effortless",
-      "exploring novel applications of multimodal ai in audio and web",
-      "crafting intuitive digital experiences",
-    ],
-    tech: ["swift", "typescript", "python", "gemini"]
-  },
-  {
     period: "2024",
     role: "senior engineer",
     company: "titles, inc",
@@ -37,7 +26,18 @@ const TIMELINE: TimelineItem[] = [
     tech: ["typescript", "react", "firebase", "swift", "tailwind"]
   },
   {
-    period: "2022 - present",
+    period: "2023 - present",
+    role: "making stuff",
+    company: "myself",
+    description: [
+      "building tools that feel powerful and effortless",
+      "exploring novel applications of multimodal ai in audio and web",
+      "crafting intuitive digital experiences",
+    ],
+    tech: ["swift", "typescript", "python", "gemini"]
+  },
+  {
+    period: "2022 - 2023",
     role: "senior engineer",
     company: "stems labs",
     description: [
