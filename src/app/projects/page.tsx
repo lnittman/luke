@@ -47,7 +47,7 @@ export default function Projects() {
   return (
     <div className="relative min-h-screen flex flex-col sm:justify-center">
       {/* Sticky Project Picker */}
-      <div className="sticky top-[4.5rem] z-50 py-2 sm:absolute sm:top-[64px] sm:left-0 sm:right-0 bg-[rgb(var(--background))]">
+      <div className="sticky z-50 py-2 sm:absolute top-[80px] sm:left-0 sm:right-0 bg-[rgb(var(--background))]">
         <ProjectPicker 
           currentProject={currentProject}
           onProjectChange={(project) => {
