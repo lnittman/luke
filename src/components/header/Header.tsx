@@ -3,7 +3,6 @@
 import { motion, AnimatePresence } from 'framer-motion';
 import { useState, useEffect, useRef } from 'react';
 import { usePathname } from 'next/navigation';
-import Link from 'next/link';
 
 interface ContactInfo {
   name: string;
@@ -23,6 +22,7 @@ export function Header() {
   const [isExpanded, setIsExpanded] = useState(false);
   const [currentTime, setCurrentTime] = useState(new Date());
   const [colonVisible, setColonVisible] = useState(true);
+
   const pathname = usePathname();
   const pageName = pathname === '/' ? 'home' : pathname.slice(1);
   const headerRef = useRef<HTMLDivElement>(null);
@@ -120,20 +120,7 @@ export function Header() {
               {displayMinutes}
             </span>
             <div className="w-[36px] sm:w-[44px] h-[36px] sm:h-[44px] flex items-center justify-center">
-              <motion.div
-                className="text-xl sm:text-2xl"
-                animate={{
-                  scale: [1, 1.05, 1],
-                  opacity: [1, 0.9, 1],
-                }}
-                transition={{
-                  duration: 4,
-                  repeat: Infinity,
-                  ease: "easeInOut",
-                }}
-              >
-                {getTimeEmoji()}
-              </motion.div>
+              {getTimeEmoji()}
             </div>
           </motion.div>
         </motion.div>
