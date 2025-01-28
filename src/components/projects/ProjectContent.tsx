@@ -22,7 +22,7 @@ export const ProjectContent = ({ project, onShowDemo }: ProjectContentProps) => 
             {project.id === 'squish' && (
               <>
                 <a 
-                  href="https://squish-web.vercel.app/"
+                  href="https://squish-web-development.vercel.app/"
                   target="_blank"
                   rel="noopener noreferrer"
                   className="text-xs sm:text-sm font-mono text-[rgb(var(--text-secondary))] hover:text-[rgb(var(--text-primary))] transition-colors"
