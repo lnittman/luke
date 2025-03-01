@@ -5,6 +5,10 @@ import { useEffect, useState, useRef } from 'react';
 import { clsx } from 'clsx';
 import { Header } from '@/components/header/Header';
 import ReactPlayer from 'react-player';
+import dynamic from 'next/dynamic';
+
+// Dynamically import Navigation component
+const Navigation = dynamic(() => import('@/components/navigation/Navigation'), { ssr: false });
 
 // Add type for valid theme numbers
 type ThemeNumber = 1 | 2 | 3;
@@ -85,6 +89,7 @@ export function ClientLayout({ children }: { children: React.ReactNode }) {
     )}>
       <Header />
       {children}
+      <Navigation />
     </div>
   );
 } 

@@ -3,7 +3,8 @@ export interface Project {
   name: string;
   emoji: string;
   description: string;
-  demoUrl: string;
+  demoUrl?: string;
+  appUrl?: string;
   sourceUrl: string;
   videos?: { src: string; title: string }[];
   content: {
@@ -147,62 +148,60 @@ export const PROJECTS: Project[] = [
     }
   },
   {
-    id: 'drib',
-    name: 'drib',
+    id: 'voet',
+    name: 'voet',
     emoji: '⚽️',
-    description: 'ai-first football platform',
-    demoUrl: 'https://drib-web.vercel.app/',
-    sourceUrl: 'https://github.com/nithya/drib',
+    description: 'football intelligence platform with AI-powered analysis',
+    demoUrl: 'https://voet-app.vercel.app/',
+    sourceUrl: 'https://github.com/nithya/voet',
     videos: [
-      { src: 'assets/drib-demo.mp4', title: 'platform demo' },
+      { src: 'assets/voet-demo.mp4', title: 'platform demo' },
     ],
     content: {
       overview: {
         title: 'overview',
         items: [
-          'real-time match analytics',
-          'ai-powered tactical insights',
-          'social match threads',
-          'dashboard+widget interface'
+          'real-time football data aggregation platform',
+          'AI-powered news analysis with entity extraction',
+          'comprehensive football statistics visualization',
+          'intelligent data scraping and enrichment pipeline'
         ]
       },
       core: {
         title: 'core',
         items: [
-          'advanced metrics engine',
-          'pattern recognition',
-          'live match tracking',
-          'community spaces'
+          'multi-source data orchestration system',
+          'Gemini-powered content analysis & entity recognition',
+          'automated entity linking for players, teams, and matches',
+          'distributed job queue for scheduled data updates'
         ]
       },
       architecture: {
         title: 'architecture',
         items: [
-          'monorepo structure',
-          'real-time websockets',
-          'vector embeddings',
-          'edge deployment'
+          'modular scraper system with orchestration layer',
+          'LLM pipeline for content extraction and classification',
+          'Redis queue for resilient distributed processing',
+          'relational schema with rich entity relationships'
         ]
       },
       tech: {
         title: 'tech',
         items: [
           'next.js',
-          'turborepo',
           'typescript',
-          'liveblocks',
-          'clerk',
           'tailwind',
-          'motion',
-          'resend',
-          'knock',
           'prisma',
-          'neon',
           'postgresql',
           'redis',
-          'websocket',
-          'vertexai',
-          'openai',
+          'upstash',
+          'gemini api',
+          'cheerio',
+          'SWR',
+          'zustand',
+          'framer motion',
+          'jina',
+          'vercel',
         ]
       }
     }
@@ -250,21 +249,19 @@ export const PROJECTS: Project[] = [
         title: 'tech',
         items: [
           'swift',
-          'swiftui',
-          'coreaudio',
-          'midikit',
-          'python',
-          'fastapi',
+          'webkit',
+          'next.js',
+          'typescript',
+          'rust',
+          'audio tools',
+          'video server',
           'postgresql',
-          'alembic',
-          'sqlmodel',
-          'redis',
-          'websocket',
-          'docker',
           'vertexai',
           'openai',
-          'gcp',
-          'vst3'
+          'worker',
+          'streams',
+          's3',
+          'vapor'
         ]
       }
     }
@@ -320,5 +317,187 @@ export const PROJECTS: Project[] = [
         ]
       }
     }
-  }
+  },
+  {
+    id: 'ther',
+    name: 'ther',
+    emoji: '🌸',
+    description: 'empathetic AI companion for mental wellness',
+    demoUrl: 'https://ther-app.vercel.app/',
+    sourceUrl: 'https://github.com/nithya/ther',
+    content: {
+      overview: {
+        title: 'overview',
+        items: [
+          'supportive AI conversations for mental wellness',
+          'personalized chat experience with contextual suggestions',
+          'thoughtful design centered on empathy',
+          'subscription-based access with flexible payment options'
+        ]
+      },
+      core: {
+        title: 'core',
+        items: [
+          'empathetic conversation system',
+          'adaptive suggestion engine',
+          'mental wellness content curation',
+          'biometric authentication',
+          'secure subscription management'
+        ]
+      },
+      architecture: {
+        title: 'architecture',
+        items: [
+          'next.js app with prisma ORM',
+          'cross-platform with tauri',
+          'iOS native support',
+          'stripe payment integration',
+          'secure API architecture'
+        ]
+      },
+      tech: {
+        title: 'tech',
+        items: [
+          'next.js',
+          'react 19',
+          'typescript',
+          'tailwind',
+          'framer motion',
+          'prisma',
+          'postgresql',
+          'generative AI',
+          'stripe',
+          'tauri',
+          'iOS',
+          'macOS',
+          'rust',
+          'zustand',
+          'zod',
+          'SWR',
+          'vercel'
+        ]
+      }
+    }
+  },
+  {
+    id: 'loops',
+    name: 'loops',
+    emoji: '∞',
+    description: 'stem player for your music with intelligent audio processing',
+    demoUrl: 'https://loops-app.vercel.app/',
+    sourceUrl: 'https://github.com/yourusername/loops',
+    content: {
+      overview: {
+        title: 'overview',
+        items: [
+          'audio stem separation engine',
+          'interactive loop control interface',
+          'real-time audio manipulation',
+          'modern, minimalist UI design',
+          'mobile-responsive audio workstation'
+        ]
+      },
+      core: {
+        title: 'core',
+        items: [
+          'AI-powered stem isolation (vocals, drums, bass, other)',
+          'precise loop control with customizable segments',
+          'dynamic tempo and playback rate adjustment',
+          'individual stem volume and mute controls',
+          'audio export and sharing capabilities'
+        ]
+      },
+      architecture: {
+        title: 'architecture',
+        items: [
+          'client-side audio processing engine',
+          'Web Audio API with custom scheduling',
+          'distributed backend with serverless functions',
+          'audio processing microservices',
+          'efficient audio file streaming and caching'
+        ]
+      },
+      tech: {
+        title: 'tech',
+        items: [
+          'next.js',
+          'react',
+          'typescript',
+          'tailwind',
+          'tone.js',
+          'web audio API',
+          'framer motion',
+          'spleeter',
+          'fastAPI',
+          'python',
+          'docker',
+          'vercel KV',
+          'vercel blob storage',
+          'zustand',
+          'railway'
+        ]
+      }
+    }
+  },
+  {
+    id: 'jobs',
+    name: 'jobs',
+    emoji: '💼',
+    description: 'personalized job application tracking platform with AI capabilities',
+    appUrl: 'https://jobs-xyz.vercel.app/',
+    sourceUrl: 'https://github.com/nithya/jobs',
+    videos: [
+      { src: 'assets/jobs-demo.mp4', title: 'app demo' }
+    ],
+    content: {
+      overview: {
+        title: 'overview',
+        items: [
+          'intelligent job application tracking with LLM integration',
+          'multi-model AI for cover letter generation and job matching',
+          'advanced context management for coherent AI responses',
+          'customizable workflow automation for job applications'
+        ]
+      },
+      core: {
+        title: 'core',
+        items: [
+          'multi-LLM architecture with provider abstraction',
+          'embedding-based job-resume matching',
+          'automated application workflows',
+          'context-aware prompt engineering'
+        ]
+      },
+      architecture: {
+        title: 'architecture',
+        items: [
+          'next.js app router with RSC',
+          'vercel edge runtime optimization',
+          'vector storage integration',
+          'serverless AI processing'
+        ]
+      },
+      tech: {
+        title: 'tech',
+        items: [
+          'next.js 14',
+          'typescript',
+          'tailwind',
+          'prisma',
+          'vercel ai sdk',
+          'neon database',
+          'vercel kv',
+          'next-auth',
+          'openrouter',
+          'jina',
+          'zustand',
+          'swr',
+          'zod',
+          'framer motion',
+          'edge functions',
+          'pgvector'
+        ]
+      }
+    }
+  },
 ]; 

@@ -4,6 +4,7 @@ import { motion, AnimatePresence } from 'framer-motion';
 import {  useEffect, useState, useMemo } from 'react';
 import Image from 'next/image';
 import { TechPill } from '@/components/TechPill';
+import { QuotePill } from '@/components/QuotePill';
 import { getZenColor } from '@/utils/colors';
 import { defaultQuote, techQuotes } from '@/utils/quotes';
 import Balancer from 'react-wrap-balancer';
@@ -161,7 +162,7 @@ function Hero() {
                 {section === 'resonance' && (
                   <div className="flex flex-wrap gap-1 landscape:gap-0.5 sm:gap-1.5 md:gap-2">
                     {resonanceItems.map((tag, i) => (
-                      <TechPill 
+                      <QuotePill 
                         key={tag} 
                         text={tag} 
                         index={i} 

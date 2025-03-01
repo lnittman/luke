@@ -99,13 +99,13 @@ export const VideoPlayer = ({
       exit={{ opacity: 0 }}
     >
       {/* Header */}
-      <div className="p-4 flex items-center justify-between text-white/80">
-        <div className="flex items-center gap-4">
-          <h2 className="text-sm font-mono">{title}</h2>
+      <div className="p-2 sm:p-4 flex items-center justify-between text-white/80">
+        <div className="flex items-center gap-2 sm:gap-4">
+          <h2 className="text-xs sm:text-sm font-mono">{title}</h2>
         </div>
         <button 
           onClick={onClose}
-          className="text-white/50 hover:text-white transition-colors font-mono"
+          className="text-white/50 hover:text-white transition-colors font-mono text-xs sm:text-sm"
         >
           esc
         </button>
@@ -122,9 +122,9 @@ export const VideoPlayer = ({
         }}
       >
         {/* Video container with controls */}
-        <div className="relative w-full max-w-5xl mx-4 flex flex-col items-center">
+        <div className="relative w-full max-w-5xl mx-2 sm:mx-4 flex flex-col items-center">
           {/* Video wrapper */}
-          <div className="relative w-full max-h-[70vh] flex items-center justify-center mb-28">
+          <div className="relative w-full max-h-[70vh] flex items-center justify-center mb-16 sm:mb-24 md:mb-28">
             <video
               ref={videoRef}
               src={src}
@@ -135,9 +135,9 @@ export const VideoPlayer = ({
             />
 
             {/* Controls container */}
-            <div className="absolute bottom-[-8rem] left-0 right-0 flex justify-center px-4 py-8">
+            <div className="absolute bottom-[-5rem] sm:bottom-[-6rem] md:bottom-[-8rem] left-0 right-0 flex justify-center px-2 sm:px-4 py-4 sm:py-8">
               {/* Play/Pause button with navigation */}
-              <div className="flex items-center gap-8 text-3xl">
+              <div className="flex items-center gap-4 sm:gap-8 text-2xl sm:text-3xl">
                 <button
                   onClick={restartOrPrev}
                   className="text-white/60 hover:text-white transition-opacity"

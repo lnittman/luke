@@ -1,5 +1,5 @@
 import { motion, AnimatePresence } from 'framer-motion';
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useRef } from 'react';
 import { TechPill } from '../TechPill';
 import clsx from 'clsx';
 
@@ -17,72 +17,138 @@ export const ProjectSection = ({
   isTechSection = false 
 }: ProjectSectionProps) => {
   const [mounted, setMounted] = useState(false);
-  const [isDesktop, setIsDesktop] = useState(false);
   const [isExpanded, setIsExpanded] = useState(defaultExpanded);
+  const [containerWidth, setContainerWidth] = useState(0);
+  const sectionRef = useRef<HTMLDivElement>(null);
 
   useEffect(() => {
     setMounted(true);
-    const checkIsDesktop = () => {
-      setIsDesktop(window.innerWidth >= 640); // Using sm breakpoint
-    };
-    checkIsDesktop();
-    window.addEventListener('resize', checkIsDesktop);
-    return () => window.removeEventListener('resize', checkIsDesktop);
-  }, []);
+    // Set expanded state based on defaultExpanded prop
+    setIsExpanded(defaultExpanded);
+  }, [defaultExpanded]);
 
+  // Monitor container width for fluid text sizing
   useEffect(() => {
-    if (mounted) {
-      setIsExpanded(isDesktop || title.toLowerCase() === 'overview');
-    }
-  }, [mounted, isDesktop, title]);
+    if (!sectionRef.current) return;
+
+    const updateWidth = () => {
+      if (sectionRef.current) {
+        setContainerWidth(sectionRef.current.offsetWidth);
+      }
+    };
+
+    // Initial measurement
+    updateWidth();
+
+    // Set up resize observer
+    const resizeObserver = new ResizeObserver(updateWidth);
+    resizeObserver.observe(sectionRef.current);
+
+    return () => {
+      if (sectionRef.current) {
+        resizeObserver.unobserve(sectionRef.current);
+      }
+      resizeObserver.disconnect();
+    };
+  }, [mounted]);
+
+  // Calculate fluid font sizes based on container width
+  const getTitleFontSize = () => {
+    if (containerWidth <= 0) return 'text-xs';
+    
+    // Base size on container width with min/max constraints
+    if (containerWidth < 200) return 'text-[10px]';
+    if (containerWidth < 300) return 'text-xs';
+    if (containerWidth < 400) return 'text-sm';
+    return 'text-base';
+  };
+
+  const getItemFontSize = () => {
+    if (containerWidth <= 0) return 'text-[10px]';
+    
+    // Base size on container width with min/max constraints
+    if (containerWidth < 200) return 'text-[8px]';
+    if (containerWidth < 300) return 'text-[10px]';
+    if (containerWidth < 400) return 'text-xs';
+    return 'text-sm';
+  };
 
   return (
-    <div className="space-y-2">
-      <button 
-        onClick={() => !isDesktop && setIsExpanded(!isExpanded)}
+    <motion.div 
+      ref={sectionRef}
+      className="space-y-1.5 sm:space-y-2 w-full"
+      layout
+      transition={{ duration: 0.3, type: "spring", stiffness: 200, damping: 25 }}
+    >
+      {/* Section Title - Always clickable to toggle content */}
+      <motion.button 
+        onClick={() => setIsExpanded(!isExpanded)}
         className={clsx(
-          "w-full flex items-center justify-between text-sm sm:text-base font-mono text-[rgb(var(--text-secondary))]",
-          isDesktop ? "cursor-default" : "hover:text-[rgb(var(--text-primary))] transition-colors"
+          "w-full flex items-center justify-between font-mono text-[rgb(var(--text-secondary))]",
+          getTitleFontSize(),
+          "hover:text-[rgb(var(--text-primary))] transition-colors"
         )}
+        layout
       >
-        <span>{title}</span>
-        {!isDesktop && (
-          <span className="text-xs opacity-60">{isExpanded ? '−' : '+'}</span>
-        )}
-      </button>
+        <motion.span layout className="truncate">{title}</motion.span>
+        <motion.span 
+          className={clsx("opacity-60", containerWidth < 300 ? "text-[8px]" : "text-[10px]")}
+          layout
+        >
+          {isExpanded ? '−' : '+'}
+        </motion.span>
+      </motion.button>
+
+      {/* Section Content - Toggleable on all screen sizes */}
       <AnimatePresence initial={false}>
-        {(isDesktop || isExpanded) && (
+        {isExpanded && (
           <motion.div
-            initial={!isDesktop ? { height: 0, opacity: 0 } : undefined}
-            animate={!isDesktop ? { height: 'auto', opacity: 1 } : undefined}
-            exit={!isDesktop ? { height: 0, opacity: 0 } : undefined}
+            initial={{ height: 0, opacity: 0 }}
+            animate={{ height: 'auto', opacity: 1 }}
+            exit={{ height: 0, opacity: 0 }}
             transition={{ duration: 0.2 }}
-            className="overflow-hidden"
+            className="overflow-hidden w-full"
+            layout
           >
             {isTechSection ? (
-              <div className="flex flex-wrap gap-1.5 sm:gap-2 pt-1">
+              <motion.div 
+                className="flex flex-wrap gap-1 sm:gap-1.5 md:gap-2 pt-1"
+                layout
+              >
                 {items.map((item, i) => (
-                  <TechPill key={item} text={item} index={i} />
+                  <TechPill 
+                    key={item} 
+                    text={item} 
+                    index={i} 
+                    containerWidth={containerWidth}
+                  />
                 ))}
-              </div>
+              </motion.div>
             ) : (
-              <ul className="space-y-1.5">
+              <motion.ul 
+                className="space-y-1 sm:space-y-1.5 w-full"
+                layout
+              >
                 {items.map((item, i) => (
                   <motion.li 
                     key={i}
-                    initial={!isDesktop ? { opacity: 0, x: -10 } : undefined}
-                    animate={!isDesktop ? { opacity: 1, x: 0 } : undefined}
+                    initial={{ opacity: 0, x: -10 }}
+                    animate={{ opacity: 1, x: 0 }}
                     transition={{ delay: i * 0.05 }}
-                    className="text-xs sm:text-sm font-mono text-[rgb(var(--text-primary))]"
+                    className={clsx(
+                      "font-mono text-[rgb(var(--text-primary))] break-words",
+                      getItemFontSize()
+                    )}
+                    layout
                   >
                     {item}
                   </motion.li>
                 ))}
-              </ul>
+              </motion.ul>
             )}
           </motion.div>
         )}
       </AnimatePresence>
-    </div>
+    </motion.div>
   );
 }; 

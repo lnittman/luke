@@ -13,6 +13,9 @@ const nextConfig = {
       },
     ],
   },
+  experimental: {
+    reactMode: 'concurrent'
+  }
 }
 
 module.exports = nextConfig 

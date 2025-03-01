@@ -18,7 +18,7 @@ const RUNTIME_ASSETS = [
   '/assets/squish-demo.mp4',
   '/assets/squish-demo-2.mp4',
   '/assets/top.mp4',
-  '/assets/drib-demo.mp4',
+  '/assets/voet-demo.mp4',
   '/assets/sine-ios.mp4',
   '/assets/sine-pack-utility.mp4',
   '/assets/helios.mp4'

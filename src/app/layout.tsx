@@ -1,12 +1,10 @@
 import type { Metadata, Viewport } from 'next';
 import { Inter } from 'next/font/google';
-import dynamic from 'next/dynamic';
 import './globals.css';
 import { ClientLayout } from './ClientLayout';
 import { Analytics } from '@vercel/analytics/next';
 
 const inter = Inter({ subsets: ['latin'] });
-const Navigation = dynamic(() => import('@/components/navigation/Navigation'), { ssr: false });
 
 export const viewport: Viewport = {
   width: 'device-width',
@@ -52,7 +50,6 @@ export default function RootLayout({
       <body className={inter.className}>
         <ClientLayout>
           {children}
-          <Navigation />
           <Analytics />
         </ClientLayout>
       </body>

@@ -1,0 +1,191 @@
+diff --git a/src/app/projects/page.tsx b/src/app/projects/page.tsx
+index 6aaed04..ef2ad0b 100644
+--- a/src/app/projects/page.tsx
++++ b/src/app/projects/page.tsx
+@@ -1,16 +1,21 @@
+ 'use client';
+ 
+ import { motion, AnimatePresence } from 'framer-motion';
+-import { useState, useEffect } from 'react';
++import { useState, useEffect, useRef } from 'react';
+ import { PROJECTS, type Project } from '@/utils/constants/projects';
+-import { ProjectPicker } from '@/components/projects/ProjectPicker';
+ import { ProjectContent } from '@/components/projects/ProjectContent';
+ import { VideoPlayer } from '@/components/projects/VideoPlayer';
+ import { useVideoPreload } from '@/hooks/useVideoPreload';
++import { ChevronDownIcon, ChevronUpIcon } from '@heroicons/react/24/outline';
++import { ProjectSelection } from '@/components/project-selection';
+ 
+ export default function Projects() {
+   const [currentProject, setCurrentProject] = useState(PROJECTS[0]);
+   const [currentVideo, setCurrentVideo] = useState<number | null>(null);
++  const [isPickerOpen, setIsPickerOpen] = useState(false);
++  const videoRef = useRef<HTMLVideoElement>(null);
++  const [videoLoaded, setVideoLoaded] = useState(false);
++  const [muted, setMuted] = useState(true);
+ 
+   // Preload all project videos
+   const allVideos = PROJECTS.flatMap(p => p.videos?.map(v => v.src) || []);
+@@ -27,6 +32,12 @@ export default function Projects() {
+     }
+   }, []);
+ 
++  useEffect(() => {
++    if (videoRef.current) {
++      videoRef.current.muted = muted;
++    }
++  }, [muted]);
++
+   const closeVideo = () => setCurrentVideo(null);
+   const showDemo = () => setCurrentVideo(0);
+   
+@@ -44,36 +55,113 @@ export default function Projects() {
+     }
+   };
+ 
++  // This project should showcase the job hunting automation app
++  // Replace or add relevant details about the Jobs project
++  const jobsProjectInfo = {
++    description: "A next-gen job application automation platform that serves as 'Cursor for jobs' — leveraging multiple LLMs to transform the job hunting process. It connects directly to job APIs and resume data to create an end-to-end solution for finding and applying to relevant positions.",
++    
++    features: [
++      "Multi-LLM architecture with seamless switching between Gemini, Anthropic Claude, OpenAI, and OpenRouter",
++      "Advanced prompt engineering for context-aware cover letter and application response generation",
++      "Automated job discovery with relevance ranking via embedding similarity",
++      "Headless browser automation for job application submission",
++      "Resume parsing and analysis to extract skills and match with job requirements",
++      "Sophisticated context management to maintain coherent AI-generated content",
++      "Programmable job hunting workflows with custom filters and application criteria"
++    ],
++    
++    techStack: [
++      "Next.js 14 with App Router and React Server Components",
++      "useSWR for data fetching (intentionally avoiding Tanstack Query for better control)",
++      "Client-side LLM provider context with provider abstraction layer",
++      "Vercel KV for persistent storage and caching LLM responses",
++      "Puppeteer for browser automation and job application submission",
++      "Custom AI streaming response handlers for real-time generation",
++      "Self-hosted vector embeddings for job-resume matching"
++    ]
++  };
++
++  // Function to handle project selection
++  const selectProject = (project: Project) => {
++    setCurrentProject(project);
++    setIsPickerOpen(false);
++    
++    // Update URL hash
++    window.location.hash = `#${project.id}`;
++  };
++
++  const handleProjectChange = (newProject: string) => {
++    setCurrentProject(PROJECTS.find(p => p.id === newProject) || PROJECTS[0]);
++  };
++
+   return (
+-    <div className="relative min-h-screen flex flex-col sm:justify-center">
+-      {/* Sticky Project Picker */}
+-      <div className="sticky z-50 py-2 sm:absolute top-[80px] sm:left-0 sm:right-0 bg-[rgb(var(--background))]">
+-        <ProjectPicker 
+-          currentProject={currentProject}
+-          onProjectChange={(project) => {
+-            setCurrentProject(project);
+-            setCurrentVideo(null);
+-          }}
+-          projects={PROJECTS}
+-        />
++    <div className="min-h-screen bg-black text-white flex flex-col">
++      {/* Project Picker Bar */}
++      <div className="z-10 fixed top-0 left-0 right-0 bg-black border-b border-neutral-800 p-3">
++        <div 
++          className="flex items-center justify-between cursor-pointer"
++          onClick={() => setIsPickerOpen(!isPickerOpen)}
++        >
++          <div className="font-bold text-sm uppercase tracking-wider">
++            {currentProject.title}
++          </div>
++          <div>
++            {isPickerOpen ? 
++              <ChevronUpIcon className="h-4 w-4" /> : 
++              <ChevronDownIcon className="h-4 w-4" />
++            }
++          </div>
++        </div>
++        
++        {/* Project Selector Dropdown */}
++        <AnimatePresence>
++          {isPickerOpen && (
++            <motion.div
++              initial={{ height: 0, opacity: 0 }}
++              animate={{ height: 'auto', opacity: 1 }}
++              exit={{ height: 0, opacity: 0 }}
++              transition={{ duration: 0.2 }}
++              className="mt-2 border-t border-neutral-800 pt-2"
++            >
++              <div className="flex flex-col space-y-1">
++                {PROJECTS.map(project => (
++                  <div
++                    key={project.id}
++                    className={`px-2 py-1 cursor-pointer hover:bg-neutral-800 ${
++                      project.id === currentProject.id ? 'bg-neutral-800' : ''
++                    }`}
++                    onClick={() => selectProject(project)}
++                  >
++                    {project.title}
++                  </div>
++                ))}
++              </div>
++            </motion.div>
++          )}
++        </AnimatePresence>
+       </div>
+ 
+-      {/* Project Content */}
+-      <AnimatePresence mode="wait">
+-        <motion.div
+-          key={currentProject.id}
+-          initial={{ opacity: 0 }}
+-          animate={{ opacity: 1 }}
+-          exit={{ opacity: 0 }}
+-          transition={{ duration: 0.3 }}
+-          className="pt-8 pb-24 sm:pb-0 sm:pt-0"
+-        >
+-          <ProjectContent 
+-            project={currentProject} 
+-            onShowDemo={showDemo}
+-          />
+-        </motion.div>
+-      </AnimatePresence>
++      {/* Main Content Area */}
++      <div className="flex-grow mt-14 p-4">
++        <AnimatePresence mode="wait">
++          {currentProject && (
++            <motion.div
++              key={`project-content-${currentProject.id}`}
++              initial={{ opacity: 0 }}
++              animate={{ opacity: 1 }}
++              exit={{ opacity: 0 }}
++              transition={{ duration: 0.3 }}
++              className="w-full"
++            >
++              <ProjectContent 
++                project={currentProject} 
++                onShowDemo={showDemo}
++                jobsProjectInfo={jobsProjectInfo}
++              />
++            </motion.div>
++          )}
++        </AnimatePresence>
++      </div>
+ 
+       {/* Full screen video player */}
+       <AnimatePresence>
+@@ -89,6 +177,8 @@ export default function Projects() {
+           />
+         )}
+       </AnimatePresence>
++
++      <ProjectSelection selectedProject={currentProject.id} onProjectChange={handleProjectChange} />
+     </div>
+   );
+ }

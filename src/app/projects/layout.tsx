@@ -1,14 +1,15 @@
-import type { Metadata } from 'next';
+import type { Metadata, Viewport } from 'next';
+
+export const viewport: Viewport = {
+  width: 'device-width',
+  initialScale: 1,
+  viewportFit: 'cover',
+  themeColor: '#FFFFFF',
+};
 
 export const metadata: Metadata = {
   title: 'luke nittmann // projects',
   description: '2025',
-  viewport: {
-    width: 'device-width',
-    initialScale: 1,
-    viewportFit: 'cover',
-  },
-  themeColor: '#FFFFFF',
   appleWebApp: {
     capable: true,
     statusBarStyle: 'default',
