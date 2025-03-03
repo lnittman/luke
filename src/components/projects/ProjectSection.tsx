@@ -5,7 +5,7 @@ import clsx from 'clsx';
 
 interface ProjectSectionProps {
   title: string;
-  items: string[];
+  items: (string | { name: string; documentationUrl: string })[];
   defaultExpanded?: boolean;
   isTechSection?: boolean;
 }
@@ -117,7 +117,7 @@ export const ProjectSection = ({
               >
                 {items.map((item, i) => (
                   <TechPill 
-                    key={item} 
+                    key={typeof item === 'string' ? item : item.name} 
                     text={item} 
                     index={i} 
                     containerWidth={containerWidth}
@@ -141,7 +141,7 @@ export const ProjectSection = ({
                     )}
                     layout
                   >
-                    {item}
+                    {typeof item === 'string' ? item : item.name}
                   </motion.li>
                 ))}
               </motion.ul>

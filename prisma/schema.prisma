@@ -1,0 +1,48 @@
+// This is your Prisma schema file,
+// learn more about it in the docs: https://pris.ly/d/prisma-schema
+
+// Looking for ways to speed up your queries, or scale easily with your serverless or edge functions?
+// Try Prisma Accelerate: https://pris.ly/cli/accelerate-init
+
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+// Generated project model
+model GeneratedProject {
+  id          String   @id @default(cuid())
+  name        String
+  emoji       String
+  description String
+  sourceUrl   String   @default("#")
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+
+  // Project content sections
+  overviewItems     String[]
+  coreItems         String[]
+  architectureItems String[]
+  techItems         String[]
+  techItemsJson     String?  @db.Text // Stores tech items with documentation URLs as JSON
+
+  // New document structure (index, design, code, init)
+  indexDocument String? @db.Text
+  codeDocument  String? @db.Text
+  techDocument  String? @db.Text
+
+  // Legacy document content (kept for backward compatibility)
+  initDocument           String? @db.Text
+  designDocument         String? @db.Text
+  implementationDocument String? @db.Text
+  comprehensiveDocument  String? @db.Text
+
+  // User information (can be extended later with auth)
+  userPrompt      String  @db.Text
+  userIp          String?
+  userFingerprint String?
+}

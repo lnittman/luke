@@ -22,7 +22,7 @@ export interface Project {
     };
     tech: {
       title: string;
-      items: string[];
+      items: (string | { name: string; documentationUrl: string })[];
     };
   };
 }

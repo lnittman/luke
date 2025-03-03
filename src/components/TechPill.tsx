@@ -4,7 +4,7 @@ import { getZenColor } from '@/utils/colors';
 import clsx from 'clsx';
 
 export interface TechPillProps {
-  text: string;
+  text: string | { name: string; documentationUrl: string };
   index?: number;
   onClick?: () => void;
   isActive?: boolean;
@@ -12,7 +12,15 @@ export interface TechPillProps {
 }
 
 // Function to map tech names to official websites
-function getTechUrl(tech: string): string {
+function getTechUrl(tech: string | { name: string; documentationUrl: string }): string {
+  // If tech is an object with a documentationUrl, use it directly
+  if (typeof tech !== 'string' && tech.documentationUrl) {
+    return tech.documentationUrl;
+  }
+  
+  // Otherwise, extract the name (either from the string or object)
+  const techName = typeof tech === 'string' ? tech : tech.name;
+  
   const techMap: Record<string, string> = {
     // General technologies
     'react': 'https://react.dev',
@@ -46,6 +54,8 @@ function getTechUrl(tech: string): string {
     'clerk': 'https://clerk.com',
     'liveblocks': 'https://liveblocks.io',
     'gemini api': 'https://ai.google.dev/gemini-api',
+    'gemini': 'https://ai.google.dev/gemini-api',
+    'google gemini api': 'https://ai.google.dev/gemini-api',
     'openai': 'https://openai.com',
     'vertexai': 'https://cloud.google.com/vertex-ai',
     'ast': 'https://en.wikipedia.org/wiki/Abstract_syntax_tree',
@@ -57,6 +67,24 @@ function getTechUrl(tech: string): string {
     'audio tools': 'https://developer.mozilla.org/en-US/docs/Web/API/Web_Audio_API',
     'video server': 'https://github.com/topics/video-server',
     'webkit': 'https://webkit.org',
+    
+    // Apple technologies
+    'swiftui': 'https://developer.apple.com/xcode/swiftui/',
+    'uikit': 'https://developer.apple.com/documentation/uikit/',
+    'arkit': 'https://developer.apple.com/augmented-reality/',
+    'core ml': 'https://developer.apple.com/documentation/coreml',
+    'coreml': 'https://developer.apple.com/documentation/coreml',
+    'healthkit': 'https://developer.apple.com/health-fitness/',
+    'cloudkit': 'https://developer.apple.com/icloud/cloudkit/',
+    'core data': 'https://developer.apple.com/documentation/coredata',
+    'coredata': 'https://developer.apple.com/documentation/coredata',
+    'storekit': 'https://developer.apple.com/storekit/',
+    'core animation': 'https://developer.apple.com/documentation/quartzcore',
+    'coreanimation': 'https://developer.apple.com/documentation/quartzcore',
+    'swiftdata': 'https://developer.apple.com/documentation/swiftdata',
+    'notificationcenter': 'https://developer.apple.com/documentation/foundation/notificationcenter',
+    'notification framework': 'https://developer.apple.com/documentation/usernotifications',
+    'push notifications': 'https://developer.apple.com/documentation/usernotifications',
     
     // Interests from the home page
     'books': 'https://www.goodreads.com',
@@ -76,7 +104,7 @@ function getTechUrl(tech: string): string {
     'vercel blob storage': 'https://vercel.com/docs/storage/vercel-blob',
   };
 
-  return techMap[tech.toLowerCase()] || 'https://www.google.com/search?q=' + encodeURIComponent(tech);
+  return techMap[techName.toLowerCase()] || 'https://www.google.com/search?q=' + encodeURIComponent(techName);
 }
 
 export function TechPill({ text, index = 0, onClick, isActive = false, containerWidth = 0 }: TechPillProps) {
@@ -85,9 +113,12 @@ export function TechPill({ text, index = 0, onClick, isActive = false, container
     []
   );
 
+  // Get the display text (either from the string or object)
+  const displayText = typeof text === 'string' ? text : text.name;
+
   const color = useMemo(() => 
-    getZenColor(text, index),
-    [text, index]
+    getZenColor(displayText, index),
+    [displayText, index]
   );
 
   // Spring configuration for smooth transitions
@@ -213,7 +244,7 @@ export function TechPill({ text, index = 0, onClick, isActive = false, container
         textDecoration: 'none', // Remove default link underline
       }}
     >
-      {text}
+      {displayText}
     </MotionLink>
   );
 }
