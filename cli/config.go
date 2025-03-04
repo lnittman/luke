@@ -5,9 +5,11 @@ import (
 	"encoding/json"
 	"fmt"
 	"io/ioutil"
+	"net/url"
 	"os"
 	"path/filepath"
 	"strings"
+	"luke/cli/api"
 
 	"github.com/charmbracelet/bubbles/list"
 	tea "github.com/charmbracelet/bubbletea"
@@ -312,47 +314,117 @@ func isUseUnifiedAPIEnabled() bool {
 	return getConfigValue("use_unified_api") == "true"
 }
 
-// Add configuration setup wizard
+// Configure the unified API settings
 func setupUnifiedAPIConfig() {
-	fmt.Println("📡 Unified API Configuration")
-	fmt.Println("This will connect your CLI to the web application for enhanced functionality.")
+	fmt.Println("=== Luke API Setup ===")
+	fmt.Println("This will configure your Luke CLI to connect to your Luke API instance.")
+	fmt.Println()
 	
-	reader := bufio.NewReader(os.Stdin)
-	
-	// Get API endpoint
-	fmt.Print("Enter the API endpoint URL (e.g., https://luke-app.vercel.app): ")
-	endpoint, _ := reader.ReadString('\n')
-	endpoint = strings.TrimSpace(endpoint)
-	
-	if endpoint != "" {
-		setAPIEndpoint(endpoint)
-		fmt.Println("✅ API endpoint saved.")
+	// Get current configuration
+	apiEndpoint := getConfigValue("api_endpoint")
+	if apiEndpoint == "" {
+		apiEndpoint = "http://localhost:3000"
 	}
 	
-	// Get API key
-	fmt.Print("Enter your API key: ")
-	apiKey, _ := reader.ReadString('\n')
-	apiKey = strings.TrimSpace(apiKey)
+	// Prompt for API endpoint
+	fmt.Printf("Enter API endpoint [%s]: ", apiEndpoint)
+	reader := bufio.NewReader(os.Stdin)
+	input, _ := reader.ReadString('\n')
+	input = strings.TrimSpace(input)
 	
-	if apiKey != "" {
-		// Save API key
-		if err := saveApiKey(apiKey); err != nil {
-			fmt.Printf("Failed to save API key: %v\n", err)
+	if input != "" {
+		apiEndpoint = input
+	}
+	
+	// Check if the endpoint is valid
+	apiEndpoint = strings.TrimSuffix(apiEndpoint, "/")
+	
+	// Validate the endpoint
+	_, err := url.Parse(apiEndpoint)
+	if err != nil {
+		fmt.Printf("❌ Invalid API endpoint: %v\n", err)
+		return
+	}
+	
+	// Save the configuration
+	err = setConfigValue("api_endpoint", apiEndpoint)
+	if err != nil {
+		fmt.Printf("❌ Failed to save API endpoint: %v\n", err)
+		return
+	}
+	
+	// Force the use of unified API
+	err = setConfigValue("use_unified_api", "true")
+	if err != nil {
+		fmt.Printf("❌ Failed to save API configuration: %v\n", err)
+		return
+	}
+	
+	// Get current API key
+	apiKey := os.Getenv("LUKE_API_KEY")
+	if apiKey == "" {
+		// Try to read from config
+		apiKey = getConfigValue("luke_api_key")
+	}
+	
+	if apiKey == "" {
+		// Prompt for API key
+		fmt.Print("Enter your Luke API key: ")
+		apiKey, _ = reader.ReadString('\n')
+		apiKey = strings.TrimSpace(apiKey)
+		
+		if apiKey != "" {
+			err = setConfigValue("luke_api_key", apiKey)
+			if err != nil {
+				fmt.Printf("❌ Failed to save API key: %v\n", err)
+				return
+			}
+			
+			// Set environment variable for current session
+			os.Setenv("LUKE_API_KEY", apiKey)
 		} else {
-			fmt.Println("✅ API key saved successfully!")
+			fmt.Println("⚠️ No API key provided.")
 		}
 	}
 	
-	// Enable unified API
-	fmt.Print("Enable unified API mode? (y/n): ")
-	enableInput, _ := reader.ReadString('\n')
-	enableInput = strings.TrimSpace(strings.ToLower(enableInput))
+	// Test the connection
+	fmt.Println("Testing connection to API...")
 	
-	if enableInput == "y" || enableInput == "yes" {
-		setUseUnifiedAPI(true)
-		fmt.Println("✅ Unified API mode enabled!")
+	client := api.NewAPIClient(apiEndpoint, apiKey)
+	
+	// Try to get available models as a test
+	models, err := client.GetAvailableModels()
+	if err != nil {
+		fmt.Printf("❌ Failed to connect to API: %v\n", err)
+		fmt.Println("  Check your API endpoint and API key, then try again.")
+		fmt.Println("  Proceeding with default configuration.")
 	} else {
-		setUseUnifiedAPI(false)
-		fmt.Println("ℹ️ Unified API mode disabled. The CLI will use direct API calls.")
+		fmt.Println("✅ Successfully connected to API!")
+		if len(models) > 0 {
+			fmt.Println("📋 Available models:")
+			for _, model := range models {
+				fmt.Printf("  • %s\n", model)
+			}
+		}
 	}
+	
+	fmt.Println()
+	fmt.Println("API configuration complete!")
+	fmt.Printf("• Endpoint: %s\n", apiEndpoint)
+	fmt.Printf("• API key: %s\n", maskAPIKey(apiKey))
+	fmt.Println()
+	fmt.Println("You can now use the Luke CLI with your API!")
+}
+
+// Helper to mask API key for display
+func maskAPIKey(key string) string {
+	if key == "" {
+		return "not set"
+	}
+	
+	if len(key) <= 8 {
+		return "***" + key[len(key)-3:]
+	}
+	
+	return key[0:4] + "..." + key[len(key)-4:]
 } 

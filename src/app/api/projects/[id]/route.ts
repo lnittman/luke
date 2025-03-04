@@ -6,7 +6,8 @@ export async function GET(
   { params }: { params: { id: string } }
 ) {
   try {
-    const { id } = params;
+    // Ensure params is awaited before accessing properties
+    const id = params?.id;
 
     if (!id) {
       return NextResponse.json(

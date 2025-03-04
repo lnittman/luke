@@ -830,80 +830,44 @@ export const ProjectGenerator = ({ onProjectGenerated, onCancel, techData }: Pro
         'Other': 'other'
       };
       
-      // This is a simplified version; in a full implementation, we would parse 
-      // the Markdown content to extract technologies and their documentation links
-      const additionalTechs: Array<{ name: string; documentationUrl: string }> = [];
-      
-      // Extract tech items from the current stack-specific content if possible
-      const dataKey = stackToDataKey[stack];
-      const techMatches = techData.techMd.match(/["`']([a-zA-Z0-9\.\-\/]+)["`']/g) || [];
-      const extractedTechs = techMatches
-        .map(match => match.replace(/["`']/g, '').toLowerCase())
-        .filter(tech => tech.length > 1 && !tech.includes('.com'));
-      
-      // Find unique technologies not already in the template
-      const existingTechNames = resultFromTemplate.map(t => t.name.toLowerCase());
-      const uniqueTechs = Array.from(new Set(extractedTechs)).filter(
-        tech => !existingTechNames.includes(tech) && tech.length < 30
-      );
-      
-      // Create tech items for each unique tech
-      for (const tech of uniqueTechs.slice(0, 30)) { // Limit to 30 additional techs
-        additionalTechs.push({
-          name: tech,
-          documentationUrl: `https://www.google.com/search?q=${encodeURIComponent(tech)}+documentation`
-        });
-      }
-      
-      // Add related techs based on relationships in techData
-      if (techData.relationships) {
-        // For each selected tech, get related techs
-        for (const tech of selectedTechs) {
-          const related = techData.relationships[tech.toLowerCase()];
-          if (related) {
-            for (const relatedTech of related) {
-              // Skip if already in template or added
-              if (!template.frameworks.includes(relatedTech) && 
-                  !template.libraries.includes(relatedTech) &&
-                  !template.apis.includes(relatedTech) &&
-                  !template.tools.includes(relatedTech) &&
-                  !additionalTechs.some(t => t.name === relatedTech) &&
-                  !existingTechNames.includes(relatedTech)) {
-                
-                additionalTechs.push({
-                  name: relatedTech,
-                  documentationUrl: `https://www.google.com/search?q=${encodeURIComponent(relatedTech)}+documentation`
-                });
-              }
-            }
-          }
-        }
-      }
-      
-      // For "Other" stack, include more technologies
-      if (stack === 'Other' && additionalTechs.length < 50) {
-        // Add more tech options from our hardcoded list
-        const extraTechs = [
-          'react', 'vue', 'angular', 'svelte', 'typescript', 'javascript',
-          'tailwind', 'node.js', 'express', 'python', 'django', 'flask',
-          'postgresql', 'mongodb', 'redis', 'graphql', 'rest', 'docker',
-          'kubernetes', 'aws', 'gcp', 'azure', 'vercel', 'netlify',
-          'firebase', 'supabase'
-        ];
+      // Use tech relationships from the new tech documentation system if available
+      if (techData.relationships && Object.keys(techData.relationships).length > 0) {
+        const stackKey = stackToDataKey[stack].toLowerCase();
+        const relatedTechs = techData.relationships[stackKey] || [];
         
-        for (const tech of extraTechs) {
-          if (!existingTechNames.includes(tech) && 
-              !additionalTechs.some(t => t.name === tech)) {
-            additionalTechs.push({
+        // Add related techs that aren't already in the template
+        const existingTechNames = new Set(resultFromTemplate.map(t => t.name.toLowerCase()));
+        
+        relatedTechs.forEach(tech => {
+          if (!existingTechNames.has(tech.toLowerCase())) {
+            resultFromTemplate.push({
               name: tech,
               documentationUrl: `https://www.google.com/search?q=${encodeURIComponent(tech)}+documentation`
             });
+            existingTechNames.add(tech.toLowerCase());
           }
-        }
+        });
+      } else {
+        // Extract tech items from the tech.md content as fallback
+        const techMatches = techData.techMd.match(/["`']([a-zA-Z0-9\.\-\/]+)["`']/g) || [];
+        const extractedTechs = techMatches
+          .map(match => match.replace(/["`']/g, '').toLowerCase())
+          .filter(tech => tech.length > 1 && !tech.includes('.com'));
+        
+        // Find unique technologies not already in the template
+        const existingTechNames = new Set(resultFromTemplate.map(t => t.name.toLowerCase()));
+        const uniqueTechs = Array.from(new Set(extractedTechs)).filter(
+          tech => !existingTechNames.has(tech) && tech.length < 30
+        );
+        
+        // Add unique techs to the result
+        uniqueTechs.slice(0, 10).forEach(tech => {
+          resultFromTemplate.push({
+            name: tech,
+            documentationUrl: `https://www.google.com/search?q=${encodeURIComponent(tech)}+documentation`
+          });
+        });
       }
-      
-      // Combine template techs with additional related techs
-      return [...resultFromTemplate, ...additionalTechs];
     }
     
     return resultFromTemplate;
@@ -1026,8 +990,47 @@ export const ProjectGenerator = ({ onProjectGenerated, onCancel, techData }: Pro
       zip.file("code.md", documents.code || 
         `# ${project.name} Implementation\n\nThis document provides implementation details and code patterns for the project.`);
       
+      // Fetch tech.md content from Vercel Blob if available for the selected tech stack
+      let techMdContent = documents.tech;
+      
+      if (!techMdContent && selectedTechStack) {
+        try {
+          // Map stack option to normalized tech name
+          const techNameMap: Record<TechStackOption, string> = {
+            'Next.js': 'next-js',
+            'Apple': 'apple',
+            'CLI': 'cli',
+            'Other': 'other'
+          };
+          
+          const normalizedTechName = techNameMap[selectedTechStack];
+          
+          // Attempt to fetch from Vercel Blob
+          const blobResponse = await fetch(`/api/blob/list`);
+          const blobData = await blobResponse.json();
+          
+          // Look for a matching tech-*.md file
+          const techFile = blobData.blobs.find(
+            (blob: any) => blob.pathname === `tech-${normalizedTechName}.md`
+          );
+          
+          if (techFile) {
+            // Fetch the content
+            const response = await fetch(techFile.url);
+            if (response.ok) {
+              techMdContent = await response.text();
+              console.log(`Found tech documentation for ${selectedTechStack} in Vercel Blob`);
+            }
+          } else {
+            console.log(`No tech documentation found for ${selectedTechStack} in Vercel Blob`);
+          }
+        } catch (error) {
+          console.error('Error fetching tech documentation from Vercel Blob:', error);
+        }
+      }
+      
       // Add tech.md (technology documentation)
-      zip.file("tech.md", documents.tech || 
+      zip.file("tech.md", techMdContent || 
         `# ${project.name} Technology Stack\n\nThis document details the technologies, frameworks, and libraries used in the project.`);
       
       // Generate the ZIP file
@@ -1062,6 +1065,9 @@ export const ProjectGenerator = ({ onProjectGenerated, onCancel, techData }: Pro
       console.warn("No tech stack selected, using 'Other' as default");
       setSelectedTechStack('Other');
     }
+
+    // Log the selected tech stack for debugging
+    console.log(`Using selected tech stack: ${selectedTechStack}`);
 
     // Add user message
     const userMessage: Message = {
@@ -1108,7 +1114,8 @@ export const ProjectGenerator = ({ onProjectGenerated, onCancel, techData }: Pro
       // Prepare the request body with tech stack
       let requestBody: any = {
         prompt: userMessage.content,
-        projectName: projectName || undefined
+        projectName: projectName || undefined,
+        selectedTechStack: selectedTechStack || 'Other'  // Always include selected tech stack
       };
       
       // Add tech information if available
@@ -1288,8 +1295,35 @@ export const ProjectGenerator = ({ onProjectGenerated, onCancel, techData }: Pro
       setSearchProgress(0);
       setDiscoveredTechs([]);
       
+      // Auto-select a tech stack if none is selected
+      if (!selectedTechStack) {
+        // Randomly choose from available tech stacks with weighted probability
+        const techStacks: TechStackOption[] = ['Next.js', 'Apple', 'CLI', 'Other'];
+        const weights = [0.4, 0.3, 0.2, 0.1]; // Higher weight for Next.js and Apple
+        
+        // Weighted random selection
+        const randomValue = Math.random();
+        let cumulativeWeight = 0;
+        let selectedStack: TechStackOption = 'Other'; // Default
+        
+        for (let i = 0; i < techStacks.length; i++) {
+          cumulativeWeight += weights[i];
+          if (randomValue <= cumulativeWeight) {
+            selectedStack = techStacks[i];
+            break;
+          }
+        }
+        
+        console.log(`[IDEA] Auto-selecting tech stack: ${selectedStack}`);
+        setSelectedTechStack(selectedStack);
+      }
+      
+      // Get the selected or auto-selected tech stack
+      const techStackTemplate = selectedTechStack 
+        ? TECH_STACK_TEMPLATES[selectedTechStack] 
+        : TECH_STACK_TEMPLATES['Other'];
+      
       // Create tech context from selected tech stack
-      const techStackTemplate = selectedTechStack ? TECH_STACK_TEMPLATES[selectedTechStack] : TECH_STACK_TEMPLATES['Other'];
       const techContext = selectedTechs.length > 0 
         ? `Tech stack: ${selectedTechs.join(', ')}` 
         : selectedTechStack 
@@ -1298,6 +1332,16 @@ export const ProjectGenerator = ({ onProjectGenerated, onCancel, techData }: Pro
       
       // Use server API endpoint instead of direct Jina calls
       const baseUrl = typeof window !== 'undefined' ? window.location.origin : '';
+      
+      // Determine the enhancement mode based on input length
+      const userInput = inputValue.trim();
+      const enhancementMode = userInput.length === 0 
+        ? 'generate' // No input, generate from scratch
+        : userInput.length < 50 
+          ? 'expand' // Short input, use as seed and expand
+          : 'refine'; // Long input, refine and enhance while keeping core idea
+      
+      console.log(`[IDEA] Enhancement mode: ${enhancementMode} for input of length ${userInput.length}`);
       
       // New implementation with streaming search results
       // First, start a separate API call to get search results as they come in
@@ -1310,7 +1354,8 @@ export const ProjectGenerator = ({ onProjectGenerated, onCancel, techData }: Pro
         body: JSON.stringify({
           techStack: techStackTemplate,
           techContext,
-          userInput: inputValue.trim()
+          userInput,
+          enhancementMode
         }),
       });
       
@@ -1323,44 +1368,33 @@ export const ProjectGenerator = ({ onProjectGenerated, onCancel, techData }: Pro
         body: JSON.stringify({
           techStack: techStackTemplate,
           techContext,
-          userInput: inputValue.trim()
+          userInput,
+          enhancementMode
         }),
       });
       
-      // Handle search results immediately as they stream in
+      // Process streaming search results
       try {
         const searchResponse = await searchPromise;
-        if (!searchResponse.ok) {
-          console.warn('Search streaming failed:', searchResponse.status);
-        } else if (searchResponse.body) {
+        
+        if (searchResponse.ok && searchResponse.body) {
           const reader = searchResponse.body.getReader();
-          const decoder = new TextDecoder();
           let done = false;
-          
-          // Clear previous documents
-          clearDocuments();
-          
-          // Add initial search categories as documents in "generating" state
-          addSearchResult("Researching cultural and viral trends...", "Cultural & Viral Trends");
-          addSearchResult("Analyzing technology landscape...", "Technology Landscape");
-          addSearchResult("Identifying market opportunities...", "Market Opportunities");
           
           while (!done) {
             const { value, done: doneReading } = await reader.read();
             done = doneReading;
             
             if (value) {
-              const chunk = decoder.decode(value, { stream: true });
+              const chunk = new TextDecoder().decode(value);
               try {
-                // Each chunk should be a JSON object with category, content, and links
                 const searchResult = JSON.parse(chunk);
+                
+                // Update search results
                 setSearchResults(prev => [...prev, searchResult]);
-                setSearchProgress(prev => Math.min(prev + 33, 99)); // Increment progress
+                setSearchProgress(prev => Math.min(prev + 15, 95));
                 
-                // Add the search result to documents
-                addSearchResult(searchResult.content, searchResult.category || "Search Result");
-                
-                // Extract potential tech items from search results
+                // Extract tech from search results
                 if (searchResult.links && searchResult.links.length > 0) {
                   // Simple tech extraction from links based on common tech domains
                   const techDomains = [
@@ -1444,14 +1478,32 @@ export const ProjectGenerator = ({ onProjectGenerated, onCancel, techData }: Pro
         const ideaContent = ideaData.idea;
         
         // Parse the idea content to extract tech stack info
-        const techRegex = /## Tech(?:nology|nologies|nical Considerations|)[\s\S]*?(?=## |$)/;
+        const techRegex = /## Tech(?:nology|nologies|nical Implementation|nical Considerations|)[\s\S]*?(?=## |$)/i;
         const techSection = ideaContent.match(techRegex);
+        
         if (techSection) {
           const techContent = techSection[0];
           
           // Create a tech markdown document
           const techMarkdown = `# Technology Guide\n\n${techContent}`;
           updateDocument('tech', techMarkdown, 'perplexity');
+          
+          // Extract tech items from the tech section
+          const techItemRegex = /[-*]\s+([A-Za-z0-9_\-\.]+)/g;
+          const techItems: string[] = [];
+          let match;
+          
+          while ((match = techItemRegex.exec(techContent)) !== null) {
+            if (match[1] && !techItems.includes(match[1])) {
+              techItems.push(match[1]);
+            }
+          }
+          
+          // Auto-populate tech pills
+          if (techItems.length > 0) {
+            console.log(`[IDEA] Auto-populating tech pills: ${techItems.join(', ')}`);
+            setSelectedTechs(techItems);
+          }
         }
       }
       
@@ -1459,8 +1511,8 @@ export const ProjectGenerator = ({ onProjectGenerated, onCancel, techData }: Pro
       setInputValue(ideaData.idea);
       
       // If a project name was suggested, set it
-      if (ideaData.suggestedName) {
-        setProjectName(ideaData.suggestedName);
+      if (ideaData.name) {
+        setProjectName(ideaData.name);
       }
       
     } catch (error) {
@@ -1468,7 +1520,7 @@ export const ProjectGenerator = ({ onProjectGenerated, onCancel, techData }: Pro
       setMessages(prev => [...prev, {
         id: Date.now().toString(),
         role: 'assistant',
-        content: 'Sorry, I had trouble generating a random app idea. Please try again or provide your own idea.',
+        content: 'Sorry, I had trouble enhancing your idea. Please try again or provide more details.',
         timestamp: new Date(),
       }]);
     } finally {
@@ -1638,9 +1690,9 @@ export const ProjectGenerator = ({ onProjectGenerated, onCancel, techData }: Pro
                           onClick={generateRandomAppIdea}
                           disabled={isGenerating || isGeneratingRandomIdea}
                           className="p-1.5 rounded-md bg-[rgb(var(--surface-1)/0.1)] hover:bg-[rgb(var(--surface-1)/0.3)] transition-colors text-lg"
-                          title="Generate random trendy app idea"
+                          title="Enhance idea with AI"
                         >
-                          🎲
+                          🌱
                         </button>
                         <p className="font-mono text-sm whitespace-pre-wrap">{messages[0].content}</p>
                       </div>

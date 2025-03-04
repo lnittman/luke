@@ -1,0 +1,18 @@
+{
+  "nextjs": ["react", "vercel", "typescript"],
+  "react": ["javascript", "nextjs", "frontend"],
+  "typescript": ["javascript", "static typing"],
+  "vercel": ["nextjs", "deployment", "serverless"],
+  "neondb": ["postgresql", "database", "cloud"],
+  "upstash": ["redis", "kv", "serverless"],
+  "blob": ["storage", "vercel", "cloud"],
+  "openrouter": ["ai", "api", "llm"],
+  "gemini": ["ai", "google", "multimodal"],
+  "gcp": ["cloud", "google"],
+  "postgresql": ["database", "sql"],
+  "redis": ["database", "nosql", "kv"],
+  "ai": ["machine learning", "llm"],
+  "frontend": ["ui", "web", "react"],
+  "backend": ["api", "server", "database"],
+  "serverless": ["cloud", "functions"]
+} 

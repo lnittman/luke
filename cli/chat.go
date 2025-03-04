@@ -5,7 +5,6 @@ import (
 	"encoding/json"
 	"fmt"
 	"io/ioutil"
-	"net/http"
 	"os"
 	"path/filepath"
 	"sort"
@@ -22,21 +21,19 @@ import (
 	"luke/cli/api"
 )
 
+// Global program reference for sending messages across goroutines
+var program *tea.Program
+
 // Available models
 var availableModels = []string{
 	"anthropic/claude-3.7-sonnet",
+	"anthropic/claude-3.5-sonnet",  
 	"anthropic/claude-3-opus",
-	"anthropic/claude-3-sonnet",
-	"anthropic/claude-3-haiku",
-	"anthropic/claude-3.5-sonnet",
-	"google/gemini-1.5-pro",
-	"google/gemini-1.5-flash",
-	"openai/gpt-4o",
 	"openai/gpt-4-turbo",
+	"openai/gpt-4o",
 	"openai/gpt-3.5-turbo",
 	"meta/llama-3-70b-instruct",
-	"mistral/mistral-large",
-	"mistral/mistral-medium",
+	"google/gemini-1.5-pro",
 }
 
 // Common model providers
@@ -113,117 +110,76 @@ type chatModel struct {
 
 // Initialize the chat model
 func initialChatModel() chatModel {
+	// Create a text area with a placeholder
 	ta := textarea.New()
-	ta.Placeholder = "Type your message here..."
+	ta.Placeholder = "Type your message here... (press Ctrl+S to set API key, Ctrl+P to see models, Ctrl+Enter to submit)"
 	ta.Focus()
 	ta.CharLimit = 4000
+	ta.SetWidth(120)
 	ta.SetHeight(3)
-	ta.SetWidth(100)
-	ta.ShowLineNumbers = false
-	ta.KeyMap.InsertNewline.SetEnabled(true)
 
-	// Create viewport for chat history with improved styles
-	vp := viewport.New(100, 30)
+	// Create a viewport for displaying chat history
+	vp := viewport.New(120, 20)
 	vp.SetContent("")
 
-	// Spinner for loading state with improved style
+	// Create a spinner for loading state
 	s := spinner.New()
 	s.Spinner = spinner.Dot
-	s.Style = lipgloss.NewStyle().Foreground(lipgloss.Color("#9A348E"))
+	s.Style = lipgloss.NewStyle().Foreground(lipgloss.Color("205"))
 
-	// Read API key from environment or config file
-	apiKey := os.Getenv("OPENROUTER_API_KEY")
-	if apiKey == "" {
-		// Try to read from config file
-		homeDir, err := os.UserHomeDir()
-		if err == nil {
-			configDir := filepath.Join(homeDir, ".luke")
-			configFile := filepath.Join(configDir, "config.json")
-			if _, err := os.Stat(configFile); err == nil {
-				data, err := ioutil.ReadFile(configFile)
-				if err == nil {
-					var config map[string]string
-					if err := json.Unmarshal(data, &config); err == nil {
-						apiKey = config["openrouter_api_key"]
-					}
-				}
-			}
-		}
-	}
+	// Styles for different message types
+	responseStyle := lipgloss.NewStyle().Foreground(lipgloss.Color("86")).Margin(1, 0)
+	userStyle := lipgloss.NewStyle().Foreground(lipgloss.Color("255")).Margin(0, 0)
+	systemStyle := lipgloss.NewStyle().Foreground(lipgloss.Color("241")).Margin(0, 0)
+	helpStyle := lipgloss.NewStyle().Foreground(lipgloss.Color("241")).Margin(0, 0)
+	errorStyle := lipgloss.NewStyle().Foreground(lipgloss.Color("196")).Margin(0, 0)
+	modelStyle := lipgloss.NewStyle().Foreground(lipgloss.Color("205")).Margin(0, 0)
+	tokensStyle := lipgloss.NewStyle().Foreground(lipgloss.Color("241")).Margin(0, 0)
 
-	// Create styles with improved colors and spacing
-	responseStyle := lipgloss.NewStyle().
-		Foreground(lipgloss.Color("#83AAFF")).
-		Bold(false).
-		Italic(false).
-		MarginTop(1).
-		MarginBottom(1)
+	// Get models
+	models := availableModels
 
-	userStyle := lipgloss.NewStyle().
-		Foreground(lipgloss.Color("#FF83AA")).
-		Bold(true).
-		MarginTop(1).
-		MarginBottom(0)
+	// Read API key from environment
+	apiKey := os.Getenv("LUKE_API_KEY")
 
-	systemStyle := lipgloss.NewStyle().
-		Foreground(lipgloss.Color("#CCCCCC")).
-		Italic(true).
-		MarginTop(1).
-		MarginBottom(1)
+	// Default to Claude 3.7 Sonnet
+	selectedModel := "anthropic/claude-3.7-sonnet"
 
-	helpStyle := lipgloss.NewStyle().
-		Foreground(lipgloss.Color("#888888")).
-		Italic(true).
-		MarginTop(1).
-		MarginBottom(1)
-
-	errorStyle := lipgloss.NewStyle().
-		Foreground(lipgloss.Color("#FF5555")).
-		Bold(true).
-		MarginTop(1).
-		MarginBottom(1)
-
-	modelStyle := lipgloss.NewStyle().
-		Foreground(lipgloss.Color("#55AAFF")).
-		Bold(true).
-		MarginBottom(1)
-
-	tokensStyle := lipgloss.NewStyle().
-		Foreground(lipgloss.Color("#888888")).
-		Italic(true).
-		MarginTop(1)
-		
-	// Initial system message for context
-	initialMessages := []Message{
-		{
+	// Start with a system message
+	var messages []Message
+	if len(messages) == 0 {
+		messages = append(messages, Message{
 			Role:    "system",
-			Content: "You are Claude, an AI assistant created by Anthropic to be helpful, harmless, and honest. " +
-				"Respond to user queries accurately and concisely. You are being used in a terminal interface, " +
-				"so format your responses appropriately using Markdown.",
-		},
+			Content: "You are Claude, an AI assistant created by Anthropic. You are helpful, harmless, and honest.",
+		})
 	}
 
 	return chatModel{
-		textarea:        ta,
-		viewport:        vp,
-		spinner:         s,
-		apiKey:          apiKey,
-		selectedModel:   "anthropic/claude-3.7-sonnet", // Set Claude 3.7 Sonnet as default
-		availableModels: availableModels,
-		filteredModels:  availableModels, // Initialize with all models
-		selectedModelIndex: 0, // Initialize the selected index
-		viewportOffset:  0, // Initialize viewport offset
-		messages:        initialMessages,
-		responseStyle:   responseStyle,
-		userStyle:       userStyle,
-		systemStyle:     systemStyle,
-		helpStyle:       helpStyle,
-		errorStyle:      errorStyle,
-		modelStyle:      modelStyle,
-		tokensStyle:     tokensStyle,
-		searchMode:      false,
-		searchQuery:     "",
-		lastRefresh:     time.Now(), // Initialize lastRefresh
+		messages:         messages,
+		textarea:         ta,
+		viewport:         vp,
+		spinner:          s,
+		apiKey:           apiKey,
+		selectedModel:    selectedModel,
+		availableModels:  models,
+		waiting:          false,
+		showModelPicker:  false,
+		streaming:        false,
+		streamContent:    "",
+		responseStyle:    responseStyle,
+		userStyle:        userStyle,
+		systemStyle:      systemStyle,
+		helpStyle:        helpStyle,
+		errorStyle:       errorStyle,
+		modelStyle:       modelStyle,
+		tokensStyle:      tokensStyle,
+		err:              nil,
+		selectedModelIndex: 0,
+		searchMode:        false,
+		searchQuery:       "",
+		filteredModels:    models,
+		viewportOffset:    0,
+		lastRefresh:       time.Now(),
 	}
 }
 
@@ -244,37 +200,45 @@ func saveApiKey(key string) error {
 	}
 
 	configDir := filepath.Join(homeDir, ".luke")
-	if err := os.MkdirAll(configDir, 0700); err != nil {
-		return err
-	}
-
 	configFile := filepath.Join(configDir, "config.json")
 
-	// Read existing config if it exists
-	var config map[string]string
+	// Ensure the directory exists
+	if _, err := os.Stat(configDir); os.IsNotExist(err) {
+		if err := os.MkdirAll(configDir, 0700); err != nil {
+			return err
+		}
+	}
+
+	// Read existing config or create a new one
+	config := make(map[string]string)
 	if _, err := os.Stat(configFile); err == nil {
 		data, err := ioutil.ReadFile(configFile)
 		if err != nil {
-			config = make(map[string]string)
-		} else {
-			if err := json.Unmarshal(data, &config); err != nil {
-				config = make(map[string]string)
-			}
+			return err
 		}
-	} else {
-		config = make(map[string]string)
+		
+		if err := json.Unmarshal(data, &config); err != nil {
+			return err
+		}
 	}
-
-	// Update the key
-	config["openrouter_api_key"] = key
-
-	// Write back to file
+	
+	// Update the API key
+	config["luke_api_key"] = key
+	
+	// Save the config
 	data, err := json.MarshalIndent(config, "", "  ")
 	if err != nil {
 		return err
 	}
-
-	return ioutil.WriteFile(configFile, data, 0600)
+	
+	if err := ioutil.WriteFile(configFile, data, 0600); err != nil {
+		return err
+	}
+	
+	// Also update the environment variable
+	os.Setenv("LUKE_API_KEY", key)
+	
+	return nil
 }
 
 // Fix model name format by cleaning up any special suffixes
@@ -306,31 +270,40 @@ type streamRefreshTickMsg time.Time
 // Tick message type for handling timeouts
 type timeoutCheckerTickMsg time.Time
 
-// Submit message to OpenRouter API with streaming
+// Submit message to LLM API through the web app API adapter
 func submitMessage(apiKey string, model string, messages []Message) tea.Cmd {
 	return func() tea.Msg {
-		// Check if we should use the unified API
-		useUnifiedAPI := getConfigValue("use_unified_api") == "true"
-		apiEndpoint := getConfigValue("api_endpoint")
+		// Get API configuration
+		useUnifiedAPI := getConfigValue("use_unified_api")
+		if useUnifiedAPI == "" {
+			// Default to using the unified API if not explicitly set
+			useUnifiedAPI = "true"
+		}
 		
-		if useUnifiedAPI && apiEndpoint != "" {
-			// Use the API client to submit the message
+		apiEndpoint := getConfigValue("api_endpoint")
+		if apiEndpoint == "" {
+			// Default API endpoint if not configured
+			apiEndpoint = "http://localhost:3000"
+		}
+		
+		if useUnifiedAPI == "true" {
+			// Use the API adapter to communicate with the web app
 			client := api.NewAPIClient(apiEndpoint, apiKey)
 			
-			// Convert chat messages to prompt
+			// Convert chat messages to the format expected by the API
 			prompt := ""
 			for _, msg := range messages {
 				prompt += msg.Role + ": " + msg.Content + "\n\n"
 			}
 			
-			// Create request
+			// Create request with model information
 			req := api.LLMRequest{
 				Prompt:      prompt,
 				Model:       model,
 				Temperature: 0.7,
 			}
 			
-			// Send request to API
+			// Send request to the API adapter
 			response, err := client.GenerateLLMResponse(req)
 			if err != nil {
 				return fmt.Errorf("API error: %v", err)
@@ -339,62 +312,54 @@ func submitMessage(apiKey string, model string, messages []Message) tea.Cmd {
 			// Return the response
 			return ResponseReceived{Content: response.Content}
 		} else {
-			// Use the existing direct OpenRouter implementation
-			// (keep existing code here)
-			return ResponseReceived{Content: "Error: Implementation missing"}
+			// Direct implementation fallback - this is only used when explicitly configured
+			// And should only be used for debugging purposes
+			
+			return fmt.Errorf("Direct API implementation has been disabled. Please update your config to use the Luke API.\n\nRun:\n  luke setup-api\n\nto configure the API endpoint.")
 		}
 	}
 }
 
-// List available models from OpenRouter
+// List available models from the API
 func fetchAvailableModels(apiKey string) tea.Cmd {
 	return func() tea.Msg {
 		if apiKey == "" {
 			return availableModels
 		}
 
-		req, err := http.NewRequest("GET", "https://openrouter.ai/api/v1/models", nil)
-		if err != nil {
+		// Check if we should use the unified API
+		useUnifiedAPI := getConfigValue("use_unified_api")
+		if useUnifiedAPI == "" {
+			// Default to using the unified API if not explicitly set
+			useUnifiedAPI = "true"
+		}
+		
+		apiEndpoint := getConfigValue("api_endpoint")
+		if apiEndpoint == "" {
+			// Default API endpoint if not configured
+			apiEndpoint = "http://localhost:3000"
+		}
+		
+		if useUnifiedAPI == "true" {
+			// Use the API client to get available models
+			client := api.NewAPIClient(apiEndpoint, apiKey)
+			
+			// Use the API client to get models
+			models, err := client.GetAvailableModels()
+			if err != nil {
+				return availableModels
+			}
+			
+			// If no models returned, use defaults
+			if len(models) == 0 {
+				return availableModels
+			}
+			
+			return models
+		} else {
+			// Direct implementation fallback - just return our defaults
 			return availableModels
 		}
-
-		req.Header.Set("Authorization", "Bearer "+apiKey)
-		req.Header.Set("HTTP-Referer", "https://github.com/yourusername/luke-cli")
-		req.Header.Set("X-Title", "Luke CLI Chat")
-
-		client := &http.Client{Timeout: 10 * time.Second}
-		resp, err := client.Do(req)
-		if err != nil {
-			return availableModels
-		}
-		defer resp.Body.Close()
-
-		if resp.StatusCode != http.StatusOK {
-			return availableModels
-		}
-
-		var modelsResponse struct {
-			Data []struct {
-				ID          string `json:"id"`
-				Name        string `json:"name"`
-				Description string `json:"description"`
-			} `json:"data"`
-		}
-
-		if err := json.NewDecoder(resp.Body).Decode(&modelsResponse); err != nil {
-			return availableModels
-		}
-
-		models := []string{}
-		for _, model := range modelsResponse.Data {
-			models = append(models, model.ID)
-		}
-
-		if len(models) == 0 {
-			return availableModels
-		}
-
-		return models
 	}
 }
 
@@ -880,7 +845,7 @@ func (m chatModel) Update(msg tea.Msg) (tea.Model, tea.Cmd) {
 			case "ctrl+s": // Enter API key
 				if !m.waiting {
 					// Prompt for API key
-					fmt.Print("Enter your OpenRouter API key: ")
+					fmt.Print("Enter your Luke API key: ")
 					scanner := bufio.NewScanner(os.Stdin)
 					scanner.Scan()
 					apiKey := scanner.Text()
@@ -895,7 +860,7 @@ func (m chatModel) Update(msg tea.Msg) (tea.Model, tea.Cmd) {
 						}
 						
 						// Set the key as environment variable for current session
-						os.Setenv("OPENROUTER_API_KEY", apiKey)
+						os.Setenv("LUKE_API_KEY", apiKey)
 					}
 					
 					// Refresh screen
@@ -924,7 +889,7 @@ func (m chatModel) Update(msg tea.Msg) (tea.Model, tea.Cmd) {
 					}
 					
 					// Set the key as environment variable for current session
-					os.Setenv("OPENROUTER_API_KEY", apiKey)
+					os.Setenv("LUKE_API_KEY", apiKey)
 					
 					// Clear textarea
 					m.textarea.Reset()
@@ -1416,10 +1381,15 @@ func (m chatModel) View() string {
 	)
 }
 
-// Run the chat interface
+// This is a reference to the main bubbletea program for streaming updates
+func setProgramReference(p *tea.Program) {
+	program = p
+}
+
+// runChatInterface starts the chat interface
 func runChatInterface() {
 	// Check if API key is set
-	apiKey := os.Getenv("OPENROUTER_API_KEY")
+	apiKey := os.Getenv("LUKE_API_KEY")
 	if apiKey == "" {
 		// Try to read from config file
 		homeDir, err := os.UserHomeDir()
@@ -1435,7 +1405,7 @@ func runChatInterface() {
 				if err == nil {
 					var config map[string]string
 					if err := json.Unmarshal(data, &config); err == nil {
-						apiKey = config["openrouter_api_key"]
+						apiKey = config["luke_api_key"]
 					}
 				}
 			}
@@ -1443,9 +1413,9 @@ func runChatInterface() {
 		
 		// If still no API key, prompt for it
 		if apiKey == "" {
-			fmt.Println("OpenRouter API key is required for chat functionality.")
-			fmt.Println("Get your free API key at: https://openrouter.ai/")
-			fmt.Print("Enter your OpenRouter API key: ")
+			fmt.Println("Luke API key is required for chat functionality.")
+			fmt.Println("This key connects to your local Luke API, which handles LLM connections.")
+			fmt.Print("Enter your Luke API key: ")
 			
 			// Read API key from stdin
 			reader := bufio.NewReader(os.Stdin)
@@ -1462,7 +1432,7 @@ func runChatInterface() {
 					// Save API key
 					if configFile != "" {
 						config := map[string]string{
-							"openrouter_api_key": apiKey,
+							"luke_api_key": apiKey,
 						}
 						
 						data, err := json.MarshalIndent(config, "", "  ")
@@ -1476,9 +1446,9 @@ func runChatInterface() {
 						}
 					}
 				}
-				
+
 				// Set environment variable for current session
-				os.Setenv("OPENROUTER_API_KEY", apiKey)
+				os.Setenv("LUKE_API_KEY", apiKey)
 			} else {
 				fmt.Println("⚠️ No API key provided. The chat will have limited functionality.")
 				fmt.Println("You can set your API key later using Ctrl+S during chat or with the /key command.")
@@ -1492,8 +1462,9 @@ func runChatInterface() {
 	
 	// Start the chat interface
 	p := tea.NewProgram(initialChatModel(), tea.WithAltScreen())
+	setProgramReference(p) // Set the program reference for streaming
 	if _, err := p.Run(); err != nil {
-		fmt.Printf("Error running chat interface: %v", err)
+		fmt.Printf("Error running chat interface: %v\n", err)
 		os.Exit(1)
 	}
 }

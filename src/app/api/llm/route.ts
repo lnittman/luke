@@ -1,4 +1,5 @@
 import { NextRequest, NextResponse } from 'next/server';
+import { getOpenRouterHeaders, getOpenRouterKey } from '@/lib/api-keys';
 
 export const maxDuration = 300; // 5 minutes
 
@@ -22,12 +23,13 @@ export async function POST(request: NextRequest) {
       );
     }
 
-    const openRouterApiKey = process.env.OPENROUTER_API_KEY;
+    // Use our utility function to get the API key
+    const openRouterApiKey = getOpenRouterKey();
     
     if (!openRouterApiKey) {
-      console.error("[LLM API] Missing OpenRouter API key");
+      console.error("[LLM API] Missing or invalid OpenRouter API key");
       return NextResponse.json(
-        { error: 'OpenRouter API key not configured on the server.' },
+        { error: 'OpenRouter API key not configured properly on the server.' },
         { status: 500 }
       );
     }
@@ -66,15 +68,10 @@ export async function POST(request: NextRequest) {
     console.log(`[LLM API] Calling OpenRouter with model: ${requestBody.model}`);
     
     try {
-      // Call OpenRouter API
+      // Call OpenRouter API with our utility headers
       const response = await fetch('https://openrouter.ai/api/v1/chat/completions', {
         method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-          'Authorization': `Bearer ${openRouterApiKey}`,
-          'HTTP-Referer': 'https://luke-portfolio.vercel.app',
-          'X-Title': 'Luke Portfolio',
-        },
+        headers: getOpenRouterHeaders(),
         body: JSON.stringify(requestBody),
       });
 

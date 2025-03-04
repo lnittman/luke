@@ -91,63 +91,6 @@ export const PROJECTS: Project[] = [
     }
   },
   {
-    id: 'top',
-    name: 'top',
-    emoji: '🧠',
-    description: 'vision-first development platform',
-    demoUrl: 'https://top-web.vercel.app/',
-    sourceUrl: 'https://github.com/orgs/top-labs/repositories',
-    videos: [
-      { src: 'assets/top.mp4', title: 'platform demo' }
-    ],
-    content: {
-      overview: {
-        title: 'overview',
-        items: [
-          'natural language development',
-          'vision-driven architecture',
-          'context-aware tooling',
-          'seamless abstraction of best practices'
-        ]
-      },
-      core: {
-        title: 'core',
-        items: [
-          'intelligent context system',
-          'natural language interface',
-          'semantic project mapping',
-          'adaptive documentation'
-        ]
-      },
-      architecture: {
-        title: 'architecture',
-        items: [
-          'distributed platform',
-          'llm pipeline system',
-          'vector embeddings',
-          'context graph'
-        ]
-      },
-      tech: {
-        title: 'tech',
-        items: [
-          'next.js',
-          'typescript',
-          'postgresql',
-          'pgvector',
-          'vertexai',
-          'openai',
-          'turborepo',
-          'tailwind',
-          'motion',
-          'markdown',
-          'clerk',
-          'ast',
-        ]
-      }
-    }
-  },
-  {
     id: 'voet',
     name: 'voet',
     emoji: '⚽️',

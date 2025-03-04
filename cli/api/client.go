@@ -256,4 +256,39 @@ func (c *APIClient) GetProjectDocuments(id string) (map[string]string, error) {
 	}
 
 	return docsResp.Documents, nil
+}
+
+// GetAvailableModels fetches the list of available models from the API
+func (c *APIClient) GetAvailableModels() ([]string, error) {
+	httpReq, err := http.NewRequest("GET", c.baseURL+"/api/llm/models", nil)
+	if err != nil {
+		return nil, err
+	}
+
+	httpReq.Header.Set("Authorization", "Bearer "+c.apiKey)
+
+	resp, err := c.httpClient.Do(httpReq)
+	if err != nil {
+		return nil, err
+	}
+	defer resp.Body.Close()
+
+	body, err := ioutil.ReadAll(resp.Body)
+	if err != nil {
+		return nil, err
+	}
+
+	if resp.StatusCode != http.StatusOK {
+		return nil, fmt.Errorf("API error: %s (status %d)", body, resp.StatusCode)
+	}
+
+	var modelsResponse struct {
+		Models []string `json:"models"`
+	}
+
+	if err := json.Unmarshal(body, &modelsResponse); err != nil {
+		return nil, err
+	}
+
+	return modelsResponse.Models, nil
 } 

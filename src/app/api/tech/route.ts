@@ -1,8 +1,10 @@
 import { NextRequest, NextResponse } from 'next/server';
-import { put, list, del, head, getDownloadUrl, get } from '@vercel/blob';
+import { put, list, del, head, getDownloadUrl } from '@vercel/blob';
 import axios from 'axios';
 import path from 'path';
-import fs from 'fs';
+import { promises as fs } from 'fs';
+import { createHash } from 'crypto';
+import { LLMProvider, createServerApiProvider } from '@/lib/llm';
 
 // Tech stack names for file management
 const TECH_STACKS = ['next', 'apple', 'cli', 'other'];
@@ -17,6 +19,11 @@ const jinaClient = axios.create({
     'Content-Type': 'application/json'
   }
 });
+
+// Define paths for the local file system
+const DOCS_DIR = path.join(process.cwd(), 'docs');
+const TEMPLATE_DIR = path.join(DOCS_DIR, 'template');
+const TOOLS_DIR = path.join(DOCS_DIR, 'tools');
 
 // Retry utility for API calls
 async function withRetry<T>(fn: () => Promise<T>, maxRetries = 3, initialDelay = 500): Promise<T> {
@@ -253,216 +260,343 @@ async function generateTechRelationships(allTechItems: string[]): Promise<Record
   return relationships;
 }
 
+// Check for token in request headers or environment
+function getBlobToken(request: NextRequest): string | undefined {
+  // Check for token in custom header
+  const headerToken = request.headers.get('x-vercel-blob-token');
+  if (headerToken) {
+    return headerToken;
+  }
+  
+  // Fall back to environment variables
+  return process.env.BLOB_READ_WRITE_TOKEN || process.env.VERCEL_BLOB_TOKEN;
+}
+
 // Handler for GET requests
 export async function GET(request: NextRequest) {
+  // Set the token for this request
+  const token = getBlobToken(request);
+  process.env.VERCEL_BLOB_TOKEN = token;
+  
   try {
     const techData = await getTechData();
     return NextResponse.json(techData);
   } catch (error) {
     console.error('Error retrieving tech data:', error);
-    return NextResponse.json(
-      { error: 'Failed to retrieve tech data' },
-      { status: 500 }
-    );
+    return NextResponse.json({
+      error: 'Failed to retrieve tech data',
+      message: error instanceof Error ? error.message : String(error),
+      fallback: 'Using local files instead',
+      timestamp: new Date().toISOString()
+    }, { status: 500 });
   }
 }
 
 // Handler for POST requests - to manually trigger updates
 export async function POST(request: NextRequest) {
+  // Set the token for this request
+  const token = getBlobToken(request);
+  process.env.VERCEL_BLOB_TOKEN = token;
+  
   try {
-    console.log('[TECH] Manual update requested');
-    const updatedData = await updateTechFiles();
-    return NextResponse.json(updatedData);
+    await updateTechFiles();
+    const techData = await getTechData();
+    return NextResponse.json({
+      success: true,
+      data: techData,
+      message: 'Tech files updated successfully'
+    });
   } catch (error) {
-    console.error('Error updating tech data:', error);
-    return NextResponse.json(
-      { error: 'Failed to update tech data' },
-      { status: 500 }
-    );
+    console.error('Error updating tech files:', error);
+    return NextResponse.json({
+      error: 'Failed to update tech files',
+      message: error instanceof Error ? error.message : String(error),
+      fallback: 'Using existing files instead',
+      timestamp: new Date().toISOString()
+    }, { status: 500 });
   }
 }
 
-// Update tech files in Vercel Blob
+// Update tech files in both Vercel Blob and local filesystem
 async function updateTechFiles() {
-  console.log('[TECH] Updating tech documentation files');
+  console.log('[TECH] Starting tech files update process');
   
-  const techData = {
-    techMd: '',
-    stacks: {} as Record<string, { lastUpdated: string }>,
-    relationships: {} as Record<string, string[]>
-  };
+  // Check if we should update all files
+  const shouldUpdate = await shouldUpdateFile('tech.md');
+  if (!shouldUpdate) {
+    console.log('[TECH] No update needed based on file age');
+    return { message: 'Tech files are up to date' };
+  }
   
-  // Process each tech stack
-  const stackContents: Record<string, string> = {};
-  let allTechItems: string[] = [];
-  
-  for (const stack of TECH_STACKS) {
-    console.log(`[TECH] Generating content for ${stack}`);
+  // Local file operations - ensure directories exist
+  try {
+    // Ensure the directories exist
+    await fs.mkdir(DOCS_DIR, { recursive: true });
+    await fs.mkdir(TEMPLATE_DIR, { recursive: true });
+    await fs.mkdir(TOOLS_DIR, { recursive: true });
     
+    // Create each tech stack directory in the template dir
+    for (const stack of TECH_STACKS) {
+      const stackDir = path.join(TEMPLATE_DIR, stack);
+      await fs.mkdir(stackDir, { recursive: true });
+    }
+  } catch (error) {
+    console.error('Error creating directories:', error);
+  }
+  
+  // Collect all tech items for relationship building
+  const allTechItems: string[] = [];
+  
+  // Generate tech docs for each stack
+  for (const stack of TECH_STACKS) {
+    console.log(`[TECH] Generating tech docs for ${stack}...`);
     try {
-      // Generate content for this stack
       const { content, techItems } = await getTechForStack(stack);
+      allTechItems.push(...techItems);
       
-      // Store in Vercel Blob
-      const techFileName = `tech-${stack}.md`;
-      await put(techFileName, content, { access: 'public' });
+      // Save to Vercel Blob
+      try {
+        const blobName = `tech-${stack}.md`;
+        const blob = await put(blobName, content, { access: 'public' });
+        console.log(`[TECH] Uploaded ${blobName} to Vercel Blob: ${blob.url}`);
+      } catch (blobError) {
+        console.error(`[TECH] Error uploading ${stack} to Vercel Blob:`, blobError);
+      }
       
-      // Track data
-      stackContents[stack] = content;
-      allTechItems = [...allTechItems, ...techItems];
-      
-      // Update stacks info
-      techData.stacks[stack] = {
-        lastUpdated: new Date().toISOString()
-      };
-      
-      console.log(`[TECH] Successfully updated ${techFileName}`);
+      // Save locally to both new and legacy locations
+      try {
+        // New location in template/{stack}/tech.md
+        const stackDir = path.join(TEMPLATE_DIR, stack);
+        await fs.writeFile(path.join(stackDir, 'tech.md'), content);
+        
+        // Legacy location
+        await fs.writeFile(path.join(DOCS_DIR, `tech-${stack}.md`), content);
+        
+        console.log(`[TECH] Saved ${stack} documentation locally`);
+      } catch (fileError) {
+        console.error(`[TECH] Error saving ${stack} documentation locally:`, fileError);
+      }
     } catch (error) {
-      console.error(`[TECH] Error updating ${stack}:`, error);
+      console.error(`[TECH] Error generating tech docs for ${stack}:`, error);
     }
   }
   
-  // Generate main tech.md file
-  const mainTechMd = `# Technology Stack Guide 2024
+  // Generate relationships between tech stacks
+  const relationships = await generateTechRelationships(allTechItems);
+  
+  // Save relationships
+  try {
+    const relationshipsJSON = JSON.stringify(relationships, null, 2);
+    
+    // Save to Vercel Blob
+    try {
+      await put('tech-relationships.json', relationshipsJSON, { access: 'public' });
+      console.log('[TECH] Saved relationships to Vercel Blob');
+    } catch (error) {
+      console.error('[TECH] Error saving relationships to Vercel Blob:', error);
+    }
+    
+    // Save locally
+    try {
+      await fs.writeFile(path.join(DOCS_DIR, 'tech-relationships.json'), relationshipsJSON);
+      console.log('[TECH] Saved relationships locally');
+    } catch (error) {
+      console.error('[TECH] Error saving relationships locally:', error);
+    }
+  } catch (error) {
+    console.error('[TECH] Error generating relationships:', error);
+  }
+  
+  // Generate main tech.md file with all stacks
+  try {
+    // Read all stack files and combine them
+    const techMdParts: string[] = [];
+    
+    for (const stack of TECH_STACKS) {
+      try {
+        const stackPath = path.join(TEMPLATE_DIR, stack, 'tech.md');
+        const content = await fs.readFile(stackPath, 'utf-8');
+        
+        // Extract content without the header and last updated line
+        const lines = content.split('\n');
+        const filteredLines = lines.filter((line, index) => 
+          index > 2 && !line.includes('Last updated')
+        );
+        
+        techMdParts.push(`## ${stack.charAt(0).toUpperCase() + stack.slice(1)} Technologies\n\n${filteredLines.join('\n')}`);
+      } catch (error) {
+        console.error(`[TECH] Error reading stack file for ${stack}:`, error);
+      }
+    }
+    
+    // Create the main tech.md file
+    const mainTechContent = `# Technology Stack Guide 2024
 
 > Comprehensive guide to modern development technologies across different platforms.
 > Last updated: ${new Date().toISOString()}
 
-${Object.entries(stackContents).map(([stack, content]) => {
-  // Extract content without the header and last updated line
-  const lines = content.split('\n');
-  const filteredLines = lines.filter((line, index) => 
-    index > 2 && !line.includes('Last updated')
-  );
-  return `## ${stack.charAt(0).toUpperCase() + stack.slice(1)} Technologies\n\n${filteredLines.join('\n')}`;
-}).join('\n\n---\n\n')}
+${techMdParts.join('\n\n---\n\n')}
 `;
+    
+    // Save to Vercel Blob
+    try {
+      const blob = await put('tech.md', mainTechContent, { access: 'public' });
+      console.log(`[TECH] Uploaded main tech.md to Vercel Blob: ${blob.url}`);
+    } catch (blobError) {
+      console.error('[TECH] Error uploading main tech.md to Vercel Blob:', blobError);
+    }
+    
+    // Save locally to both new and legacy locations
+    try {
+      // New location in tools/tech.md
+      await fs.writeFile(path.join(TOOLS_DIR, 'tech.md'), mainTechContent);
+      
+      // Legacy location
+      await fs.writeFile(path.join(DOCS_DIR, 'tech.md'), mainTechContent);
+      
+      console.log('[TECH] Saved main tech.md documentation locally');
+    } catch (fileError) {
+      console.error('[TECH] Error saving main tech.md documentation locally:', fileError);
+    }
+  } catch (error) {
+    console.error('[TECH] Error generating main tech file:', error);
+  }
   
-  // Store combined content
-  await put('tech.md', mainTechMd, { access: 'public' });
-  techData.techMd = mainTechMd;
-  
-  // Generate relationships - deduplicate tech items first
-  allTechItems = Array.from(new Set(allTechItems));
-  techData.relationships = await generateTechRelationships(allTechItems);
-  
-  return techData;
+  console.log('[TECH] Tech files update complete');
+  return { message: 'Tech files updated' };
 }
 
 // Retrieve tech data, first from Vercel Blob, then fall back to local file if necessary
 async function getTechData() {
-  let techMd = '';
-  let stacks = {} as Record<string, { lastUpdated: string }>;
-  let relationships = {} as Record<string, string[]>;
-
-  try {
-    // First try to get files from Vercel Blob
-    console.log('Fetching tech files from Vercel Blob...');
-
-    // List all blobs to find tech files
-    const { blobs } = await list();
-    const techMdBlob = blobs.find(blob => blob.pathname === 'tech.md');
-    
-    if (techMdBlob) {
-      // Get the main tech.md file
-      const response = await fetch(techMdBlob.url);
-      if (response.ok) {
-        techMd = await response.text();
-        console.log('Successfully retrieved tech.md from Vercel Blob');
-      }
-
-      // Get the stack files
-      const stacksData: Record<string, { lastUpdated: string }> = {};
-      const stackFiles = blobs.filter(blob => blob.pathname.startsWith('tech-') && blob.pathname.endsWith('.md'));
-      
-      for (const stackFile of stackFiles) {
-        const stackName = stackFile.pathname.replace('tech-', '').replace('.md', '');
-        stacksData[stackName] = {
-          lastUpdated: new Date(stackFile.uploadedAt).toISOString()
-        };
-      }
-      
-      stacks = stacksData;
-      console.log(`Found ${Object.keys(stacks).length} tech stack files in Vercel Blob`);
-      
-      // Extract relationships from content (simplified version)
-      // In a real implementation, you would parse the content of each file to generate relationships
-      const techNames = Object.keys(stacks);
-      for (const tech of techNames) {
-        relationships[tech] = techNames.filter(t => t !== tech).slice(0, 3);
-      }
-      
-      // Check if the files need updating
-      const oldestFile = Object.values(stacks).reduce((oldest, current) => {
-        const currentDate = new Date(current.lastUpdated).getTime();
-        return currentDate < oldest ? currentDate : oldest;
-      }, Date.now());
-      
-      const ageMs = Date.now() - oldestFile;
-      if (ageMs > UPDATE_FREQUENCY_MS) {
-        console.log(`Files are ${ageMs / (1000 * 60 * 60)} hours old, triggering background update`);
-        // Trigger update in background
-        updateTechFiles().catch(err => console.error('Background update failed:', err));
-      }
-      
-      return {
-        techMd,
-        relationships,
-        stacks
-      };
-    } else {
-      console.log('No tech.md file found in Vercel Blob, generating new content');
-      return await updateTechFiles();
-    }
-  } catch (error) {
-    console.error('Error retrieving from Vercel Blob:', error);
-    console.log('Falling back to local files...');
-  }
-
-  // Fall back to local files if Vercel Blob fails
-  try {
-    const docsPath = path.join(process.cwd(), 'docs');
-    const mainFilePath = path.join(docsPath, 'tech.md');
-    
-    if (fs.existsSync(mainFilePath)) {
-      techMd = fs.readFileSync(mainFilePath, 'utf-8');
-      
-      // Parse stack files
-      const stackFiles = fs.readdirSync(docsPath)
-        .filter(file => file.startsWith('tech-') && file.endsWith('.md'));
-      
-      for (const file of stackFiles) {
-        const stackName = file.replace('tech-', '').replace('.md', '');
-        const stats = fs.statSync(path.join(docsPath, file));
-        
-        stacks[stackName] = {
-          lastUpdated: stats.mtime.toISOString()
-        };
-      }
-      
-      // Extract relationships (simplified)
-      const techNames = Object.keys(stacks);
-      for (const tech of techNames) {
-        relationships[tech] = techNames.filter(t => t !== tech).slice(0, 3);
-      }
-      
-      return {
-        techMd,
-        relationships,
-        stacks
-      };
-    } else {
-      console.log('No local tech.md file found, generating new content');
-      return await updateTechFiles();
-    }
-  } catch (error) {
-    console.error('Error reading local files:', error);
-  }
-
-  // If all else fails, return default content
-  return {
-    techMd: "# Technology Stack Guide\n\nNo documentation available. Run the tech update command to generate documentation.",
+  const techData: Record<string, any> = {
+    stacks: {},
+    main: '',
     relationships: {},
-    stacks: {}
   };
+
+  // Try to get data from Vercel Blob first
+  try {
+    // Get the list of blobs
+    const blobs = await list();
+    console.log(`Found ${blobs.blobs.length} blobs.`);
+    
+    // Process tech stacks and main file
+    const techStacks = ['next', 'apple', 'cli', 'other'];
+    for (const stack of techStacks) {
+      const blobName = `tech-${stack}.md`;
+      const blob = blobs.blobs.find(b => b.pathname === blobName);
+      
+      if (blob) {
+        try {
+          const url = await getDownloadUrl(blobName);
+          const response = await fetch(url);
+          if (response.ok) {
+            techData[stack] = await response.text();
+          } else {
+            console.error(`Failed to fetch ${blobName} from blob storage: ${response.status}`);
+          }
+        } catch (error) {
+          console.error(`Error fetching ${blobName} from blob:`, error);
+        }
+      }
+    }
+    
+    // Get main tech.md file
+    const mainBlob = blobs.blobs.find(b => b.pathname === 'tech.md');
+    if (mainBlob) {
+      try {
+        const url = await getDownloadUrl('tech.md');
+        const response = await fetch(url);
+        if (response.ok) {
+          techData.main = await response.text();
+        } else {
+          console.error(`Failed to fetch tech.md from blob storage: ${response.status}`);
+        }
+      } catch (error) {
+        console.error('Error retrieving tech.md from blob:', error);
+        // Will fall back to local files
+      }
+    }
+    
+    // Get relationships file
+    const relBlob = blobs.blobs.find(b => b.pathname === 'tech-relationships.json');
+    if (relBlob) {
+      try {
+        const url = await getDownloadUrl('tech-relationships.json');
+        const response = await fetch(url);
+        if (response.ok) {
+          techData.relationships = await response.json();
+        } else {
+          console.error(`Failed to fetch tech-relationships.json from blob storage: ${response.status}`);
+        }
+      } catch (error) {
+        console.error('Error retrieving tech-relationships.json from blob:', error);
+        // Will fall back to local files
+      }
+    }
+    
+    console.log('Successfully retrieved tech data from Vercel Blob');
+    return techData;
+  } catch (blobError) {
+    console.error('Error retrieving from Vercel Blob, falling back to local files:', blobError);
+    
+    // Fallback to local files
+    try {
+      const techStacks = ['next', 'apple', 'cli', 'other'];
+      
+      for (const stack of techStacks) {
+        try {
+          // Try new location first
+          const templateStackPath = path.join(TEMPLATE_DIR, stack, 'tech.md');
+          techData[stack] = await fs.readFile(templateStackPath, 'utf-8');
+          console.log(`Read ${stack} from ${templateStackPath}`);
+        } catch (e) {
+          // Fallback to legacy location
+          try {
+            const legacyPath = path.join(DOCS_DIR, `tech-${stack}.md`);
+            techData[stack] = await fs.readFile(legacyPath, 'utf-8');
+            console.log(`Read ${stack} from legacy path ${legacyPath}`);
+          } catch (legacyError) {
+            console.error(`Could not read ${stack} documentation from any location:`, legacyError);
+            techData[stack] = `# ${stack} Documentation\n\nDocumentation not available.`;
+          }
+        }
+      }
+      
+      // Get main tech file
+      try {
+        // Try new location first
+        const toolsPath = path.join(TOOLS_DIR, 'tech.md');
+        techData.main = await fs.readFile(toolsPath, 'utf-8');
+        console.log(`Read main tech from ${toolsPath}`);
+      } catch (e) {
+        // Fallback to legacy location
+        try {
+          const legacyMainPath = path.join(DOCS_DIR, 'tech.md');
+          techData.main = await fs.readFile(legacyMainPath, 'utf-8');
+          console.log(`Read main tech from legacy path ${legacyMainPath}`);
+        } catch (legacyError) {
+          console.error('Could not read main tech documentation from any location:', legacyError);
+          techData.main = '# Technology Documentation\n\nMain documentation not available.';
+        }
+      }
+      
+      // Try to read relationships file
+      try {
+        const relationshipsPath = path.join(DOCS_DIR, 'tech-relationships.json');
+        const relationshipsContent = await fs.readFile(relationshipsPath, 'utf-8');
+        techData.relationships = JSON.parse(relationshipsContent);
+      } catch (e) {
+        console.error('Could not read relationships file:', e);
+        techData.relationships = {};
+      }
+      
+      console.log('Successfully retrieved tech data from local files');
+    } catch (fileError) {
+      console.error('Error retrieving from local files:', fileError);
+      throw new Error('Failed to retrieve tech data from Vercel Blob and local files');
+    }
+  }
+  
+  return techData;
 } 

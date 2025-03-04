@@ -1,5 +1,6 @@
 import { NextRequest, NextResponse } from 'next/server';
 import axios from 'axios';
+import { getOpenRouterHeaders, getOpenRouterKey } from '@/lib/api-keys';
 
 export const maxDuration = 30; // 30 second timeout for search
 
@@ -14,13 +15,13 @@ function getCurrentMonthName(): string {
 }
 
 /**
- * Process the Perplexity response to extract structured content
+ * Process the search response to extract structured content
  */
-function processPerplexityResponse(responseText: string): { content: string } {
-  console.log(`[SONAR] Processing Perplexity response: ${responseText.substring(0, 150)}...`);
+function processSearchResponse(responseText: string): { content: string } {
+  console.log(`[SONAR] Processing search response: ${responseText.substring(0, 150)}...`);
   
   try {
-    // Check if response is already valid JSON
+    // First try to parse as JSON
     let resources;
     try {
       resources = JSON.parse(responseText);
@@ -82,122 +83,121 @@ function processPerplexityResponse(responseText: string): { content: string } {
       return { content: `## Resources\n\n${urlResources}` };
     }
     
+    // For GPT-4 responses, if we couldn't extract structured content, return the full response
+    if (responseText.trim().length > 0) {
+      // Format as markdown section if not already formatted
+      const formattedContent = responseText.includes('#') ? 
+        responseText : 
+        `## AI Search Results\n\n${responseText}`;
+      
+      console.log('[SONAR] Returning direct text response content');
+      return { content: formattedContent };
+    }
+    
     // If we couldn't parse or extract anything useful
-    console.warn('[SONAR] Could not extract usable resources from response');
+    console.warn('[SONAR] Could not extract usable content from response');
     return { content: `## Resources\n\n*No resources available*` };
     
   } catch (error) {
-    console.error(`[SONAR] Error processing Perplexity response: ${error instanceof Error ? error.message : String(error)}`);
+    console.error(`[SONAR] Error processing search response: ${error instanceof Error ? error.message : String(error)}`);
     return { content: `## Resources\n\n*Error processing resources*` };
   }
 }
 
 /**
- * API route that provides search results using Perplexity Sonar Reasoning
+ * API route that provides search results using GPT-4 through OpenRouter
  */
 export async function POST(request: NextRequest) {
   try {
-    console.log('[SONAR] Received request to Sonar API');
+    const { query } = await request.json();
     
-    // Parse the request body
-    const requestData = await request.json();
-    const { query } = requestData;
-
-    if (!query || typeof query !== 'string') {
-      console.error('[SONAR] Invalid query provided');
+    if (!query) {
       return NextResponse.json(
-        { error: 'Invalid query. Please provide a text query.' },
+        { error: 'No search query provided' }, 
         { status: 400 }
       );
     }
+    
+    console.log(`[SONAR] Received search request: ${query.substring(0, 100)}...`);
 
-    // Get the OpenRouter API key from environment variable
-    const openrouterApiKey = process.env.OPENROUTER_API_KEY;
+    // Get OpenRouter API key
+    const openrouterApiKey = getOpenRouterKey();
     
     if (!openrouterApiKey) {
-      console.error('[SONAR] No OpenRouter API key found in environment variables');
+      console.error('[SONAR] No OpenRouter API key found or invalid format');
       return NextResponse.json(
-        { error: 'OpenRouter API key not configured on the server.' },
+        { error: 'Search API key not configured properly' },
         { status: 500 }
       );
     }
     
-    console.log(`[SONAR] Searching with Sonar Reasoning: "${query.substring(0, 100)}..."`);
+    // Prepare search request
+    const currentYear = getCurrentYear();
+    const currentMonth = getCurrentMonthName();
     
+    // Add temporal context to the search
+    const enhancedQuery = `You are a search assistant that helps find relevant information. 
+Please provide a comprehensive answer to the following query:
+
+${query}
+
+Current date context: ${currentMonth} ${currentYear}
+
+Format your response in markdown with clear sections and include relevant URLs when possible.`;
+    
+    // Call Sonar Reasoning through OpenRouter
     const response = await axios.post(
       'https://openrouter.ai/api/v1/chat/completions',
       {
-        model: 'perplexity/sonar-reasoning',
+        model: 'openai/gpt-4',
         messages: [
-          {
-            role: 'system',
-            content: `You are a research assistant that provides accurate, factual information about technologies, frameworks, libraries, and technical documentation. Focus on finding the most relevant and high-quality resources for the user's query.`
-          },
-          {
-            role: 'user',
-            content: `Research the following technical topic thoroughly and provide detailed information with relevant URLs to resources: ${query}. Focus on official documentation, popular tutorials, and community resources.
-
-Provide the most specific, high-quality resources that directly address the query.
-
-Return your response as a JSON array of objects. Each object should have:
-- "name": The name of the specific resource or subtopic
-- "description": A concise description 
-- "url": A direct URL to the official documentation
-- "type": The type of resource (e.g., "documentation", "tutorial", "guide")
-
-Example format:
-[
-  {
-    "name": "React Documentation",
-    "description": "Official React documentation with guides and API references",
-    "url": "https://react.dev/",
-    "type": "documentation"
-  },
-  {
-    "name": "Next.js Learn",
-    "description": "Interactive Next.js tutorial for beginners",
-    "url": "https://nextjs.org/learn",
-    "type": "tutorial"
-  }
-]`
-          }
+          { role: 'user', content: enhancedQuery }
         ],
-        max_tokens: 2048,
-        temperature: 0.7,
-        response_format: { type: "text" } // Ensure we get text back, not a JSON object
+        temperature: 0.5,
+        stream: false
       },
       {
-        headers: {
-          'Content-Type': 'application/json',
-          'Authorization': `Bearer ${openrouterApiKey}`,
-          'HTTP-Referer': 'https://luke-portfolio.vercel.app',
-          'X-Title': 'Luke App'
-        }
+        headers: getOpenRouterHeaders()
       }
     );
 
-    console.log(`[SONAR] Received response from Perplexity (${response.data.choices[0].message.content.length} chars)`);
-    
-    // Process the response to ensure we return properly formatted content
-    const responseContent = response.data.choices[0].message.content;
-    const processedResponse = processPerplexityResponse(responseContent);
-    
-    // Return the processed response
-    return NextResponse.json(processedResponse);
+    // Check response status
+    if (response.status !== 200) {
+      console.error(`[SONAR] Error from OpenRouter: ${response.status}`);
+      return NextResponse.json(
+        { error: 'Sonar Reasoning API error' },
+        { status: response.status }
+      );
+    }
+
+    // Process the response
+    const responseData = response.data;
+    const content = responseData.choices[0]?.message?.content;
+
+    if (!content) {
+      return NextResponse.json(
+        { error: 'No content in response from search service' },
+        { status: 500 }
+      );
+    }
+
+    // Process and return the search response
+    const processedContent = processSearchResponse(content);
+    return NextResponse.json(processedContent);
   } catch (error: any) {
-    console.error(`[SONAR] Error searching with Sonar Reasoning: ${error instanceof Error ? error.message : String(error)}`);
+    console.error(`[SONAR] Error with search service: ${error instanceof Error ? error.message : String(error)}`);
     
     // Handle specific error cases
     if (error.response?.status === 402) {
       return NextResponse.json(
-        { error: 'Payment required for Perplexity Sonar Reasoning', content: '## Resources\n\n*Payment required for resources*' },
+        { error: 'Payment required for search service', content: '## Resources\n\n*Payment required for resources*' },
         { status: 402 }
       );
     }
     
     return NextResponse.json(
       { 
-        error: `Error searching with Sonar Reasoning: ${error.message}`, 
+        error: `Error with search service: ${error.message}`, 
         content: '## Resources\n\n*Error retrieving resources*' 
       },
       { status: 500 }

@@ -172,7 +172,7 @@ func main() {
 		case "diag", "diagnostics":
 			runSystemDiagnostics()
 		case "docs", "doc":
-			runDocViewer()
+			runTechDocsViewer()
 		case "techdocs", "tech":
 			runTechDocsViewer()
 		case "project", "generate":

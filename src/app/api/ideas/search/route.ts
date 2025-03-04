@@ -40,29 +40,61 @@ export async function POST(request: NextRequest) {
       const { 
         techStack, 
         techContext, 
-        userInput 
+        userInput,
+        enhancementMode = 'generate'
       } = await request.json();
       
       // Get current year for relevant queries
       const currentYear = getCurrentYear();
       const currentMonth = getCurrentMonthName();
       
+      console.log(`[SEARCH] Processing search with mode: ${enhancementMode}, input: ${userInput?.substring(0, 50) || 'none'}`);
+      
       // Create context strings
       const userContext = userInput?.trim() 
         ? `Based on user input: ${userInput}` 
         : '';
       
-      // Create search queries for different aspects of trend research
-      const queries = [
-        `trending viral movements and cultural phenomena in ${currentMonth} ${currentYear} in the western world, including social media trends, celebrity news, entertainment, fashion, and lifestyle trends`,
-        `cutting-edge technologies and trending GitHub repositories with the most stars in ${currentMonth} ${currentYear}, including new frameworks, libraries, and developer tools`,
-        userContext ? `${userContext} trending apps and ideas in ${currentYear}` : `trending business and startup ideas gaining traction in ${currentMonth} ${currentYear}, with specific examples and market analysis`
-      ];
+      // Create search queries based on enhancement mode and user input
+      let queries: string[] = [];
+      
+      switch (enhancementMode) {
+        case 'expand':
+          // For short inputs that need expansion, focus on the specific concept
+          queries = [
+            `${userInput} app concept details, features, and similar successful apps in ${currentMonth} ${currentYear}`,
+            `cutting-edge technologies and frameworks for building ${userInput} apps in ${currentMonth} ${currentYear}`,
+            `market analysis and user demographics for ${userInput} apps and services in ${currentYear}`
+          ];
+          break;
+          
+        case 'refine':
+          // For longer inputs that need refinement, focus on improving the existing concept
+          queries = [
+            `best practices and design patterns for ${userInput.split(' ').slice(0, 3).join(' ')} apps in ${currentMonth} ${currentYear}`,
+            `technical implementation strategies for ${userInput.split(' ').slice(0, 3).join(' ')} applications using modern frameworks`,
+            `market positioning and competitive analysis for ${userInput.split(' ').slice(0, 3).join(' ')} products in ${currentYear}`
+          ];
+          break;
+          
+        case 'generate':
+        default:
+          // For generating from scratch, use broader trend research
+          queries = [
+            `trending viral movements and cultural phenomena in ${currentMonth} ${currentYear} in the western world, including social media trends, celebrity news, entertainment, fashion, and lifestyle trends`,
+            `cutting-edge technologies and trending GitHub repositories with the most stars in ${currentMonth} ${currentYear}, including new frameworks, libraries, and developer tools`,
+            userContext ? `${userContext} trending apps and ideas in ${currentYear}` : `trending business and startup ideas gaining traction in ${currentMonth} ${currentYear}, with specific examples and market analysis`
+          ];
+          break;
+      }
+      
+      console.log(`[SEARCH] Generated ${queries.length} search queries for mode: ${enhancementMode}`);
       
       // Get the OpenRouter API key from environment variable
       const openrouterApiKey = process.env.OPENROUTER_API_KEY;
       
       if (!openrouterApiKey) {
+        console.error('[SEARCH] No OpenRouter API key found in environment variables');
         await writer.write(encoder.encode(JSON.stringify({
           category: 'Error',
           content: 'No OpenRouter API key found in environment variables',
@@ -77,13 +109,23 @@ export async function POST(request: NextRequest) {
         const query = queries[i];
         let categoryName = '';
         
-        // Set category name based on query index
-        if (i === 0) categoryName = 'Cultural & Viral Trends';
-        else if (i === 1) categoryName = 'Technology Trends';
-        else categoryName = 'Startup & Business Trends';
+        // Set category name based on enhancement mode and query index
+        if (enhancementMode === 'expand') {
+          if (i === 0) categoryName = 'Concept Exploration';
+          else if (i === 1) categoryName = 'Technical Implementation';
+          else categoryName = 'Market Analysis';
+        } else if (enhancementMode === 'refine') {
+          if (i === 0) categoryName = 'Design Best Practices';
+          else if (i === 1) categoryName = 'Technical Architecture';
+          else categoryName = 'Market Positioning';
+        } else {
+          if (i === 0) categoryName = 'Cultural & Viral Trends';
+          else if (i === 1) categoryName = 'Technology Trends';
+          else categoryName = 'Startup & Business Trends';
+        }
         
         try {
-          console.log(`Searching with Sonar Reasoning: ${query}`);
+          console.log(`[SEARCH] Searching with Sonar Reasoning: ${query.substring(0, 100)}...`);
           
           const response = await axios.post(
             'https://openrouter.ai/api/v1/chat/completions',
@@ -107,17 +149,19 @@ export async function POST(request: NextRequest) {
                 'Content-Type': 'application/json',
                 'Authorization': `Bearer ${openrouterApiKey}`,
                 'HTTP-Referer': 'https://luke-portfolio.vercel.app',
-                'X-Title': 'Luke Project Generator'
+                'X-Title': 'Luke App'
               }
             }
           );
           
-          console.log('Sonar Reasoning search completed successfully');
+          console.log(`[SEARCH] Sonar Reasoning search completed successfully for "${categoryName}"`);
           
           // Extract links from the response content
           const content = response.data.choices[0].message.content;
           const linkRegex = /https?:\/\/[^\s)"\]]+/g;
           const links = content.match(linkRegex) || [];
+          
+          console.log(`[SEARCH] Extracted ${links.length} links from search results`);
           
           // Stream the result back to the client
           await writer.write(encoder.encode(JSON.stringify({
@@ -127,7 +171,7 @@ export async function POST(request: NextRequest) {
           })));
           
         } catch (error) {
-          console.error(`Error searching with Sonar Reasoning for "${categoryName}":`, error);
+          console.error(`[ERROR] Error searching with Sonar Reasoning for "${categoryName}": ${error instanceof Error ? error.message : 'Unknown error'}`);
           
           // Stream error information
           await writer.write(encoder.encode(JSON.stringify({
@@ -142,7 +186,7 @@ export async function POST(request: NextRequest) {
       await writer.close();
       
     } catch (error) {
-      console.error('Error in search streaming:', error);
+      console.error(`[ERROR] Error in search streaming: ${error instanceof Error ? error.message : 'Unknown error'}`);
       
       try {
         // Stream error information
@@ -153,7 +197,7 @@ export async function POST(request: NextRequest) {
         })));
         await writer.close();
       } catch (writeError) {
-        console.error('Error writing to stream:', writeError);
+        console.error(`[ERROR] Error writing to stream: ${writeError instanceof Error ? writeError.message : 'Unknown error'}`);
       }
     }
   })();

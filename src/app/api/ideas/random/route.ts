@@ -1,6 +1,7 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { projectGenerator } from '@/lib/llm';
 import axios, { AxiosError } from 'axios';
+import { getOpenRouterHeaders, getOpenRouterKey } from '@/lib/api-keys';
 
 export const maxDuration = 60; // Set a 60 second timeout for idea generation
 
@@ -21,12 +22,12 @@ function getCurrentMonthName(): string {
 // Function to perform web search using Perplexity Sonar Reasoning via OpenRouter
 async function searchWithSonarReasoning(query: string): Promise<string> {
   try {
-    // Get OpenRouter API key from environment variable
-    const openrouterApiKey = process.env.OPENROUTER_API_KEY;
+    // Get OpenRouter API key using the utility function
+    const openrouterApiKey = getOpenRouterKey();
     
     if (!openrouterApiKey) {
-      console.error('[ERROR] No OpenRouter API key found in environment variables');
-      throw new Error('No OpenRouter API key found in environment variables');
+      console.error('[ERROR] OpenRouter API key not available');
+      throw new Error('OpenRouter API key not available');
     }
     
     console.log(`[SEARCH] Executing Sonar Reasoning query: "${query.substring(0, 100)}..."`);
@@ -34,12 +35,7 @@ async function searchWithSonarReasoning(query: string): Promise<string> {
     // Use Perplexity via OpenRouter to get search results
     const response = await fetch('https://openrouter.ai/api/v1/chat/completions', {
       method: 'POST',
-      headers: {
-        'Content-Type': 'application/json',
-        'Authorization': `Bearer ${openrouterApiKey}`,
-        'HTTP-Referer': 'https://luke-portfolio.vercel.app',
-        'X-Title': 'Luke App',
-      },
+      headers: getOpenRouterHeaders(),
       body: JSON.stringify({
         model: 'perplexity/sonar-reasoning',
         messages: [
@@ -120,20 +116,15 @@ Make each query specific and information-dense to maximize the quality of search
     console.log("[API] Calling Claude to generate search plan...");
     const response = await fetch('https://openrouter.ai/api/v1/chat/completions', {
       method: 'POST',
-      headers: {
-        'Content-Type': 'application/json',
-        'Authorization': `Bearer ${openrouterApiKey}`,
-        'HTTP-Referer': 'https://luke-portfolio.vercel.app',
-        'X-Title': 'Luke App',
-      },
+      headers: getOpenRouterHeaders(),
       body: JSON.stringify({
         model: 'anthropic/claude-3.7-sonnet',
         messages: [
-          { role: 'user', content: searchPlanPrompt }
+          { role: "user", content: searchPlanPrompt }
         ],
         temperature: 0.7,
-        response_format: { type: "json_object" }
-      }),
+        max_tokens: 1000
+      })
     });
 
     if (!response.ok) {
@@ -236,20 +227,15 @@ Each follow-up query should be highly specific and target a particular aspect th
     console.log("[API] Calling Claude to generate follow-up queries...");
     const response = await fetch('https://openrouter.ai/api/v1/chat/completions', {
       method: 'POST',
-      headers: {
-        'Content-Type': 'application/json',
-        'Authorization': `Bearer ${openrouterApiKey}`,
-        'HTTP-Referer': 'https://luke-portfolio.vercel.app',
-        'X-Title': 'Luke App',
-      },
+      headers: getOpenRouterHeaders(),
       body: JSON.stringify({
         model: 'anthropic/claude-3.7-sonnet',
         messages: [
-          { role: 'user', content: followUpPrompt }
+          { role: "user", content: followUpPrompt }
         ],
         temperature: 0.7,
-        response_format: { type: "json_object" }
-      }),
+        max_tokens: 1000
+      })
     });
 
     if (!response.ok) {
@@ -325,13 +311,17 @@ export async function POST(request: NextRequest) {
   try {
     console.log("[REQUEST] Random idea generation request received");
     
-    // Get user input from request, if any
-    const { prompt } = await request.json().catch(() => ({ prompt: '' }));
+    // Get user input and enhancement mode from request
+    const { prompt, userInput, enhancementMode = 'generate', techStack, techContext } = 
+      await request.json().catch(() => ({ prompt: '', userInput: '', enhancementMode: 'generate' }));
     
-    console.log(`[INFO] Generating random app idea${prompt ? ` based on: "${prompt}"` : ''}`);
+    // Use either prompt or userInput (for backward compatibility)
+    const inputText = prompt || userInput || '';
+    
+    console.log(`[INFO] Enhancing idea with mode: ${enhancementMode}, input length: ${inputText.length}`);
     
     // Generate tailored search queries based on user input
-    const searchQueries = await generateSearchPlan(prompt);
+    const searchQueries = await generateSearchPlan(inputText);
     console.log(`[INFO] Generated ${searchQueries.length} search queries`);
     
     // Perform searches with Sonar Reasoning for each query
@@ -377,7 +367,7 @@ export async function POST(request: NextRequest) {
 
     // Generate follow-up queries based on initial results
     console.log("[INFO] Generating follow-up queries based on initial results...");
-    const followUpQueries = await generateFollowUpQueries(searchResults, prompt);
+    const followUpQueries = await generateFollowUpQueries(searchResults, inputText);
     
     // Run follow-up queries to get deeper information
     console.log("[INFO] Executing follow-up queries for deeper context...");
@@ -409,21 +399,38 @@ ${followUpContext}
     
     console.log(`[INFO] Created structured context (${trendContext.length} chars)`);
     
+    // Create a system prompt based on the enhancement mode
+    let systemPrompt = '';
+    
+    switch (enhancementMode) {
+      case 'expand':
+        systemPrompt = `You are a visionary app concept creator who takes seed ideas and expands them into fully-realized app concepts. You maintain the core essence of the original idea while adding depth, features, and market context.`;
+        break;
+      case 'refine':
+        systemPrompt = `You are a product refinement specialist who takes existing app concepts and enhances them with market insights, technical feasibility, and strategic positioning. You preserve the user's core vision while making it more compelling and viable.`;
+        break;
+      case 'generate':
+      default:
+        systemPrompt = `You are a visionary app concept creator who deeply understands current trends, market dynamics, and viral potential as of ${getCurrentMonthName()} ${getCurrentYear()}. Your task is to craft a unique, viral-worthy app concept that combines current cultural trends with technological feasibility.`;
+        break;
+    }
+    
     // LLM prompt template for generating app ideas with references
     const promptTemplate = `
-You are a visionary app concept creator who deeply understands current trends, market dynamics, and viral potential as of ${getCurrentMonthName()} ${getCurrentYear()}. Your task is to craft a unique, viral-worthy app concept that combines current cultural trends with technological feasibility.
+${systemPrompt}
 
 ${trendContext ? '## Comprehensive Trend Analysis\nI\'ve conducted extensive research on current trends. Please carefully analyze this research to inform your idea:' : ''}
 ${trendContext || `Use your knowledge of current tech trends and viral phenomena as of ${getCurrentMonthName()} ${getCurrentYear()}.`}
 
-${prompt ? `\n## User Interests and Requirements\n${prompt}\n` : ''}
+${inputText ? `\n## User Input\n${inputText}\n` : ''}
+${techContext ? `\n## Technical Context\n${techContext}\n` : ''}
 
 ## Relevant Market Resources
 ${filteredLinks.length > 0 ? filteredLinks.map(link => `- ${link}`).join('\n') : ''}
 
-Based on the comprehensive research provided above, develop a compelling, differentiated app concept that satisfies these criteria:
+Based on the ${inputText ? 'user input and ' : ''}comprehensive research provided above, develop a compelling, differentiated app concept that satisfies these criteria:
 
-1. Addresses a genuine user need identified in the trend analysis
+1. ${inputText ? 'Builds upon the core idea provided by the user' : 'Addresses a genuine user need identified in the trend analysis'}
 2. Leverages a specific technological advantage or innovation
 3. Has a clear path to user acquisition and potential virality
 4. Demonstrates market timing awareness (why now is the perfect time for this)
@@ -475,20 +482,15 @@ Make your concept feel innovative yet achievable, culturally relevant to ${getCu
     console.log("[API] Calling Claude to generate app idea...");
     const response = await fetch('https://openrouter.ai/api/v1/chat/completions', {
       method: 'POST',
-      headers: {
-        'Content-Type': 'application/json',
-        'Authorization': `Bearer ${openrouterApiKey}`,
-        'HTTP-Referer': 'https://luke-portfolio.vercel.app',
-        'X-Title': 'Luke App',
-      },
+      headers: getOpenRouterHeaders(),
       body: JSON.stringify({
         model: 'anthropic/claude-3.7-sonnet',
         messages: [
-          { role: 'user', content: promptTemplate }
+          { role: "user", content: promptTemplate }
         ],
-        temperature: 0.85,
-        max_tokens: 2000,
-      }),
+        temperature: 0.7,
+        max_tokens: 3000
+      })
     });
 
     if (!response.ok) {

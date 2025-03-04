@@ -207,7 +207,7 @@ export const ProjectPicker = ({
               </motion.button>
             )}
             <h3 className="font-mono text-lg">
-              {viewMode === 'main' ? 'select project' : 'community-generated'}
+              {viewMode === 'main' ? 'select project' : 'ai-generated'}
             </h3>
           </div>
           
@@ -318,7 +318,7 @@ export const ProjectPicker = ({
                           <div className="flex-1">
                             <div className="font-mono text-base lowercase">generated</div>
                             <div className="font-mono text-sm text-[rgb(var(--text-secondary))] line-clamp-1">
-                              community-generated projects
+                              ai-generated projects
                             </div>
                           </div>
                           <div className="text-base opacity-60 font-mono">

@@ -1,0 +1,2078 @@
+diff --git a/cli/api/client.go b/cli/api/client.go
+index f4f2d21..e9d2e85 100644
+--- a/cli/api/client.go
++++ b/cli/api/client.go
+@@ -256,4 +256,39 @@ func (c *APIClient) GetProjectDocuments(id string) (map[string]string, error) {
+ 	}
+ 
+ 	return docsResp.Documents, nil
++}
++
++// GetAvailableModels fetches the list of available models from the API
++func (c *APIClient) GetAvailableModels() ([]string, error) {
++	httpReq, err := http.NewRequest("GET", c.baseURL+"/api/llm/models", nil)
++	if err != nil {
++		return nil, err
++	}
++
++	httpReq.Header.Set("Authorization", "Bearer "+c.apiKey)
++
++	resp, err := c.httpClient.Do(httpReq)
++	if err != nil {
++		return nil, err
++	}
++	defer resp.Body.Close()
++
++	body, err := ioutil.ReadAll(resp.Body)
++	if err != nil {
++		return nil, err
++	}
++
++	if resp.StatusCode != http.StatusOK {
++		return nil, fmt.Errorf("API error: %s (status %d)", body, resp.StatusCode)
++	}
++
++	var modelsResponse struct {
++		Models []string `json:"models"`
++	}
++
++	if err := json.Unmarshal(body, &modelsResponse); err != nil {
++		return nil, err
++	}
++
++	return modelsResponse.Models, nil
+ } 
+\ No newline at end of file
+diff --git a/cli/chat.go b/cli/chat.go
+index 9acce9c..8f25697 100644
+--- a/cli/chat.go
++++ b/cli/chat.go
+@@ -5,7 +5,6 @@ import (
+ 	"encoding/json"
+ 	"fmt"
+ 	"io/ioutil"
+-	"net/http"
+ 	"os"
+ 	"path/filepath"
+ 	"sort"
+@@ -22,21 +21,19 @@ import (
+ 	"luke/cli/api"
+ )
+ 
++// Global program reference for sending messages across goroutines
++var program *tea.Program
++
+ // Available models
+ var availableModels = []string{
+ 	"anthropic/claude-3.7-sonnet",
++	"anthropic/claude-3.5-sonnet",  
+ 	"anthropic/claude-3-opus",
+-	"anthropic/claude-3-sonnet",
+-	"anthropic/claude-3-haiku",
+-	"anthropic/claude-3.5-sonnet",
+-	"google/gemini-1.5-pro",
+-	"google/gemini-1.5-flash",
+-	"openai/gpt-4o",
+ 	"openai/gpt-4-turbo",
++	"openai/gpt-4o",
+ 	"openai/gpt-3.5-turbo",
+ 	"meta/llama-3-70b-instruct",
+-	"mistral/mistral-large",
+-	"mistral/mistral-medium",
++	"google/gemini-1.5-pro",
+ }
+ 
+ // Common model providers
+@@ -113,117 +110,76 @@ type chatModel struct {
+ 
+ // Initialize the chat model
+ func initialChatModel() chatModel {
++	// Create a text area with a placeholder
+ 	ta := textarea.New()
+-	ta.Placeholder = "Type your message here..."
++	ta.Placeholder = "Type your message here... (press Ctrl+S to set API key, Ctrl+P to see models, Ctrl+Enter to submit)"
+ 	ta.Focus()
+ 	ta.CharLimit = 4000
++	ta.SetWidth(120)
+ 	ta.SetHeight(3)
+-	ta.SetWidth(100)
+-	ta.ShowLineNumbers = false
+-	ta.KeyMap.InsertNewline.SetEnabled(true)
+ 
+-	// Create viewport for chat history with improved styles
+-	vp := viewport.New(100, 30)
++	// Create a viewport for displaying chat history
++	vp := viewport.New(120, 20)
+ 	vp.SetContent("")
+ 
+-	// Spinner for loading state with improved style
++	// Create a spinner for loading state
+ 	s := spinner.New()
+ 	s.Spinner = spinner.Dot
+-	s.Style = lipgloss.NewStyle().Foreground(lipgloss.Color("#9A348E"))
+-
+-	// Read API key from environment or config file
+-	apiKey := os.Getenv("OPENROUTER_API_KEY")
+-	if apiKey == "" {
+-		// Try to read from config file
+-		homeDir, err := os.UserHomeDir()
+-		if err == nil {
+-			configDir := filepath.Join(homeDir, ".luke")
+-			configFile := filepath.Join(configDir, "config.json")
+-			if _, err := os.Stat(configFile); err == nil {
+-				data, err := ioutil.ReadFile(configFile)
+-				if err == nil {
+-					var config map[string]string
+-					if err := json.Unmarshal(data, &config); err == nil {
+-						apiKey = config["openrouter_api_key"]
+-					}
+-				}
+-			}
+-		}
+-	}
+-
+-	// Create styles with improved colors and spacing
+-	responseStyle := lipgloss.NewStyle().
+-		Foreground(lipgloss.Color("#83AAFF")).
+-		Bold(false).
+-		Italic(false).
+-		MarginTop(1).
+-		MarginBottom(1)
+-
+-	userStyle := lipgloss.NewStyle().
+-		Foreground(lipgloss.Color("#FF83AA")).
+-		Bold(true).
+-		MarginTop(1).
+-		MarginBottom(0)
+-
+-	systemStyle := lipgloss.NewStyle().
+-		Foreground(lipgloss.Color("#CCCCCC")).
+-		Italic(true).
+-		MarginTop(1).
+-		MarginBottom(1)
+-
+-	helpStyle := lipgloss.NewStyle().
+-		Foreground(lipgloss.Color("#888888")).
+-		Italic(true).
+-		MarginTop(1).
+-		MarginBottom(1)
+-
+-	errorStyle := lipgloss.NewStyle().
+-		Foreground(lipgloss.Color("#FF5555")).
+-		Bold(true).
+-		MarginTop(1).
+-		MarginBottom(1)
+-
+-	modelStyle := lipgloss.NewStyle().
+-		Foreground(lipgloss.Color("#55AAFF")).
+-		Bold(true).
+-		MarginBottom(1)
+-
+-	tokensStyle := lipgloss.NewStyle().
+-		Foreground(lipgloss.Color("#888888")).
+-		Italic(true).
+-		MarginTop(1)
+-		
+-	// Initial system message for context
+-	initialMessages := []Message{
+-		{
++	s.Style = lipgloss.NewStyle().Foreground(lipgloss.Color("205"))
++
++	// Styles for different message types
++	responseStyle := lipgloss.NewStyle().Foreground(lipgloss.Color("86")).Margin(1, 0)
++	userStyle := lipgloss.NewStyle().Foreground(lipgloss.Color("255")).Margin(0, 0)
++	systemStyle := lipgloss.NewStyle().Foreground(lipgloss.Color("241")).Margin(0, 0)
++	helpStyle := lipgloss.NewStyle().Foreground(lipgloss.Color("241")).Margin(0, 0)
++	errorStyle := lipgloss.NewStyle().Foreground(lipgloss.Color("196")).Margin(0, 0)
++	modelStyle := lipgloss.NewStyle().Foreground(lipgloss.Color("205")).Margin(0, 0)
++	tokensStyle := lipgloss.NewStyle().Foreground(lipgloss.Color("241")).Margin(0, 0)
++
++	// Get models
++	models := availableModels
++
++	// Read API key from environment
++	apiKey := os.Getenv("LUKE_API_KEY")
++
++	// Default to Claude 3.7 Sonnet
++	selectedModel := "anthropic/claude-3.7-sonnet"
++
++	// Start with a system message
++	var messages []Message
++	if len(messages) == 0 {
++		messages = append(messages, Message{
+ 			Role:    "system",
+-			Content: "You are Claude, an AI assistant created by Anthropic to be helpful, harmless, and honest. " +
+-				"Respond to user queries accurately and concisely. You are being used in a terminal interface, " +
+-				"so format your responses appropriately using Markdown.",
+-		},
++			Content: "You are Claude, an AI assistant created by Anthropic. You are helpful, harmless, and honest.",
++		})
+ 	}
+ 
+ 	return chatModel{
+-		textarea:        ta,
+-		viewport:        vp,
+-		spinner:         s,
+-		apiKey:          apiKey,
+-		selectedModel:   "anthropic/claude-3.7-sonnet", // Set Claude 3.7 Sonnet as default
+-		availableModels: availableModels,
+-		filteredModels:  availableModels, // Initialize with all models
+-		selectedModelIndex: 0, // Initialize the selected index
+-		viewportOffset:  0, // Initialize viewport offset
+-		messages:        initialMessages,
+-		responseStyle:   responseStyle,
+-		userStyle:       userStyle,
+-		systemStyle:     systemStyle,
+-		helpStyle:       helpStyle,
+-		errorStyle:      errorStyle,
+-		modelStyle:      modelStyle,
+-		tokensStyle:     tokensStyle,
+-		searchMode:      false,
+-		searchQuery:     "",
+-		lastRefresh:     time.Now(), // Initialize lastRefresh
++		messages:         messages,
++		textarea:         ta,
++		viewport:         vp,
++		spinner:          s,
++		apiKey:           apiKey,
++		selectedModel:    selectedModel,
++		availableModels:  models,
++		waiting:          false,
++		showModelPicker:  false,
++		streaming:        false,
++		streamContent:    "",
++		responseStyle:    responseStyle,
++		userStyle:        userStyle,
++		systemStyle:      systemStyle,
++		helpStyle:        helpStyle,
++		errorStyle:       errorStyle,
++		modelStyle:       modelStyle,
++		tokensStyle:      tokensStyle,
++		err:              nil,
++		selectedModelIndex: 0,
++		searchMode:        false,
++		searchQuery:       "",
++		filteredModels:    models,
++		viewportOffset:    0,
++		lastRefresh:       time.Now(),
+ 	}
+ }
+ 
+@@ -244,37 +200,45 @@ func saveApiKey(key string) error {
+ 	}
+ 
+ 	configDir := filepath.Join(homeDir, ".luke")
+-	if err := os.MkdirAll(configDir, 0700); err != nil {
+-		return err
+-	}
+-
+ 	configFile := filepath.Join(configDir, "config.json")
+ 
+-	// Read existing config if it exists
+-	var config map[string]string
++	// Ensure the directory exists
++	if _, err := os.Stat(configDir); os.IsNotExist(err) {
++		if err := os.MkdirAll(configDir, 0700); err != nil {
++			return err
++		}
++	}
++
++	// Read existing config or create a new one
++	config := make(map[string]string)
+ 	if _, err := os.Stat(configFile); err == nil {
+ 		data, err := ioutil.ReadFile(configFile)
+ 		if err != nil {
+-			config = make(map[string]string)
+-		} else {
+-			if err := json.Unmarshal(data, &config); err != nil {
+-				config = make(map[string]string)
+-			}
++			return err
++		}
++		
++		if err := json.Unmarshal(data, &config); err != nil {
++			return err
+ 		}
+-	} else {
+-		config = make(map[string]string)
+ 	}
+-
+-	// Update the key
+-	config["openrouter_api_key"] = key
+-
+-	// Write back to file
++	
++	// Update the API key
++	config["luke_api_key"] = key
++	
++	// Save the config
+ 	data, err := json.MarshalIndent(config, "", "  ")
+ 	if err != nil {
+ 		return err
+ 	}
+-
+-	return ioutil.WriteFile(configFile, data, 0600)
++	
++	if err := ioutil.WriteFile(configFile, data, 0600); err != nil {
++		return err
++	}
++	
++	// Also update the environment variable
++	os.Setenv("LUKE_API_KEY", key)
++	
++	return nil
+ }
+ 
+ // Fix model name format by cleaning up any special suffixes
+@@ -306,31 +270,40 @@ type streamRefreshTickMsg time.Time
+ // Tick message type for handling timeouts
+ type timeoutCheckerTickMsg time.Time
+ 
+-// Submit message to OpenRouter API with streaming
++// Submit message to LLM API through the web app API adapter
+ func submitMessage(apiKey string, model string, messages []Message) tea.Cmd {
+ 	return func() tea.Msg {
+-		// Check if we should use the unified API
+-		useUnifiedAPI := getConfigValue("use_unified_api") == "true"
++		// Get API configuration
++		useUnifiedAPI := getConfigValue("use_unified_api")
++		if useUnifiedAPI == "" {
++			// Default to using the unified API if not explicitly set
++			useUnifiedAPI = "true"
++		}
++		
+ 		apiEndpoint := getConfigValue("api_endpoint")
++		if apiEndpoint == "" {
++			// Default API endpoint if not configured
++			apiEndpoint = "http://localhost:3000"
++		}
+ 		
+-		if useUnifiedAPI && apiEndpoint != "" {
+-			// Use the API client to submit the message
++		if useUnifiedAPI == "true" {
++			// Use the API adapter to communicate with the web app
+ 			client := api.NewAPIClient(apiEndpoint, apiKey)
+ 			
+-			// Convert chat messages to prompt
++			// Convert chat messages to the format expected by the API
+ 			prompt := ""
+ 			for _, msg := range messages {
+ 				prompt += msg.Role + ": " + msg.Content + "\n\n"
+ 			}
+ 			
+-			// Create request
++			// Create request with model information
+ 			req := api.LLMRequest{
+ 				Prompt:      prompt,
+ 				Model:       model,
+ 				Temperature: 0.7,
+ 			}
+ 			
+-			// Send request to API
++			// Send request to the API adapter
+ 			response, err := client.GenerateLLMResponse(req)
+ 			if err != nil {
+ 				return fmt.Errorf("API error: %v", err)
+@@ -339,62 +312,54 @@ func submitMessage(apiKey string, model string, messages []Message) tea.Cmd {
+ 			// Return the response
+ 			return ResponseReceived{Content: response.Content}
+ 		} else {
+-			// Use the existing direct OpenRouter implementation
+-			// (keep existing code here)
+-			return ResponseReceived{Content: "Error: Implementation missing"}
++			// Direct implementation fallback - this is only used when explicitly configured
++			// And should only be used for debugging purposes
++			
++			return fmt.Errorf("Direct API implementation has been disabled. Please update your config to use the Luke API.\n\nRun:\n  luke setup-api\n\nto configure the API endpoint.")
+ 		}
+ 	}
+ }
+ 
+-// List available models from OpenRouter
++// List available models from the API
+ func fetchAvailableModels(apiKey string) tea.Cmd {
+ 	return func() tea.Msg {
+ 		if apiKey == "" {
+ 			return availableModels
+ 		}
+ 
+-		req, err := http.NewRequest("GET", "https://openrouter.ai/api/v1/models", nil)
+-		if err != nil {
+-			return availableModels
+-		}
+-
+-		req.Header.Set("Authorization", "Bearer "+apiKey)
+-		req.Header.Set("HTTP-Referer", "https://github.com/yourusername/luke-cli")
+-		req.Header.Set("X-Title", "Luke CLI Chat")
+-
+-		client := &http.Client{Timeout: 10 * time.Second}
+-		resp, err := client.Do(req)
+-		if err != nil {
+-			return availableModels
+-		}
+-		defer resp.Body.Close()
+-
+-		if resp.StatusCode != http.StatusOK {
+-			return availableModels
+-		}
+-
+-		var modelsResponse struct {
+-			Data []struct {
+-				ID          string `json:"id"`
+-				Name        string `json:"name"`
+-				Description string `json:"description"`
+-			} `json:"data"`
+-		}
+-
+-		if err := json.NewDecoder(resp.Body).Decode(&modelsResponse); err != nil {
+-			return availableModels
++		// Check if we should use the unified API
++		useUnifiedAPI := getConfigValue("use_unified_api")
++		if useUnifiedAPI == "" {
++			// Default to using the unified API if not explicitly set
++			useUnifiedAPI = "true"
+ 		}
+-
+-		models := []string{}
+-		for _, model := range modelsResponse.Data {
+-			models = append(models, model.ID)
++		
++		apiEndpoint := getConfigValue("api_endpoint")
++		if apiEndpoint == "" {
++			// Default API endpoint if not configured
++			apiEndpoint = "http://localhost:3000"
+ 		}
+-
+-		if len(models) == 0 {
++		
++		if useUnifiedAPI == "true" {
++			// Use the API client to get available models
++			client := api.NewAPIClient(apiEndpoint, apiKey)
++			
++			// Use the API client to get models
++			models, err := client.GetAvailableModels()
++			if err != nil {
++				return availableModels
++			}
++			
++			// If no models returned, use defaults
++			if len(models) == 0 {
++				return availableModels
++			}
++			
++			return models
++		} else {
++			// Direct implementation fallback - just return our defaults
+ 			return availableModels
+ 		}
+-
+-		return models
+ 	}
+ }
+ 
+@@ -880,7 +845,7 @@ func (m chatModel) Update(msg tea.Msg) (tea.Model, tea.Cmd) {
+ 			case "ctrl+s": // Enter API key
+ 				if !m.waiting {
+ 					// Prompt for API key
+-					fmt.Print("Enter your OpenRouter API key: ")
++					fmt.Print("Enter your Luke API key: ")
+ 					scanner := bufio.NewScanner(os.Stdin)
+ 					scanner.Scan()
+ 					apiKey := scanner.Text()
+@@ -895,7 +860,7 @@ func (m chatModel) Update(msg tea.Msg) (tea.Model, tea.Cmd) {
+ 						}
+ 						
+ 						// Set the key as environment variable for current session
+-						os.Setenv("OPENROUTER_API_KEY", apiKey)
++						os.Setenv("LUKE_API_KEY", apiKey)
+ 					}
+ 					
+ 					// Refresh screen
+@@ -924,7 +889,7 @@ func (m chatModel) Update(msg tea.Msg) (tea.Model, tea.Cmd) {
+ 					}
+ 					
+ 					// Set the key as environment variable for current session
+-					os.Setenv("OPENROUTER_API_KEY", apiKey)
++					os.Setenv("LUKE_API_KEY", apiKey)
+ 					
+ 					// Clear textarea
+ 					m.textarea.Reset()
+@@ -1416,10 +1381,15 @@ func (m chatModel) View() string {
+ 	)
+ }
+ 
+-// Run the chat interface
++// This is a reference to the main bubbletea program for streaming updates
++func setProgramReference(p *tea.Program) {
++	program = p
++}
++
++// runChatInterface starts the chat interface
+ func runChatInterface() {
+ 	// Check if API key is set
+-	apiKey := os.Getenv("OPENROUTER_API_KEY")
++	apiKey := os.Getenv("LUKE_API_KEY")
+ 	if apiKey == "" {
+ 		// Try to read from config file
+ 		homeDir, err := os.UserHomeDir()
+@@ -1435,7 +1405,7 @@ func runChatInterface() {
+ 				if err == nil {
+ 					var config map[string]string
+ 					if err := json.Unmarshal(data, &config); err == nil {
+-						apiKey = config["openrouter_api_key"]
++						apiKey = config["luke_api_key"]
+ 					}
+ 				}
+ 			}
+@@ -1443,9 +1413,9 @@ func runChatInterface() {
+ 		
+ 		// If still no API key, prompt for it
+ 		if apiKey == "" {
+-			fmt.Println("OpenRouter API key is required for chat functionality.")
+-			fmt.Println("Get your free API key at: https://openrouter.ai/")
+-			fmt.Print("Enter your OpenRouter API key: ")
++			fmt.Println("Luke API key is required for chat functionality.")
++			fmt.Println("This key connects to your local Luke API, which handles LLM connections.")
++			fmt.Print("Enter your Luke API key: ")
+ 			
+ 			// Read API key from stdin
+ 			reader := bufio.NewReader(os.Stdin)
+@@ -1462,7 +1432,7 @@ func runChatInterface() {
+ 					// Save API key
+ 					if configFile != "" {
+ 						config := map[string]string{
+-							"openrouter_api_key": apiKey,
++							"luke_api_key": apiKey,
+ 						}
+ 						
+ 						data, err := json.MarshalIndent(config, "", "  ")
+@@ -1476,9 +1446,9 @@ func runChatInterface() {
+ 						}
+ 					}
+ 				}
+-				
++
+ 				// Set environment variable for current session
+-				os.Setenv("OPENROUTER_API_KEY", apiKey)
++				os.Setenv("LUKE_API_KEY", apiKey)
+ 			} else {
+ 				fmt.Println("⚠️ No API key provided. The chat will have limited functionality.")
+ 				fmt.Println("You can set your API key later using Ctrl+S during chat or with the /key command.")
+@@ -1492,8 +1462,9 @@ func runChatInterface() {
+ 	
+ 	// Start the chat interface
+ 	p := tea.NewProgram(initialChatModel(), tea.WithAltScreen())
++	setProgramReference(p) // Set the program reference for streaming
+ 	if _, err := p.Run(); err != nil {
+-		fmt.Printf("Error running chat interface: %v", err)
++		fmt.Printf("Error running chat interface: %v\n", err)
+ 		os.Exit(1)
+ 	}
+ }
+diff --git a/cli/config.go b/cli/config.go
+index 0b8549b..22bb5b2 100644
+--- a/cli/config.go
++++ b/cli/config.go
+@@ -5,9 +5,11 @@ import (
+ 	"encoding/json"
+ 	"fmt"
+ 	"io/ioutil"
++	"net/url"
+ 	"os"
+ 	"path/filepath"
+ 	"strings"
++	"luke/cli/api"
+ 
+ 	"github.com/charmbracelet/bubbles/list"
+ 	tea "github.com/charmbracelet/bubbletea"
+@@ -312,47 +314,117 @@ func isUseUnifiedAPIEnabled() bool {
+ 	return getConfigValue("use_unified_api") == "true"
+ }
+ 
+-// Add configuration setup wizard
++// Configure the unified API settings
+ func setupUnifiedAPIConfig() {
+-	fmt.Println("📡 Unified API Configuration")
+-	fmt.Println("This will connect your CLI to the web application for enhanced functionality.")
++	fmt.Println("=== Luke API Setup ===")
++	fmt.Println("This will configure your Luke CLI to connect to your Luke API instance.")
++	fmt.Println()
+ 	
++	// Get current configuration
++	apiEndpoint := getConfigValue("api_endpoint")
++	if apiEndpoint == "" {
++		apiEndpoint = "http://localhost:3000"
++	}
++	
++	// Prompt for API endpoint
++	fmt.Printf("Enter API endpoint [%s]: ", apiEndpoint)
+ 	reader := bufio.NewReader(os.Stdin)
++	input, _ := reader.ReadString('\n')
++	input = strings.TrimSpace(input)
++	
++	if input != "" {
++		apiEndpoint = input
++	}
++	
++	// Check if the endpoint is valid
++	apiEndpoint = strings.TrimSuffix(apiEndpoint, "/")
++	
++	// Validate the endpoint
++	_, err := url.Parse(apiEndpoint)
++	if err != nil {
++		fmt.Printf("❌ Invalid API endpoint: %v\n", err)
++		return
++	}
+ 	
+-	// Get API endpoint
+-	fmt.Print("Enter the API endpoint URL (e.g., https://luke-app.vercel.app): ")
+-	endpoint, _ := reader.ReadString('\n')
+-	endpoint = strings.TrimSpace(endpoint)
++	// Save the configuration
++	err = setConfigValue("api_endpoint", apiEndpoint)
++	if err != nil {
++		fmt.Printf("❌ Failed to save API endpoint: %v\n", err)
++		return
++	}
+ 	
+-	if endpoint != "" {
+-		setAPIEndpoint(endpoint)
+-		fmt.Println("✅ API endpoint saved.")
++	// Force the use of unified API
++	err = setConfigValue("use_unified_api", "true")
++	if err != nil {
++		fmt.Printf("❌ Failed to save API configuration: %v\n", err)
++		return
+ 	}
+ 	
+-	// Get API key
+-	fmt.Print("Enter your API key: ")
+-	apiKey, _ := reader.ReadString('\n')
+-	apiKey = strings.TrimSpace(apiKey)
++	// Get current API key
++	apiKey := os.Getenv("LUKE_API_KEY")
++	if apiKey == "" {
++		// Try to read from config
++		apiKey = getConfigValue("luke_api_key")
++	}
+ 	
+-	if apiKey != "" {
+-		// Save API key
+-		if err := saveApiKey(apiKey); err != nil {
+-			fmt.Printf("Failed to save API key: %v\n", err)
++	if apiKey == "" {
++		// Prompt for API key
++		fmt.Print("Enter your Luke API key: ")
++		apiKey, _ = reader.ReadString('\n')
++		apiKey = strings.TrimSpace(apiKey)
++		
++		if apiKey != "" {
++			err = setConfigValue("luke_api_key", apiKey)
++			if err != nil {
++				fmt.Printf("❌ Failed to save API key: %v\n", err)
++				return
++			}
++			
++			// Set environment variable for current session
++			os.Setenv("LUKE_API_KEY", apiKey)
+ 		} else {
+-			fmt.Println("✅ API key saved successfully!")
++			fmt.Println("⚠️ No API key provided.")
+ 		}
+ 	}
+ 	
+-	// Enable unified API
+-	fmt.Print("Enable unified API mode? (y/n): ")
+-	enableInput, _ := reader.ReadString('\n')
+-	enableInput = strings.TrimSpace(strings.ToLower(enableInput))
++	// Test the connection
++	fmt.Println("Testing connection to API...")
++	
++	client := api.NewAPIClient(apiEndpoint, apiKey)
+ 	
+-	if enableInput == "y" || enableInput == "yes" {
+-		setUseUnifiedAPI(true)
+-		fmt.Println("✅ Unified API mode enabled!")
++	// Try to get available models as a test
++	models, err := client.GetAvailableModels()
++	if err != nil {
++		fmt.Printf("❌ Failed to connect to API: %v\n", err)
++		fmt.Println("  Check your API endpoint and API key, then try again.")
++		fmt.Println("  Proceeding with default configuration.")
+ 	} else {
+-		setUseUnifiedAPI(false)
+-		fmt.Println("ℹ️ Unified API mode disabled. The CLI will use direct API calls.")
++		fmt.Println("✅ Successfully connected to API!")
++		if len(models) > 0 {
++			fmt.Println("📋 Available models:")
++			for _, model := range models {
++				fmt.Printf("  • %s\n", model)
++			}
++		}
++	}
++	
++	fmt.Println()
++	fmt.Println("API configuration complete!")
++	fmt.Printf("• Endpoint: %s\n", apiEndpoint)
++	fmt.Printf("• API key: %s\n", maskAPIKey(apiKey))
++	fmt.Println()
++	fmt.Println("You can now use the Luke CLI with your API!")
++}
++
++// Helper to mask API key for display
++func maskAPIKey(key string) string {
++	if key == "" {
++		return "not set"
+ 	}
++	
++	if len(key) <= 8 {
++		return "***" + key[len(key)-3:]
++	}
++	
++	return key[0:4] + "..." + key[len(key)-4:]
+ } 
+\ No newline at end of file
+diff --git a/cli/go.mod b/cli/go.mod
+index 72b9817..41a916b 100644
+--- a/cli/go.mod
++++ b/cli/go.mod
+@@ -7,7 +7,7 @@ require (
+ 	github.com/charmbracelet/bubbletea v1.3.4
+ 	github.com/charmbracelet/glamour v0.8.0
+ 	github.com/charmbracelet/lipgloss v1.0.0
+-	github.com/muesli/reflow v0.3.0
++	github.com/dustin/go-humanize v1.0.1
+ )
+ 
+ require (
+@@ -27,6 +27,7 @@ require (
+ 	github.com/microcosm-cc/bluemonday v1.0.27 // indirect
+ 	github.com/muesli/ansi v0.0.0-20230316100256-276c6243b2f6 // indirect
+ 	github.com/muesli/cancelreader v0.2.2 // indirect
++	github.com/muesli/reflow v0.3.0 // indirect
+ 	github.com/muesli/termenv v0.16.0 // indirect
+ 	github.com/rivo/uniseg v0.4.7 // indirect
+ 	github.com/sahilm/fuzzy v0.1.1 // indirect
+diff --git a/cli/go.sum b/cli/go.sum
+index 94e4a39..6379129 100644
+--- a/cli/go.sum
++++ b/cli/go.sum
+@@ -30,6 +30,8 @@ github.com/charmbracelet/x/term v0.2.1 h1:AQeHeLZ1OqSXhrAWpYUtZyX1T3zVxfpZuEQMIQ
+ github.com/charmbracelet/x/term v0.2.1/go.mod h1:oQ4enTYFV7QN4m0i9mzHrViD7TQKvNEEkHUMCmsxdUg=
+ github.com/dlclark/regexp2 v1.11.5 h1:Q/sSnsKerHeCkc/jSTNq1oCm7KiVgUMZRDUoRu0JQZQ=
+ github.com/dlclark/regexp2 v1.11.5/go.mod h1:DHkYz0B9wPfa6wondMfaivmHpzrQ3v9q8cnmRbL6yW8=
++github.com/dustin/go-humanize v1.0.1 h1:GzkhY7T5VNhEkwH0PVJgjz+fX1rhBrR7pRT3mDkpeCY=
++github.com/dustin/go-humanize v1.0.1/go.mod h1:Mu1zIs6XwVuF/gI1OepvI0qD18qycQx+mFykh5fBlto=
+ github.com/erikgeiser/coninput v0.0.0-20211004153227-1c3628e74d0f h1:Y/CXytFA4m6baUTXGLOoWe4PQhGxaX0KpnayAqC48p4=
+ github.com/erikgeiser/coninput v0.0.0-20211004153227-1c3628e74d0f/go.mod h1:vw97MGsxSvLiUE2X8qFplwetxpGLQrlU1Q9AUEIzCaM=
+ github.com/gorilla/css v1.0.1 h1:ntNaBIghp6JmvWnxbZKANoLyuXTPZ4cAMlo6RyhlbO8=
+diff --git a/cli/luke b/cli/luke
+index 2d2c1c1..6aa716d 100755
+Binary files a/cli/luke and b/cli/luke differ
+diff --git a/cli/main.go b/cli/main.go
+index 45ef775..15f03b8 100644
+--- a/cli/main.go
++++ b/cli/main.go
+@@ -172,7 +172,7 @@ func main() {
+ 		case "diag", "diagnostics":
+ 			runSystemDiagnostics()
+ 		case "docs", "doc":
+-			runDocViewer()
++			runTechDocsViewer()
+ 		case "techdocs", "tech":
+ 			runTechDocsViewer()
+ 		case "project", "generate":
+diff --git a/cli/techdocs.go b/cli/techdocs.go
+index d96f3a8..bf085f5 100644
+--- a/cli/techdocs.go
++++ b/cli/techdocs.go
+@@ -1,18 +1,13 @@
+ package main
+ 
+ import (
+-	"bufio"
+-	"bytes"
+ 	"encoding/json"
+ 	"fmt"
+ 	"io"
+ 	"io/ioutil"
+-	"math/rand"
+-	"mime/multipart"
+ 	"net/http"
+ 	"os"
+ 	"path/filepath"
+-	"regexp"
+ 	"sort"
+ 	"strings"
+ 	"time"
+@@ -21,9 +16,61 @@ import (
+ 	tea "github.com/charmbracelet/bubbletea"
+ 	"github.com/charmbracelet/glamour"
+ 	"github.com/charmbracelet/lipgloss"
+-	"luke/cli/api"
++	"github.com/dustin/go-humanize"
+ )
+ 
++// Directory structure constants
++const (
++	DocsDir     = "docs"
++	LukeDir     = "luke"
++	ToolsDir    = "tools"
++	TemplateDir = "template"
++)
++
++// Define styles for the UI - with unique names to avoid conflicts
++var (
++	docsTitleStyle       = lipgloss.NewStyle().Bold(true).Foreground(lipgloss.Color("205")).MarginBottom(1)
++	docsMainStyle        = lipgloss.NewStyle().Margin(1, 2)
++	docsListItemStyle    = lipgloss.NewStyle().PaddingLeft(2)
++	docsSelectedItemStyle = lipgloss.NewStyle().PaddingLeft(2).Background(lipgloss.Color("205")).Foreground(lipgloss.Color("#000000"))
++	docsErrorStyle       = lipgloss.NewStyle().Foreground(lipgloss.Color("196"))
++	docsInfoStyle        = lipgloss.NewStyle().Foreground(lipgloss.Color("86"))
++)
++
++// Helper functions
++func getProjectDir() string {
++	// Try to determine the root directory
++	dir, err := os.Getwd()
++	if err != nil {
++		return ".."
++	}
++
++	// Check if we're in the project root or cli directory
++	if filepath.Base(dir) == "cli" {
++		return filepath.Dir(dir)
++	}
++
++	// Check if we're already at the project root (has docs dir)
++	docsPath := filepath.Join(dir, "docs")
++	if _, err := os.Stat(docsPath); err == nil {
++		return dir
++	}
++
++	// Default case: assume one level up
++	return ".."
++}
++
++func getServerURL() string {
++	// Try to get from environment or config
++	serverURL := os.Getenv("LUKE_SERVER_URL")
++	if serverURL != "" {
++		return serverURL
++	}
++	
++	// Default development URL
++	return "http://localhost:3000"
++}
++
+ // Messages
+ type TechDocsUpdated struct {
+ 	TechMd  string
+@@ -47,681 +94,659 @@ type TechDocsResult struct {
+ 	Content string
+ }
+ 
++// DocItem represents a documentation item in the filesystem or blob storage
++type DocItem struct {
++	Name        string
++	Path        string
++	IsDirectory bool
++	Size        int64
++	LastUpdated time.Time
++	Children    []DocItem
++}
++
+ // Tech docs model
+ type techDocsModel struct {
+-	spinner    spinner.Model
+-	updating   bool
+-	updated    bool
+-	techMd     string
+-	stacks     map[string]StackInfo
+-	err        error
+-	rendered   string
+-	statusText string
++	spinner     spinner.Model
++	updating    bool
++	updated     bool
++	techMd      string
++	stacks      map[string]StackInfo
++	err         error
++	rendered    string
++	statusText  string
++	rootDocs    []DocItem
++	selectedDoc string
++	viewMode    string // "list" or "content"
++	scrollY     int
+ }
+ 
+ func initialTechDocsModel() techDocsModel {
+ 	// Setup spinner
+ 	s := spinner.New()
+ 	s.Spinner = spinner.Dot
+-	s.Style = lipgloss.NewStyle().Foreground(lipgloss.Color("#9A348E"))
++	s.Style = lipgloss.NewStyle().Foreground(lipgloss.Color("205"))
+ 
+ 	return techDocsModel{
+-		spinner:    s,
+-		updating:   true,
+-		updated:    false,
+-		statusText: "🔄 updating tech documentation...",
++		spinner:     s,
++		updating:    false,
++		updated:     false,
++		techMd:      "",
++		stacks:      make(map[string]StackInfo),
++		err:         nil,
++		rendered:    "",
++		statusText:  "Loading tech documentation...",
++		rootDocs:    []DocItem{},
++		selectedDoc: "",
++		viewMode:    "list",
++		scrollY:     0,
+ 	}
+ }
+ 
++// Init initializes the techDocsModel
+ func (m techDocsModel) Init() tea.Cmd {
+ 	return tea.Batch(
+ 		m.spinner.Tick,
+-		updateTechDocs(),
++		loadDocsStructure(),
+ 	)
+ }
+ 
+-// Command to update tech docs
+-func updateTechDocs() tea.Cmd {
++// loadDocsStructure loads the docs directory structure
++func loadDocsStructure() tea.Cmd {
+ 	return func() tea.Msg {
+-		// Determine base URL for Luke API
+-		baseURL := os.Getenv("LUKE_API_URL")
+-		if baseURL == "" {
+-			baseURL = "http://localhost:3000"
++		root := []DocItem{}
++		baseDir := filepath.Join(getProjectDir(), DocsDir)
++		
++		if _, err := os.Stat(baseDir); os.IsNotExist(err) {
++			return root
+ 		}
+ 
+-		// First try the Luke API
+-		lukeApiSuccess := false
+-		var techData struct {
+-			TechMd       string                `json:"techMd"`
+-			Relationships map[string][]string  `json:"relationships"`
+-			Stacks       map[string]StackInfo  `json:"stacks"`
++		// Create root categories
++		lukeItem := DocItem{
++			Name:        "Luke App Documentation",
++			Path:        filepath.Join(DocsDir, LukeDir),
++			IsDirectory: true,
++			Children:    []DocItem{},
+ 		}
+-
+-		resp, err := http.Get(baseURL + "/api/tech")
+-		if err == nil {
+-			defer resp.Body.Close()
+-			
+-			if resp.StatusCode == http.StatusOK {
+-				if err := json.NewDecoder(resp.Body).Decode(&techData); err == nil {
+-					lukeApiSuccess = true
+-				}
+-			}
++		
++		toolsItem := DocItem{
++			Name:        "Tech & Tools Documentation",
++			Path:        filepath.Join(DocsDir, ToolsDir),
++			IsDirectory: true,
++			Children:    []DocItem{},
+ 		}
+-
+-		// If Luke API failed, use Jina API directly
+-		if !lukeApiSuccess {
+-			fmt.Println("🔄 Luke API unavailable, using Jina APIs directly...")
+-			techData, err = updateTechDocsWithJina()
+-			if err != nil {
+-				return TechDocsUpdateFailed{Error: fmt.Sprintf("Jina API error: %s", err.Error())}
+-			}
++		
++		templateItem := DocItem{
++			Name:        "Project Templates",
++			Path:        filepath.Join(DocsDir, TemplateDir),
++			IsDirectory: true,
++			Children:    []DocItem{},
+ 		}
+-
+-		return TechDocsUpdated{
+-			TechMd: techData.TechMd,
+-			Stacks: techData.Stacks,
++		
++		// Legacy items - files directly under docs/ for backward compatibility
++		legacyItem := DocItem{
++			Name:        "Legacy Files",
++			Path:        DocsDir,
++			IsDirectory: true,
++			Children:    []DocItem{},
+ 		}
+-	}
+-}
+ 
+-// Upload file to Vercel Blob storage
+-func uploadToVercelBlob(baseURL, filename string, content []byte) (string, error) {
+-	// Get Vercel Blob token from environment variable or config file
+-	blobToken := os.Getenv("VERCEL_BLOB_TOKEN")
+-	
+-	// Try the LUKE_VERCEL_BLOB_TOKEN as well
+-	if blobToken == "" {
+-		blobToken = os.Getenv("LUKE_VERCEL_BLOB_TOKEN")
+-	}
+-	
+-	// Try the BLOB_READ_WRITE_TOKEN as well
+-	if blobToken == "" {
+-		blobToken = os.Getenv("BLOB_READ_WRITE_TOKEN")
+-	}
+-	
+-	// If token not in env var, try to read from config file
+-	if blobToken == "" {
+-		homeDir, err := os.UserHomeDir()
++		// Load docs/luke files
++		lukeDir := filepath.Join(baseDir, LukeDir)
++		if _, err := os.Stat(lukeDir); !os.IsNotExist(err) {
++			lukeItem.Children = loadDocsDir(lukeDir, filepath.Join(DocsDir, LukeDir))
++		}
++		
++		// Load docs/tools files
++		toolsDir := filepath.Join(baseDir, ToolsDir)
++		if _, err := os.Stat(toolsDir); !os.IsNotExist(err) {
++			toolsItem.Children = loadDocsDir(toolsDir, filepath.Join(DocsDir, ToolsDir))
++		}
++		
++		// Process template directory - special handling for tech stacks
++		templateDir := filepath.Join(baseDir, TemplateDir)
++		if _, err := os.Stat(templateDir); !os.IsNotExist(err) {
++			entries, err := ioutil.ReadDir(templateDir)
+ 		if err == nil {
+-			configDir := filepath.Join(homeDir, ".luke")
+-			configFile := filepath.Join(configDir, "config.json")
+-			
+-			if _, err := os.Stat(configFile); err == nil {
+-				data, err := ioutil.ReadFile(configFile)
+-				if err == nil {
+-					var config map[string]string
+-					if err := json.Unmarshal(data, &config); err == nil {
+-						// Try all possible token keys
+-						blobToken = config["vercel_blob_token"]
+-						if blobToken == "" {
+-							blobToken = config["luke_vercel_blob_token"]
+-						}
+-						if blobToken == "" {
+-							blobToken = config["blob_read_write_token"]
++				for _, entry := range entries {
++					if entry.IsDir() {
++						stackItem := DocItem{
++							Name:        getCategoryName(entry.Name()) + " Stack",
++							Path:        filepath.Join(DocsDir, TemplateDir, entry.Name()),
++							IsDirectory: true,
++							Children:    loadDocsDir(filepath.Join(templateDir, entry.Name()), filepath.Join(DocsDir, TemplateDir, entry.Name())),
+ 						}
++						templateItem.Children = append(templateItem.Children, stackItem)
+ 					}
+ 				}
+ 			}
+ 		}
++		
++		// Load legacy files (direct under docs/)
++		legacyItems := []DocItem{}
++		entries, err := ioutil.ReadDir(baseDir)
++		if err == nil {
++			for _, entry := range entries {
++				if !entry.IsDir() {
++					// Legacy files
++					legacyItems = append(legacyItems, DocItem{
++						Name:        entry.Name(),
++						Path:        filepath.Join(DocsDir, entry.Name()),
++						IsDirectory: false,
++						Size:        entry.Size(),
++						LastUpdated: entry.ModTime(),
++					})
++				}
++			}
++		}
++		
++		legacyItem.Children = legacyItems
++		
++		// Only add categories that have content
++		if len(lukeItem.Children) > 0 {
++			root = append(root, lukeItem)
++		}
++		
++		if len(toolsItem.Children) > 0 {
++			root = append(root, toolsItem)
++		}
++		
++		if len(templateItem.Children) > 0 {
++			root = append(root, templateItem)
++		}
++		
++		if len(legacyItem.Children) > 0 {
++			root = append(root, legacyItem)
++		}
++
++		return root
+ 	}
+-	
+-	// Still no token found, let user know how to set it up
+-	if blobToken == "" {
+-		return "", fmt.Errorf("no blob token found. Set VERCEL_BLOB_TOKEN, LUKE_VERCEL_BLOB_TOKEN, or BLOB_READ_WRITE_TOKEN environment variable or add to ~/.luke/config.json")
+-	}
++}
+ 
+-	// Prepare the multipart form data
+-	body := &bytes.Buffer{}
+-	writer := multipart.NewWriter(body)
++// loadDocsDir loads a directory's contents into DocItem structures
++func loadDocsDir(dirPath string, relativePath string) []DocItem {
++	result := []DocItem{}
+ 	
+-	// Add the filename field
+-	if err := writer.WriteField("filename", filename); err != nil {
+-		return "", fmt.Errorf("error writing filename field: %w", err)
++	if _, err := os.Stat(dirPath); os.IsNotExist(err) {
++		return result
+ 	}
+ 	
+-	// Create a form file for the content
+-	part, err := writer.CreateFormFile("file", filename)
++	entries, err := ioutil.ReadDir(dirPath)
+ 	if err != nil {
+-		return "", fmt.Errorf("error creating form file: %w", err)
++		return result
+ 	}
+ 	
+-	// Write the content to the form file
+-	if _, err := part.Write(content); err != nil {
+-		return "", fmt.Errorf("error writing content to form file: %w", err)
+-	}
+-	
+-	// Close the writer
+-	if err := writer.Close(); err != nil {
+-		return "", fmt.Errorf("error closing multipart writer: %w", err)
+-	}
++	// Process directories first
++	dirs := []DocItem{}
++	files := []DocItem{}
+ 	
+-	// Create the request to the Vercel Blob API endpoint
+-	req, err := http.NewRequest("POST", baseURL+"/api/blob", body)
+-	if err != nil {
+-		return "", fmt.Errorf("error creating request: %w", err)
++	for _, entry := range entries {
++		entryPath := filepath.Join(dirPath, entry.Name())
++		relPath := filepath.Join(relativePath, entry.Name())
++		
++		if entry.IsDir() {
++			item := DocItem{
++				Name:        entry.Name(),
++				Path:        relPath,
++				IsDirectory: true,
++				Children:    loadDocsDir(entryPath, relPath),
++			}
++			dirs = append(dirs, item)
++		} else {
++			item := DocItem{
++				Name:        entry.Name(),
++				Path:        relPath,
++				IsDirectory: false,
++				Size:        entry.Size(),
++				LastUpdated: entry.ModTime(),
++			}
++			files = append(files, item)
++		}
+ 	}
+ 	
+-	// Set the content type to the multipart form data
+-	req.Header.Set("Content-Type", writer.FormDataContentType())
+-	
+-	// Add authorization header with token
+-	req.Header.Set("Authorization", "Bearer "+blobToken)
+-	
+-	// Send the request
+-	client := &http.Client{Timeout: 30 * time.Second}
+-	resp, err := client.Do(req)
+-	if err != nil {
+-		return "", fmt.Errorf("error sending request: %w", err)
+-	}
+-	defer resp.Body.Close()
++	// Sort directories and files by name
++	sort.Slice(dirs, func(i, j int) bool {
++		return dirs[i].Name < dirs[j].Name
++	})
+ 	
+-	// Check the response status
+-	if resp.StatusCode != http.StatusOK {
+-		bodyBytes, _ := io.ReadAll(resp.Body)
+-		bodyPreview := string(bodyBytes)
+-		if len(bodyPreview) > 100 {
+-			bodyPreview = bodyPreview[:100] + "..."
+-		}
+-		return "", fmt.Errorf("error from blob API (status %d): %s", resp.StatusCode, bodyPreview)
+-	}
++	sort.Slice(files, func(i, j int) bool {
++		return files[i].Name < files[j].Name
++	})
+ 	
+-	// Parse the response to get the URL
+-	var blobResponse struct {
+-		URL string `json:"url"`
+-	}
+-	if err := json.NewDecoder(resp.Body).Decode(&blobResponse); err != nil {
+-		return "", fmt.Errorf("error parsing response: %w", err)
+-	}
++	// Directories first, then files
++	result = append(result, dirs...)
++	result = append(result, files...)
+ 	
+-	return blobResponse.URL, nil
++	return result
+ }
+ 
+-// Use Jina APIs to update tech documentation
+-func updateTechDocsWithJina() (struct {
+-	TechMd       string                `json:"techMd"`
+-	Relationships map[string][]string  `json:"relationships"`
+-	Stacks       map[string]StackInfo  `json:"stacks"`
+-}, error) {
+-	var result struct {
+-		TechMd       string                `json:"techMd"`
+-		Relationships map[string][]string  `json:"relationships"`
+-		Stacks       map[string]StackInfo  `json:"stacks"`
++// getCategoryName returns a nice display name for a category
++func getCategoryName(dirname string) string {
++	switch strings.ToLower(dirname) {
++	case "next":
++		return "Next.js"
++	case "apple":
++		return "Apple"
++	case "cli":
++		return "CLI"
++	case "other":
++		return "Other"
++	default:
++		// Capitalize first letter
++		if len(dirname) > 0 {
++			return strings.ToUpper(dirname[0:1]) + dirname[1:]
++		}
++		return dirname
+ 	}
++}
+ 
+-	// Set up the stacks
+-	stacks := []string{"next", "apple", "cli", "other"}
+-	stackInfo := make(map[string]StackInfo)
+-	relationships := make(map[string][]string)
+-	
+-	// Determine base URL for Luke API (needed for Blob storage)
+-	baseURL := os.Getenv("LUKE_API_URL")
+-	if baseURL == "" {
+-		baseURL = "http://localhost:3000"
+-	}
++// updateTechDocs fetches the latest tech documentation
++func updateTechDocs() tea.Cmd {
++	return func() tea.Msg {
++		serverURL := getServerURL()
++		endpoint := serverURL + "/api/tech"
+ 
+-	// Generate main tech.md content
+-	mainContent := "# Technology Stack Guide 2024\n\n> Comprehensive guide to modern development technologies across different platforms.\n\n"
+-
+-	// Create docs directory if it doesn't exist
+-	localDocsPath := "docs"
+-	if _, err := os.Stat(localDocsPath); os.IsNotExist(err) {
+-		// Try one level up if the immediate docs doesn't exist
+-		localDocsPath = "../docs"
+-		if _, err := os.Stat(localDocsPath); os.IsNotExist(err) {
+-			// Create docs directory
+-			if err := os.MkdirAll(localDocsPath, 0755); err != nil {
+-				fmt.Printf("⚠️ warning: error creating docs directory: %s\n", err)
+-			}
++		// POST request to trigger update
++		client := &http.Client{
++			Timeout: 30 * time.Second,
+ 		}
+-	}
+ 
+-	// Process each tech stack
+-	for _, stack := range stacks {
+-		fmt.Printf("🔍 searching for %s documentation...\n", stack)
+-		
+-		// Use Jina Search API to find documentation about the tech stack
+-		query := fmt.Sprintf("%s technology stack guide 2024", stack)
+-		stackContent, stackRels, err := searchForTechContent(query, stack)
++		resp, err := client.Post(endpoint, "application/json", nil)
+ 		if err != nil {
+-			fmt.Printf("⚠️ warning: error fetching %s documentation: %s\n", stack, err)
+-			continue
++			return TechDocsUpdateFailed{Error: err.Error()}
+ 		}
++		defer resp.Body.Close()
+ 
+-		// Add to relationships map
+-		for tech, related := range stackRels {
+-			relationships[tech] = related
+-		}
+-
+-		// Save the content to local file first
+-		stackFileName := fmt.Sprintf("tech-%s.md", stack)
+-		stackFilePath := filepath.Join(localDocsPath, stackFileName)
+-		if err := os.WriteFile(stackFilePath, []byte(stackContent), 0644); err != nil {
+-			fmt.Printf("⚠️ warning: error writing local file %s: %s\n", stackFilePath, err)
+-		} else {
+-			fmt.Printf("✅ saved %s to local file: %s\n", stackFileName, stackFilePath)
+-		}
+-
+-		// Try uploading to Vercel Blob (but don't fail if it doesn't work)
+-		fmt.Printf("📤 trying to upload %s to vercel blob...\n", stackFileName)
+-		stackFileURL, err := uploadToVercelBlob(baseURL, stackFileName, []byte(stackContent))
++		body, err := io.ReadAll(resp.Body)
+ 		if err != nil {
+-			fmt.Printf("ℹ️ blob storage not used: %s\n", err)
+-		} else {
+-			fmt.Printf("✅ also uploaded %s to blob: %s\n", stackFileName, stackFileURL)
++			return TechDocsUpdateFailed{Error: fmt.Sprintf("Failed to read response: %v", err)}
+ 		}
+ 
+-		// Add to main content
+-		mainContent += fmt.Sprintf("\n## %s\n\n%s\n\n---\n\n", 
+-			strings.ToUpper(stack[:1]) + stack[1:], 
+-			strings.Join(strings.Split(stackContent, "\n")[2:], "\n"))
+-		
+-		// Add to stacks info
+-		stackInfo[stack] = StackInfo{
+-			LastUpdated: time.Now(),
++		// Check if response is JSON
++		var contentType string
++		if contentTypes, ok := resp.Header["Content-Type"]; ok && len(contentTypes) > 0 {
++			contentType = contentTypes[0]
+ 		}
+-	}
+-
+-	// Save main tech.md file locally
+-	mainFilePath := filepath.Join(localDocsPath, "tech.md")
+-	if err := os.WriteFile(mainFilePath, []byte(mainContent), 0644); err != nil {
+-		fmt.Printf("⚠️ warning: error writing main tech.md file: %s\n", err)
+-	} else {
+-		fmt.Printf("✅ saved tech.md to local file: %s\n", mainFilePath)
+-	}
+-
+-	// Try to upload main tech.md file to Vercel Blob
+-	fmt.Printf("📤 trying to upload main tech.md to vercel blob...\n")
+-	mainFileURL, err := uploadToVercelBlob(baseURL, "tech.md", []byte(mainContent))
+-	if err != nil {
+-		fmt.Printf("ℹ️ blob storage not used for main file: %s\n", err)
+-	} else {
+-		fmt.Printf("✅ also uploaded tech.md to blob: %s\n", mainFileURL)
+-	}
+-
+-	// Set up result
+-	result.TechMd = mainContent
+-	result.Relationships = relationships
+-	result.Stacks = stackInfo
+-
+-	return result, nil
+-}
+-
+-// Search for tech documentation using Jina API
+-func searchForTechContent(query, techName string) (string, map[string][]string, error) {
+-	// Define headers
+-	headers := map[string]string{
+-		"Content-Type": "application/json",
+-		"Accept": "application/json",
+-	}
+-
+-	// Prepare the search request
+-	searchBody := map[string]interface{}{
+-		"q": query,
+-		"options": "Markdown",
+-	}
+-	searchJSON, _ := json.Marshal(searchBody)
+-
+-	// Create the HTTP client
+-	client := &http.Client{
+-		Timeout: time.Second * 30,
+-	}
+ 
+-	// Make the search request
+-	searchReq, err := http.NewRequest("POST", "https://s.jina.ai/", bytes.NewBuffer(searchJSON))
+-	if err != nil {
+-		return "", nil, fmt.Errorf("error creating search request: %w", err)
+-	}
+-
+-	// Add headers
+-	for key, value := range headers {
+-		searchReq.Header.Add(key, value)
+-	}
+-
+-	// Execute the search request
+-	searchResp, err := client.Do(searchReq)
+-	if err != nil {
+-		return "", nil, fmt.Errorf("error executing search request: %w", err)
+-	}
+-	defer searchResp.Body.Close()
+-
+-	// Read and parse search results
+-	searchRespBody, err := io.ReadAll(searchResp.Body)
+-	if err != nil {
+-		return "", nil, fmt.Errorf("error reading search response: %w", err)
+-	}
+-
+-	var searchResult struct {
+-		Code   int `json:"code"`
+-		Status int `json:"status"`
+-		Data   []struct {
+-			Title       string `json:"title"`
+-			Description string `json:"description"`
+-			URL         string `json:"url"`
+-			Content     string `json:"content"`
++		if !strings.Contains(contentType, "application/json") {
++			// If HTML or other non-JSON response, handle gracefully
++			truncatedResponse := string(body)
++			if len(truncatedResponse) > 100 {
++				truncatedResponse = truncatedResponse[:100] + "..."
++			}
++			return TechDocsUpdateFailed{Error: fmt.Sprintf("API returned non-JSON response: %s\nFalling back to local files.", truncatedResponse)}
++		}
++
++		// Attempt to decode
++		if resp.StatusCode == http.StatusOK {
++			var techData struct {
++				Success bool `json:"success"`
++				Data    struct {
++					TechMd       string                `json:"main"`
++					Relationships map[string][]string  `json:"relationships"`
++					Next         string                `json:"next"`
++					Apple        string                `json:"apple"`
++					CLI          string                `json:"cli"`
++					Other        string                `json:"other"`
+ 		} `json:"data"`
+ 	}
+ 
+-	if err := json.Unmarshal(searchRespBody, &searchResult); err != nil {
+-		return "", nil, fmt.Errorf("error parsing search response: %w", err)
+-	}
++			if err := json.Unmarshal(body, &techData); err != nil {
++				return TechDocsUpdateFailed{Error: fmt.Sprintf("Failed to unmarshal JSON: %v", err)}
++			}
+ 
+-	// Extract technologies and build relationships
+-	techRelationships := make(map[string][]string)
+-	
+-	// Build content from search results
+-	var content strings.Builder
+-	content.WriteString(fmt.Sprintf("# %s Technology Stack\n\n", strings.ToUpper(techName[:1]) + techName[1:]))
+-	
+-	// Get current date
+-	currentTime := time.Now().Format("January 2, 2006")
+-	content.WriteString(fmt.Sprintf("> Generated documentation for %s technologies. Last updated on %s.\n\n", 
+-		techName, currentTime))
+-
+-	// Extract content from top results
+-	if len(searchResult.Data) > 0 {
+-		// Extract technologies by regex pattern
+-		techPattern := regexp.MustCompile(`\b([A-Za-z0-9.]+(?:[A-Za-z0-9-]*[A-Za-z0-9]+)?\.?[A-Za-z0-9]*)\b`)
+-		
+-		// Build technologies section
+-		technologies := make(map[string]bool)
+-		
+-		// Parse tech names from content
+-		for _, result := range searchResult.Data[:min(3, len(searchResult.Data))] {
+-			content.WriteString(fmt.Sprintf("## From %s\n\n", result.Title))
+-			
+-			// Limit content length
+-			truncatedContent := result.Content
+-			if len(truncatedContent) > 2000 {
+-				truncatedContent = truncatedContent[:2000] + "..."
++			// Convert to expected structure
++			stacks := make(map[string]StackInfo)
++			stacks["next"] = StackInfo{LastUpdated: time.Now()}
++			stacks["apple"] = StackInfo{LastUpdated: time.Now()}
++			stacks["cli"] = StackInfo{LastUpdated: time.Now()}
++			stacks["other"] = StackInfo{LastUpdated: time.Now()}
++
++			return TechDocsUpdated{
++				TechMd:  techData.Data.TechMd,
++				Stacks:  stacks,
+ 			}
+-			
+-			content.WriteString(truncatedContent + "\n\n")
+-			
+-			// Extract technologies
+-			matches := techPattern.FindAllString(result.Content, -1)
+-			for _, match := range matches {
+-				// Filter out common words and numbers
+-				if len(match) > 2 && !isCommonWord(match) {
+-					technologies[match] = true
+-				}
++		} else {
++			// Try to parse error message from JSON
++			var errorData struct {
++				Error      string `json:"error"`
++				Message    string `json:"message"`
++				Fallback   string `json:"fallback"`
++				Timestamp  string `json:"timestamp"`
+ 			}
+-		}
+-		
+-		// Add technologies list
+-		content.WriteString("## Key Technologies\n\n")
+-		
+-		techList := make([]string, 0, len(technologies))
+-		for tech := range technologies {
+-			techList = append(techList, tech)
+-		}
+-		sort.Strings(techList)
+-		
+-		for _, tech := range techList {
+-			content.WriteString(fmt.Sprintf("- %s\n", tech))
+-		}
+-		
+-		// Build relationships
+-		for _, tech := range techList {
+-			// Find related technologies
+-			related := findRelatedTechs(tech, techList, 5)
+-			techRelationships[tech] = related
+-		}
+-	} else {
+-		content.WriteString("No documentation found for this technology stack.\n")
+-	}
+-
+-	return content.String(), techRelationships, nil
+-}
+ 
+-// Find min of two ints
+-func min(a, b int) int {
+-	if a < b {
+-		return a
+-	}
+-	return b
+-}
++			if err := json.Unmarshal(body, &errorData); err != nil {
++				// If can't parse error JSON, show raw response
++				return TechDocsUpdateFailed{Error: fmt.Sprintf("API error (Status %d): %s", resp.StatusCode, string(body))}
++			}
+ 
+-// Check if a word is common and should be excluded
+-func isCommonWord(word string) bool {
+-	commonWords := map[string]bool{
+-		"the": true, "and": true, "for": true, "with": true, "this": true,
+-		"that": true, "from": true, "com": true, "org": true, "net": true,
+-		"http": true, "https": true, "html": true, "www": true, "web": true,
++			return TechDocsUpdateFailed{Error: fmt.Sprintf("API error: %s - %s", errorData.Error, errorData.Message)}
++		}
+ 	}
+-	
+-	return commonWords[strings.ToLower(word)]
+ }
+ 
+-// Find related technologies based on simple similarity
+-func findRelatedTechs(tech string, allTechs []string, maxRelated int) []string {
+-	related := make([]string, 0, maxRelated)
+-	tech = strings.ToLower(tech)
+-	
+-	// Simple heuristic: technologies with similar names or common prefixes/suffixes
+-	for _, other := range allTechs {
+-		otherLower := strings.ToLower(other)
+-		
+-		// Skip self
+-		if otherLower == tech {
+-			continue
+-		}
+-		
+-		// Check for prefix/suffix match
+-		if strings.HasPrefix(otherLower, tech) || strings.HasPrefix(tech, otherLower) ||
+-		   strings.HasSuffix(otherLower, tech) || strings.HasSuffix(tech, otherLower) {
+-			related = append(related, other)
+-			if len(related) >= maxRelated {
+-				break
+-			}
+-		}
+-	}
+-	
+-	// Fill with random techs if not enough related ones
+-	if len(related) < maxRelated {
+-		shuffle(allTechs)
+-		for _, other := range allTechs {
+-			otherLower := strings.ToLower(other)
+-			if otherLower != tech && !contains(related, other) {
+-				related = append(related, other)
+-				if len(related) >= maxRelated {
+-					break
+-				}
++// FetchDocContent fetches content of a specific document
++func FetchDocContent(docPath string) tea.Cmd {
++	return func() tea.Msg {
++		// Check if file exists locally first
++		fullPath := filepath.Join(getProjectDir(), docPath)
++		if _, err := os.Stat(fullPath); err == nil {
++			content, err := ioutil.ReadFile(fullPath)
++			if err != nil {
++				return TechDocsResult{Content: fmt.Sprintf("Error reading file: %v", err)}
+ 			}
++			return TechDocsResult{Content: string(content)}
+ 		}
++		
++		return TechDocsResult{Content: fmt.Sprintf("File not found: %s", docPath)}
+ 	}
+-	
+-	return related
+ }
+ 
+-// Check if a slice contains a string
+-func contains(slice []string, str string) bool {
+-	for _, item := range slice {
+-		if item == str {
+-			return true
++// renderMarkdown renders markdown content
++func renderMarkdown(markdown string) tea.Cmd {
++	return func() tea.Msg {
++		r, _ := glamour.NewTermRenderer(
++			glamour.WithAutoStyle(),
++			glamour.WithWordWrap(120),
++		)
++
++		out, err := r.Render(markdown)
++		if err != nil {
++			return MarkdownRendered{Content: fmt.Sprintf("Error rendering markdown: %v", err)}
+ 		}
+-	}
+-	return false
+-}
+ 
+-// Shuffle a slice
+-func shuffle(slice []string) {
+-	rand.Seed(time.Now().UnixNano())
+-	rand.Shuffle(len(slice), func(i, j int) {
+-		slice[i], slice[j] = slice[j], slice[i]
+-	})
++		return MarkdownRendered{Content: out}
++	}
+ }
+ 
++// Update handles messages and events for the techDocsModel
+ func (m techDocsModel) Update(msg tea.Msg) (tea.Model, tea.Cmd) {
+-	var cmd tea.Cmd
+-	var cmds []tea.Cmd
+-
+ 	switch msg := msg.(type) {
+ 	case tea.KeyMsg:
+ 		switch msg.String() {
+-		case "ctrl+c", "q", "esc":
++		case "q", "esc":
++			if m.viewMode == "content" {
++				// Go back to list view
++				m.viewMode = "list"
++				m.scrollY = 0
++				return m, nil
++			}
+ 			return m, tea.Quit
++		case "u":
++			if !m.updating {
++				m.updating = true
++				m.statusText = "Updating tech documentation..."
++				return m, updateTechDocs()
++			}
++		case "enter":
++			if m.viewMode == "list" && m.selectedDoc != "" {
++				// Check if the selected item is a directory
++				for _, item := range flattenDocs(m.rootDocs) {
++					if item.Path == m.selectedDoc && !item.IsDirectory {
++						m.viewMode = "content"
++						m.scrollY = 0
++						return m, tea.Batch(
++							FetchDocContent(m.selectedDoc),
++							m.spinner.Tick,
++						)
++					}
++				}
++			}
++		case "up", "k":
++			if m.viewMode == "list" {
++				allDocs := flattenDocs(m.rootDocs)
++				if len(allDocs) > 0 {
++					currentIndex := -1
++					for i, doc := range allDocs {
++						if doc.Path == m.selectedDoc {
++							currentIndex = i
++							break
++						}
++					}
++
++					if currentIndex > 0 {
++						m.selectedDoc = allDocs[currentIndex-1].Path
++					} else if currentIndex == -1 {
++						// Nothing selected yet, select the first item
++						m.selectedDoc = allDocs[0].Path
++					}
++				}
++			} else if m.viewMode == "content" {
++				if m.scrollY > 0 {
++					m.scrollY--
++				}
++			}
++		case "down", "j":
++			if m.viewMode == "list" {
++				allDocs := flattenDocs(m.rootDocs)
++				if len(allDocs) > 0 {
++					currentIndex := -1
++					for i, doc := range allDocs {
++						if doc.Path == m.selectedDoc {
++							currentIndex = i
++							break
++						}
++					}
++
++					if currentIndex >= 0 && currentIndex < len(allDocs)-1 {
++						m.selectedDoc = allDocs[currentIndex+1].Path
++					} else if currentIndex == -1 {
++						// Nothing selected yet, select the first item
++						m.selectedDoc = allDocs[0].Path
++					}
++				}
++			} else if m.viewMode == "content" {
++				m.scrollY++
++			}
+ 		}
+ 
+-	case TechDocsUpdated:
++	case spinner.TickMsg:
++		var cmd tea.Cmd
++		m.spinner, cmd = m.spinner.Update(msg)
++		return m, cmd
++
++	case []DocItem:
++		m.rootDocs = msg
++		if len(flattenDocs(m.rootDocs)) > 0 && m.selectedDoc == "" {
++			// Select the first item by default
++			m.selectedDoc = flattenDocs(m.rootDocs)[0].Path
++		}
+ 		m.updating = false
+-		m.updated = true
++		m.statusText = "Select a document to view"
++		return m, nil
++
++	case TechDocsUpdated:
+ 		m.techMd = msg.TechMd
+ 		m.stacks = msg.Stacks
+-		return m, renderMarkdown(m.techMd)
++		m.updating = false
++		m.updated = true
++		m.statusText = "Tech documentation updated"
++		
++		// Reload the docs structure
++		return m, loadDocsStructure()
+ 
+ 	case TechDocsUpdateFailed:
+-		m.updating = false
+-		m.updated = false
+ 		m.err = fmt.Errorf(msg.Error)
++		m.updating = false
++		m.statusText = "Failed to update: " + msg.Error
+ 		return m, nil
+ 
++	case TechDocsResult:
++		// Content fetched, now render it
++		return m, renderMarkdown(msg.Content)
++
+ 	case MarkdownRendered:
+ 		m.rendered = msg.Content
++		m.statusText = "Viewing document"
+ 		return m, nil
+-
+-	case spinner.TickMsg:
+-		if m.updating {
+-			m.spinner, cmd = m.spinner.Update(msg)
+-			cmds = append(cmds, cmd)
+-		}
+ 	}
+ 
+-	return m, tea.Batch(cmds...)
++	return m, nil
+ }
+ 
+-func (m techDocsModel) View() string {
+-	if m.err != nil {
+-		return fmt.Sprintf("❌ error: %s\n\npress any key to exit.", m.err.Error())
+-	}
+-
+-	if m.updating {
+-		return fmt.Sprintf(
+-			"%s\n\n%s",
+-			m.statusText,
+-			m.spinner.View(),
+-		)
+-	}
+-
+-	if m.updated && m.rendered != "" {
+-		stackInfo := "🧩 tech stack information:\n"
+-		for name, info := range m.stacks {
+-			stackInfo += fmt.Sprintf("- %s: updated %s\n", name, 
+-				info.LastUpdated.Format("Jan 02, 2006 15:04:05"))
++// flattenDocs flattens the docs structure for easier navigation
++func flattenDocs(docs []DocItem) []DocItem {
++	result := []DocItem{}
++	
++	for _, doc := range docs {
++		result = append(result, doc)
++		if doc.IsDirectory && len(doc.Children) > 0 {
++			for _, child := range flattenDocs(doc.Children) {
++				// Indent child name for display
++				if !child.IsDirectory {
++					child.Name = "  " + child.Name
++				}
++				result = append(result, child)
++			}
+ 		}
+-		
+-		// Add information about the storage location
+-		storageInfo := "📦 documentation storage: Vercel Blob (cloud)\n"
+-		storageInfo += "📝 access documentation anywhere using the web UI\n"
+-		
+-		return fmt.Sprintf(
+-			"✅ tech documentation updated successfully! 🎉\n\n%s\n%s\n\n%s\n\npress 'q' to exit.",
+-			stackInfo,
+-			storageInfo,
+-			m.rendered,
+-		)
+ 	}
+-
+-	return "press 'q' to exit."
++	
++	return result
+ }
+ 
+-// Command to render markdown
+-func renderMarkdown(markdown string) tea.Cmd {
+-	return func() tea.Msg {
+-		r, _ := glamour.NewTermRenderer(
+-			glamour.WithAutoStyle(),
+-			glamour.WithWordWrap(80),
+-		)
++// View renders the tech docs viewer
++func (m techDocsModel) View() string {
++	s := docsTitleStyle.Render("📚 Luke Documentation Viewer")
++	s += "\n\n"
+ 
+-		rendered, err := r.Render(markdown)
+-		if err != nil {
+-			rendered = "❌ error rendering markdown: " + err.Error()
+-		}
++	if m.updating {
++		s += m.spinner.View() + " " + m.statusText
++		return docsMainStyle.Render(s)
++	}
+ 
+-		return MarkdownRendered{Content: rendered}
++	if m.err != nil {
++		s += docsErrorStyle.Render("Error: "+m.err.Error()) + "\n\n"
++		s += docsInfoStyle.Render("Press 'u' to try updating again or 'q' to quit")
++		return docsMainStyle.Render(s)
+ 	}
+-}
+ 
+-// FetchTechDoc is a command to fetch tech documentation
+-func FetchTechDoc(techName string) tea.Cmd {
+-	return func() tea.Msg {
+-		apiEndpoint := getConfigValue("api_endpoint")
+-		apiKey := getConfigValue("api_key")
+-		
+-		if apiEndpoint == "" {
+-			return fmt.Errorf("API endpoint not configured. Use 'luke config' to set up.")
++	if m.viewMode == "content" {
++		// View document content
++		content := m.rendered
++		if content == "" {
++			content = m.spinner.View() + " Loading content..."
+ 		}
+ 		
+-		client := api.NewAPIClient(apiEndpoint, apiKey)
+-		content, err := client.FetchTechDocumentation(techName)
+-		if err != nil {
+-			return fmt.Errorf("Failed to fetch tech docs: %v", err)
++		// Apply scrolling
++		lines := strings.Split(content, "\n")
++		visibleHeight := 30 // Approximate terminal height
++		startLine := m.scrollY
++		if startLine > len(lines)-visibleHeight {
++			startLine = len(lines) - visibleHeight
+ 		}
+-		
+-		return TechDocsResult{Content: content}
+-	}
+-}
+-
+-// Run the tech docs viewer
+-func runTechDocsViewer() {
+-	fmt.Println("🔍 Tech Documentation Viewer")
+-	fmt.Println("Enter a technology name to view documentation (or 'q' to quit):")
+-	
+-	reader := bufio.NewReader(os.Stdin)
+-	for {
+-		fmt.Print("> ")
+-		input, _ := reader.ReadString('\n')
+-		input = strings.TrimSpace(input)
+-		
+-		if input == "q" || input == "quit" || input == "exit" {
+-			break
++		if startLine < 0 {
++			startLine = 0
+ 		}
+ 		
+-		if input == "" {
+-			continue
++		endLine := startLine + visibleHeight
++		if endLine > len(lines) {
++			endLine = len(lines)
+ 		}
+ 		
+-		// Fetch the documentation
+-		apiEndpoint := getConfigValue("api_endpoint")
+-		apiKey := getConfigValue("api_key")
++		visibleContent := strings.Join(lines[startLine:endLine], "\n")
+ 		
+-		if apiEndpoint == "" {
+-			fmt.Println("❌ API endpoint not configured. Use 'luke config' to set up.")
+-			continue
++		// Add scrollbar indicators
++		if startLine > 0 {
++			visibleContent = "↑ More above ↑\n" + visibleContent
+ 		}
+-		
+-		client := api.NewAPIClient(apiEndpoint, apiKey)
+-		content, err := client.FetchTechDocumentation(input)
+-		if err != nil {
+-			fmt.Printf("❌ Failed to fetch tech docs: %v\n", err)
+-			continue
++		if endLine < len(lines) {
++			visibleContent = visibleContent + "\n↓ More below ↓"
+ 		}
+ 		
+-		// Render the markdown
+-		renderer, _ := glamour.NewTermRenderer(
+-			glamour.WithAutoStyle(),
+-			glamour.WithWordWrap(100),
+-		)
+-		
+-		rendered, err := renderer.Render(content)
+-		if err != nil {
+-			fmt.Println(content)
+-		} else {
+-			fmt.Println(rendered)
++		s += visibleContent + "\n\n"
++		s += docsInfoStyle.Render("Press 'Esc' to go back to the document list, 'j'/'k' to scroll, 'q' to quit")
++		return docsMainStyle.Render(s)
++	}
++
++	// List view
++	s += docsInfoStyle.Render(m.statusText) + "\n\n"
++
++	// Document list
++	if len(m.rootDocs) == 0 {
++		s += "No documentation found. Press 'u' to update."
++	} else {
++		// Display items in a tree-like structure
++		allDocs := flattenDocs(m.rootDocs)
++		for _, doc := range allDocs {
++			lineStyle := docsListItemStyle
++			prefix := ""
++			
++			if doc.Path == m.selectedDoc {
++				lineStyle = docsSelectedItemStyle
++				prefix = "> "
++			} else {
++				prefix = "  "
++			}
++			
++			// Calculate indentation based on path depth
++			indent := strings.Count(doc.Path, string(os.PathSeparator)) - 1
++			if indent < 0 {
++				indent = 0
++			}
++			
++			indentStr := strings.Repeat("  ", indent)
++			
++			if doc.IsDirectory {
++				// Directory items - use folder emoji
++				s += lineStyle.Render(prefix + indentStr + "📁 " + doc.Name) + "\n"
++			} else {
++				// File items - use file emoji
++				fileInfo := ""
++				if doc.Size > 0 {
++					fileInfo = fmt.Sprintf(" (%s", humanize.Bytes(uint64(doc.Size)))
++					if !doc.LastUpdated.IsZero() {
++						fileInfo += fmt.Sprintf(", %s", humanize.Time(doc.LastUpdated))
++					}
++					fileInfo += ")"
++				}
++				
++				// Check file extension to determine icon
++				icon := "📄"
++				if strings.HasSuffix(strings.ToLower(doc.Name), ".md") {
++					icon = "📝" // Markdown
++				} else if strings.HasSuffix(strings.ToLower(doc.Name), ".json") {
++					icon = "🔍" // JSON
++				}
++				
++				s += lineStyle.Render(prefix + indentStr + icon + " " + doc.Name + fileInfo) + "\n"
++			}
+ 		}
+-		
+-		fmt.Println("\nPress Enter to continue...")
+-		reader.ReadString('\n')
+ 	}
++
++	s += "\n" + docsInfoStyle.Render("Press 'j'/'k' to navigate, 'Enter' to view, 'u' to update, 'q' to quit")
++	return docsMainStyle.Render(s)
+ }
+ 
+-func runTechDocsUpdate() {
+-	m := initialTechDocsModel()
+-	m.statusText = "🔄 updating tech documentation..."
+-	m.updating = true
+-	
+-	p := tea.NewProgram(m)
++// runTechDocsViewer runs the tech docs viewer
++func runTechDocsViewer() {
++	p := tea.NewProgram(initialTechDocsModel())
+ 	if _, err := p.Run(); err != nil {
+-		fmt.Printf("❌ error updating tech docs: %v", err)
++		fmt.Printf("Error running tech docs viewer: %v\n", err)
+ 		os.Exit(1)
+ 	}
++}
++
++// runTechDocsUpdate runs a tech docs update
++func runTechDocsUpdate() {
++	fmt.Println("Updating tech documentation...")
++	
++	serverURL := getServerURL()
++	endpoint := serverURL + "/api/tech"
++	
++	client := &http.Client{
++		Timeout: 30 * time.Second,
++	}
++	
++	resp, err := client.Post(endpoint, "application/json", nil)
++	if err != nil {
++		fmt.Printf("❌ Error updating tech documentation: %v\n", err)
++		return
++	}
++	defer resp.Body.Close()
++	
++	if resp.StatusCode == http.StatusOK {
++		fmt.Println("✅ Tech documentation updated")
++	} else {
++		body, _ := io.ReadAll(resp.Body)
++		fmt.Printf("❌ Error updating tech documentation: %s\n", string(body))
++	}
+ } 
+\ No newline at end of file

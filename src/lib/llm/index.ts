@@ -669,16 +669,22 @@ You are an expert development assistant tasked with implementing the project des
     const templates = loadTechStackTemplates(techStack);
     console.log(`Loaded templates for tech stack: ${techStack}`);
     
-    // Extract project name from the tech.md or use default
-    const projectNameMatch = techMdDocument.match(/# ([a-zA-Z0-9_-]+)/);
-    const extractedProjectName = projectNameMatch ? projectNameMatch[1] : this.projectName || 'Project';
+    // Use the actual project name instead of trying to extract it from tech.md
+    // Get the project name from the project content if available, otherwise use stored project name or default
+    const projectName = 
+      (projectContent.project?.name) || 
+      (projectContent.name) || 
+      this.projectName || 
+      'Project';
+    
+    console.log(`Using project name: "${projectName}" for all documentation`);
     
     // 3. Generate index.md with tech.md context and consistent project name
     console.log("Generating index document...");
     const indexPrompt = `
       Create a concise index.md document for this project based on the provided template.
       
-      IMPORTANT: The project name is "${extractedProjectName}". Use this name consistently throughout all documents.
+      IMPORTANT: The project name is "${projectName}". Use this name consistently throughout all documents.
       
       Project content: ${JSON.stringify(projectContent)}
       Template: ${templates.indexTemplate}
@@ -700,7 +706,7 @@ You are an expert development assistant tasked with implementing the project des
     const designPrompt = `
       Create a comprehensive design.md document for this project based on the provided template.
       
-      IMPORTANT: The project name is "${extractedProjectName}". Use this name consistently throughout all documents.
+      IMPORTANT: The project name is "${projectName}". Use this name consistently throughout all documents.
       
       Project content: ${JSON.stringify(projectContent)}
       Template: ${templates.designTemplate}
@@ -722,7 +728,7 @@ You are an expert development assistant tasked with implementing the project des
     const codePrompt = `
       Create a detailed code.md implementation guide for this project based on the provided template.
       
-      IMPORTANT: The project name is "${extractedProjectName}". Use this name consistently throughout all documents.
+      IMPORTANT: The project name is "${projectName}". Use this name consistently throughout all documents.
       
       Project content: ${JSON.stringify(projectContent)}
       Template: ${templates.codeTemplate}
@@ -748,7 +754,7 @@ You are an expert development assistant tasked with implementing the project des
     const initPrompt = `
       Create a comprehensive init.md document that provides clear instructions for AI assistants on implementing this project.
       
-      IMPORTANT: The project name is "${extractedProjectName}". Use this name consistently throughout all documents.
+      IMPORTANT: The project name is "${projectName}". Use this name consistently throughout all documents.
       
       Project content: ${JSON.stringify(projectContent)}
       

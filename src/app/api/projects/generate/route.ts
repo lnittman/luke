@@ -3,6 +3,7 @@ import { prisma } from '@/lib/db/prisma';
 import { NextRequest, NextResponse } from 'next/server';
 import axios, { AxiosError } from 'axios';
 import crypto from 'crypto';
+import { getOpenRouterHeaders, getOpenRouterKey } from '@/lib/api-keys';
 
 // Create a fingerprint from user IP and agent
 function createFingerprint(ip: string, userAgent: string): string {
@@ -74,39 +75,35 @@ async function generateProjectSearchPlan(
     
     // Create a prompt for Claude to generate search queries
     const searchPlanPrompt = `
-You are a search strategist tasked with creating the optimal set of 4-6 search queries to gather comprehensive information for generating documentation for a software project.
+You are tasked with generating a comprehensive search plan for researching a ${techStackType} project based on the user's requirements.
 
-PROJECT REQUIREMENTS: "${prompt}"
-TECH STACK TYPE: "${techStackType}"
-${techItems.length > 0 ? `TECH STACK: ${techItems.join(', ')}` : ''}
+USER REQUIREMENTS:
+${prompt}
 
-Current date: ${currentMonth} ${currentYear}
+TECH STACK TYPE: ${techStackType}
 
-Your task is to create search queries that will retrieve the most valuable information to help document and implement this project effectively.
+Create a search plan consisting of 3-5 specific search queries that will help gather relevant context for implementing this project.
 
-The search queries should:
-1. Cover best practices and implementation patterns for the specified tech stack
-2. Find current resources, tutorials, and documentation for the project's technologies
-3. Identify common architecture patterns for this type of application
-4. Explore potential API integrations and libraries that would benefit this project
-5. Research common challenges and solutions for similar projects
+The search queries should focus on:
+1. Best practices and architecture patterns for ${techStackType} projects
+2. Implementation examples and tutorials for similar applications
+3. Technical challenges and solutions specific to this domain
+4. Recent developments in the technologies mentioned
 
-Format your response as a JSON array of strings, each representing a single search query.
-Example: ["query 1", "query 2", "query 3"]
+FORMAT REQUIREMENTS:
+- Return ONLY a valid JSON array of strings, with each string being a search query
+- Do NOT include markdown formatting, code blocks, or explanatory text
+- Ensure the response can be directly parsed with JSON.parse()
+- Example valid response: ["query 1", "query 2", "query 3"]
 
-Make each query specific and information-dense to maximize the quality of search results.
+IMPORTANT: Your entire response must be ONLY the JSON array with no other text.
 `;
 
     // Make API call to Claude
     console.log("Generating project search plan with Claude...");
     const response = await fetch('https://openrouter.ai/api/v1/chat/completions', {
       method: 'POST',
-      headers: {
-        'Content-Type': 'application/json',
-        'Authorization': `Bearer ${openrouterApiKey}`,
-        'HTTP-Referer': 'https://luke-portfolio.vercel.app',
-        'X-Title': 'Luke App',
-      },
+      headers: getOpenRouterHeaders(),
       body: JSON.stringify({
         model: 'anthropic/claude-3.7-sonnet',
         messages: [
@@ -125,8 +122,20 @@ Make each query specific and information-dense to maximize the quality of search
     const searchPlanContent = data.choices[0].message.content;
     
     try {
-      // Parse the JSON response
-      const searchPlan = JSON.parse(searchPlanContent);
+      // Check if response is wrapped in markdown code blocks and extract
+      let processedContent = searchPlanContent;
+      
+      // Handle markdown JSON code blocks
+      const markdownJsonRegex = /```(json)?\s*(\[[\s\S]*?\])\s*```/;
+      const markdownMatch = processedContent.match(markdownJsonRegex);
+      
+      if (markdownMatch && markdownMatch[2]) {
+        processedContent = markdownMatch[2];
+        console.log("Extracted JSON from markdown code block");
+      }
+      
+      // Try to parse the processed content
+      const searchPlan = JSON.parse(processedContent);
       
       if (Array.isArray(searchPlan) && searchPlan.length > 0) {
         console.log("Generated project search plan:", searchPlan);
@@ -134,6 +143,18 @@ Make each query specific and information-dense to maximize the quality of search
       }
     } catch (parseError) {
       console.error("Error parsing search plan:", parseError);
+      
+      // Try to extract arrays manually as fallback
+      try {
+        const arrayMatch = searchPlanContent.match(/\[\s*"[^"]*"(?:\s*,\s*"[^"]*")*\s*\]/);
+        if (arrayMatch) {
+          const extractedArray = JSON.parse(arrayMatch[0]);
+          console.log("Manually extracted search plan:", extractedArray);
+          return extractedArray;
+        }
+      } catch (fallbackError) {
+        console.error("Fallback parsing also failed:", fallbackError);
+      }
     }
     
     // Fall back to default queries if anything goes wrong
@@ -175,182 +196,88 @@ function getDefaultProjectSearchQueries(
 // Function to enrich tech documentation using Perplexity's Sonar Reasoning
 async function enrichTechDocumentation(projectContent: any, techStack: any): Promise<Array<{ name: string; documentationUrl: string }>> {
   try {
-    // Get OpenRouter API key from environment variable
-    const openrouterApiKey = process.env.OPENROUTER_API_KEY;
+    console.log("Enriching tech documentation with Perplexity Sonar Reasoning...");
     
-    if (!openrouterApiKey) {
-      console.warn('No OpenRouter API key found in environment variables');
-      return [];
-    }
-    
-    // Extract tech names from project content
-    const techItems = projectContent.tech || [];
-    
-    if (!techItems || techItems.length === 0) {
-      console.warn('No tech items found in project content');
-      return [];
-    }
-    
-    console.log('Enriching tech documentation with Perplexity Sonar Reasoning...');
-    
-    // Create a list of tech items for the prompt
-    const techNames = techItems.map((item: any) => {
-      if (typeof item === 'string') return item;
-      return item.name;
-    }).filter(Boolean);
-    
-    // Additional tech items from the tech stack if available
-    const additionalTech: string[] = [];
-    if (techStack) {
-      if (techStack.frameworks) additionalTech.push(...techStack.frameworks);
-      if (techStack.libraries) additionalTech.push(...techStack.libraries);
-      if (techStack.apis) additionalTech.push(...techStack.apis);
-      if (techStack.tools) additionalTech.push(...techStack.tools);
-    }
-    
-    // Combine all tech items and remove duplicates
-    const allTechItems = Array.from(new Set([...techNames, ...additionalTech]));
-    
-    // Format tech items for the prompt
-    const techItemsStr = allTechItems.join(', ');
-    
-    // Use Perplexity via OpenRouter to get current documentation links
-    const response = await axios.post(
-      'https://openrouter.ai/api/v1/chat/completions',
-      {
-        model: 'perplexity/sonar-reasoning',
-        messages: [
-          {
-            role: 'system',
-            content: `You are a technical documentation specialist who provides the most current and official documentation links for software technologies, libraries, frameworks, and tools. You should focus on finding the official documentation URLs, GitHub repositories, and other authoritative sources.`
-          },
-          {
-            role: 'user',
-            content: `Please provide the most current and official documentation links for the following technologies: ${techItemsStr}.
-
-For each technology, provide:
-1. The exact name of the technology (correcting any typos or casing issues)
-2. The primary official documentation URL
-3. A secondary resource URL (like GitHub repo, tutorials site, etc.) if available
-
-Format your response as a valid JSON array of objects, each with "name" and "documentationUrl" properties. Do not include any explanatory text outside the JSON array.
-
-Example format:
-[
-  {
-    "name": "React",
-    "documentationUrl": "https://react.dev"
-  },
-  {
-    "name": "TailwindCSS",
-    "documentationUrl": "https://tailwindcss.com/docs"
-  }
-]`
-          }
-        ],
-        max_tokens: 2048,
-        temperature: 0.1,
-        response_format: { type: "json_object" }
-      },
-      {
-        headers: {
-          'Content-Type': 'application/json',
-          'Authorization': `Bearer ${openrouterApiKey}`,
-          'HTTP-Referer': 'https://luke-portfolio.vercel.app',
-          'X-Title': 'Luke Project Generator'
-        }
-      }
+    // Extract tech items to enrich
+    const techItems = projectContent.tech.map((item: any) => 
+      typeof item === 'string' ? item : item.name
     );
     
-    console.log('Received tech documentation links from Perplexity');
+    // Create a detailed query for Perplexity to get documentation links
+    const techQuery = `Provide detailed documentation links and brief explanations for these technologies: ${
+      techItems.join(', ')
+    }. 
     
-    // Parse the response to get the tech documentation links
-    const content = response.data.choices[0].message.content;
+    For each technology, provide:
+    1. The official documentation URL
+    2. A brief description (1-2 sentences)
+    3. The type of technology (framework, library, tool, etc.)
     
-    try {
-      // Parse the JSON response, handling markdown code blocks
-      let jsonContent = content;
-      
-      // Check if the content is wrapped in markdown code blocks
-      const markdownCodeBlockRegex = /```(?:json)?\s*([\s\S]*?)\s*```/;
-      const markdownMatch = content.match(markdownCodeBlockRegex);
-      
-      if (markdownMatch && markdownMatch[1]) {
-        // Extract the JSON content from the markdown code block
-        jsonContent = markdownMatch[1].trim();
-        console.log('Extracted JSON from markdown code block');
-      }
-      
-      // Try to parse the JSON
-      let techDocs;
-      try {
-        techDocs = JSON.parse(jsonContent);
-      } catch (error) {
-        const parseError = error as Error;
-        console.error('First JSON parse attempt failed:', parseError.message);
-        
-        // If the parsing fails, try to fix common issues
-        // Sometimes there are extra backticks or quotes that need to be removed
-        const cleanedJson = jsonContent
-          .replace(/^```.*\n/, '') // Remove starting code block marker
-          .replace(/\n```$/, '')   // Remove ending code block marker
-          .trim();
-          
-        try {
-          techDocs = JSON.parse(cleanedJson);
-          console.log('Successfully parsed JSON after cleaning');
-        } catch (error) {
-          // If it still fails, try to extract an array pattern
-          const secondParseError = error as Error;
-          console.error('Second JSON parse attempt failed:', secondParseError.message);
-          
-          // Last resort: Try to manually extract data if it looks like JSON but has syntax issues
-          // This is a simplified approach that will only work for basic JSON structures
-          const extractedLinks = [];
-          const itemRegex = /"name":\s*"([^"]+)"[^"]*"documentationUrl":\s*"([^"]+)"/g;
-          let match;
-          
-          while ((match = itemRegex.exec(cleanedJson)) !== null) {
-            extractedLinks.push({
-              name: match[1],
-              documentationUrl: match[2]
-            });
-          }
-          
-          if (extractedLinks.length > 0) {
-            console.log(`Manually extracted ${extractedLinks.length} links from malformed JSON`);
-            return extractedLinks;
-          }
-          
-          throw new Error(`Failed to parse tech documentation JSON: ${secondParseError.message}`);
-        }
-      }
-      
-      // Make sure we have an array of objects with name and documentationUrl properties
-      if (Array.isArray(techDocs)) {
-        return techDocs.filter((item: any) => 
-          item && typeof item === 'object' && 
-          item.name && typeof item.name === 'string' && 
-          item.documentationUrl && typeof item.documentationUrl === 'string'
-        );
-      }
-      
-      if (techDocs.links && Array.isArray(techDocs.links)) {
-        return techDocs.links.filter((item: any) => 
-          item && typeof item === 'object' && 
-          item.name && typeof item.name === 'string' && 
-          item.documentationUrl && typeof item.documentationUrl === 'string'
-        );
-      }
-      
-      console.error('Invalid tech documentation format:', techDocs);
-      return [];
-      
-    } catch (error) {
-      console.error('Error parsing tech documentation JSON:', error);
+    Format your response as a JSON array of objects with "name", "description", "url", and "type" fields.
+    `;
+    
+    console.log(`[Perplexity] Searching for tech documentation for ${techItems.length} technologies`);
+    console.log(`[Perplexity] Query: "${techQuery.substring(0, 100)}..."`);
+    
+    // Use our API route to make the Perplexity request to avoid token exposure
+    const response = await fetch('/api/sonar', {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+      },
+      body: JSON.stringify({ query: techQuery }),
+    });
+    
+    if (!response.ok) {
+      console.error(`[Perplexity] Error enriching tech documentation: ${response.status}`);
       return [];
     }
     
+    console.log(`[Perplexity] Received tech documentation response`);
+    const data = await response.json();
+    
+    if (!data || !data.content) {
+      console.error('[Perplexity] Invalid response from Perplexity');
+      return [];
+    }
+    
+    console.log(`[Perplexity] Processing tech documentation content: ${data.content.substring(0, 100)}...`);
+    
+    // Parse the markdown content to extract structured data
+    const enrichedTechItems: Array<{ name: string; documentationUrl: string }> = [];
+    
+    // Extract sections from markdown
+    const sections = data.content.split(/\n## /);
+    
+    // Process each section to extract tech info
+    sections.forEach((section: string, index: number) => {
+      if (index === 0 && !section.startsWith('## ')) {
+        // Skip the first section if it's not a tech item (likely intro text)
+        return;
+      }
+      
+      // Extract tech name from section header (cleanup for first section)
+      const sectionLines = section.split('\n');
+      const techName = index === 0 ? 
+        sectionLines[0].replace(/^## /, '') : 
+        sectionLines[0];
+      
+      // Find URL in the section
+      const urlMatch = section.match(/\[Link\]\((https?:\/\/[^\)]+)\)/);
+      const documentationUrl = urlMatch ? urlMatch[1] : '';
+      
+      if (techName && documentationUrl) {
+        enrichedTechItems.push({
+          name: techName.trim(),
+          documentationUrl
+        });
+        
+        console.log(`[Perplexity] Enriched tech: ${techName.trim()} with URL: ${documentationUrl.substring(0, 50)}...`);
+      }
+    });
+    
+    console.log(`[Perplexity] Successfully enriched ${enrichedTechItems.length} tech items with documentation links`);
+    return enrichedTechItems;
   } catch (error) {
     console.error('Error enriching tech documentation:', error);
     if (axios.isAxiosError(error)) {
@@ -415,8 +342,16 @@ function mergeTechItems(
 export async function POST(request: NextRequest) {
   try {
     const requestData = await request.json();
-    const { prompt, projectName: providedProjectName, selectedTechs, selectedTechStack } = requestData;
+    const { prompt, projectName: providedProjectName, selectedTechs } = requestData;
+    
+    // Explicitly extract tech stack selection
+    const selectedTechStackType = requestData.selectedTechStack || 'Other';
     const techStack = requestData.techStack;  // Extract separately to fix initialization order
+    
+    console.log("Project generation request received:");
+    console.log(`- Prompt: ${prompt.substring(0, 50)}...`);
+    console.log(`- Selected Tech Stack: ${selectedTechStackType}`);
+    console.log(`- Project name provided: ${providedProjectName ? 'Yes' : 'No'}`);
 
     if (!prompt || typeof prompt !== 'string') {
       return NextResponse.json(
@@ -443,8 +378,7 @@ export async function POST(request: NextRequest) {
       // Step 2: Process tech stack
       // Handle both techStack object and selectedTechStack string
       const userTechStack = requestData.techStack; 
-      const selectedTechStackType = requestData.selectedTechStack || 'Other'; 
-      console.log(`Selected tech stack type: ${selectedTechStackType}`);
+      console.log(`Processing tech stack for: ${selectedTechStackType}`);
       
       let resolvedTechStack = userTechStack ? { ...userTechStack } : null;
       
@@ -455,22 +389,76 @@ export async function POST(request: NextRequest) {
         // Pass the tech stack type to influence generation based on the selection
         const techStackPrompt = `${prompt}\n\nPreferred tech stack: ${selectedTechStackType}`;
         resolvedTechStack = await projectGenerator.generateTechStack(techStackPrompt);
+      }
         
-        // Ensure at least a minimal tech stack based on the selection
-        if (selectedTechStackType === 'Next.js' && 
-            (!resolvedTechStack.frameworks || !resolvedTechStack.frameworks.includes('Next.js'))) {
-          resolvedTechStack.frameworks = [...(resolvedTechStack.frameworks || []), 'Next.js'];
-          if (!resolvedTechStack.libraries || !resolvedTechStack.libraries.includes('React')) {
-            resolvedTechStack.libraries = [...(resolvedTechStack.libraries || []), 'React'];
+      // Force the tech stack to include mandatory frameworks based on user selection
+      // This ensures we always honor the user's explicit choice in the UI
+      if (selectedTechStackType === 'Next.js') {
+        console.log("Ensuring Next.js tech stack requirements are met");
+        resolvedTechStack.frameworks = resolvedTechStack.frameworks || [];
+        resolvedTechStack.libraries = resolvedTechStack.libraries || [];
+        
+        // Make sure Next.js is the first framework
+        if (!resolvedTechStack.frameworks.includes('Next.js')) {
+          resolvedTechStack.frameworks = ['Next.js', ...resolvedTechStack.frameworks];
+        } else {
+          // Move Next.js to front if already exists
+          resolvedTechStack.frameworks = [
+            'Next.js',
+            ...resolvedTechStack.frameworks.filter((f: string) => f !== 'Next.js')
+          ];
+        }
+        
+        // Ensure React is included
+        if (!resolvedTechStack.frameworks.includes('React') && 
+            !resolvedTechStack.libraries.includes('React')) {
+          resolvedTechStack.libraries = ['React', ...resolvedTechStack.libraries];
+        }
+      } else if (selectedTechStackType === 'Apple') {
+        console.log("Ensuring Apple tech stack requirements are met");
+        resolvedTechStack.frameworks = resolvedTechStack.frameworks || [];
+        resolvedTechStack.libraries = resolvedTechStack.libraries || [];
+        
+        // Make sure SwiftUI is the first framework
+        if (!resolvedTechStack.frameworks.includes('SwiftUI')) {
+          resolvedTechStack.frameworks = ['SwiftUI', ...resolvedTechStack.frameworks];
+        } else {
+          // Move SwiftUI to front if already exists
+          resolvedTechStack.frameworks = [
+            'SwiftUI',
+            ...resolvedTechStack.frameworks.filter((f: string) => f !== 'SwiftUI')
+          ];
+        }
+        
+        // Ensure Swift and Core Data are included
+        const requiredLibraries = ['Swift', 'Core Data'];
+        for (const lib of requiredLibraries) {
+          if (!resolvedTechStack.libraries.includes(lib)) {
+            resolvedTechStack.libraries.push(lib);
           }
-        } else if (selectedTechStackType === 'Apple' && 
-                  (!resolvedTechStack.frameworks || !resolvedTechStack.frameworks.includes('SwiftUI'))) {
-          resolvedTechStack.frameworks = [...(resolvedTechStack.frameworks || []), 'SwiftUI'];
-          resolvedTechStack.libraries = [...(resolvedTechStack.libraries || []), 'Swift', 'Core Data'];
-        } else if (selectedTechStackType === 'CLI' && 
-                  (!resolvedTechStack.frameworks || !resolvedTechStack.frameworks.includes('Go'))) {
-          resolvedTechStack.frameworks = [...(resolvedTechStack.frameworks || []), 'Go'];
-          resolvedTechStack.libraries = [...(resolvedTechStack.libraries || []), 'Cobra', 'BubbleTea'];
+        }
+      } else if (selectedTechStackType === 'CLI') {
+        console.log("Ensuring CLI tech stack requirements are met");
+        resolvedTechStack.frameworks = resolvedTechStack.frameworks || [];
+        resolvedTechStack.libraries = resolvedTechStack.libraries || [];
+        
+        // Make sure Go is the first framework for CLI
+        if (!resolvedTechStack.frameworks.includes('Go')) {
+          resolvedTechStack.frameworks = ['Go', ...resolvedTechStack.frameworks];
+        } else {
+          // Move Go to front if already exists
+          resolvedTechStack.frameworks = [
+            'Go',
+            ...resolvedTechStack.frameworks.filter((f: string) => f !== 'Go')
+          ];
+        }
+        
+        // Ensure CLI-specific libraries are included
+        const cliLibraries = ['Cobra', 'BubbleTea'];
+        for (const lib of cliLibraries) {
+          if (!resolvedTechStack.libraries.includes(lib)) {
+            resolvedTechStack.libraries.push(lib);
+          }
         }
       }
       
@@ -480,26 +468,26 @@ export async function POST(request: NextRequest) {
         await gatherProjectContext(prompt, selectedTechStackType, resolvedTechStack);
       
       console.log(`Gathered ${researchLinks.length} research links and comprehensive context`);
-      
-      // Include documentation links in the tech stack if available
-      if (resolvedTechStack.documentationLinks) {
-        console.log('Using existing documentation links in tech stack');
-      } else {
-        // Create empty documentation links object
-        resolvedTechStack.documentationLinks = {};
         
-        // Add documentation links for all tech items
-        ['frameworks', 'libraries', 'apis', 'tools'].forEach(category => {
-          if (resolvedTechStack[category]) {
-            resolvedTechStack[category].forEach((tech: string) => {
-              // Create a placeholder documentation link
-              resolvedTechStack.documentationLinks[tech] = 
-                `https://www.google.com/search?q=${encodeURIComponent(tech)}+documentation`;
-            });
-          }
-        });
-      }
-      
+        // Include documentation links in the tech stack if available
+        if (resolvedTechStack.documentationLinks) {
+          console.log('Using existing documentation links in tech stack');
+        } else {
+          // Create empty documentation links object
+          resolvedTechStack.documentationLinks = {};
+          
+          // Add documentation links for all tech items
+          ['frameworks', 'libraries', 'apis', 'tools'].forEach(category => {
+            if (resolvedTechStack[category]) {
+              resolvedTechStack[category].forEach((tech: string) => {
+                // Create a placeholder documentation link
+                resolvedTechStack.documentationLinks[tech] = 
+                  `https://www.google.com/search?q=${encodeURIComponent(tech)}+documentation`;
+              });
+            }
+          });
+        }
+        
       // Step 4: Generate project content with enhanced context
       console.log("Generating project content with enhanced context...");
       
@@ -572,12 +560,7 @@ Generate project content:`;
       // Generate the project content by directly calling OpenRouter API
       const contentResponse = await fetch('https://openrouter.ai/api/v1/chat/completions', {
         method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-          'Authorization': `Bearer ${openRouterApiKey}`,
-          'HTTP-Referer': 'https://luke-portfolio.vercel.app',
-          'X-Title': 'Luke Portfolio',
-        },
+        headers: getOpenRouterHeaders(),
         body: JSON.stringify({
           model: 'anthropic/claude-3.7-sonnet',
           messages: [
@@ -643,7 +626,7 @@ Generate project content:`;
       };
       
       // Step 4: Create the basic project structure
-      const basicProjectPrompt = `
+        const basicProjectPrompt = `
 You are a creative project generator that takes a user's project idea and transforms it into a structured project description. 
 The output should be a valid JSON object that strictly follows the format below, without any additional explanation or text outside the JSON.
 
@@ -704,12 +687,7 @@ Example format:
       console.log('Generating project structure...');
       const response = await fetch('https://openrouter.ai/api/v1/chat/completions', {
         method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-          'Authorization': `Bearer ${openRouterApiKey}`,
-          'HTTP-Referer': 'https://luke-portfolio.vercel.app',
-          'X-Title': 'Luke Portfolio',
-        },
+        headers: getOpenRouterHeaders(),
         body: JSON.stringify({
           model: 'anthropic/claude-3.7-sonnet',
           messages: [
@@ -747,24 +725,24 @@ Example format:
       console.log("Processed content for parsing:", content.substring(0, 200) + "...");
       
       const projectResponse = JSON.parse(content);
-      
-      console.log('Project structure generated successfully');
-      
-      // Now enrich the tech documentation with Perplexity
-      const enrichedTechDocs = await enrichTechDocumentation(projectContent, resolvedTechStack);
-      console.log(`Enriched ${enrichedTechDocs.length} tech documentation links with Perplexity`);
-      
-      // Merge the original tech items with the enriched documentation
-      if (enrichedTechDocs.length > 0 && projectResponse.project.content.tech.items) {
-        projectResponse.project.content.tech.items = 
-          mergeTechItems(projectResponse.project.content.tech.items, enrichedTechDocs);
-        console.log('Merged tech items with enriched documentation');
-      }
-      
-      // Extract the primary framework for template selection
+        
+        console.log('Project structure generated successfully');
+        
+        // Now enrich the tech documentation with Perplexity
+        const enrichedTechDocs = await enrichTechDocumentation(projectContent, resolvedTechStack);
+        console.log(`Enriched ${enrichedTechDocs.length} tech documentation links with Perplexity`);
+        
+        // Merge the original tech items with the enriched documentation
+        if (enrichedTechDocs.length > 0 && projectResponse.project.content.tech.items) {
+          projectResponse.project.content.tech.items = 
+            mergeTechItems(projectResponse.project.content.tech.items, enrichedTechDocs);
+          console.log('Merged tech items with enriched documentation');
+        }
+        
+        // Extract the primary framework for template selection
       const primaryFramework = selectedTechStackType || 
         (resolvedTechStack.frameworks && 
-        resolvedTechStack.frameworks.length > 0 ? 
+          resolvedTechStack.frameworks.length > 0 ? 
         resolvedTechStack.frameworks[0] : 'next.js');
       
       // Step 5: Generate the documentation using the primary framework
@@ -777,14 +755,14 @@ Example format:
         researchLinks: researchLinks
       };
       
-      const documents = await projectGenerator.generateProjectDocumentation(
-        primaryFramework, 
+        const documents = await projectGenerator.generateProjectDocumentation(
+          primaryFramework, 
         enhancedProjectContent
-      );
-      
-      // Combine the project and documents into the final response
+        );
+        
+        // Combine the project and documents into the final response
       const generationResponse = {
-        project: projectResponse.project,
+          project: projectResponse.project,
         documents: {
           ...documents,
           tech: documents.tech // Ensure tech.md is included
@@ -852,7 +830,7 @@ Example format:
         } else if (name.toLowerCase().includes('tool') || 
                   documentationUrl.includes('tool')) {
           processedTechStack.tools.push(name);
-        } else {
+            } else {
           processedTechStack.libraries.push(name);
         }
       });
@@ -1003,37 +981,32 @@ async function generateFollowUpQueries(
     
     // Create a prompt for Claude to generate follow-up queries
     const followUpPrompt = `
-You are a search strategist tasked with analyzing search results and creating follow-up search queries to gather deeper, more specific information for project documentation.
+Based on the initial search results, generate follow-up queries to gather more specific information needed for implementing this project.
 
-Here are the initial search results:
----
-${condensedResults}
----
+INITIAL RESULTS:
+${initialResults.join('\n\n')}
 
-PROJECT REQUIREMENTS: "${prompt}"
-TECH STACK TYPE: "${techStackType}"
-${techItems.length > 0 ? `TECH STACK: ${techItems.join(', ')}` : ''}
+USER REQUIREMENTS:
+${prompt}
 
-Your task is to create 3-5 follow-up search queries that will retrieve deeper, more specific information about implementation details, technical challenges, and best practices for this project.
+TECH STACK TYPE: ${techStackType}
 
-Identify specific technical challenges, architectural patterns, or implementation details that warrant deeper investigation based on the initial search results.
+Create 5 follow-up search queries that will help gather more detailed technical information about implementation patterns, best practices, and specific frameworks/libraries relevant to this project.
 
-Format your response as a JSON array of strings, each representing a single search query.
-Example: ["query 1", "query 2", "query 3"]
+FORMAT REQUIREMENTS:
+- Return ONLY a valid JSON array of strings, with each string being a search query
+- Do NOT include markdown formatting, code blocks, or explanatory text
+- Ensure the response can be directly parsed with JSON.parse()
+- Example valid response: ["query 1", "query 2", "query 3"]
 
-Each follow-up query should be highly specific and target a particular technical aspect that deserves deeper exploration.
+IMPORTANT: Your entire response must be ONLY the JSON array with no other text.
 `;
 
     // Make API call to Claude
     console.log("Generating follow-up queries with Claude...");
     const response = await fetch('https://openrouter.ai/api/v1/chat/completions', {
       method: 'POST',
-      headers: {
-        'Content-Type': 'application/json',
-        'Authorization': `Bearer ${openrouterApiKey}`,
-        'HTTP-Referer': 'https://luke-portfolio.vercel.app',
-        'X-Title': 'Luke App',
-      },
+      headers: getOpenRouterHeaders(),
       body: JSON.stringify({
         model: 'anthropic/claude-3.7-sonnet',
         messages: [
@@ -1052,8 +1025,20 @@ Each follow-up query should be highly specific and target a particular technical
     const followUpContent = data.choices[0].message.content;
     
     try {
-      // Parse the JSON response
-      const followUpQueries = JSON.parse(followUpContent);
+      // Check if response is wrapped in markdown code blocks and extract
+      let processedContent = followUpContent;
+      
+      // Handle markdown JSON code blocks
+      const markdownJsonRegex = /```(json)?\s*(\[[\s\S]*?\])\s*```/;
+      const markdownMatch = processedContent.match(markdownJsonRegex);
+      
+      if (markdownMatch && markdownMatch[2]) {
+        processedContent = markdownMatch[2];
+        console.log("Extracted JSON from markdown code block");
+      }
+      
+      // Try to parse the processed content
+      const followUpQueries = JSON.parse(processedContent);
       
       if (Array.isArray(followUpQueries) && followUpQueries.length > 0) {
         console.log("Generated follow-up queries:", followUpQueries);
@@ -1061,6 +1046,18 @@ Each follow-up query should be highly specific and target a particular technical
       }
     } catch (parseError) {
       console.error("Error parsing follow-up queries:", parseError);
+      
+      // Try to extract arrays manually as fallback
+      try {
+        const arrayMatch = followUpContent.match(/\[\s*"[^"]*"(?:\s*,\s*"[^"]*")*\s*\]/);
+        if (arrayMatch) {
+          const extractedArray = JSON.parse(arrayMatch[0]);
+          console.log("Manually extracted follow-up queries:", extractedArray);
+          return extractedArray;
+        }
+      } catch (fallbackError) {
+        console.error("Fallback parsing also failed:", fallbackError);
+      }
     }
     
     // Fall back to default queries if anything goes wrong
@@ -1105,49 +1102,49 @@ function getDefaultFollowUpQueries(
   );
 }
 
-/**
- * Search with Perplexity Sonar Reasoning
- */
+// Function to perform web search using Perplexity Sonar Reasoning via OpenRouter
 async function searchWithSonarReasoning(query: string): Promise<string> {
   try {
     // Get OpenRouter API key from environment variable
-    const openrouterApiKey = process.env.OPENROUTER_API_KEY;
+    const openrouterApiKey = getOpenRouterKey();
     
     if (!openrouterApiKey) {
-      throw new Error('No OpenRouter API key found in environment variables');
+      console.error('No OpenRouter API key found');
+      throw new Error('No OpenRouter API key found');
     }
     
+    console.log(`Executing Sonar Reasoning query: "${query.substring(0, 100)}..."`);
+    
     // Use Perplexity via OpenRouter to get search results
-    const response = await axios.post(
-      'https://openrouter.ai/api/v1/chat/completions',
-      {
+    const response = await fetch('https://openrouter.ai/api/v1/chat/completions', {
+      method: 'POST',
+      headers: getOpenRouterHeaders(),
+      body: JSON.stringify({
         model: 'perplexity/sonar-reasoning',
         messages: [
           {
             role: 'user',
-            content: query
+            content: `You are a helpful internet search engine. Search the web for up-to-date information about: ${query}`
           }
         ],
         max_tokens: 4096,
         temperature: 0.2
-      },
-      {
-        headers: {
-          'Content-Type': 'application/json',
-          'Authorization': `Bearer ${openrouterApiKey}`,
-          'HTTP-Referer': 'https://luke-portfolio.vercel.app',
-          'X-Title': 'Luke Project Generator'
-        }
-      }
-    );
+      }),
+    });
     
-    return response.data.choices[0].message.content;
-  } catch (error) {
-    console.error(`Error in Sonar Reasoning search: ${error}`);
-    if (axios.isAxiosError(error)) {
-      const axiosError = error as AxiosError;
-      throw new Error(`Sonar Reasoning search failed: ${axiosError.message}`);
+    if (!response.ok) {
+      const errorText = await response.text();
+      throw new Error(`Sonar Reasoning API error: ${response.status} ${errorText}`);
     }
-    throw error;
+    
+    const responseData = await response.json();
+    return responseData.choices[0].message.content;
+  } catch (error) {
+    console.error('Sonar Reasoning search failed:', error);
+    if (error instanceof AxiosError) {
+      throw new Error(`Sonar Reasoning API error: ${error.response?.status} ${JSON.stringify(error.response?.data)}`);
+    } else {
+      throw new Error(`Sonar Reasoning error: ${error instanceof Error ? error.message : String(error)}`);
+    }
   }
 } 
