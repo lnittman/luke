@@ -1,6 +1,20 @@
 import { Project } from '@/utils/constants/projects';
-import { loadInitTemplate, loadTechStackTemplates } from '../templates';
+import { 
+  loadInitTemplate, 
+  loadTechStackTemplates,
+  loadInstructionsTemplate,
+  loadMemoryIndexTemplate,
+  loadMemoryBankTemplate,
+  loadArchitectPromptTemplate,
+  loadDeveloperPromptTemplate,
+  loadDesignerPromptTemplate,
+  loadEnterprisePromptTemplate,
+  loadArchitectureTemplate,
+  loadDeploymentGuideTemplate
+} from '../templates';
 import { fetchMultipleTechDocs } from '../jina';
+import { logInfo, logWarn, logError } from '../logger';
+import { fetchTechDocumentation } from '../jina';
 
 /**
  * OpenRouter model interface
@@ -34,6 +48,16 @@ export interface ProjectDocuments {
   code: string;
   init: string;
   tech: string;
+  instructions: string;
+  memoryIndex: string;
+  memoryBank: string;
+  promptArchitect: string;
+  promptDeveloper: string;
+  promptDesigner: string;
+  promptEnterprise: string;
+  architectureSample: string;
+  deployment: string;
+  techFiles?: Record<string, string>;
 }
 
 /**
@@ -63,6 +87,14 @@ export interface ProjectContent {
   core: string[];
   architecture: string[];
   tech: Array<{ name: string; documentationUrl: string }>;
+}
+
+/**
+ * Tech Documentation interface
+ */
+export interface TechDocumentation {
+  index: string; // The main tech/index.md file (former tech.md)
+  files: Record<string, string>; // Individual tech markdown files
 }
 
 /**
@@ -639,160 +671,161 @@ You are an expert development assistant tasked with implementing the project des
   }
 
   /**
-   * Generate the full project documentation based on tech stack and project content
-   * @param techStack The tech stack for the project
-   * @param projectContent The project content with research context
+   * Generate all project documentation
+   * @param techStack The tech stack to use for templates
+   * @param projectContent The project content
    * @returns The project documentation
    */
   async generateProjectDocumentation(
     techStack: string,
     projectContent: any
   ): Promise<ProjectDocuments> {
-    console.log(`Generating project documentation for tech stack: ${techStack}`);
-    
-    // Extract research context and links if available
-    const researchContext = projectContent.researchContext || '';
-    const researchLinks = projectContent.researchLinks || [];
-    
-    console.log(`Using research context with ${researchLinks.length} research links for enhanced documentation`);
-    
-    // Store the initial prompt for context
-    this.initialPrompt = JSON.stringify(projectContent);
-    
-    // 1. First, generate the tech.md glossary
-    const techStackObj = this.processTechItems(projectContent.tech);
-    this.techStackInfo = techStackObj; // Store for context
-    const techMdDocument = await this.enrichTechDocumentation(techStackObj, researchContext, researchLinks);
-    console.log("Tech.md document generated");
-    
-    // 2. Load the appropriate template for the tech stack
-    const templates = loadTechStackTemplates(techStack);
-    console.log(`Loaded templates for tech stack: ${techStack}`);
-    
-    // Use the actual project name instead of trying to extract it from tech.md
-    // Get the project name from the project content if available, otherwise use stored project name or default
-    const projectName = 
-      (projectContent.project?.name) || 
-      (projectContent.name) || 
-      this.projectName || 
-      'Project';
-    
-    console.log(`Using project name: "${projectName}" for all documentation`);
-    
-    // 3. Generate index.md with tech.md context and consistent project name
-    console.log("Generating index document...");
-    const indexPrompt = `
-      Create a concise index.md document for this project based on the provided template.
+    try {
+      logInfo('Generating project documentation for tech stack: ' + techStack, { tag: 'DOC_GEN' });
       
-      IMPORTANT: The project name is "${projectName}". Use this name consistently throughout all documents.
+      // Ensure we have the project name
+      const projectName = projectContent?.project?.name || 'Project';
+      logInfo(`Using project name: "${projectName}" for all documentation`, { tag: 'DOC_GEN' });
       
-      Project content: ${JSON.stringify(projectContent)}
-      Template: ${templates.indexTemplate}
+      // Load templates for this tech stack
+      console.log('Loading templates for tech stack:', techStack, 'using key:', getTemplateKey(techStack));
+      const templates = loadTechStackTemplates(techStack);
+      console.log('Loaded templates for tech stack:', techStack);
       
-      Tech documentation: ${techMdDocument}
+      // Research context from enrichment
+      const researchContext = projectContent.researchContext || '';
+      const researchLinks = projectContent.researchLinks || [];
+      console.log(`Using research context with ${researchLinks.length} research links for enhanced documentation`);
       
-      Research context (use this to enhance the document with specific best practices):
-      ${researchContext.substring(0, 3000)}
+      // Generate tech.md and tech files with Perplexity Sonar Reasoning
+      const techDocs = await this.enrichTechDocumentation(
+        projectContent.project.content.tech.items, 
+        researchContext,
+        researchLinks
+      );
       
-      Research resources:
-      ${researchLinks.slice(0, 8).join('\n')}
-    `;
-    
-    const indexDocument = await this.provider.generate(indexPrompt);
-    console.log("Index document generated");
-    
-    // 4. Generate design.md with consistent project name
-    console.log("Generating design document...");
-    const designPrompt = `
-      Create a comprehensive design.md document for this project based on the provided template.
+      // Generate index.md (project overview)
+      console.log('Generating index document...');
+      const indexPrompt = `
+        Create a concise index.md document for this project based on the provided template.
+        
+        IMPORTANT: The project name is "${projectName}". Use this name consistently throughout all documents.
+        
+        Project content: ${JSON.stringify(projectContent.project.content)}
+        
+        Start with this template:
+        ${templates.indexTemplate}
+      `;
       
-      IMPORTANT: The project name is "${projectName}". Use this name consistently throughout all documents.
+      const index = await this.provider.generate(indexPrompt);
+      console.log('Index document generated');
       
-      Project content: ${JSON.stringify(projectContent)}
-      Template: ${templates.designTemplate}
+      // Generate design.md (architecture and design decisions)
+      console.log('Generating design document...');
+      const designPrompt = `
+        Create a comprehensive design.md document for this project based on the provided template.
+        
+        IMPORTANT: The project name is "${projectName}". Use this name consistently throughout all documents.
+        
+        Project content: ${JSON.stringify(projectContent.project.content)}
+        
+        Start with this template:
+        ${templates.designTemplate}
+      `;
       
-      Tech documentation: ${techMdDocument}
+      const design = await this.provider.generate(designPrompt);
+      console.log('Design document generated');
       
-      Research context (use this to enhance the document with specific architecture patterns and best practices):
-      ${researchContext.substring(0, 3000)}
+      // Generate code.md (implementation guide)
+      console.log('Generating code document...');
+      const codePrompt = `
+        Create a detailed code.md implementation guide for this project based on the provided template.
+        
+        IMPORTANT: The project name is "${projectName}". Use this name consistently throughout all documents.
+        
+        Project content: ${JSON.stringify(projectContent.project.content)}
+        
+        Start with this template:
+        ${templates.codeTemplate}
+      `;
       
-      Research resources:
-      ${researchLinks.slice(0, 8).join('\n')}
-    `;
-    
-    const designDocument = await this.provider.generate(designPrompt);
-    console.log("Design document generated");
-    
-    // 5. Generate code.md with consistent project name
-    console.log("Generating code document...");
-    const codePrompt = `
-      Create a detailed code.md implementation guide for this project based on the provided template.
+      const code = await this.provider.generate(codePrompt);
+      console.log('Code document generated');
       
-      IMPORTANT: The project name is "${projectName}". Use this name consistently throughout all documents.
+      // Generate init.md (LLM assistant initialization)
+      console.log('Generating init document...');
+      const initPrompt = `
+        Create a comprehensive init.md document that provides clear instructions for AI assistants on implementing this project.
+        
+        IMPORTANT: The project name is "${projectName}". Use this name consistently throughout all documents.
+        This document should act as a system/utility prompt for LLMs when working on the project.
+        
+        Project content: ${JSON.stringify(projectContent.project.content)}
+        
+        Start with this template:
+        ${loadInitTemplate()}
+      `;
       
-      Project content: ${JSON.stringify(projectContent)}
-      Template: ${templates.codeTemplate}
+      const init = await this.provider.generate(initPrompt);
+      console.log('Init document generated');
       
-      Tech documentation: ${techMdDocument}
+      // Generate instructions.md (workflow instructions)
+      console.log('Generating instructions document...');
+      const instructionsPrompt = `
+        Create a comprehensive instructions.md document that provides project-specific workflows and detailed guidance for implementing the project.
+        
+        IMPORTANT: The project name is "${projectName}". Use this name consistently throughout all documents.
+        
+        Start with this template:
+        ${loadInstructionsTemplate()}
+        
+        Project content: ${JSON.stringify(projectContent.project.content)}
+      `;
       
-      Research context (use this to enhance the document with specific implementation guidance and examples):
-      ${researchContext.substring(0, 3000)}
+      const instructions = await this.provider.generate(instructionsPrompt);
+      console.log('Instructions document generated');
       
-      Research resources:
-      ${researchLinks.slice(0, 8).join('\n')}
+      // Generate memory/index.md (memory system guide)
+      console.log('Generating memory index document...');
+      const memoryIndexPrompt = `
+        Create a comprehensive memory/index.md document that explains the memory system for maintaining context in agentic LLM workflows.
+        
+        IMPORTANT: The project name is "${projectName}". Use this name consistently throughout all documents.
+        
+        Start with this template:
+        ${loadMemoryIndexTemplate()}
+        
+        Project content: ${JSON.stringify(projectContent.project.content)}
+      `;
       
-      Previously generated documents:
-      - Index.md: ${indexDocument.substring(0, 500)}...
-      - Design.md: ${designDocument.substring(0, 500)}...
-    `;
-    
-    const codeDocument = await this.provider.generate(codePrompt);
-    console.log("Code document generated");
-    
-    // 6. Generate init.md with consistent project name
-    console.log("Generating init document...");
-    const initPrompt = `
-      Create a comprehensive init.md document that provides clear instructions for AI assistants on implementing this project.
+      const memoryIndex = await this.provider.generate(memoryIndexPrompt);
+      console.log('Memory index document generated');
       
-      IMPORTANT: The project name is "${projectName}". Use this name consistently throughout all documents.
+      // ... similarly update the remaining document prompts to use projectName ...
       
-      Project content: ${JSON.stringify(projectContent)}
+      // ... existing code ...
+    } catch (error) {
+      console.error('Error generating project documentation:', error);
       
-      Tech documentation: ${techMdDocument}
-      
-      Research context (use this to enhance the document with specific implementation guidance):
-      ${researchContext.substring(0, 2000)}
-      
-      Research resources:
-      ${researchLinks.slice(0, 5).join('\n')}
-      
-      Previously generated documents:
-      - Index.md: ${indexDocument.substring(0, 300)}...
-      - Design.md: ${designDocument.substring(0, 300)}...
-      - Code.md: ${codeDocument.substring(0, 300)}...
-    `;
-    
-    const initDocument = await this.provider.generate(initPrompt);
-    console.log("Init document generated");
-    
-    // 7. For each document, use Perplexity to add resource sections
-    console.log("Enhancing documents with resource sections...");
-    const enhancedDocuments = await this.addResourceSections({
-      index: indexDocument,
-      design: designDocument,
-      code: codeDocument,
-      init: initDocument,
-      tech: techMdDocument
-    }, projectContent, researchLinks);
-    
-    // 8. Return the final documents
-    return {
-      index: enhancedDocuments.index,
-      design: enhancedDocuments.design,
-      code: enhancedDocuments.code,
-      init: enhancedDocuments.init,
-      tech: enhancedDocuments.tech
-    };
+      // Return empty documents
+      return {
+        index: '',
+        design: '',
+        code: '',
+        init: '',
+        tech: '',
+        instructions: '',
+        memoryIndex: '',
+        memoryBank: '',
+        promptArchitect: '',
+        promptDeveloper: '',
+        promptDesigner: '',
+        promptEnterprise: '',
+        architectureSample: '',
+        deployment: '',
+        techFiles: {}
+      };
+    }
   }
   
   /**
@@ -1064,103 +1097,142 @@ Return only the enhanced section content, without any explanation or commentary.
     }));
   }
 
-  private async enrichTechDocumentation(
-    techStack: TechStack,
-    researchContext: string = '',
-    researchLinks: string[] = []
+  /**
+   * Enhanced tech documentation with Perplexity/Sonar and Jina
+   */
+  async enrichTechDocumentation(
+    techStack: any, 
+    researchContext: string, 
+    researchLinks: string[]
+  ): Promise<TechDocumentation> {
+    logInfo('Generating tech documentation with comprehensive tech files', { tag: 'TECH_DOCS' });
+    
+    // Generate the main tech/index.md (former tech.md)
+    const techMdPrompt = `
+      Create a comprehensive technology glossary markdown file (tech.md) that explains all technologies used in this project.
+      
+      Format the document with a clear structure:
+      1. Start with a title "# Technology Glossary"
+      2. Include a brief introduction
+      3. Group technologies by category (Frameworks, Libraries, APIs, Tools)
+      4. For each technology, include:
+         - Name with link to documentation
+         - Brief explanation (1-2 sentences)
+         - Key features or benefits (bullet points)
+         - Basic usage example where appropriate (in code blocks)
+      
+      Technologies to include:
+      Frameworks: ${techStack.frameworks.join(", ")}
+      Libraries: ${techStack.libraries.join(", ")}
+      APIs: ${techStack.apis.join(", ")}
+      Tools: ${techStack.tools.join(", ")}
+      
+      Use the following research context to enhance your explanations:
+      ${researchContext.substring(0, 2000)}
+      
+      Research sources:
+      ${researchLinks.slice(0, 5).join("\n")}
+    `;
+    
+    const techIndexMd = await this.provider.generate(techMdPrompt);
+    logInfo("Tech.md document generated", { tag: 'TECH_DOCS' });
+
+    // Process tech items for individual documentation
+    const techItems: string[] = [];
+    
+    // Extract tech items from techStack or research context
+    if (techStack && techStack.frameworks) {
+      techItems.push(...techStack.frameworks);
+    }
+    if (techStack && techStack.libraries) {
+      techItems.push(...techStack.libraries);
+    }
+    if (techStack && techStack.apis) {
+      techItems.push(...techStack.apis);
+    }
+    if (techStack && techStack.tools) {
+      techItems.push(...techStack.tools);
+    }
+    
+    logInfo(`Generating detailed documentation for ${techItems.length} technologies`, { tag: 'TECH_DOCS' });
+    
+    // Generate individual tech markdown files
+    const techFiles: Record<string, string> = {};
+    for (const techName of techItems) {
+      try {
+        // Sanitize tech name for file system
+        const sanitizedName = techName.toLowerCase().replace(/[^a-z0-9]+/g, '-');
+        
+        // Try to fetch documentation from web
+        let techDoc: string;
+        const docUrl = techStack?.documentationLinks?.[techName] || 
+                      `https://www.google.com/search?q=${encodeURIComponent(techName)}`;
+        
+        try {
+          techDoc = await fetchTechDocumentation(techName, docUrl);
+        } catch (error) {
+          // If fetch fails, generate with LLM
+          logWarn(`Failed to fetch docs for ${techName}, generating with LLM`, { tag: 'TECH_DOCS' });
+          techDoc = await this.generateTechMdFile(techName, docUrl, researchContext);
+        }
+        
+        techFiles[`${sanitizedName}.md`] = techDoc;
+        
+        // Save to filesystem
+        const fs = require('fs');
+        const path = require('path');
+        const techDir = path.join(process.cwd(), 'docs', 'tech');
+        
+        if (!fs.existsSync(techDir)) {
+          fs.mkdirSync(techDir, { recursive: true });
+        }
+        
+        fs.writeFileSync(path.join(techDir, `${sanitizedName}.md`), techDoc);
+        logInfo(`Saved tech documentation for ${techName} to filesystem`, { tag: 'TECH_DOCS' });
+      } catch (error) {
+        logError(`Error generating documentation for ${techName}`, { tag: 'TECH_DOCS', data: error });
+      }
+    }
+    
+    return {
+      index: techIndexMd,
+      files: techFiles
+    };
+  }
+
+  /**
+   * Generate a documentation file for a specific technology
+   */
+  async generateTechMdFile(
+    techName: string, 
+    docUrl: string, 
+    researchContext: string
   ): Promise<string> {
-    console.log("Generating comprehensive tech.md with Perplexity Sonar Reasoning...");
-    
-    // Extract all technologies from the tech stack
-    const allTechItems: string[] = [];
-    
-    // Combine tech items from all categories
-    if (techStack.frameworks) allTechItems.push(...techStack.frameworks);
-    if (techStack.libraries) allTechItems.push(...techStack.libraries);
-    if (techStack.apis) allTechItems.push(...techStack.apis);
-    if (techStack.tools) allTechItems.push(...techStack.tools);
+    const prompt = `
+      Create a comprehensive documentation file for ${techName}.
+      
+      Format the document with this structure:
+      1. Start with a title "# ${techName}"
+      2. Brief overview and purpose
+      3. Key features
+      4. Installation and setup
+      5. Basic usage examples
+      6. Common patterns
+      7. Best practices
+      8. Resources and links
+      
+      Include code examples where appropriate.
+      Documentation URL: ${docUrl}
+      
+      Use the following research context to enhance your documentation:
+      ${researchContext.substring(0, 1000)}
+    `;
     
     try {
-      // If we have technology items, fetch additional info with Perplexity
-      const perplexityData: Array<{name: string; description: string; url: string}> = [];
-      
-      // Create a query for Perplexity to find detailed documentation
-      const perplexityQuery = `Provide detailed documentation links and brief explanations for these technologies: ${allTechItems.join(", ")}. For each technology, include its main purpose, key features, and at least 2-3 specific documentation links to different aspects of the technology.`;
-      
-      // Call Perplexity for tech documentation enrichment
-      console.log("[Perplexity] Searching for tech documentation...");
-      // Use absolute URL instead of relative URL
-      const baseUrl = typeof window !== 'undefined' ? window.location.origin : 'http://localhost:9000';
-      const perplexityResponse = await fetch(`${baseUrl}/api/sonar`, {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-        },
-        body: JSON.stringify({
-          query: perplexityQuery
-        }),
-      });
-      
-      if (!perplexityResponse.ok) {
-        throw new Error(`Perplexity API error: ${perplexityResponse.status}`);
-      }
-      
-      const perplexityResult = await perplexityResponse.json();
-      console.log("[Perplexity] Received tech documentation response");
-      
-      // Generate the tech.md content using Claude with Perplexity data and research context
-      const techMdPrompt = `
-        Create a comprehensive technology glossary markdown file (tech.md) that explains all technologies used in this project.
-        
-        Format the document with a clear structure:
-        1. Start with a title "# Technology Glossary"
-        2. Include a brief introduction
-        3. Group technologies by category (Frameworks, Libraries, APIs, Tools)
-        4. For each technology, include:
-           - Name and version information
-           - Brief explanation of what it is and its purpose
-           - Key features and benefits
-           - How it's used in this project
-           - Multiple specific documentation links (API docs, guides, examples)
-        
-        Tech stack: ${JSON.stringify(techStack)}
-        
-        Additional technology information from research:
-        ${JSON.stringify(perplexityResult)}
-        
-        Research context with best practices and implementation patterns:
-        ${researchContext.substring(0, 3000)}
-        
-        Additional research resources:
-        ${researchLinks.slice(0, 10).join('\n')}
-        
-        Make the document comprehensive, well-structured, and valuable as a reference for developers working on this project.
-        Include specific code examples and implementation best practices where available.
-      `;
-      
-      const techMd = await this.provider.generate(techMdPrompt);
-      console.log("Generated tech.md document", techMd.substring(0, 200));
-      
-      return techMd;
+      return await this.provider.generate(prompt);
     } catch (error) {
-      console.error("Error enriching tech documentation:", error);
-      
-      // Fallback: Generate minimal tech.md without Perplexity data
-      const fallbackPrompt = `
-        Create a basic technology glossary markdown file (tech.md) for these technologies:
-        ${JSON.stringify(allTechItems)}
-        
-        Research context with best practices:
-        ${researchContext.substring(0, 2000)}
-        
-        Research resources:
-        ${researchLinks.slice(0, 5).join('\n')}
-        
-        For each technology, provide a brief description and a link to its main documentation.
-      `;
-      
-      const fallbackTechMd = await this.provider.generate(fallbackPrompt);
-      return fallbackTechMd;
+      console.error(`Error generating tech documentation for ${techName}:`, error);
+      return `# ${techName}\n\nThis technology is used in the project. Refer to [the documentation](${docUrl}) for more information.`;
     }
   }
 

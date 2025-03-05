@@ -12,7 +12,7 @@ const { execSync } = require('child_process');
 
 const TECH_STACKS = ['next', 'apple', 'cli', 'other'];
 const DOCS_DIR = path.join(process.cwd(), 'docs');
-const TEMPLATE_DIR = path.join(DOCS_DIR, 'template');
+const TEMPLATE_DIR = path.join(DOCS_DIR, 'template', 'stack');
 const TOOLS_DIR = path.join(DOCS_DIR, 'tools');
 
 // Ensure docs directory exists
@@ -247,8 +247,8 @@ console.log(`✅ Created legacy file ${legacyMainFilePath}`);
 
 console.log('\nAll tech files have been generated in the docs directory.');
 console.log('Using new structure:');
-console.log('  - Tech stack templates: docs/template/{stack}/');
+console.log('  - Tech stack templates: docs/template/stack/{stack}/');
 console.log('  - Main tech documentation: docs/tools/tech.md');
 console.log('  - Legacy files maintained for backward compatibility');
 console.log('\nTo manually test the files, run:');
-console.log('  node scripts/generate-tech-files.js'); 
+console.log('  node scripts/generate-tech-files.js');

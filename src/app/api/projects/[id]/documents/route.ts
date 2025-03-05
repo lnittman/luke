@@ -25,6 +25,17 @@ export async function GET(
         designDocument: true,
         codeDocument: true,
         initDocument: true,
+        techDocument: true,
+        // Agentic workflow documents
+        instructionsDocument: true,
+        memoryIndexDocument: true,
+        memoryBankDocument: true,
+        promptArchitectDocument: true,
+        promptDeveloperDocument: true,
+        promptDesignerDocument: true,
+        promptEnterpriseDocument: true,
+        architectureSampleDocument: true,
+        deploymentDocument: true,
         // Legacy document structure (for backward compatibility)
         comprehensiveDocument: true,
         implementationDocument: true,

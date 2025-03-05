@@ -1862,7 +1862,7 @@ export const ProjectGenerator = ({ onProjectGenerated, onCancel, techData }: Pro
             backgroundColor: 'var(--background)',
             color: 'var(--foreground)',
             height: '72px',
-            fontFamily: 'ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, monospace'
+            fontFamily: 'Iosevka, ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, monospace'
           }
         }}
       />

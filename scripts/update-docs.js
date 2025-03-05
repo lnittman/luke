@@ -54,8 +54,10 @@ async function main() {
   
   // Create stack directories
   const stacks = ['next', 'apple', 'cli', 'other'];
+  const STACK_DIR = path.join(TEMPLATE_DIR, 'stack');
+  ensureDir(STACK_DIR);
   stacks.forEach(stack => {
-    ensureDir(path.join(TEMPLATE_DIR, stack));
+    ensureDir(path.join(STACK_DIR, stack));
   });
   
   // Move tech files to their proper locations
@@ -69,7 +71,7 @@ async function main() {
   // Stack-specific tech files
   stacks.forEach(stack => {
     const srcPath = path.join(DOCS_DIR, `tech-${stack}.md`);
-    const destPath = path.join(TEMPLATE_DIR, stack, 'tech.md');
+    const destPath = path.join(STACK_DIR, stack, 'tech.md');
     
     if (copyFileIfExists(srcPath, destPath)) {
       movedFiles++;
@@ -121,6 +123,60 @@ Luke is an AI-powered productivity tool that helps developers build software fas
       }
     }
   }
+  
+  // Generate or ensure AI.md files exist for each stack
+  console.log('Ensuring AI.md files exist for all tech stacks...');
+  stacks.forEach(stack => {
+    const aiMdPath = path.join(TEMPLATE_DIR, stack, 'AI.md');
+    if (!fs.existsSync(aiMdPath)) {
+      console.log(`Creating blank AI.md template for ${stack}...`);
+      const aiContent = `# AI Integration Guide for ${stack.charAt(0).toUpperCase() + stack.slice(1)} Applications
+
+> Comprehensive guide to integrating AI capabilities with ${stack.charAt(0).toUpperCase() + stack.slice(1)} applications.
+> Last updated: ${new Date().toISOString()}
+
+## AI Architecture Overview
+
+Define the layered architecture for AI integration in ${stack} applications.
+
+## LLM Model Strategy
+
+### Tiered Model Approach
+
+1. **Tier 1: High-Quality Reasoning** (Used sparingly for critical tasks)
+   - Claude 3.7 Sonnet (via OpenRouter)
+   - Claude 3.7 Sonnet:thinking (for complex reasoning tasks)
+   - GPT-4o (via OpenRouter)
+   
+2. **Tier 2: Utility & General Tasks** (Everyday operations)
+   - Gemini 2 Flash (optimal price/performance)
+   - Claude 3 Haiku (via OpenRouter)
+   - Mistral Large (via OpenRouter)
+
+3. **Tier 3: Specialized Models** (Platform-specific needs)
+   - Appropriate models for specific use cases
+   - On-device models when appropriate
+   - Task-specific specialized models
+
+## Implementation Guide
+
+Add implementation details specific to ${stack} applications.
+
+## Agentic Framework Integration
+
+Document how to create agents with tools and workflows in ${stack} applications.
+
+## Best Practices
+
+List best practices for AI integration in ${stack} applications.
+
+## Resources
+
+Provide helpful resources for AI development with ${stack}.
+`;
+      fs.writeFileSync(aiMdPath, aiContent);
+    }
+  });
   
   console.log('\nDocumentation structure update complete!');
   console.log('New structure:');

@@ -30,14 +30,28 @@ model GeneratedProject {
   techItems         String[]
   techItemsJson     String?  @db.Text // Stores tech items with documentation URLs as JSON
 
-  // New document structure (index, design, code, init)
+  // Core documents
   indexDocument String? @db.Text
+  designDocument String? @db.Text
   codeDocument  String? @db.Text
   techDocument  String? @db.Text
+  initDocument  String? @db.Text
+
+  // Tech documentation files stored as JSON
+  techFilesJson String? @db.Text // JSON object with tech file names as keys and content as values
+
+  // Enhanced agentic workflow documents
+  instructionsDocument   String? @db.Text
+  memoryIndexDocument    String? @db.Text
+  memoryBankDocument     String? @db.Text
+  promptArchitectDocument String? @db.Text
+  promptDeveloperDocument String? @db.Text
+  promptDesignerDocument  String? @db.Text
+  promptEnterpriseDocument String? @db.Text
+  architectureSampleDocument String? @db.Text
+  deploymentDocument     String? @db.Text
 
   // Legacy document content (kept for backward compatibility)
-  initDocument           String? @db.Text
-  designDocument         String? @db.Text
   implementationDocument String? @db.Text
   comprehensiveDocument  String? @db.Text
 

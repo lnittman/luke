@@ -1,6 +1,8 @@
 import { NextRequest, NextResponse } from 'next/server';
 import axios from 'axios';
 import { getOpenRouterHeaders, getOpenRouterKey } from '@/lib/api-keys';
+import { logInfo, logError, logWarn } from '@/lib/logger';
+import { retryFetch } from '@/lib/api-utils';
 
 export const maxDuration = 30; // 30 second timeout for search
 
@@ -18,26 +20,35 @@ function getCurrentMonthName(): string {
  * Process the search response to extract structured content
  */
 function processSearchResponse(responseText: string): { content: string } {
-  console.log(`[SONAR] Processing search response: ${responseText.substring(0, 150)}...`);
+  logInfo(`Processing search response`, { 
+    tag: 'SONAR', 
+    data: { preview: responseText.substring(0, 150) + '...' }
+  });
   
   try {
     // First try to parse as JSON
     let resources;
     try {
       resources = JSON.parse(responseText);
-      console.log(`[SONAR] Successfully parsed JSON response with ${resources.length} resources`);
+      logInfo(`Successfully parsed JSON response`, { 
+        tag: 'SONAR', 
+        data: { resourceCount: resources.length }
+      });
     } catch (e) {
       // Try to extract JSON from markdown code blocks if parsing fails
-      console.log('[SONAR] JSON parse failed, trying to extract from response text');
+      logWarn('JSON parse failed, trying to extract from response text', { tag: 'SONAR' });
       
       // Sometimes the response might be wrapped in markdown code blocks
       const jsonMatch = responseText.match(/```(?:json)?\s*([\s\S]*?)\s*```/);
       if (jsonMatch && jsonMatch[1]) {
         try {
           resources = JSON.parse(jsonMatch[1]);
-          console.log(`[SONAR] Extracted JSON from code block with ${resources.length} resources`);
+          logInfo(`Extracted JSON from code block`, { 
+            tag: 'SONAR', 
+            data: { resourceCount: resources.length }
+          });
         } catch (e2) {
-          console.warn('[SONAR] Failed to parse extracted JSON from code block');
+          logWarn('Failed to parse extracted JSON from code block', { tag: 'SONAR' });
         }
       }
     }
@@ -57,7 +68,10 @@ function processSearchResponse(responseText: string): { content: string } {
       .join('\n');
       
       if (resourcesMarkdown) {
-        console.log(`[SONAR] Generated markdown resources with ${resourcesMarkdown.split('\n').length} items`);
+        logInfo(`Generated markdown resources`, { 
+          tag: 'SONAR', 
+          data: { itemCount: resourcesMarkdown.split('\n').length }
+        });
         return { content: `## Resources\n\n${resourcesMarkdown}` };
       }
     }
@@ -68,7 +82,10 @@ function processSearchResponse(responseText: string): { content: string } {
     const urls = responseText.match(urlRegex);
     
     if (urls && urls.length > 0) {
-      console.log(`[SONAR] Extracted ${urls.length} URLs from response text`);
+      logInfo(`Extracted URLs from response text`, { 
+        tag: 'SONAR', 
+        data: { urlCount: urls.length }
+      });
       // Create a simple list of resources from the URLs
       const urlResources = urls.slice(0, 8).map(url => {
         // Try to extract a name from the URL
@@ -90,16 +107,19 @@ function processSearchResponse(responseText: string): { content: string } {
         responseText : 
         `## AI Search Results\n\n${responseText}`;
       
-      console.log('[SONAR] Returning direct text response content');
+      logInfo('Returning direct text response content', { tag: 'SONAR' });
       return { content: formattedContent };
     }
     
     // If we couldn't parse or extract anything useful
-    console.warn('[SONAR] Could not extract usable content from response');
+    logWarn('Could not extract usable content from response', { tag: 'SONAR' });
     return { content: `## Resources\n\n*No resources available*` };
     
   } catch (error) {
-    console.error(`[SONAR] Error processing search response: ${error instanceof Error ? error.message : String(error)}`);
+    logError(`Error processing search response`, { 
+      tag: 'SONAR', 
+      data: error instanceof Error ? error.message : String(error) 
+    });
     return { content: `## Resources\n\n*Error processing resources*` };
   }
 }
@@ -112,19 +132,23 @@ export async function POST(request: NextRequest) {
     const { query } = await request.json();
     
     if (!query) {
+      logWarn('No search query provided', { tag: 'SONAR' });
       return NextResponse.json(
         { error: 'No search query provided' }, 
         { status: 400 }
       );
     }
     
-    console.log(`[SONAR] Received search request: ${query.substring(0, 100)}...`);
+    logInfo(`Received search request`, { 
+      tag: 'SONAR', 
+      data: { query: query.substring(0, 100) + '...' }
+    });
 
     // Get OpenRouter API key
     const openrouterApiKey = getOpenRouterKey();
     
     if (!openrouterApiKey) {
-      console.error('[SONAR] No OpenRouter API key found or invalid format');
+      logError('No OpenRouter API key found or invalid format', { tag: 'SONAR' });
       return NextResponse.json(
         { error: 'Search API key not configured properly' },
         { status: 500 }
@@ -146,6 +170,11 @@ Current date context: ${currentMonth} ${currentYear}
 Format your response in markdown with clear sections and include relevant URLs when possible.`;
     
     // Call Sonar Reasoning through OpenRouter
+    logInfo('Executing Sonar Reasoning query', { 
+      tag: 'SONAR', 
+      data: { query: query.substring(0, 100) + '...' }
+    });
+    
     const response = await axios.post(
       'https://openrouter.ai/api/v1/chat/completions',
       {
@@ -163,7 +192,10 @@ Format your response in markdown with clear sections and include relevant URLs w
 
     // Check response status
     if (response.status !== 200) {
-      console.error(`[SONAR] Error from OpenRouter: ${response.status}`);
+      logError(`Error from OpenRouter`, { 
+        tag: 'SONAR', 
+        data: { status: response.status }
+      });
       return NextResponse.json(
         { error: 'Sonar Reasoning API error' },
         { status: response.status }
@@ -175,17 +207,23 @@ Format your response in markdown with clear sections and include relevant URLs w
     const content = responseData.choices[0]?.message?.content;
 
     if (!content) {
+      logError('No content in response from search service', { tag: 'SONAR' });
       return NextResponse.json(
         { error: 'No content in response from search service' },
         { status: 500 }
       );
     }
 
+    logInfo('Sonar Reasoning search completed successfully', { tag: 'SONAR' });
+    
     // Process and return the search response
     const processedContent = processSearchResponse(content);
     return NextResponse.json(processedContent);
   } catch (error: any) {
-    console.error(`[SONAR] Error with search service: ${error instanceof Error ? error.message : String(error)}`);
+    logError(`Error with search service`, { 
+      tag: 'SONAR', 
+      data: error instanceof Error ? { message: error.message, stack: error.stack } : String(error)
+    });
     
     // Handle specific error cases
     if (error.response?.status === 402) {

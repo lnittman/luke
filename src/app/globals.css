@@ -2,6 +2,23 @@
 @tailwind components;
 @tailwind utilities;
 
+/* Add Iosevka font */
+@font-face {
+  font-family: 'Iosevka';
+  src: url('/fonts/iosevka-regular.woff2') format('woff2');
+  font-weight: normal;
+  font-style: normal;
+  font-display: swap;
+}
+
+@font-face {
+  font-family: 'Iosevka';
+  src: url('/fonts/iosevka-bold.woff2') format('woff2');
+  font-weight: bold;
+  font-style: normal;
+  font-display: swap;
+}
+
 @layer base {
   :root {
     /* Palette 1 - Zen Garden (Soft sage and stone) */

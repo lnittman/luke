@@ -335,10 +335,14 @@ async function updateTechFiles() {
     await fs.mkdir(TEMPLATE_DIR, { recursive: true });
     await fs.mkdir(TOOLS_DIR, { recursive: true });
     
-    // Create each tech stack directory in the template dir
+    // Create stack directory in template dir
+    const stackDir = path.join(TEMPLATE_DIR, 'stack');
+    await fs.mkdir(stackDir, { recursive: true });
+    
+    // Create each tech stack directory in the template/stack dir
     for (const stack of TECH_STACKS) {
-      const stackDir = path.join(TEMPLATE_DIR, stack);
-      await fs.mkdir(stackDir, { recursive: true });
+      const techStackDir = path.join(stackDir, stack);
+      await fs.mkdir(techStackDir, { recursive: true });
     }
   } catch (error) {
     console.error('Error creating directories:', error);
@@ -365,8 +369,8 @@ async function updateTechFiles() {
       
       // Save locally to both new and legacy locations
       try {
-        // New location in template/{stack}/tech.md
-        const stackDir = path.join(TEMPLATE_DIR, stack);
+        // New location in template/stack/{stack}/tech.md
+        const stackDir = path.join(TEMPLATE_DIR, 'stack', stack);
         await fs.writeFile(path.join(stackDir, 'tech.md'), content);
         
         // Legacy location
@@ -390,7 +394,7 @@ async function updateTechFiles() {
     
     // Save to Vercel Blob
     try {
-      await put('tech-relationships.json', relationshipsJSON, { access: 'public' });
+      await put('relationships.json', relationshipsJSON, { access: 'public' });
       console.log('[TECH] Saved relationships to Vercel Blob');
     } catch (error) {
       console.error('[TECH] Error saving relationships to Vercel Blob:', error);
@@ -398,7 +402,7 @@ async function updateTechFiles() {
     
     // Save locally
     try {
-      await fs.writeFile(path.join(DOCS_DIR, 'tech-relationships.json'), relationshipsJSON);
+      await fs.writeFile(path.join(DOCS_DIR, 'relationships.json'), relationshipsJSON);
       console.log('[TECH] Saved relationships locally');
     } catch (error) {
       console.error('[TECH] Error saving relationships locally:', error);
@@ -519,18 +523,18 @@ async function getTechData() {
     }
     
     // Get relationships file
-    const relBlob = blobs.blobs.find(b => b.pathname === 'tech-relationships.json');
+    const relBlob = blobs.blobs.find(b => b.pathname === 'relationships.json');
     if (relBlob) {
       try {
-        const url = await getDownloadUrl('tech-relationships.json');
+        const url = await getDownloadUrl('relationships.json');
         const response = await fetch(url);
         if (response.ok) {
           techData.relationships = await response.json();
         } else {
-          console.error(`Failed to fetch tech-relationships.json from blob storage: ${response.status}`);
+          console.error(`Failed to fetch relationships.json from blob storage: ${response.status}`);
         }
       } catch (error) {
-        console.error('Error retrieving tech-relationships.json from blob:', error);
+        console.error('Error retrieving relationships.json from blob:', error);
         // Will fall back to local files
       }
     }
@@ -583,7 +587,7 @@ async function getTechData() {
       
       // Try to read relationships file
       try {
-        const relationshipsPath = path.join(DOCS_DIR, 'tech-relationships.json');
+        const relationshipsPath = path.join(DOCS_DIR, 'relationships.json');
         const relationshipsContent = await fs.readFile(relationshipsPath, 'utf-8');
         techData.relationships = JSON.parse(relationshipsContent);
       } catch (e) {

@@ -1,4 +1,5 @@
 import axios from 'axios';
+import { logInfo, logError } from '../logger';
 
 // Add a cache for documentation to avoid repeated requests
 interface DocumentCache {
@@ -342,86 +343,87 @@ export async function searchDocumentation(query: string): Promise<any[]> {
 }
 
 /**
- * Fetch documentation for a specific technology to use as context
+ * Fetch and extract technical documentation for a specific technology
+ * 
  * @param techName The name of the technology
- * @param docUrl The documentation URL (if available)
- * @returns Documentation content
+ * @param docUrl The documentation URL to fetch
+ * @returns The extracted documentation in markdown format
  */
-export async function fetchTechDocumentation(techName: string, docUrl?: string): Promise<string> {
-  // Skip duplicate fetches with aggressive caching
-  const cacheKey = `${techName.toLowerCase()}:${docUrl?.toLowerCase() || ''}`;
-  const cachedDoc = techDocCache[cacheKey];
-  const now = Date.now();
+export async function fetchTechDocumentation(techName: string, docUrl: string): Promise<string> {
+  // Create a cache key combining tech name and URL
+  const cacheKey = `${techName}-${docUrl}`;
   
-  if (cachedDoc && (now - cachedDoc.timestamp < CACHE_EXPIRY)) {
-    console.log(`Using cached tech documentation for: ${techName}`);
-    return cachedDoc.content;
+  // Check if we have this in cache already
+  if (techDocCache[cacheKey] && 
+      (Date.now() - techDocCache[cacheKey].timestamp) < CACHE_EXPIRY) {
+    logInfo(`Using cached tech documentation for ${techName}`, { tag: "JINA" });
+    return techDocCache[cacheKey].content;
   }
   
   try {
-    let content = '';
+    logInfo(`Fetching tech documentation for ${techName} from ${docUrl}`, { tag: "JINA" });
     
-    // If we have a documentation URL, try to read it directly
-    if (docUrl && docUrl.startsWith('http')) {
-      try {
-        const docData = await readDocumentation(docUrl);
-        if (docData.content) {
-          // Return a cleaned and summarized version of the content
-          const cleanedContent = docData.content
-            .replace(/```[a-z]*\n[\s\S]*?\n```/g, '') // Remove code blocks
-            .replace(/\n{3,}/g, '\n\n') // Remove excessive newlines
-            .split('\n')
-            .slice(0, 100) // Take first 100 lines max
-            .join('\n');
-          
-          content = `## ${docData.title || techName} Documentation\n\n${cleanedContent.substring(0, 3000)}`;
-        }
-      } catch (error) {
-        console.warn(`Error reading documentation for ${techName}, will fall back to search: ${error}`);
-      }
+    // Use direct r.jina.ai URL approach instead of API
+    const jinaUrl = `https://r.jina.ai/${encodeURIComponent(docUrl)}`;
+    const response = await fetch(jinaUrl);
+    
+    if (!response.ok) {
+      throw new Error(`Failed to fetch: ${response.status}`);
     }
     
-    // If direct reading failed or no URL, try search
-    if (!content) {
-      try {
-        // Use search for more comprehensive results
-        const searchQuery = `${techName} documentation guide tutorial best practices`;
-        const searchResults = await searchDocumentation(searchQuery);
-        
-        if (searchResults && searchResults.length > 0) {
-          const topResult = searchResults[0];
-          content = `## ${techName} Documentation (via Search)\n\n${
-            topResult.content.substring(0, 3000)
-          }`;
-        }
-      } catch (error) {
-        console.warn(`Error searching documentation for ${techName}: ${error}`);
-      }
-    }
-    
-    // If we still don't have content, fall back to a default message
-    if (!content) {
-      content = `# ${techName} Documentation\n\nBasic documentation for ${techName}. For detailed information, refer to the official documentation.`;
-    }
+    // Extract the markdown content
+    const markdown = await response.text();
     
     // Store in cache
     techDocCache[cacheKey] = {
-      timestamp: now,
-      content
+      timestamp: Date.now(),
+      content: markdown
     };
     
-    return content;
+    // Save to local filesystem
+    await saveTechDocToFilesystem(techName, markdown);
+    
+    return markdown;
   } catch (error) {
-    console.error(`Error fetching documentation for ${techName}:`, error);
-    const fallbackContent = `# ${techName} Documentation\n\nBasic documentation for ${techName}. For detailed information, refer to the official documentation.`;
+    logError(`Error fetching tech documentation for ${techName}:`, { 
+      tag: "JINA", 
+      data: error 
+    });
     
-    // Store fallback in cache
-    techDocCache[cacheKey] = {
-      timestamp: now,
-      content: fallbackContent
-    };
+    // Return a minimal fallback documentation
+    return `# ${techName} Documentation\n\nDocumentation could not be fetched from ${docUrl}.\n\n## Overview\n\n${techName} is a technology used in this project. Refer to official documentation for detailed information.`;
+  }
+}
+
+/**
+ * Save tech documentation to the local filesystem
+ * 
+ * @param techName The name of the technology
+ * @param content The markdown content to save
+ */
+async function saveTechDocToFilesystem(techName: string, content: string): Promise<void> {
+  // Only run on server side
+  if (typeof window !== 'undefined') return;
+  
+  const fs = require('fs');
+  const path = require('path');
+  
+  try {
+    // Create the docs/tech directory if it doesn't exist
+    const techDir = path.join(process.cwd(), 'docs', 'tech');
+    if (!fs.existsSync(techDir)) {
+      fs.mkdirSync(techDir, { recursive: true });
+    }
     
-    return fallbackContent;
+    // Sanitize the tech name for filesystem use
+    const sanitizedName = techName.toLowerCase().replace(/[^a-z0-9]+/g, '-');
+    const filePath = path.join(techDir, `${sanitizedName}.md`);
+    
+    // Write the content to the file
+    fs.writeFileSync(filePath, content);
+    console.log(`[JINA] Saved tech documentation for ${techName} to ${filePath}`);
+  } catch (error) {
+    console.error(`[JINA] Error saving tech documentation to filesystem:`, error);
   }
 }
 
@@ -452,7 +454,7 @@ export async function fetchMultipleTechDocs(
   for (let i = 0; i < uniqueTechs.length; i += maxParallel) {
     const batch = uniqueTechs.slice(i, i + maxParallel);
     const batchResults = await Promise.all(
-      batch.map(tech => fetchTechDocumentation(tech.name, tech.docUrl))
+      batch.map(tech => fetchTechDocumentation(tech.name, tech.docUrl || ''))
     );
     results.push(...batchResults);
     
