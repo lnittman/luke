@@ -693,10 +693,10 @@ You are an expert development assistant tasked with implementing the project des
       console.log('Loaded templates for tech stack:', techStack);
       
       // Research context from enrichment
-      const researchContext = projectContent.researchContext || '';
-      const researchLinks = projectContent.researchLinks || [];
-      console.log(`Using research context with ${researchLinks.length} research links for enhanced documentation`);
-      
+    const researchContext = projectContent.researchContext || '';
+    const researchLinks = projectContent.researchLinks || [];
+    console.log(`Using research context with ${researchLinks.length} research links for enhanced documentation`);
+    
       // Generate tech.md and tech files with Perplexity Sonar Reasoning
       const techDocs = await this.enrichTechDocumentation(
         projectContent.project.content.tech.items, 
@@ -706,11 +706,11 @@ You are an expert development assistant tasked with implementing the project des
       
       // Generate index.md (project overview)
       console.log('Generating index document...');
-      const indexPrompt = `
-        Create a concise index.md document for this project based on the provided template.
-        
-        IMPORTANT: The project name is "${projectName}". Use this name consistently throughout all documents.
-        
+    const indexPrompt = `
+      Create a concise index.md document for this project based on the provided template.
+      
+      IMPORTANT: The project name is "${projectName}". Use this name consistently throughout all documents.
+      
         Project content: ${JSON.stringify(projectContent.project.content)}
         
         Start with this template:
@@ -722,11 +722,11 @@ You are an expert development assistant tasked with implementing the project des
       
       // Generate design.md (architecture and design decisions)
       console.log('Generating design document...');
-      const designPrompt = `
-        Create a comprehensive design.md document for this project based on the provided template.
-        
-        IMPORTANT: The project name is "${projectName}". Use this name consistently throughout all documents.
-        
+    const designPrompt = `
+      Create a comprehensive design.md document for this project based on the provided template.
+      
+      IMPORTANT: The project name is "${projectName}". Use this name consistently throughout all documents.
+      
         Project content: ${JSON.stringify(projectContent.project.content)}
         
         Start with this template:
@@ -738,11 +738,11 @@ You are an expert development assistant tasked with implementing the project des
       
       // Generate code.md (implementation guide)
       console.log('Generating code document...');
-      const codePrompt = `
-        Create a detailed code.md implementation guide for this project based on the provided template.
-        
-        IMPORTANT: The project name is "${projectName}". Use this name consistently throughout all documents.
-        
+    const codePrompt = `
+      Create a detailed code.md implementation guide for this project based on the provided template.
+      
+      IMPORTANT: The project name is "${projectName}". Use this name consistently throughout all documents.
+      
         Project content: ${JSON.stringify(projectContent.project.content)}
         
         Start with this template:
@@ -773,9 +773,9 @@ You are an expert development assistant tasked with implementing the project des
       console.log('Generating instructions document...');
       const instructionsPrompt = `
         Create a comprehensive instructions.md document that provides project-specific workflows and detailed guidance for implementing the project.
-        
-        IMPORTANT: The project name is "${projectName}". Use this name consistently throughout all documents.
-        
+      
+      IMPORTANT: The project name is "${projectName}". Use this name consistently throughout all documents.
+      
         Start with this template:
         ${loadInstructionsTemplate()}
         
@@ -808,7 +808,7 @@ You are an expert development assistant tasked with implementing the project des
       console.error('Error generating project documentation:', error);
       
       // Return empty documents
-      return {
+    return {
         index: '',
         design: '',
         code: '',
@@ -1108,14 +1108,14 @@ Return only the enhanced section content, without any explanation or commentary.
     logInfo('Generating tech documentation with comprehensive tech files', { tag: 'TECH_DOCS' });
     
     // Generate the main tech/index.md (former tech.md)
-    const techMdPrompt = `
-      Create a comprehensive technology glossary markdown file (tech.md) that explains all technologies used in this project.
-      
-      Format the document with a clear structure:
-      1. Start with a title "# Technology Glossary"
-      2. Include a brief introduction
-      3. Group technologies by category (Frameworks, Libraries, APIs, Tools)
-      4. For each technology, include:
+      const techMdPrompt = `
+        Create a comprehensive technology glossary markdown file (tech.md) that explains all technologies used in this project.
+        
+        Format the document with a clear structure:
+        1. Start with a title "# Technology Glossary"
+        2. Include a brief introduction
+        3. Group technologies by category (Frameworks, Libraries, APIs, Tools)
+        4. For each technology, include:
          - Name with link to documentation
          - Brief explanation (1-2 sentences)
          - Key features or benefits (bullet points)
@@ -1170,7 +1170,7 @@ Return only the enhanced section content, without any explanation or commentary.
         
         try {
           techDoc = await fetchTechDocumentation(techName, docUrl);
-        } catch (error) {
+    } catch (error) {
           // If fetch fails, generate with LLM
           logWarn(`Failed to fetch docs for ${techName}, generating with LLM`, { tag: 'TECH_DOCS' });
           techDoc = await this.generateTechMdFile(techName, docUrl, researchContext);

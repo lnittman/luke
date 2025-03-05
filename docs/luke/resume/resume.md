@@ -71,7 +71,7 @@ Building production-grade applications, focusing on AI-native experiences and re
   - **Infrastructure:** [Docker](https://www.docker.com/), [Railway](https://railway.app/)
   - **Architecture:** [Turborepo](https://turbo.build/repo), [NX](https://nx.dev/), Module Federation
 
-#### Loops https://loops-app.vercel.app/
+#### Loops https://loops-xyz.vercel.app/
 *Stem player for your music with intelligent audio processing*
 - React / Next.js web app with 4 independent stem track audio loops
 - Built AI-powered stem isolation system for vocals, drums, bass, and other
@@ -86,7 +86,7 @@ Building production-grade applications, focusing on AI-native experiences and re
   - **Infrastructure:** [Docker](https://www.docker.com/), [Railway](https://railway.app/), [AWS Lambda](https://aws.amazon.com/lambda/)
   - **State:** [Zustand](https://zustand-demo.pmnd.rs/), [Redux Toolkit](https://redux-toolkit.js.org/), [Immer](https://immerjs.github.io/immer/)
 
-#### Sine https://sine.app
+#### Sine https://sine-labs.com
 *MIDI-based beatmaking app for iOS*
 - Built native iOS client with comprehensive MIDI engine and patterns
 - Developed web-based MIDI/sound pack upload utility

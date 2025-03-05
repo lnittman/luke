@@ -35,16 +35,11 @@ body {
 
 /* Logo positioning */
 body::after {
-  content: "";
+  content: "👨‍💻";
   position: absolute;
-  top: 10mm;
-  right: 10mm;
-  width: 20mm;
-  height: 20mm;
-  background-image: url('/Users/nit/Developer/apps/luke/public/assets/digital-craftsman.png');
-  background-size: contain;
-  background-repeat: no-repeat;
-  background-position: center;
+  top: 5mm;
+  right: 5mm;
+  font-size: 24pt;
   z-index: 100;
   opacity: 0.9;
 }
@@ -277,8 +272,7 @@ li:contains("Stack:") + ul li {
   body::after {
     top: 5mm;
     right: 5mm;
-    width: 15mm;
-    height: 15mm;
+    font-size: 24pt;
   }
   
   h1 {
