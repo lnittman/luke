@@ -34,7 +34,7 @@ export const SearchResultsDisplay: React.FC<SearchResultsDisplayProps> = ({
     
     return (
       <div className="my-3 w-full flex items-center gap-2">
-        <div className="text-xs font-mono text-[rgb(var(--text-secondary))]">
+        <div className="text-xs  text-[rgb(var(--text-secondary))]">
           Researching trends with Perplexity: {progress}%
         </div>
         <div className="flex-1 h-1.5 bg-[rgb(var(--surface-1)/0.2)] rounded-full overflow-hidden">
@@ -61,7 +61,7 @@ export const SearchResultsDisplay: React.FC<SearchResultsDisplayProps> = ({
       {/* Search Results */}
       {results.length > 0 && (
         <div className="mt-2">
-          <h3 className="text-sm font-mono mb-2 text-[rgb(var(--text-secondary))]">
+          <h3 className="text-sm  mb-2 text-[rgb(var(--text-secondary))]">
             {isSearching ? 'Live Search Results:' : 'Search Results:'}
           </h3>
           
@@ -106,7 +106,7 @@ export const SearchResultsDisplay: React.FC<SearchResultsDisplayProps> = ({
       {/* Discovered Technologies */}
       {discoveredTechs.length > 0 && (
         <div className="mt-4">
-          <h3 className="text-sm font-mono mb-2 text-[rgb(var(--text-secondary))]">
+          <h3 className="text-sm  mb-2 text-[rgb(var(--text-secondary))]">
             Discovered Technologies:
           </h3>
           

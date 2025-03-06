@@ -107,7 +107,7 @@ Building production-grade applications, focusing on AI-native experiences and re
 - Led development of cross-platform notification system for web3 image generation platform
 - Built semantic image search system with Gemini multimodal embeddings and agentic asset organization
 - Architected full-stack features across iOS, web, and backend systems
-- **Technologies:** 
+- **Tech Stack:** 
   - **Frontend:** [React](https://react.dev/), [TypeScript](https://www.typescriptlang.org/), [Tailwind CSS](https://tailwindcss.com/), [React Three Fiber](https://docs.pmnd.rs/react-three-fiber/getting-started/introduction)
   - **Mobile:** [Swift](https://www.swift.org/), [SwiftUI](https://developer.apple.com/xcode/swiftui/)
   - **Backend:** [Firebase](https://firebase.google.com/), [Cloud Functions](https://firebase.google.com/docs/functions), [Firestore](https://firebase.google.com/docs/firestore)
@@ -123,7 +123,7 @@ Building production-grade applications, focusing on AI-native experiences and re
 - Integrated Python audio models and CoreML for on-device audio processing
 - Optimized processing costs through AI-powered effects generation
 - Built integration layer supporting major streaming platforms (Spotify, Apple Music)
-- **Stack:** 
+- **Tech Stack:** 
   - **Mobile:** [Swift](https://www.swift.org/), [AVFoundation](https://developer.apple.com/av-foundation/), [CoreAudio](https://developer.apple.com/documentation/coreaudio), [AudioKit](https://audiokit.io/), [MIDI](https://developer.apple.com/documentation/coremidi)
   - **Frontend:** [React](https://react.dev/), [WebGL](https://developer.mozilla.org/en-US/docs/Web/API/WebGL_API)
   - **Backend:** [Python](https://www.python.org/), [Golang](https://go.dev/), [FastAPI](https://fastapi.tiangolo.com/), [GraphQL](https://graphql.org/), [Redis](https://redis.io/)
@@ -140,7 +140,7 @@ Building production-grade applications, focusing on AI-native experiences and re
 - Built self-service permission system automating internal workflows
 - Maintained high service reliability across multiple regions
 - Led migration from monolith to microservices architecture
-- **Technologies:** 
+- **Tech Stack:** 
   - **Frontend:** [React Native](https://reactnative.dev/), [TypeScript](https://www.typescriptlang.org/), [Redux](https://redux.js.org/), [Jest](https://jestjs.io/)
   - **Cloud:** [AWS](https://aws.amazon.com/), [Lambda](https://aws.amazon.com/lambda/), [DynamoDB](https://aws.amazon.com/dynamodb/), [S3](https://aws.amazon.com/s3/), [CloudFormation](https://aws.amazon.com/cloudformation/)
   - **Backend:** [Java](https://www.java.com/), [Python](https://www.python.org/), [Node.js](https://nodejs.org/), [Redis](https://redis.io/)
@@ -154,7 +154,7 @@ Building production-grade applications, focusing on AI-native experiences and re
 - Rewrote Quicktime decoder enhancing metadata parsing accuracy
 - Developed automated testing framework for validation components
 - Resolved customer issues through direct support and code changes
-- **Technologies:** 
+- **Tech Stack:** 
   - **Languages:** [C++](https://isocpp.org/), [Python](https://www.python.org/), [Ruby](https://www.ruby-lang.org/)
   - **Cloud:** [AWS](https://aws.amazon.com/), [EC2](https://aws.amazon.com/ec2/), [S3](https://aws.amazon.com/s3/), [CloudFront](https://aws.amazon.com/cloudfront/)
   - **Media:** [FFmpeg](https://ffmpeg.org/), [H.264/H.265](https://en.wikipedia.org/wiki/Advanced_Video_Coding), [VP9](https://en.wikipedia.org/wiki/VP9), [AV1](https://en.wikipedia.org/wiki/AV1)

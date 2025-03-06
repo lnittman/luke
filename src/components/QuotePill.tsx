@@ -82,7 +82,7 @@ export function QuotePill({ text, index = 0, onClick, isActive = false }: QuoteP
 
   return (
     <motion.button
-      className="px-1.5 sm:px-2 md:px-3 py-0.5 rounded-full text-[0.65rem] sm:text-[10px] md:text-xs cursor-pointer select-none font-mono tracking-tight"
+      className="px-1.5 sm:px-2 md:px-3 py-0.5 rounded-full text-[0.65rem] sm:text-[10px] md:text-xs cursor-pointer select-none  tracking-tight"
       variants={variants}
       initial="initial"
       animate="animate"

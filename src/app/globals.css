@@ -1,3 +1,8 @@
+@font-face {
+  font-family: 'IosevkaTerm-Regular';
+  src: url('https://intdev-global.s3.us-west-2.amazonaws.com/public/internet-dev/6397be61-3ea4-459d-8a3e-fd95168cb214.woff2') format('woff2');
+}
+
 @tailwind base;
 @tailwind components;
 @tailwind utilities;
@@ -57,7 +62,19 @@
     --p3-border: 215 210 205;
     --p3-glow: 200 175 160;
 
-    /* Default theme variables */
+    /* Stone theme - A deep warm stone color */
+    --stone-background-start: 44 42 40;
+    --stone-background-end: 40 38 36;
+    --stone-accent-1: 185 170 155;
+    --stone-accent-2: 200 185 170;
+    --stone-text-primary: 232 230 228;
+    --stone-text-secondary: 180 175 170;
+    --stone-surface-1: 52 50 48;
+    --stone-surface-2: 48 46 44;
+    --stone-border: 62 60 58;
+    --stone-glow: 200 185 170;
+
+    /* Default theme variables - light mode */
     --background-start: var(--p1-background-start);
     --background-end: var(--p1-background-end);
     --accent-1: var(--p1-accent-1);
@@ -68,6 +85,34 @@
     --surface-2: var(--p1-surface-2);
     --border: var(--p1-border);
     --glow: var(--p1-glow);
+  }
+
+  /* Dark mode theme variables */
+  .dark {
+    --background-start: var(--p2-background-start);
+    --background-end: var(--p2-background-end);
+    --accent-1: var(--p2-accent-1);
+    --accent-2: var(--p2-accent-2);
+    --text-primary: var(--p2-text-primary);
+    --text-secondary: var(--p2-text-secondary);
+    --surface-1: var(--p2-surface-1);
+    --surface-2: var(--p2-surface-2);
+    --border: var(--p2-border);
+    --glow: var(--p2-glow);
+  }
+
+  /* Stone theme variables */
+  .stone {
+    --background-start: var(--stone-background-start);
+    --background-end: var(--stone-background-end);
+    --accent-1: var(--stone-accent-1);
+    --accent-2: var(--stone-accent-2);
+    --text-primary: var(--stone-text-primary);
+    --text-secondary: var(--stone-text-secondary);
+    --surface-1: var(--stone-surface-1);
+    --surface-2: var(--stone-surface-2);
+    --border: var(--stone-border);
+    --glow: var(--stone-glow);
   }
 
   /* Base styles */
@@ -87,16 +132,13 @@
     background: transparent;
   }
 
-  /* Theme transitions */
+  /* Theme transitions - made instant */
   html {
-    transition: background 700ms ease-in-out;
+    transition: none;
   }
 
   body * {
-    transition: background-color 700ms ease-in-out,
-                border-color 700ms ease-in-out,
-                color 700ms ease-in-out,
-                box-shadow 700ms ease-in-out;
+    transition-property: none;
   }
 
   /* Utility classes */
@@ -343,4 +385,62 @@
   background-color: rgba(100, 100, 100, 0.07);
   font-weight: 600;
   text-align: left;
+}
+
+* {
+  font-family: 'IosevkaTerm-Regular', monospace;
+}
+
+/* Blog post styling */
+.prose h2 {
+  font-size: 1.25rem !important;
+  margin-top: 2.5rem !important;
+  margin-bottom: 1rem !important;
+  font-weight: 500 !important;
+  color: rgb(var(--text-primary)) !important;
+}
+
+.prose h3 {
+  font-size: 1.125rem !important;
+  margin-top: 1.75rem !important;
+  margin-bottom: 0.75rem !important;
+  font-weight: 500 !important;
+  color: rgb(var(--text-primary)) !important;
+}
+
+.prose p {
+  margin-top: 1rem !important;
+  margin-bottom: 1rem !important;
+  line-height: 1.7 !important;
+  color: rgb(var(--text-primary)) !important;
+  max-width: 38rem !important;
+}
+
+.prose ul {
+  margin-top: 1rem !important;
+  margin-bottom: 1rem !important;
+  padding-left: 1.75rem !important;
+}
+
+.prose li {
+  margin-top: 0.5rem !important;
+  margin-bottom: 0.5rem !important;
+  color: rgb(var(--text-primary)) !important;
+  padding-left: 0.25rem !important;
+}
+
+.prose strong {
+  font-weight: 500 !important;
+  color: rgb(var(--text-accent)) !important;
+}
+
+.prose a {
+  color: rgb(var(--text-accent)) !important;
+  text-decoration: none !important;
+  transition: opacity 0.2s ease !important;
+  padding: 0.125rem 0 !important;
+}
+
+.prose a:hover {
+  opacity: 0.8 !important;
 } 

@@ -1,6 +1,6 @@
 import { LLMProvider } from '../types';
 import { getApiUrl } from '../helpers/api';
-import { logInfo, logError } from '../../logger';
+import { logInfo, logError, logLLMRequest, logLLMResponse } from '../../logger';
 
 /**
  * Server API provider implementation
@@ -23,7 +23,8 @@ export class ServerApiProvider implements LLMProvider {
       const selectedModel = options.model || this.defaultModel;
       
       logInfo(`Request to ${selectedModel}`, { tag: `LLM:${logId}` });
-      logInfo(`Prompt: ${prompt.substring(0, 300)}...`, { tag: `LLM:${logId}` });
+      // Log the full prompt
+      logLLMRequest(prompt, { tag: `LLM:${logId}` });
       
       // Check if we're running in a browser or server environment
       const baseUrl = typeof window !== 'undefined' 
@@ -64,7 +65,8 @@ export class ServerApiProvider implements LLMProvider {
       // Log response details
       logInfo(`Response status: ${response.status}`, { tag: `LLM:${logId}` });
       logInfo(`Response length: ${content.length}`, { tag: `LLM:${logId}` });
-      logInfo(`Response preview: ${content.substring(0, 300)}...`, { tag: `LLM:${logId}` });
+      // Log the full response
+      logLLMResponse(content, { tag: `LLM:${logId}` });
       
       return content;
     } catch (error) {
@@ -81,7 +83,8 @@ export class ServerApiProvider implements LLMProvider {
     const logId = Math.random().toString(36).substring(2, 15);
     
     logInfo(`Structured Request to ${options.model || this.defaultModel}`, { tag: `LLM:${logId}` });
-    logInfo(`Structured Prompt: ${prompt.substring(0, 300)}...`, { tag: `LLM:${logId}` });
+    // Log the full structured prompt
+    logLLMRequest(prompt, { tag: `LLM:${logId}` });
     
     try {
       // Request JSON format
@@ -91,7 +94,8 @@ export class ServerApiProvider implements LLMProvider {
       };
       
       const content = await this.generate(prompt, jsonOptions);
-      logInfo(`Structured Response: ${content.substring(0, 300)}...`, { tag: `LLM:${logId}` });
+      // Full response already logged in generate()
+      logInfo(`Structured Response received`, { tag: `LLM:${logId}` });
       
       // First try direct JSON parsing
       try {
@@ -139,42 +143,6 @@ export class ServerApiProvider implements LLMProvider {
    * Get available models from the server-side API
    */
   async getAvailableModels(): Promise<string[]> {
-    try {
-      const apiUrl = getApiUrl('/api/llm/models');
-      const response = await fetch(apiUrl, {
-        method: 'GET',
-      });
-      
-      if (!response.ok) {
-        throw new Error(`Failed to fetch models: ${response.status}`);
-      }
-      
-      const data = await response.json();
-      
-      if (!data || !data.models || !Array.isArray(data.models)) {
-        throw new Error('Invalid response format from models API');
-      }
-
-      return data.models;
-    } catch (error) {
-      logError(`Error fetching models: ${error}`, { tag: 'LLM' });
-      
-      // Return default models if API call fails
-      return [
-        'anthropic/claude-3.7-sonnet',
-        'anthropic/claude-3.7-haiku',
-        'anthropic/claude-3.5-sonnet',
-        'anthropic/claude-3-opus',
-        'anthropic/claude-3-sonnet',
-        'anthropic/claude-3-haiku',
-        'google/gemini-2-flash',
-        'google/gemini-2-pro',
-        'google/gemini-1.5-flash',
-        'google/gemini-1.5-pro',
-        'openai/gpt-4o',
-        'openai/gpt-4-turbo',
-        'openai/gpt-3.5-turbo',
-      ];
-    }
+    return ['anthropic/claude-3.7-sonnet', 'anthropic/claude-3-opus-20240229'];
   }
 } 

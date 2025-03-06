@@ -63,7 +63,7 @@ export const LiveSearchResults: React.FC<LiveSearchResultsProps> = ({
     <div className="w-full mt-4">
       {/* Progress indicator */}
       <div className="mb-3 flex items-center gap-2">
-        <div className="text-xs font-mono text-[rgb(var(--text-secondary))]">
+        <div className="text-xs  text-[rgb(var(--text-secondary))]">
           {ideaGenerating ? 'Generating app concept' : 'Researching trends'}: {Math.round(calculatedProgress)}%
         </div>
         <div className="flex-1 h-1.5 bg-[rgb(var(--surface-1)/0.2)] rounded-full overflow-hidden">
@@ -109,7 +109,7 @@ export const LiveSearchResults: React.FC<LiveSearchResultsProps> = ({
                   {section.icon}
                 </div>
                 
-                <h3 className="font-mono text-sm font-medium mb-1">{section.title}</h3>
+                <h3 className=" text-sm font-medium mb-1">{section.title}</h3>
                 <p className="text-xs text-[rgb(var(--text-secondary))]">{section.description}</p>
                 
                 {isActive && (

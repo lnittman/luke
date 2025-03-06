@@ -23,8 +23,8 @@
 
 body {
   font-family: 'IosevkaTerm-Regular', monospace;
-  font-size: 7.5pt;
-  line-height: 1.1;
+  font-size: 6.5pt;
+  line-height: 1;
   max-width: 800px;
   margin: 0 auto;
   color: hsl(var(--foreground));
@@ -33,15 +33,13 @@ body {
   position: relative;
 }
 
-/* Logo positioning */
-body::after {
-  content: "👨‍💻";
+/* Logo styling */
+.logo {
   position: absolute;
   top: 5mm;
   right: 5mm;
-  font-size: 24pt;
-  z-index: 100;
-  opacity: 0.9;
+  width: 20mm;
+  height: 20mm;
 }
 
 h1, h2, h3, h4, p, ul, li {
@@ -52,9 +50,9 @@ h1, h2, h3, h4, p, ul, li {
 /* Header name styling */
 h1 {
   color: hsl(var(--primary));
-  font-size: 12pt;
+  font-size: 10pt;
   margin-top: 0;
-  margin-bottom: 0.2em;
+  margin-bottom: 0.15em;
   text-align: left;
   font-weight: bold;
   line-height: 1;
@@ -63,31 +61,31 @@ h1 {
 /* Section headings */
 h2 {
   color: hsl(var(--primary));
-  font-size: 9pt;
+  font-size: 8pt;
   border-bottom: 1px solid hsl(var(--border));
   padding-bottom: 0.05em;
-  margin-top: 0.8em;
-  margin-bottom: 0.3em;
+  margin-top: 0.5em;
+  margin-bottom: 0.2em;
   text-transform: uppercase;
   letter-spacing: 0.03em;
-  line-height: 1.1;
+  line-height: 1;
 }
 
 /* Subsection headings */
 h3 {
   color: hsl(var(--foreground));
-  font-size: 8pt;
-  margin-bottom: 0.1em;
-  margin-top: 0.5em;
+  font-size: 7pt;
+  margin-bottom: 0.05em;
+  margin-top: 0.3em;
   font-weight: bold;
   line-height: 1.1;
 }
 
 /* Project titles */
 h4 {
-  font-size: 7.5pt;
+  font-size: 6.5pt;
   font-weight: bold;
-  margin-top: 0.4em;
+  margin-top: 0.2em;
   margin-bottom: 0;
   color: hsl(var(--foreground));
   line-height: 1.1;
@@ -96,7 +94,7 @@ h4 {
 /* Project links */
 h4 a {
   font-weight: normal;
-  font-size: 7pt;
+  font-size: 6pt;
   color: hsl(var(--muted-foreground));
 }
 
@@ -110,9 +108,9 @@ h4 strong {
 h4 + p em {
   color: hsl(var(--muted-foreground));
   font-style: italic;
-  font-size: 7pt;
+  font-size: 6pt;
   display: block;
-  margin-bottom: 0.1em;
+  margin-bottom: 0.05em;
   line-height: 1.1;
 }
 
@@ -123,33 +121,36 @@ p:nth-of-type(3),
 p:nth-of-type(4) {
   text-align: left;
   margin: 0;
-  line-height: 1.2;
-  font-size: 7pt;
+  line-height: 1;
+  font-size: 6pt;
   color: hsl(var(--muted-foreground));
 }
 
 ul {
   margin-top: 0;
-  margin-bottom: 0.1em;
-  padding-left: 0.8em;
+  margin-bottom: 0.05em;
+  padding-left: 0.6em;
 }
 
 li {
   margin-bottom: 0;
   padding-left: 0;
-  font-size: 7pt;
-  line-height: 1.1;
+  font-size: 6pt;
+  line-height: 1;
 }
 
 a {
   color: hsl(var(--primary));
   text-decoration: none;
+  font-size: 0.9em;
 }
 
 /* Tech stack formatting */
 li strong {
   font-weight: bold;
   color: hsl(var(--foreground));
+  margin-top: 0.6em !important;
+  display: inline-block;
 }
 
 /* Tech stack items - ultra compact */
@@ -161,81 +162,83 @@ ul li ul {
 ul li ul li {
   margin-bottom: 0;
   line-height: 1;
-  font-size: 6.5pt;
+  font-size: 6pt;
 }
 
 /* Skills section formatting - horizontal multi-column layout */
 #skills ~ h3 + ul > li {
   display: inline-block;
-  margin-right: 0.3em;
-  margin-bottom: 0.1em;
-  font-size: 7pt;
+  margin-right: 0.2em;
+  margin-bottom: 0.05em;
+  font-size: 6pt;
   background-color: hsl(var(--tech-pill-bg));
   border: 1px solid hsl(var(--tech-pill-border));
-  border-radius: 3px;
-  padding: 0.05em 0.2em;
+  border-radius: 2px;
+  padding: 0.02em 0.1em;
   color: hsl(var(--tech-pill-text));
 }
 
 #skills ~ h3 {
-  margin-bottom: 0.1em;
-  margin-top: 0.4em;
+  margin-bottom: 0.05em;
+  margin-top: 0.2em;
 }
 
 /* Make all skills sections use 3-column layout */
 #skills ~ h3 + ul {
   column-count: 3;
-  column-gap: 1em;
-  margin-bottom: 0.4em;
+  column-gap: 0.8em;
+  margin-bottom: 0.2em;
 }
 
 /* Reduce spacing for tech stack bullets */
 li ul {
   margin-top: 0;
-  margin-bottom: 0.1em;
+  margin-bottom: 0;
 }
 
 /* Ultra compact formatting for Tech Stack sections */
 li:contains("Tech Stack") {
-  margin-top: 0.5em !important;
+  margin-top: 0.6em !important;
+  padding-top: 0.1em !important;
 }
 
 li:contains("Tech Stack") + ul {
   margin-top: 0;
-  columns: 4;
-  column-gap: 0.5em;
-  margin-bottom: 0.3em;
+  columns: 5;
+  column-gap: 0.3em;
+  margin-bottom: 0.1em;
 }
 
 /* Make projects more condensed */
 #projects ~ h3 {
-  margin-top: 0.2em;
+  margin-top: 0.15em;
 }
 
 /* Add spacing after each project */
 h4 + p + ul {
-  margin-bottom: 0.7em;
+  margin-bottom: 0.3em;
 }
 
 /* Add spacing after each job */
 h3 + p + ul {
-  margin-bottom: 0.7em;
+  margin-bottom: 0.3em;
 }
 
 /* Add spacing after demo materials line */
 p em + p {
-  margin-top: 0.6em;
+  margin-top: 0.2em;
 }
 
 /* Add spacing between jobs */
 h3 + p {
-  margin-bottom: 0.2em;
+  margin-bottom: 0.1em;
 }
 
-/* Add spacing before Technologies section */
-li:contains("Technologies:"), li:contains("Stack:") {
+/* Add spacing before Tech Stack section */
+li:contains("Tech Stack") {
   margin-top: 0.6em !important;
-  margin-bottom: 0.2em !important;
+  padding-top: 0.1em !important;
+  border-top: 0.5pt solid transparent;
 }
 
 /* Add columns to employment section */
@@ -244,75 +247,71 @@ li:contains("Technologies:"), li:contains("Stack:") {
 }
 
 /* Tech stack items in pill style */
-li:contains("Tech Stack") + ul li,
-li:contains("Technologies:") + ul li,
-li:contains("Stack:") + ul li {
+li:contains("Tech Stack") + ul li {
   display: inline-block;
-  margin-right: 0.2em;
-  margin-bottom: 0.15em;
+  margin-right: 0.1em;
+  margin-bottom: 0.08em;
   background-color: hsl(var(--tech-pill-bg));
   border: 1px solid hsl(var(--tech-pill-border));
-  border-radius: 3px;
-  padding: 0.03em 0.15em;
+  border-radius: 2px;
+  padding: 0.01em 0.08em;
   color: hsl(var(--tech-pill-text));
-  font-size: 6.5pt;
+  font-size: 5.8pt;
 }
 
 @media print {
   @page {
-    margin: 5mm;
+    margin: 3mm;
     size: A4;
   }
   
   body {
-    font-size: 7pt;
-  }
-  
-  /* Logo positioning for print */
-  body::after {
-    top: 5mm;
-    right: 5mm;
-    font-size: 24pt;
+    font-size: 6pt;
   }
   
   h1 {
-    font-size: 11pt;
+    font-size: 10pt;
   }
   
   h2 {
-    font-size: 8.5pt;
-    margin-top: 0.7em;
-    margin-bottom: 0.25em;
-  }
-  
-  h3 {
     font-size: 7.5pt;
     margin-top: 0.4em;
     margin-bottom: 0.15em;
   }
   
+  h3 {
+    font-size: 6.5pt;
+    margin-top: 0.2em;
+    margin-bottom: 0.05em;
+  }
+  
   h4 {
-    font-size: 7pt;
-    margin-top: 0.3em;
+    font-size: 6pt;
+    margin-top: 0.15em;
   }
   
   li, p {
-    font-size: 6.5pt;
+    font-size: 6pt;
   }
   
   a {
     color: #000;
+    font-size: 0.9em;
   }
   
   /* Tech pill styling for print */
   #skills ~ h3 + ul > li,
-  li:contains("Tech Stack") + ul li,
-  li:contains("Technologies:") + ul li,
-  li:contains("Stack:") + ul li {
+  li:contains("Tech Stack") + ul li {
     background-color: #f5f7fa;
     border: 0.5pt solid #e4e7ec;
     color: #1e293b;
-    padding: 0.02em 0.12em;
-    font-size: 6.5pt;
+    padding: 0.01em 0.08em;
+    font-size: 5.8pt;
+  }
+  
+  /* Tech Stack spacing for print */
+  li:contains("Tech Stack") {
+    margin-top: 0.5em !important;
+    padding-top: 0.1em !important;
   }
 } 

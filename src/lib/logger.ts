@@ -13,34 +13,36 @@ export interface LogOptions {
   tag: string;
   level?: LogLevel;
   data?: any;
+  fullLog?: boolean; // New option to bypass truncation for LLM logs
 }
 
 /**
  * Log a message with structured format and optional data
  * 
  * @param message The main log message
- * @param options Logging options including tag, level, and data
+ * @param options Logging options including tag, level, data, and fullLog
  */
 export function log(message: string, options: LogOptions): void {
-  const { tag, level = LogLevel.INFO, data } = options;
+  const { tag, level = LogLevel.INFO, data, fullLog = false } = options;
   const timestamp = new Date().toISOString();
   const logPrefix = `[${timestamp}] [${level}] [${tag}]`;
   
   // Log the message with its prefix
   console.log(`${logPrefix} ${message}`);
   
-  // If there's additional data, log it too (truncate if needed)
+  // If there's additional data, log it too (truncate if needed, unless fullLog is true)
   if (data) {
     const dataString = typeof data === 'string' 
       ? data 
       : JSON.stringify(data, null, 2);
     
-    // Truncate very large data
-    const truncated = dataString.length > 2000
+    // Only truncate if fullLog is false and length exceeds limit
+    const shouldTruncate = !fullLog && dataString.length > 2000;
+    const logContent = shouldTruncate
       ? `${dataString.substring(0, 2000)}... (truncated, full length: ${dataString.length})`
       : dataString;
     
-    console.log(`${logPrefix} Data:`, truncated);
+    console.log(`${logPrefix} Data:`, logContent);
   }
 }
 
@@ -97,7 +99,7 @@ export function redactSensitiveData(data: any): any {
   return cloned;
 }
 
-// Convenience methods for different log levels
+// Convenience methods for different log levels with fullLog option
 export const logDebug = (message: string, options: Omit<LogOptions, 'level'>) => 
   log(message, { ...options, level: LogLevel.DEBUG });
 
@@ -108,4 +110,11 @@ export const logWarn = (message: string, options: Omit<LogOptions, 'level'>) =>
   log(message, { ...options, level: LogLevel.WARN });
 
 export const logError = (message: string, options: Omit<LogOptions, 'level'>) => 
-  log(message, { ...options, level: LogLevel.ERROR }); 
+  log(message, { ...options, level: LogLevel.ERROR });
+
+// New full logging methods for LLM interactions
+export const logLLMRequest = (prompt: string, options: Omit<LogOptions, 'level'>) => 
+  log("LLM Request", { ...options, level: LogLevel.INFO, data: prompt, fullLog: true });
+
+export const logLLMResponse = (response: string, options: Omit<LogOptions, 'level'>) => 
+  log("LLM Response", { ...options, level: LogLevel.INFO, data: response, fullLog: true }); 

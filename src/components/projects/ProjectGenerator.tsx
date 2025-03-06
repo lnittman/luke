@@ -12,7 +12,6 @@ import {
   TabsList,
   TabsTrigger
 } from "@/components/ui/tabs";
-import { FloatingDocPanel } from '@/components/FloatingDocPanel';
 import { useDocumentManager, DocItem } from '@/lib/hooks/useDocumentManager';
 import { Toaster } from 'sonner';
 import { X } from 'lucide-react';
@@ -971,73 +970,277 @@ export const ProjectGenerator = ({ onProjectGenerated, onCancel, techData }: Pro
   const generateAndDownloadDocs = async (project: Project, documents: ProjectGenerationResponse['documents']) => {
     try {
       setIsGeneratingDocs(true);
+      console.log('Starting document generation and ZIP creation...');
       
-      // Create a new ZIP file
+      // Log the available documents
+      console.log('Available documents:', Object.keys(documents).filter(key => documents[key as keyof typeof documents]));
+      
+      // Create a new ZIP file with the full project documentation structure
       const zip = new JSZip();
       
-      // Always include init.md
-      zip.file("init.md", documents.init || GENERALIZED_INIT_MD);
+      // Create the base folder
+      const projectDocsFolder = zip.folder("project-docs");
+      if (!projectDocsFolder) {
+        throw new Error("Failed to create project-docs folder");
+      }
+      console.log('Created project-docs folder');
       
-      // Add index.md (project overview)
-      zip.file("index.md", documents.index || 
+      // Create directory structure
+      const docsFolder = projectDocsFolder.folder("docs");
+      const techFolder = projectDocsFolder.folder("tech");
+      const systemFolder = projectDocsFolder.folder("system");
+      const memoryFolder = projectDocsFolder.folder("memory");
+      const promptsFolder = projectDocsFolder.folder("prompts");
+      const architectureFolder = projectDocsFolder.folder("architecture");
+      
+      // Check if all folders were created
+      if (!docsFolder || !techFolder || !systemFolder || !memoryFolder || !promptsFolder || !architectureFolder) {
+        console.error('Failed to create one or more required directories');
+      } else {
+        console.log('Created all required directories');
+      }
+      
+      // Create subfolders for prompts
+      const rolesFolder = promptsFolder?.folder("roles");
+      const commandsFolder = promptsFolder?.folder("commands");
+      
+      if (!rolesFolder || !commandsFolder) {
+        console.error('Failed to create prompt subdirectories');
+      } else {
+        console.log('Created prompt subdirectories');
+      }
+      
+      // Add README.md at the root (project overview)
+      projectDocsFolder.file("README.md", documents.index || 
         (selectedTechStack ? TECH_STACK_DOCS[selectedTechStack] : TECH_STACK_DOCS["Other"]));
+      console.log('Added README.md to project root');
       
-      // Add design.md (design documentation)
-      zip.file("design.md", documents.design || 
-        `# ${project.name} Design\n\nThis document outlines the design principles and UI/UX guidelines for the ${project.name} project.`);
+      // Add index.md (documentation index)
+      const indexContent = `# ${project.name} Documentation Index
+
+> This document provides a comprehensive overview of all documentation folders and files for ${project.name}.
+
+## Documentation Structure
+
+The project documentation is organized into the following directory structure:
+
+\`\`\`
+project-docs/
+│
+├── README.md                      # Human-readable GitHub README
+├── index.md                       # This file - summary of all folders and files
+│
+├── docs/                          # Core documentation
+│   ├── overview.md                # Project overview
+│   ├── design.md                  # Architecture and design decisions
+│   ├── code.md                    # Implementation guide
+│   └── README.md                  # Summary of core documentation
+│
+├── tech/                          # Technology documentation
+│   ├── index.md                   # Tech stack overview
+│   └── README.md                  # Guide to tech documentation
+│
+├── system/                        # LLM system files
+│   ├── init.md                    # System prompt for LLM initialization
+│   ├── instructions.md            # Project-specific workflow instructions
+│   └── README.md                  # Guide to using system files
+│
+├── memory/                        # Memory system
+│   ├── index.md                   # Memory system guide
+│   ├── bank_1.md                  # Initial memory bank
+│   └── README.md                  # Memory usage instructions
+│
+├── prompts/                       # Role and workflow prompts
+│   ├── roles/                     # Role-specific prompts
+│   │   ├── architect.md           # Architecture-focused role
+│   │   ├── developer.md           # Development-focused role
+│   │   ├── designer.md            # Design-focused role
+│   │   └── enterprise.md          # Business/growth-focused role
+│   ├── commands/                  # Workflow command prompts
+│   │   ├── setup.md               # Project setup commands
+│   │   └── testing.md             # Testing workflow commands
+│   └── README.md                  # Guide to using prompts
+│
+└── architecture/                  # Architecture documentation
+    ├── sample-feature.md          # Sample architecture document
+    └── README.md                  # Architecture documentation guide
+\`\`\`
+`;
+      projectDocsFolder.file("index.md", indexContent);
+      console.log('Added index.md to project root');
       
-      // Add code.md (implementation documentation)
-      zip.file("code.md", documents.code || 
-        `# ${project.name} Implementation\n\nThis document provides implementation details and code patterns for the project.`);
+      // Add core documentation files in docs/
+      if (docsFolder) {
+        // overview.md - copy of the index.md document
+        docsFolder.file("overview.md", documents.index || 
+          (selectedTechStack ? TECH_STACK_DOCS[selectedTechStack] : TECH_STACK_DOCS["Other"]));
+        
+        // design.md - architecture and design
+        docsFolder.file("design.md", documents.design || 
+          `# ${project.name} Design\n\nThis document outlines the design principles and UI/UX guidelines for the ${project.name} project.`);
+        
+        // code.md - implementation guide
+        docsFolder.file("code.md", documents.code || 
+          `# ${project.name} Implementation\n\nThis document provides implementation details and code patterns for the project.`);
+        
+        // README.md for docs/ directory
+        docsFolder.file("README.md", `# Core Documentation\n\nThis directory contains the core documentation for ${project.name}. Start with overview.md for a high-level understanding of the project.`);
+        
+        console.log('Added all core documentation files to docs/ directory');
+      }
       
-      // Fetch tech.md content from Vercel Blob if available for the selected tech stack
-      let techMdContent = documents.tech;
-      
-      if (!techMdContent && selectedTechStack) {
-        try {
-          // Map stack option to normalized tech name
-          const techNameMap: Record<TechStackOption, string> = {
-            'Next.js': 'next-js',
-            'Apple': 'apple',
-            'CLI': 'cli',
-            'Other': 'other'
-          };
-          
-          const normalizedTechName = techNameMap[selectedTechStack];
-          
-          // Attempt to fetch from Vercel Blob
-          const blobResponse = await fetch(`/api/blob/list`);
-          const blobData = await blobResponse.json();
-          
-          // Look for a matching tech-*.md file
-          const techFile = blobData.blobs.find(
-            (blob: any) => blob.pathname === `tech-${normalizedTechName}.md`
-          );
-          
-          if (techFile) {
-            // Fetch the content
-            const response = await fetch(techFile.url);
-            if (response.ok) {
-              techMdContent = await response.text();
-              console.log(`Found tech documentation for ${selectedTechStack} in Vercel Blob`);
+      // Add tech documentation files in tech/
+      if (techFolder) {
+        // Get tech.md content from documents or fallback
+        let techMdContent = documents.tech;
+        console.log('Tech document available:', Boolean(techMdContent));
+        
+        if (!techMdContent && selectedTechStack) {
+          try {
+            // Map stack option to normalized tech name
+            const techNameMap: Record<TechStackOption, string> = {
+              'Next.js': 'next-js',
+              'Apple': 'apple',
+              'CLI': 'cli',
+              'Other': 'other'
+            };
+            
+            const normalizedTechName = techNameMap[selectedTechStack];
+            console.log(`Looking for tech documentation for ${selectedTechStack} (${normalizedTechName})`);
+            
+            // Attempt to fetch from Vercel Blob
+            const blobResponse = await fetch(`/api/blob/list`);
+            const blobData = await blobResponse.json();
+            console.log('Blob list:', blobData.blobs.map((b: any) => b.pathname));
+            
+            // Look for a matching tech-*.md file
+            const techFile = blobData.blobs.find(
+              (blob: any) => blob.pathname === `tech-${normalizedTechName}.md`
+            );
+            
+            if (techFile) {
+              // Fetch the content
+              const response = await fetch(techFile.url);
+              if (response.ok) {
+                techMdContent = await response.text();
+                console.log(`Found tech documentation for ${selectedTechStack} in Vercel Blob`);
+              } else {
+                console.error(`Failed to fetch tech file content: ${response.status}`);
+              }
+            } else {
+              console.log(`No tech documentation found for ${selectedTechStack} in Vercel Blob`);
             }
-          } else {
-            console.log(`No tech documentation found for ${selectedTechStack} in Vercel Blob`);
+          } catch (error) {
+            console.error('Error fetching tech documentation from Vercel Blob:', error);
           }
-        } catch (error) {
-          console.error('Error fetching tech documentation from Vercel Blob:', error);
+        }
+        
+        // index.md (former tech.md)
+        techFolder.file("index.md", techMdContent || 
+          `# ${project.name} Technology Stack\n\nThis document details the technologies, frameworks, and libraries used in the project.`);
+        console.log('Added index.md to tech/ directory');
+        
+        // README.md for tech/ directory
+        techFolder.file("README.md", `# Technology Documentation\n\nThis directory contains documentation for all technologies used in ${project.name}. See index.md for an overview of the technology stack.`);
+        
+        // Tech-specific files could be added here if available in documents.techFiles
+        if (documents.techFiles) {
+          console.log('Tech files available:', Object.keys(documents.techFiles));
+          Object.entries(documents.techFiles).forEach(([filename, content]) => {
+            techFolder.file(filename, content);
+            console.log(`Added tech file: ${filename}`);
+          });
+        } else {
+          console.log('No tech-specific files available');
         }
       }
       
-      // Add tech.md (technology documentation)
-      zip.file("tech.md", techMdContent || 
-        `# ${project.name} Technology Stack\n\nThis document details the technologies, frameworks, and libraries used in the project.`);
+      // Add system files in system/
+      if (systemFolder) {
+        // init.md - system prompt for LLM initialization
+        systemFolder.file("init.md", documents.init || 
+          `# ${project.name} System Initialization\n\nThis document provides the system prompt for initializing an LLM when working with this project.`);
+        
+        // instructions.md - project-specific workflow instructions
+        systemFolder.file("instructions.md", documents.instructions || 
+          `# ${project.name} Implementation Guide\n\nThis document provides specific instructions for implementing the project using the documentation.`);
+        
+        // README.md for system/ directory
+        systemFolder.file("README.md", `# System Files\n\nThis directory contains files used to initialize and guide LLM agents when working with ${project.name}.`);
+        
+        console.log('Added system files to system/ directory');
+      }
+      
+      // Add memory files in memory/
+      if (memoryFolder) {
+        // index.md - memory system guide
+        memoryFolder.file("index.md", documents.memoryIndex || 
+          `# ${project.name} Memory System\n\nThis document outlines how to use the memory system with LLM agents for this project.`);
+        
+        // bank_1.md - initial memory bank
+        memoryFolder.file("bank_1.md", documents.memoryBank || 
+          `# ${project.name} Memory Bank\n\nThis document contains the initial memory bank for storing context when working with this project.`);
+        
+        // README.md for memory/ directory
+        memoryFolder.file("README.md", `# Memory System\n\nThis directory contains files for the memory system used by LLM agents working with ${project.name}.`);
+        
+        console.log('Added memory files to memory/ directory');
+      }
+      
+      // Add prompt files in prompts/
+      if (promptsFolder) {
+        // README.md for prompts/ directory
+        promptsFolder.file("README.md", `# Role and Workflow Prompts\n\nThis directory contains specialized prompts for different roles and workflows when working with ${project.name}.`);
+        
+        // Add role-specific prompts
+        if (rolesFolder) {
+          rolesFolder.file("architect.md", documents.promptArchitect || 
+            `# ${project.name} - Architect Role\n\nThis document provides prompts for the architecture-focused role when working with this project.`);
+          
+          rolesFolder.file("developer.md", documents.promptDeveloper || 
+            `# ${project.name} - Developer Role\n\nThis document provides prompts for the development-focused role when working with this project.`);
+          
+          rolesFolder.file("designer.md", documents.promptDesigner || 
+            `# ${project.name} - Designer Role\n\nThis document provides prompts for the design-focused role when working with this project.`);
+          
+          rolesFolder.file("enterprise.md", documents.promptEnterprise || 
+            `# ${project.name} - Enterprise Role\n\nThis document provides prompts for the business/growth-focused role when working with this project.`);
+          
+          console.log('Added role-specific prompts to prompts/roles/ directory');
+        }
+        
+        // Add command prompts
+        if (commandsFolder) {
+          commandsFolder.file("setup.md", 
+            `# ${project.name} Setup Commands\n\nThis document provides commands for setting up the development environment for this project.`);
+          
+          commandsFolder.file("testing.md", 
+            `# ${project.name} Testing Workflow\n\nThis document provides commands for testing this project.`);
+          
+          console.log('Added command prompts to prompts/commands/ directory');
+        }
+      }
+      
+      // Add architecture files in architecture/
+      if (architectureFolder) {
+        // sample-feature.md - sample architecture document
+        architectureFolder.file("sample-feature.md", documents.architectureSample || 
+          `# ${project.name} Sample Feature Architecture\n\nThis document provides a sample architecture document for a feature in this project.`);
+        
+        // README.md for architecture/ directory
+        architectureFolder.file("README.md", `# Architecture Documentation\n\nThis directory contains detailed architecture documentation for ${project.name}.`);
+        
+        console.log('Added architecture files to architecture/ directory');
+      }
       
       // Generate the ZIP file
+      console.log('Generating ZIP file...');
       const content = await zip.generateAsync({ type: "blob" });
+      console.log(`ZIP file generated: ${content.size} bytes`);
       
       // Save the ZIP file
       saveAs(content, `${project.name}-docs.zip`);
+      console.log(`ZIP file saved as: ${project.name}-docs.zip`);
       
       setIsGeneratingDocs(false);
       
@@ -1046,13 +1249,25 @@ export const ProjectGenerator = ({ onProjectGenerated, onCancel, techData }: Pro
         setShouldTransition(true);
       }, 500);
     } catch (error) {
-      console.error('Error auto-downloading documentation:', error);
+      console.error('Error generating documentation:', error);
       setIsGeneratingDocs(false);
       
-      // Still transition even if doc generation fails
-      setTimeout(() => {
-        setShouldTransition(true);
-      }, 500);
+      // Attempt to create a minimal ZIP with basic documents
+      try {
+        console.log('Attempting to create minimal documentation ZIP...');
+        const zip = new JSZip();
+        const folder = zip.folder("project-docs");
+        if (folder) {
+          folder.file("README.md", `# ${project.name}\n\nAn error occurred while generating complete documentation.`);
+          folder.file("error-log.md", `# Error Log\n\n\`\`\`\n${error}\n\`\`\``);
+          
+          const content = await zip.generateAsync({ type: "blob" });
+          saveAs(content, `${project.name}-minimal-docs.zip`);
+          console.log('Created minimal documentation ZIP');
+        }
+      } catch (fallbackError) {
+        console.error('Failed to create minimal documentation ZIP:', fallbackError);
+      }
     }
   };
 
@@ -1170,70 +1385,80 @@ export const ProjectGenerator = ({ onProjectGenerated, onCancel, techData }: Pro
       
       // Use the Perplexity API to enrich tech documentation links
       try {
-        // Extract tech items from the generated project
-        const techItems = projectData.project.content.tech.items.map((item: any) => 
-          typeof item === 'string' ? item : item.name
-        );
+        // Extract tech items from the generated project safely
+        const techItems = projectData?.project?.content?.tech?.items
+          ? projectData.project.content.tech.items.map((item: any) => 
+              typeof item === 'string' ? item : item.name
+            )
+          : [];
         
-        console.log('Enriching tech documentation with Perplexity...');
-        
-        // Call the tech enrichment API
-        const enrichResponse = await fetch(`${baseUrl}/api/tech/enrich`, {
-          method: 'POST',
-          headers: {
-            'Content-Type': 'application/json',
-          },
-          body: JSON.stringify({
-            techItems,
-            detailedInfo: true
-          }),
-        });
-        
-        if (enrichResponse.ok) {
-          const enrichData = await enrichResponse.json();
+        // Only proceed if we have tech items to enrich
+        if (techItems.length > 0) {
+          console.log('Enriching tech documentation with Perplexity...');
           
-          if (enrichData.technologies && Array.isArray(enrichData.technologies)) {
-            console.log(`Received ${enrichData.technologies.length} enriched tech docs`);
+          // Call the tech enrichment API
+          const enrichResponse = await fetch(`${baseUrl}/api/tech/enrich`, {
+            method: 'POST',
+            headers: {
+              'Content-Type': 'application/json',
+            },
+            body: JSON.stringify({
+              techItems,
+              detailedInfo: true
+            }),
+          });
+          
+          if (enrichResponse.ok) {
+            const enrichData = await enrichResponse.json();
             
-            // Create a map of enriched docs by name (case-insensitive)
-            const enrichedDocsMap = new Map();
-            enrichData.technologies.forEach((doc: any) => {
-              if (doc.name) {
-                enrichedDocsMap.set(doc.name.toLowerCase(), doc);
+            if (enrichData.technologies && Array.isArray(enrichData.technologies)) {
+              console.log(`Received ${enrichData.technologies.length} enriched tech docs`);
+              
+              // Create a map of enriched docs by name (case-insensitive)
+              const enrichedDocsMap = new Map();
+              enrichData.technologies.forEach((doc: any) => {
+                if (doc.name) {
+                  enrichedDocsMap.set(doc.name.toLowerCase(), doc);
+                }
+              });
+              
+              // Update tech items with enriched documentation if tech.items exists
+              if (projectData?.project?.content?.tech?.items) {
+                const enhancedTechItems = projectData.project.content.tech.items.map((item: any) => {
+                  // Get the name from either string or object
+                  const name = typeof item === 'string' ? item : item.name;
+                  
+                  // Look for enriched doc (case-insensitive)
+                  const enrichedDoc = enrichedDocsMap.get(name.toLowerCase());
+                  
+                  if (enrichedDoc) {
+                    // Use the enriched doc but preserve original name casing
+                    return {
+                      name: name,
+                      documentationUrl: enrichedDoc.documentationUrl,
+                      githubUrl: enrichedDoc.githubUrl,
+                      // Include description and best practice if available
+                      ...(enrichedDoc.description && { description: enrichedDoc.description }),
+                      ...(enrichedDoc.bestPractice && { bestPractice: enrichedDoc.bestPractice })
+                    };
+                  }
+                  
+                  // If no enriched doc found, return the original item
+                  return item;
+                });
+                
+                // Update the project with enriched tech items
+                projectData.project.content.tech.items = enhancedTechItems;
               }
-            });
-            
-            // Update tech items with enriched documentation
-            const enhancedTechItems = projectData.project.content.tech.items.map((item: any) => {
-              // Get the name from either string or object
-              const name = typeof item === 'string' ? item : item.name;
-              
-              // Look for enriched doc (case-insensitive)
-              const enrichedDoc = enrichedDocsMap.get(name.toLowerCase());
-              
-              if (enrichedDoc) {
-                // Use the enriched doc but preserve original name casing
-                return {
-                  name: name,
-                  documentationUrl: enrichedDoc.documentationUrl,
-                  githubUrl: enrichedDoc.githubUrl,
-                  // Include description and best practice if available
-                  ...(enrichedDoc.description && { description: enrichedDoc.description }),
-                  ...(enrichedDoc.bestPractice && { bestPractice: enrichedDoc.bestPractice })
-                };
-              }
-              
-              // If no enriched doc found, return the original item
-              return item;
-            });
-            
-            // Update the project with enriched tech items
-            projectData.project.content.tech.items = enhancedTechItems;
-            setEnrichmentStatus('complete');
+              setEnrichmentStatus('complete');
+            }
+          } else {
+            console.warn('Failed to enrich tech documentation:', await enrichResponse.text());
+            setEnrichmentStatus('error');
           }
         } else {
-          console.warn('Failed to enrich tech documentation:', await enrichResponse.text());
-          setEnrichmentStatus('error');
+          console.log('No tech items found to enrich');
+          setEnrichmentStatus('complete');
         }
       } catch (enrichError) {
         console.error('Error enriching tech documentation:', enrichError);
@@ -1288,6 +1513,9 @@ export const ProjectGenerator = ({ onProjectGenerated, onCancel, techData }: Pro
 
   // Generate a random app idea based on current trends
   const generateRandomAppIdea = async () => {
+    const startTime = Date.now();
+    console.log(`[SPROUT] Starting random app idea generation at ${new Date().toISOString()}`);
+    
     try {
       setIsGeneratingRandomIdea(true);
       setIsSearching(true);
@@ -1314,8 +1542,10 @@ export const ProjectGenerator = ({ onProjectGenerated, onCancel, techData }: Pro
           }
         }
         
-        console.log(`[IDEA] Auto-selecting tech stack: ${selectedStack}`);
+        console.log(`[SPROUT] Auto-selecting tech stack: ${selectedStack} (random value: ${randomValue.toFixed(3)})`);
         setSelectedTechStack(selectedStack);
+      } else {
+        console.log(`[SPROUT] Using existing tech stack: ${selectedTechStack}`);
       }
       
       // Get the selected or auto-selected tech stack
@@ -1330,6 +1560,8 @@ export const ProjectGenerator = ({ onProjectGenerated, onCancel, techData }: Pro
           ? `Tech stack: ${TECH_STACK_DISPLAY_NAMES[selectedTechStack]} (${techStackTemplate.frameworks.join(', ')})` 
           : '';
       
+      console.log(`[SPROUT] Tech context: ${techContext || 'none'}`);
+      
       // Use server API endpoint instead of direct Jina calls
       const baseUrl = typeof window !== 'undefined' ? window.location.origin : '';
       
@@ -1341,7 +1573,13 @@ export const ProjectGenerator = ({ onProjectGenerated, onCancel, techData }: Pro
           ? 'expand' // Short input, use as seed and expand
           : 'refine'; // Long input, refine and enhance while keeping core idea
       
-      console.log(`[IDEA] Enhancement mode: ${enhancementMode} for input of length ${userInput.length}`);
+      console.log(`[SPROUT] Enhancement mode: ${enhancementMode} for input of length ${userInput.length}`);
+      if (userInput) {
+        console.log(`[SPROUT] User input: "${userInput.substring(0, 100)}${userInput.length > 100 ? '...' : ''}"`);
+      }
+      
+      const searchStartTime = Date.now();
+      console.log(`[SPROUT] Starting search request to ${baseUrl}/api/ideas/search`);
       
       // New implementation with streaming search results
       // First, start a separate API call to get search results as they come in
@@ -1360,6 +1598,9 @@ export const ProjectGenerator = ({ onProjectGenerated, onCancel, techData }: Pro
       });
       
       // Start the actual idea generation in parallel
+      const ideaGenerationStartTime = Date.now();
+      console.log(`[SPROUT] Starting idea generation request to ${baseUrl}/api/ideas/random`);
+      
       const ideaPromise = fetch(`${baseUrl}/api/ideas/random`, {
         method: 'POST',
         headers: {
@@ -1376,10 +1617,16 @@ export const ProjectGenerator = ({ onProjectGenerated, onCancel, techData }: Pro
       // Process streaming search results
       try {
         const searchResponse = await searchPromise;
+        const searchResponseTime = Date.now() - searchStartTime;
+        console.log(`[SPROUT] Search response received in ${searchResponseTime}ms with status ${searchResponse.status}`);
         
         if (searchResponse.ok && searchResponse.body) {
           const reader = searchResponse.body.getReader();
           let done = false;
+          let chunkCount = 0;
+          let totalBytes = 0;
+          
+          console.log(`[SPROUT] Starting to read search result stream`);
           
           while (!done) {
             const { value, done: doneReading } = await reader.read();
@@ -1387,8 +1634,12 @@ export const ProjectGenerator = ({ onProjectGenerated, onCancel, techData }: Pro
             
             if (value) {
               const chunk = new TextDecoder().decode(value);
+              totalBytes += chunk.length;
+              chunkCount++;
+              
               try {
                 const searchResult = JSON.parse(chunk);
+                console.log(`[SPROUT] Received chunk #${chunkCount}: ${searchResult.category} (${chunk.length} bytes)`);
                 
                 // Update search results
                 setSearchResults(prev => [...prev, searchResult]);
@@ -1396,6 +1647,8 @@ export const ProjectGenerator = ({ onProjectGenerated, onCancel, techData }: Pro
                 
                 // Extract tech from search results
                 if (searchResult.links && searchResult.links.length > 0) {
+                  console.log(`[SPROUT] Processing ${searchResult.links.length} links from search result`);
+                  
                   // Simple tech extraction from links based on common tech domains
                   const techDomains = [
                     { pattern: 'github.com', prefix: '' },
@@ -1417,6 +1670,8 @@ export const ProjectGenerator = ({ onProjectGenerated, onCancel, techData }: Pro
                     { pattern: 'google', prefix: 'Google Cloud' },
                   ];
                   
+                  const extractedTechs: string[] = [];
+                  
                   searchResult.links.forEach((link: string) => {
                     for (const domain of techDomains) {
                       if (link.includes(domain.pattern)) {
@@ -1433,6 +1688,7 @@ export const ProjectGenerator = ({ onProjectGenerated, onCancel, techData }: Pro
                         }
                         
                         if (techName) {
+                          extractedTechs.push(techName);
                           setDiscoveredTechs(prev => {
                             // Check if this tech is already in the list
                             if (!prev.some(t => t.name.toLowerCase() === techName.toLowerCase())) {
@@ -1448,9 +1704,13 @@ export const ProjectGenerator = ({ onProjectGenerated, onCancel, techData }: Pro
                       }
                     }
                   });
+                  
+                  if (extractedTechs.length > 0) {
+                    console.log(`[SPROUT] Extracted technologies from links: ${extractedTechs.join(', ')}`);
+                  }
                 }
               } catch (parseError) {
-                console.error('Error parsing search result chunk:', parseError);
+                console.error(`[SPROUT] Error parsing search result chunk (${chunk.length} bytes):`, parseError);
               }
             }
           }
@@ -1579,7 +1839,7 @@ export const ProjectGenerator = ({ onProjectGenerated, onCancel, techData }: Pro
                 {isGenerating && !showInputForm && !generatedProject && (
                   <motion.div 
                     key="thinking-state"
-                    className="text-center font-mono text-sm text-[rgb(var(--text-secondary))]"
+                    className="text-center  text-sm text-[rgb(var(--text-secondary))]"
                     initial={{ opacity: 0 }}
                     animate={{ 
                       opacity: [0.5, 1, 0.5],
@@ -1621,14 +1881,14 @@ export const ProjectGenerator = ({ onProjectGenerated, onCancel, techData }: Pro
                       <div className="flex items-center gap-3 mb-4">
                         <div className="text-3xl">{generatedProject.emoji}</div>
                         <div>
-                          <h2 className="text-lg font-mono">{generatedProject.name}</h2>
+                          <h2 className="text-lg ">{generatedProject.name}</h2>
                           <p className="text-sm text-[rgb(var(--text-secondary))]">{generatedProject.description}</p>
                         </div>
                       </div>
 
                       <div className="space-y-3 mb-4">
                         <div>
-                          <h3 className="text-sm font-mono mb-1">{generatedProject.content.overview.title}</h3>
+                          <h3 className="text-sm  mb-1">{generatedProject.content.overview.title}</h3>
                           <ul className="text-xs space-y-1">
                             {generatedProject.content.overview.items.map((item, i) => (
                               <li key={i} className="text-[rgb(var(--text-secondary))]">{item}</li>
@@ -1637,7 +1897,7 @@ export const ProjectGenerator = ({ onProjectGenerated, onCancel, techData }: Pro
                         </div>
 
                         <div>
-                          <h3 className="text-sm font-mono mb-1">{generatedProject.content.tech.title}</h3>
+                          <h3 className="text-sm  mb-1">{generatedProject.content.tech.title}</h3>
                           <div className="flex flex-wrap gap-2">
                             {generatedProject.content.tech.items.map((tech, i) => (
                               <TechPill 
@@ -1652,7 +1912,7 @@ export const ProjectGenerator = ({ onProjectGenerated, onCancel, techData }: Pro
                       </div>
 
                       <div className="text-center">
-                        <div className="mb-2 text-sm font-mono">Generating documentation...</div>
+                        <div className="mb-2 text-sm ">Generating documentation...</div>
                         <div className="w-full h-1.5 bg-[rgb(var(--surface-1)/0.2)] rounded-full overflow-hidden">
                           <motion.div 
                             className="h-full bg-[rgb(var(--accent-1)/0.5)]"
@@ -1694,14 +1954,14 @@ export const ProjectGenerator = ({ onProjectGenerated, onCancel, techData }: Pro
                         >
                           🌱
                         </button>
-                        <p className="font-mono text-sm whitespace-pre-wrap">{messages[0].content}</p>
+                        <p className=" text-sm whitespace-pre-wrap">{messages[0].content}</p>
                       </div>
                     )}
                     
                     {/* Error message if present */}
                     {messages.length > 1 && messages[messages.length - 1].role === 'assistant' && (
                       <div className="mb-6 text-center">
-                        <p className="font-mono text-sm whitespace-pre-wrap text-[rgb(var(--text-secondary))]">
+                        <p className=" text-sm whitespace-pre-wrap text-[rgb(var(--text-secondary))]">
                           {messages[messages.length - 1].content}
                         </p>
                       </div>
@@ -1715,7 +1975,7 @@ export const ProjectGenerator = ({ onProjectGenerated, onCancel, techData }: Pro
                           value={projectName}
                           onChange={handleNameChange}
                           placeholder="project name (optional)"
-                          className="w-full mb-2 p-3 bg-[rgb(var(--surface-1)/0.1)] rounded-md focus:outline-none focus:ring-1 focus:ring-[rgb(var(--surface-1)/0.3)] font-mono text-sm border border-[rgb(var(--border)/0.2)] text-center"
+                          className="w-full mb-2 p-3 bg-[rgb(var(--surface-1)/0.1)] rounded-md focus:outline-none focus:ring-1 focus:ring-[rgb(var(--surface-1)/0.3)]  text-sm border border-[rgb(var(--border)/0.2)] text-center"
                           disabled={isGenerating}
                         />
                       </div>
@@ -1749,7 +2009,7 @@ export const ProjectGenerator = ({ onProjectGenerated, onCancel, techData }: Pro
                           value={inputValue}
                           onChange={handleInputChange}
                           placeholder="describe your project idea..."
-                          className="w-full p-3 bg-[rgb(var(--surface-1)/0.1)] rounded-md focus:outline-none focus:ring-1 focus:ring-[rgb(var(--surface-1)/0.3)] font-mono text-sm resize-none min-h-[40px] max-h-[120px] text-center border border-[rgb(var(--border)/0.2)] flex items-center justify-center"
+                          className="w-full p-3 bg-[rgb(var(--surface-1)/0.1)] rounded-md focus:outline-none focus:ring-1 focus:ring-[rgb(var(--surface-1)/0.3)]  text-sm resize-none min-h-[40px] max-h-[120px] text-center border border-[rgb(var(--border)/0.2)] flex items-center justify-center"
                           style={{
                             textAlign: 'center',
                             paddingTop: '12px',
@@ -1771,7 +2031,7 @@ export const ProjectGenerator = ({ onProjectGenerated, onCancel, techData }: Pro
                       <button
                         type="submit"
                         disabled={isGenerating || isGeneratingRandomIdea || !inputValue.trim()}
-                        className="mt-4 w-full p-2.5 bg-[rgb(var(--accent-1)/0.1)] hover:bg-[rgb(var(--accent-1)/0.2)] rounded-md font-mono text-sm border border-[rgb(var(--accent-1)/0.3)] transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
+                        className="mt-4 w-full p-2.5 bg-[rgb(var(--accent-1)/0.1)] hover:bg-[rgb(var(--accent-1)/0.2)] rounded-md  text-sm border border-[rgb(var(--accent-1)/0.3)] transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
                       >
                         generate project
                       </button>
@@ -1784,7 +2044,7 @@ export const ProjectGenerator = ({ onProjectGenerated, onCancel, techData }: Pro
                           onValueChange={(value: string) => setSelectedTechStack(value as TechStackOption)}
                           value={selectedTechStack || "Other"}
                         >
-                          <TabsList className="grid w-full grid-cols-4 font-mono text-xs">
+                          <TabsList className="grid w-full grid-cols-4  text-xs">
                             <TabsTrigger value="Other">
                               <span className="text-base mr-1">{TECH_STACK_EMOJIS["Other"]}</span>
                               <span className="hidden sm:inline">{TECH_STACK_DISPLAY_NAMES["Other"]}</span>
@@ -1855,7 +2115,7 @@ export const ProjectGenerator = ({ onProjectGenerated, onCancel, techData }: Pro
       <Toaster 
         position="bottom-left" 
         toastOptions={{
-          className: "glass-effect border border-border/20 font-mono",
+          className: "glass-effect border border-border/20 ",
           duration: 5000,
           style: {
             borderRadius: '0.75rem',

@@ -3,6 +3,7 @@ import { Inter } from 'next/font/google';
 import './globals.css';
 import { ClientLayout } from './ClientLayout';
 import { Analytics } from '@vercel/analytics/next';
+import { ThemeProviderWrapper } from './ThemeProviderWrapper';
 
 const inter = Inter({ subsets: ['latin'] });
 
@@ -48,10 +49,12 @@ export default function RootLayout({
         <meta name="mobile-web-app-capable" content="yes" />
       </head>
       <body className={inter.className}>
-        <ClientLayout>
-          {children}
-          <Analytics />
-        </ClientLayout>
+        <ThemeProviderWrapper>
+          <ClientLayout>
+            {children}
+            <Analytics />
+          </ClientLayout>
+        </ThemeProviderWrapper>
       </body>
     </html>
   );

@@ -7,6 +7,7 @@ import { motion, useMotionValue, useSpring, useTransform } from 'framer-motion';
 import { useRef, useEffect, useState } from 'react';
 import Image from 'next/image';
 import { AnimatePresence } from 'framer-motion';
+import { useTheme } from 'next-themes';
 
 interface NavigationItem {
   href: string;
@@ -14,7 +15,7 @@ interface NavigationItem {
   icon: string;
 }
 
-const NAVIGATION_ITEMS: NavigationItem[] = [
+const DEFAULT_NAVIGATION_ITEMS: NavigationItem[] = [
   {
     href: '/',
     label: 'Home',
@@ -32,8 +33,22 @@ const NAVIGATION_ITEMS: NavigationItem[] = [
   },
 ];
 
+// Additional item for jobs page (only shown on localhost)
+const JOBS_NAVIGATION_ITEM: NavigationItem = {
+  href: '/jobs',
+  label: 'Jobs',
+  icon: '/assets/jobs.png', // Using jobs.png
+};
+
 function NavigationIcon({ item, isActive }: { item: NavigationItem; isActive: boolean }) {
   const [showTooltip, setShowTooltip] = useState(false);
+  const { theme } = useTheme();
+  const isDarkTheme = theme === 'dark';
+
+  // Adjust glow opacity and spread based on theme
+  const glowOpacity = isDarkTheme ? 0.25 : 0.15;
+  const glowSpread = isDarkTheme ? '0 0 25px' : '0 0 20px';
+  const glowRadius = isDarkTheme ? '90%' : '70%';
 
   return (
     <div className="relative group">
@@ -68,8 +83,8 @@ function NavigationIcon({ item, isActive }: { item: NavigationItem; isActive: bo
             transition={{ duration: 0.2 }}
             className="absolute inset-0 rounded-xl"
             style={{ 
-              background: 'radial-gradient(circle at center, rgb(var(--accent-1) / 0.15) 0%, transparent 70%)',
-              boxShadow: '0 0 20px rgb(var(--accent-1) / 0.2)'
+              background: `radial-gradient(circle at center, rgb(var(--accent-1) / ${glowOpacity}) 0%, transparent ${glowRadius})`,
+              boxShadow: `${glowSpread} rgb(var(--accent-1) / ${glowOpacity})`,
             }}
           />
         )}
@@ -86,7 +101,7 @@ function NavigationIcon({ item, isActive }: { item: NavigationItem; isActive: bo
             className="absolute left-0 -translate-x-1/2 -top-10 hidden sm:block w-full"
           >
             <div className="relative flex flex-col items-center">
-              <div className="px-2.5 py-1.5 rounded-md bg-[rgb(var(--surface-1)/0.9)] backdrop-blur-sm font-mono text-sm lowercase whitespace-nowrap">
+              <div className="px-2.5 py-1.5 rounded-md bg-[rgb(var(--surface-1)/0.9)] backdrop-blur-sm  text-sm lowercase whitespace-nowrap">
                 {item.label.toLowerCase()}
               </div>
               <div 
@@ -103,6 +118,20 @@ function NavigationIcon({ item, isActive }: { item: NavigationItem; isActive: bo
 
 export default function Navigation() {
   const pathname = usePathname();
+  const [navigationItems, setNavigationItems] = useState<NavigationItem[]>(DEFAULT_NAVIGATION_ITEMS);
+  
+  // Check if we're on localhost and add the jobs link if so
+  useEffect(() => {
+    if (typeof window !== 'undefined') {
+      const isLocalhost = window.location.hostname === 'localhost' || window.location.hostname === '127.0.0.1';
+      
+      if (isLocalhost) {
+        setNavigationItems([...DEFAULT_NAVIGATION_ITEMS, JOBS_NAVIGATION_ITEM]);
+      } else {
+        setNavigationItems(DEFAULT_NAVIGATION_ITEMS);
+      }
+    }
+  }, []);
 
   return (
     <nav 
@@ -111,7 +140,7 @@ export default function Navigation() {
       data-navigation
     >
       <ul className="flex gap-1.5 sm:gap-3">
-        {NAVIGATION_ITEMS.map(item => {
+        {navigationItems.map(item => {
           const isActive = pathname === item.href;
           return (
             <li key={item.href}>

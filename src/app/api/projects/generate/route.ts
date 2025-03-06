@@ -26,7 +26,7 @@ export async function POST(request: NextRequest) {
         { status: 400 }
       );
     }
-    
+
     // Create provider and generator
     const provider = createServerApiProvider();
     const projectGenerator = new ProjectGenerator(provider);
@@ -40,7 +40,7 @@ export async function POST(request: NextRequest) {
       await projectGenerator.generateTechStack(prompt);
     
     // Gather project context from research
-    const { context: projectResearchContext, links: researchLinks } = 
+      const { context: projectResearchContext, links: researchLinks } = 
       await gatherProjectContext(prompt, selectedTechStackType, techStack);
     
     // Generate project content
@@ -84,7 +84,7 @@ export async function POST(request: NextRequest) {
     );
     
     // Combine results
-    const generationResponse = {
+      const generationResponse = {
       project: {
         id: new Date().getTime().toString(),
         name: projectName,
@@ -93,14 +93,14 @@ export async function POST(request: NextRequest) {
         createdAt: new Date().toISOString(),
         researchLinks
       },
-      documents: {
-        ...documents,
+        documents: {
+          ...documents,
         ...commandPrompts
       }
     };
     
     // Return the generated project
-    return NextResponse.json(generationResponse);
+      return NextResponse.json(generationResponse);
   } catch (error) {
     console.error('Error generating project:', error);
     return NextResponse.json(

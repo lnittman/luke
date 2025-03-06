@@ -3,6 +3,7 @@
 import { motion, AnimatePresence } from 'framer-motion';
 import { useState, useEffect, useRef } from 'react';
 import { usePathname } from 'next/navigation';
+import { ThemeSwitcher } from '@/components/ThemeSwitcher';
 
 interface ContactInfo {
   name: string;
@@ -95,11 +96,11 @@ export function Header() {
             className="text-base sm:text-lg font-medium text-[rgb(var(--text-primary))]"
             layout="position"
           >
-            <span className="font-mono">{CONTACT_INFO.name}</span>
-            <span className="hidden sm:inline opacity-50 ml-2 font-mono">//</span>
+            <span className="">{CONTACT_INFO.name}</span>
+            <span className="hidden sm:inline opacity-50 ml-2 ">//</span>
             <motion.span
               key={pageName}
-              className="hidden sm:inline-block ml-2 font-mono"
+              className="hidden sm:inline-block ml-2 "
               initial={{ opacity: 0 }}
               animate={{ opacity: 1 }}
               exit={{ opacity: 0 }}
@@ -114,7 +115,7 @@ export function Header() {
             className="flex items-center gap-2"
             layout="position"
           >
-            <span className="hidden sm:inline text-xs font-mono text-[rgb(var(--text-secondary))] hover:text-[rgb(var(--text-primary))] transition-colors">
+            <span className="hidden sm:inline text-xs  text-[rgb(var(--text-secondary))] hover:text-[rgb(var(--text-primary))] transition-colors">
               local time - {hours.toString().padStart(2, '0')}
               <span style={{ opacity: colonVisible ? 1 : 0, transition: 'opacity 0.1s' }}>:</span>
               {displayMinutes}
@@ -149,9 +150,9 @@ export function Header() {
               }}
               className="overflow-hidden border-t border-[rgb(var(--border))] relative z-[100]"
             >
-              <div className="p-4 sm:p-6">
+              <div className="p-4 sm:p-6 relative">
                 {/* Contact Info */}
-                <div className="space-y-2.5 text-sm sm:text-base text-[rgb(var(--text-secondary))] font-mono">
+                <div className="space-y-2.5 text-sm sm:text-base text-[rgb(var(--text-secondary))] ">
                   <a 
                     href={`tel:${CONTACT_INFO.phone}`}
                     className="block hover:text-[rgb(var(--text-primary))] transition-colors"
@@ -164,6 +165,7 @@ export function Header() {
                   >
                     {CONTACT_INFO.email}
                   </a>
+                  {/*
                   <a 
                     href={`https://maps.google.com/?q=${encodeURIComponent(CONTACT_INFO.address)}`}
                     target="_blank"
@@ -172,6 +174,12 @@ export function Header() {
                   >
                     {CONTACT_INFO.address}
                   </a>
+                  */}
+                </div>
+                
+                {/* Theme Switcher */}
+                <div className="absolute bottom-4 right-4 sm:right-6">
+                  <ThemeSwitcher />
                 </div>
               </div>
             </motion.div>

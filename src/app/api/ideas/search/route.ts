@@ -14,6 +14,26 @@ function getCurrentMonthName(): string {
 }
 
 /**
+ * Process the search response from Sonar
+ */
+function processSearchResponse(responseText: string): { content: string } {
+  console.log(`[SEARCH] Processing search response of ${responseText.length} chars`);
+  
+  try {
+    // For now, just return the full content
+    // In the future, we could extract key insights, links, etc.
+    return {
+      content: responseText
+    };
+  } catch (error) {
+    console.error(`[SEARCH] Error processing search response: ${error}`);
+    return {
+      content: `Error processing response: ${responseText.substring(0, 200)}...`
+    };
+  }
+}
+
+/**
  * API route that streams search results back to the client as they come in
  * This allows for a more interactive experience with real-time updates
  */
@@ -49,6 +69,10 @@ export async function POST(request: NextRequest) {
       const currentMonth = getCurrentMonthName();
       
       console.log(`[SEARCH] Processing search with mode: ${enhancementMode}, input: ${userInput?.substring(0, 50) || 'none'}`);
+      console.log(`[SEARCH] Tech context length: ${techContext?.length || 0} chars`);
+      console.log(`[SEARCH] Tech stack provided: ${techStack ? 'yes' : 'no'}`);
+      
+      const searchStartTime = Date.now();
       
       // Create context strings
       const userContext = userInput?.trim() 
@@ -89,6 +113,9 @@ export async function POST(request: NextRequest) {
       }
       
       console.log(`[SEARCH] Generated ${queries.length} search queries for mode: ${enhancementMode}`);
+      for (let i = 0; i < queries.length; i++) {
+        console.log(`[SEARCH] Query ${i+1}: ${queries[i].substring(0, 100)}...`);
+      }
       
       // Get the OpenRouter API key from environment variable
       const openrouterApiKey = process.env.OPENROUTER_API_KEY;
@@ -98,106 +125,126 @@ export async function POST(request: NextRequest) {
         await writer.write(encoder.encode(JSON.stringify({
           category: 'Error',
           content: 'No OpenRouter API key found in environment variables',
-          links: []
         })));
         await writer.close();
-        return;
+        return response;
       }
       
-      // Process each query in sequence (not parallel, to stream results)
+      // Start processing queries one by one
       for (let i = 0; i < queries.length; i++) {
         const query = queries[i];
-        let categoryName = '';
-        
-        // Set category name based on enhancement mode and query index
-        if (enhancementMode === 'expand') {
-          if (i === 0) categoryName = 'Concept Exploration';
-          else if (i === 1) categoryName = 'Technical Implementation';
-          else categoryName = 'Market Analysis';
-        } else if (enhancementMode === 'refine') {
-          if (i === 0) categoryName = 'Design Best Practices';
-          else if (i === 1) categoryName = 'Technical Architecture';
-          else categoryName = 'Market Positioning';
-        } else {
-          if (i === 0) categoryName = 'Cultural & Viral Trends';
-          else if (i === 1) categoryName = 'Technology Trends';
-          else categoryName = 'Startup & Business Trends';
-        }
+        const queryStartTime = Date.now();
+        console.log(`[SEARCH] Processing query ${i+1}/${queries.length}: "${query.substring(0, 100)}..."`);
         
         try {
-          console.log(`[SEARCH] Searching with Sonar Reasoning: ${query.substring(0, 100)}...`);
-          
-          const response = await axios.post(
+          // Send the query to the OpenRouter API using the Sonar model
+          const sonarResponse = await axios.post(
             'https://openrouter.ai/api/v1/chat/completions',
             {
-              model: 'perplexity/sonar-reasoning',
+              model: 'perplexity/sonar-small-online',
               messages: [
                 {
-                  role: 'system',
-                  content: `You are a research assistant that provides accurate, factual information about the latest global trends, viral phenomena, and cutting-edge technologies as of ${getCurrentMonthName()} ${getCurrentYear()}. Focus on cultural, social, and technological movements that are currently trending in the western world. Include relevant links to your sources and provide comprehensive, detailed information.`
-                },
-                {
                   role: 'user',
-                  content: `Research the following topic thoroughly and provide detailed information with multiple relevant URLs to sources: ${query}. Focus on the most current information available as of ${getCurrentMonthName()} ${getCurrentYear()}. Include specific examples, statistics if available, and explanations of why these trends matter.`
+                  content: query
                 }
               ],
-              max_tokens: 2048,
-              temperature: 0.7
+              max_tokens: 4096,
+              temperature: 0.7,
             },
             {
               headers: {
                 'Content-Type': 'application/json',
                 'Authorization': `Bearer ${openrouterApiKey}`,
-                'HTTP-Referer': 'https://luke-portfolio.vercel.app',
-                'X-Title': 'Luke App'
+                'HTTP-Referer': 'https://luke.nittmann.com'
               }
             }
           );
           
-          console.log(`[SEARCH] Sonar Reasoning search completed successfully for "${categoryName}"`);
+          const responseTime = Date.now() - queryStartTime;
           
-          // Extract links from the response content
-          const content = response.data.choices[0].message.content;
-          const linkRegex = /https?:\/\/[^\s)"\]]+/g;
-          const links = content.match(linkRegex) || [];
-          
-          console.log(`[SEARCH] Extracted ${links.length} links from search results`);
-          
-          // Stream the result back to the client
-          await writer.write(encoder.encode(JSON.stringify({
-            category: categoryName,
-            content: content.slice(0, 500) + '...', // Send a preview of the content
-            links: links.slice(0, 10) // Send up to 10 links
-          })));
-          
+          // Process the response
+          if (sonarResponse.data && 
+              sonarResponse.data.choices && 
+              sonarResponse.data.choices[0] && 
+              sonarResponse.data.choices[0].message && 
+              sonarResponse.data.choices[0].message.content) {
+            
+            const content = sonarResponse.data.choices[0].message.content;
+            console.log(`[SEARCH] Sonar response received (${content.length} chars) in ${responseTime}ms`);
+            console.log(`[SEARCH] Sample result: "${content.substring(0, 100)}..."`);
+            
+            // Extract useful info from the sonar response
+            const processed = processSearchResponse(content);
+            
+            // Send the response back to the client
+            await writer.write(encoder.encode(JSON.stringify({
+              category: `Search ${i+1}`,
+              content: processed.content,
+              responseTime
+            })));
+          } else {
+            console.error('[SEARCH] Unexpected response format from OpenRouter');
+            await writer.write(encoder.encode(JSON.stringify({
+              category: `Search Error ${i+1}`,
+              content: 'Error: Unexpected response format',
+              responseTime
+            })));
+          }
         } catch (error) {
-          console.error(`[ERROR] Error searching with Sonar Reasoning for "${categoryName}": ${error instanceof Error ? error.message : 'Unknown error'}`);
+          console.error(`[SEARCH] Error executing query ${i+1}:`, error);
           
-          // Stream error information
+          // Try to send error details back to client
+          let errorMessage = 'Unknown error';
+          if (error instanceof AxiosError) {
+            errorMessage = error.response?.data?.error?.message || error.message;
+          } else if (error instanceof Error) {
+            errorMessage = error.message;
+          }
+          
           await writer.write(encoder.encode(JSON.stringify({
-            category: categoryName,
-            content: `Error searching for trends: ${error instanceof Error ? error.message : 'Unknown error'}`,
-            links: []
+            category: `Search Error ${i+1}`,
+            content: `Error: ${errorMessage}`,
+            responseTime: Date.now() - queryStartTime
           })));
         }
+        
+        // Add a small delay between queries to avoid rate limiting
+        await new Promise(resolve => setTimeout(resolve, 500));
       }
       
-      // Close the stream when all searches are complete
-      await writer.close();
+      // Calculate and log the total search time
+      const totalSearchTime = Date.now() - searchStartTime;
+      console.log(`[SEARCH] Completed all searches in ${totalSearchTime}ms`);
       
+      // Send a completion message
+      await writer.write(encoder.encode(JSON.stringify({
+        category: 'Complete',
+        content: `Completed ${queries.length} searches in ${totalSearchTime}ms`,
+        totalTime: totalSearchTime
+      })));
+      
+      // Close the writer
+      await writer.close();
     } catch (error) {
-      console.error(`[ERROR] Error in search streaming: ${error instanceof Error ? error.message : 'Unknown error'}`);
+      // Handle errors
+      console.error('[SEARCH] Error processing search request:', error);
       
       try {
-        // Stream error information
+        // Try to send error details back to client
+        let errorMessage = 'Unknown error';
+        if (error instanceof AxiosError) {
+          errorMessage = error.response?.data?.error?.message || error.message;
+        } else if (error instanceof Error) {
+          errorMessage = error.message;
+        }
+        
         await writer.write(encoder.encode(JSON.stringify({
           category: 'Error',
-          content: `An error occurred: ${error instanceof Error ? error.message : 'Unknown error'}`,
-          links: []
+          content: `Error: ${errorMessage}`
         })));
         await writer.close();
-      } catch (writeError) {
-        console.error(`[ERROR] Error writing to stream: ${writeError instanceof Error ? writeError.message : 'Unknown error'}`);
+      } catch (finalError) {
+        console.error('[SEARCH] Failed to send error response:', finalError);
       }
     }
   })();

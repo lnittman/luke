@@ -41,15 +41,15 @@ export function LinkEmbed({ url, title, description, image }: LinkEmbedProps) {
           </div>
         )}
         <div className="flex-1 min-w-0">
-          <h3 className="text-sm sm:text-base font-mono text-[rgb(var(--text-primary))] truncate">
+          <h3 className="text-sm sm:text-base  text-[rgb(var(--text-primary))] truncate">
             {title}
           </h3>
           {description && (
-            <p className="text-xs sm:text-sm font-mono text-[rgb(var(--text-secondary))] line-clamp-2 mt-1">
+            <p className="text-xs sm:text-sm  text-[rgb(var(--text-secondary))] line-clamp-2 mt-1">
               {description}
             </p>
           )}
-          <div className="text-xs font-mono text-[rgb(var(--text-secondary))] mt-1 truncate">
+          <div className="text-xs  text-[rgb(var(--text-secondary))] mt-1 truncate">
             {url.replace(/^https?:\/\//, '')}
           </div>
         </div>

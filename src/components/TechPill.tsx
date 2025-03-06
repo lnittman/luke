@@ -227,7 +227,7 @@ export function TechPill({ text, index = 0, onClick, isActive = false, container
   return (
     <MotionLink
       className={clsx(
-        "rounded-full cursor-pointer select-none font-mono tracking-tight",
+        "rounded-full cursor-pointer select-none  tracking-tight",
         getFontSize(),
         getPadding()
       )}

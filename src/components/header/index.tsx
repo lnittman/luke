@@ -59,17 +59,17 @@ export function Header() {
     <header className="fixed top-0 left-0 right-0 z-50 px-4 py-4 glass-effect">
       <div className="max-w-6xl mx-auto flex items-center justify-between">
         <div className="flex items-center space-x-1">
-          <Link href="/" className="text-sm sm:text-base font-mono">
+          <Link href="/" className="text-sm sm:text-base ">
             {CONTACT_INFO.name}
           </Link>
-          <span className="hidden sm:inline font-mono text-sm sm:text-base text-[rgb(var(--text-secondary))]">
+          <span className="hidden sm:inline  text-sm sm:text-base text-[rgb(var(--text-secondary))]">
             // {pageName}
           </span>
         </div>
 
         <div className="flex items-center space-x-2 sm:space-x-4">
           <div 
-            className="text-xs sm:text-sm font-mono text-[rgb(var(--text-secondary))]"
+            className="text-xs sm:text-sm  text-[rgb(var(--text-secondary))]"
             onMouseEnter={() => setShowTimeTooltip(true)}
             onMouseLeave={() => setShowTimeTooltip(false)}
           >

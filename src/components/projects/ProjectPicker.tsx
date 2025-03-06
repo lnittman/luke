@@ -2,6 +2,7 @@ import { motion, AnimatePresence } from 'framer-motion';
 import { useState, useRef, useEffect, useCallback, useMemo } from 'react';
 import clsx from 'clsx';
 import { Project } from '@/utils/constants/projects';
+import Link from 'next/link';
 
 interface ProjectPickerProps {
   currentProject: Project;
@@ -192,32 +193,32 @@ export const ProjectPicker = ({
       animate={{ opacity: 1, y: 0 }}
       transition={{ duration: 0.4, ease: [0.23, 1, 0.32, 1] }}
     >
-      <div className="relative w-full rounded-xl overflow-hidden bg-white shadow-md border border-[rgb(var(--surface-1)/0.05)]">
+      <div className="relative w-full rounded-lg overflow-hidden bg-[rgb(var(--background-secondary))] border border-[rgb(var(--border))]">
         {/* Header */}
-        <div className="p-3 flex justify-between items-center border-b border-[rgb(var(--surface-1)/0.05)]">
+        <div className="px-4 py-3 flex justify-between items-center border-b border-[rgb(var(--border))]">
           <div className="flex items-center gap-2">
             {viewMode === 'generated' && (
               <motion.button
                 onClick={returnToMainView}
-                className="w-7 h-7 flex items-center justify-center rounded-full hover:bg-[rgb(var(--surface-1)/0.05)] transition-colors"
-                whileHover={{ scale: 1.05 }}
-                whileTap={{ scale: 0.95 }}
+                className="text-sm text-[rgb(var(--text-secondary))] hover:text-[rgb(var(--text-accent))] transition-colors"
+                whileHover={{ opacity: 0.8 }}
+                whileTap={{ opacity: 0.6 }}
               >
-                <span className="text-sm font-mono">←</span>
+                ←
               </motion.button>
             )}
-            <h3 className="font-mono text-lg">
+            <h3 className="text-[rgb(var(--text-secondary))] text-sm">
               {viewMode === 'main' ? 'select project' : 'ai-generated'}
             </h3>
           </div>
           
           <motion.button
             onClick={onOpenProjectGenerator}
-            className="w-7 h-7 flex items-center justify-center rounded-full hover:bg-[rgb(var(--surface-1)/0.05)] transition-colors"
-            whileHover={{ scale: 1.05 }}
-            whileTap={{ scale: 0.95 }}
+            className="text-sm text-[rgb(var(--text-secondary))] hover:text-[rgb(var(--text-accent))] transition-colors"
+            whileHover={{ opacity: 0.8 }}
+            whileTap={{ opacity: 0.6 }}
           >
-            <span className="text-lg font-mono">+</span>
+            +
           </motion.button>
         </div>
         
@@ -261,31 +262,36 @@ export const ProjectPicker = ({
                           onMouseEnter={() => setHoveredProject(project.id)}
                           onMouseLeave={() => setHoveredProject(null)}
                         >
-                          <motion.div
-                            className={clsx(
-                              "relative p-2.5 rounded-xl transition-colors duration-300 border border-[rgb(var(--surface-1)/0.05)]",
-                              hoveredProject === project.id ? "bg-[rgb(var(--surface-1)/0.05)]" : "",
-                              isActive && "bg-[rgb(var(--surface-1)/0.08)]"
-                            )}
-                            style={{ 
-                              height: itemHeight ? `${itemHeight - 8}px` : 'auto',
+                          <Link 
+                            href={`/projects?id=${project.id}`} 
+                            passHref
+                            onClick={(e) => {
+                              e.preventDefault();
+                              onProjectChange(project);
                             }}
                           >
-                            <button
-                              onClick={() => onProjectChange(project)}
-                              className="w-full h-full flex items-center gap-3 text-left"
+                            <div
+                              className={clsx(
+                                "px-4 py-3 border-b border-[rgb(var(--border))] grid grid-cols-12 hover:bg-[rgb(var(--background-hover))] transition-colors cursor-pointer group",
+                                isActive && "bg-[rgb(var(--background-hover))]"
+                              )}
+                              style={{ 
+                                height: itemHeight ? `${itemHeight}px` : 'auto',
+                              }}
                             >
-                              <div className="text-2xl">
+                              <div className="col-span-2 text-2xl flex items-center">
                                 {project.emoji}
                               </div>
-                              <div className="flex-1">
-                                <div className="font-mono text-base lowercase">{project.name}</div>
-                                <div className="font-mono text-sm text-[rgb(var(--text-secondary))] line-clamp-1">
+                              <div className="col-span-10 flex flex-col justify-center">
+                                <div className="text-[rgb(var(--text-primary))] group-hover:text-[rgb(var(--text-accent))] transition-colors text-base lowercase">
+                                  {project.name}
+                                </div>
+                                <div className="text-[rgb(var(--text-secondary))] text-sm line-clamp-1">
                                   {project.description}
                                 </div>
                               </div>
-                            </button>
-                          </motion.div>
+                            </div>
+                          </Link>
                         </motion.div>
                       );
                     })}
@@ -299,33 +305,27 @@ export const ProjectPicker = ({
                       onMouseEnter={() => setHoveredProject(GENERATED_PROJECTS_ID)}
                       onMouseLeave={() => setHoveredProject(null)}
                     >
-                      <motion.div
+                      <div
                         className={clsx(
-                          "relative p-2.5 rounded-xl transition-colors duration-300 border border-[rgb(var(--surface-1)/0.05)]",
-                          hoveredProject === GENERATED_PROJECTS_ID ? "bg-[rgb(var(--surface-1)/0.05)]" : ""
+                          "px-4 py-3 border-b border-[rgb(var(--border))] grid grid-cols-12 hover:bg-[rgb(var(--background-hover))] transition-colors cursor-pointer group"
                         )}
+                        onClick={openGeneratedProjects}
                         style={{ 
-                          height: itemHeight ? `${itemHeight - 8}px` : 'auto',
+                          height: itemHeight ? `${itemHeight}px` : 'auto',
                         }}
                       >
-                        <button
-                          onClick={openGeneratedProjects}
-                          className="w-full h-full flex items-center gap-3 text-left"
-                        >
-                          <div className="text-2xl">
-                            ✨
+                        <div className="col-span-2 text-2xl flex items-center">
+                          ✨
+                        </div>
+                        <div className="col-span-10 flex flex-col justify-center">
+                          <div className="text-[rgb(var(--text-primary))] group-hover:text-[rgb(var(--text-accent))] transition-colors text-base lowercase">
+                            generated
                           </div>
-                          <div className="flex-1">
-                            <div className="font-mono text-base lowercase">generated</div>
-                            <div className="font-mono text-sm text-[rgb(var(--text-secondary))] line-clamp-1">
-                              ai-generated projects
-                            </div>
+                          <div className="text-[rgb(var(--text-secondary))] text-sm line-clamp-1">
+                            ai-generated projects
                           </div>
-                          <div className="text-base opacity-60 font-mono">
-                            →
-                          </div>
-                        </button>
-                      </motion.div>
+                        </div>
+                      </div>
                     </motion.div>
                   </motion.div>
                 ) : (
@@ -354,9 +354,9 @@ export const ProjectPicker = ({
                           >
                             <motion.div
                               className={clsx(
-                                "relative p-2.5 rounded-xl transition-colors duration-300 border border-[rgb(var(--surface-1)/0.05)]",
-                                hoveredProject === project.id ? "bg-[rgb(var(--surface-1)/0.05)]" : "",
-                                isActive && "bg-[rgb(var(--surface-1)/0.08)]"
+                                "relative p-2.5 rounded-xl transition-colors duration-300 border border-[rgb(var(--border))]",
+                                hoveredProject === project.id ? "bg-[rgb(var(--surface-2))]" : "",
+                                isActive && "bg-[rgb(var(--surface-2))] border-[rgb(var(--accent-1)/0.2)]"
                               )}
                               style={{ 
                                 height: itemHeight ? `${itemHeight - 8}px` : 'auto',
@@ -373,8 +373,8 @@ export const ProjectPicker = ({
                                   {project.emoji}
                                 </div>
                                 <div className="flex-1">
-                                  <div className="font-mono text-base lowercase">{project.name}</div>
-                                  <div className="font-mono text-sm text-[rgb(var(--text-secondary))] line-clamp-1">
+                                  <div className="text-[rgb(var(--text-primary))] text-base lowercase">{project.name}</div>
+                                  <div className="text-[rgb(var(--text-secondary))] text-sm line-clamp-1">
                                     {project.description}
                                   </div>
                                 </div>
@@ -385,21 +385,21 @@ export const ProjectPicker = ({
                       })
                     ) : (
                       // Loading state or empty state
-                      <div className="py-3 text-center font-mono text-sm text-[rgb(var(--text-secondary))]">
+                      <div className="py-3 text-center  text-sm text-[rgb(var(--text-secondary))]">
                         {isLoadingMore ? 'loading projects...' : 'no generated projects found'}
                       </div>
                     )}
                     
                     {/* Loading indicator */}
                     {isLoadingMore && generatedProjects.length > 0 && (
-                      <div className="py-1.5 text-center font-mono text-xs text-[rgb(var(--text-secondary))]">
+                      <div className="py-1.5 text-center  text-xs text-[rgb(var(--text-secondary))]">
                         loading more...
                       </div>
                     )}
                     
                     {/* End of list message */}
                     {!hasMoreProjects && generatedProjects.length > 0 && (
-                      <div className="py-1.5 text-center font-mono text-xs text-[rgb(var(--text-secondary))]">
+                      <div className="py-1.5 text-center  text-xs text-[rgb(var(--text-secondary))]">
                         end of list
                       </div>
                     )}

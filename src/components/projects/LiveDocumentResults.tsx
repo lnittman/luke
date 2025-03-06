@@ -96,7 +96,7 @@ export const LiveDocumentResults: React.FC<LiveDocumentResultsProps> = ({
     <div className="w-full">
       {/* Progress indicator */}
       <div className="mb-3 flex items-center gap-2">
-        <div className="text-sm font-mono text-[rgb(var(--text-secondary))]">
+        <div className="text-sm  text-[rgb(var(--text-secondary))]">
           Generating documentation: {completedCount}/{totalCount}
         </div>
         <div className="flex-1 h-1.5 bg-[rgb(var(--surface-1)/0.2)] rounded-full overflow-hidden">
@@ -131,7 +131,7 @@ export const LiveDocumentResults: React.FC<LiveDocumentResultsProps> = ({
             >
               <div className="p-4 flex flex-col items-center justify-center min-h-[100px]">
                 <div className="text-2xl mb-2">{documentLabels[doc.type].emoji}</div>
-                <div className="font-mono text-sm text-center">{documentLabels[doc.type].title}</div>
+                <div className=" text-sm text-center">{documentLabels[doc.type].title}</div>
                 
                 {/* Source indicator */}
                 {doc.status === 'completed' && (
@@ -199,8 +199,8 @@ export const LiveDocumentResults: React.FC<LiveDocumentResultsProps> = ({
               <div className={`flex items-center justify-between p-4 border-b ${documentSources[selectedDoc] === 'perplexity' ? 'border-blue-400/30 bg-blue-900/10' : 'border-purple-400/30 bg-purple-900/10'}`}>
                 <div className="flex items-center gap-2">
                   <span className="text-xl">{documentLabels[selectedDoc].emoji}</span>
-                  <h2 className="font-mono text-lg">{documentLabels[selectedDoc].title}</h2>
-                  <div className={`text-xs font-mono px-2 py-1 rounded-full ${documentSources[selectedDoc] === 'perplexity' ? 'bg-blue-400/20 text-blue-200' : 'bg-purple-400/20 text-purple-200'}`}>
+                  <h2 className=" text-lg">{documentLabels[selectedDoc].title}</h2>
+                  <div className={`text-xs  px-2 py-1 rounded-full ${documentSources[selectedDoc] === 'perplexity' ? 'bg-blue-400/20 text-blue-200' : 'bg-purple-400/20 text-purple-200'}`}>
                     {documentSources[selectedDoc] === 'perplexity' ? 'Perplexity' : 'Claude AI'}
                   </div>
                 </div>

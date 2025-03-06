@@ -110,7 +110,7 @@ Senior Software Engineer (Remote) | May 2024 - November 2024
 - Led development of cross-platform notification system for web3 image generation platform
 - Built semantic image search system with Gemini multimodal embeddings and agentic asset organization
 - Architected full-stack features across iOS, web, and backend systems
-- Technologies: 
+- Tech Stack: 
   * Frontend: React, TypeScript, Tailwind CSS, React Three Fiber
   * Mobile: Swift, SwiftUI
   * Backend: Firebase, Cloud Functions, Firestore
@@ -126,7 +126,7 @@ Senior Software Engineer (Remote) | November 2022 - Present
 - Integrated Python audio models and CoreML for on-device audio processing
 - Optimized processing costs through AI-powered effects generation
 - Built integration layer supporting major streaming platforms (Spotify, Apple Music)
-- Stack: 
+- Tech Stack: 
   * Mobile: Swift, AVFoundation, CoreAudio, AudioKit, MIDI
   * Frontend: React, WebGL
   * Backend: Python, Golang, FastAPI, GraphQL, Redis
@@ -143,7 +143,7 @@ Software Engineer, Address Intelligence (Portland, OR) | June 2019 - December 20
 - Built self-service permission system automating internal workflows
 - Maintained high service reliability across multiple regions
 - Led migration from monolith to microservices architecture
-- Technologies: 
+- Tech Stack: 
   * Frontend: React Native, TypeScript, Redux, Jest
   * Cloud: AWS, Lambda, DynamoDB, S3, CloudFormation
   * Backend: Java, Python, Node.js, Redis
@@ -157,7 +157,7 @@ Software Engineer, AWS MediaConvert (Portland, OR) | January 2018 - June 2019
 - Rewrote Quicktime decoder enhancing metadata parsing accuracy
 - Developed automated testing framework for validation components
 - Resolved customer issues through direct support and code changes
-- Technologies: 
+- Tech Stack: 
   * Languages: C++, Python, Ruby
   * Cloud: AWS, EC2, S3, CloudFront
   * Media: FFmpeg, H.264/H.265, VP9, AV1

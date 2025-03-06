@@ -6,12 +6,18 @@ export function generateProjectSearchPlanPrompt(
   techStackType: string, 
   techContext: string = ''
 ): string {
+  // Log the inputs for debugging
+  console.log(`[SEARCH-PLAN] Generating search plan prompt with:
+  - Prompt length: ${prompt.length} chars
+  - Tech stack: ${techStackType}
+  - Tech context: ${techContext ? `${techContext.substring(0, 100)}...` : 'none'}`);
+
   // Include initial tech context in the prompt
   const techContextSection = techContext 
     ? `\nUSE THIS TECH CONTEXT TO INFORM YOUR QUERIES:\n${techContext.substring(0, 2000)}\n`
     : '';
   
-  return `
+  const finalPrompt = `
 You are tasked with generating a comprehensive search plan for researching a ${techStackType} project based on the user's requirements.
 
 USER REQUIREMENTS:
@@ -36,4 +42,9 @@ FORMAT REQUIREMENTS:
 
 IMPORTANT: Your entire response must be ONLY the JSON array with no other text.
 `;
+
+  // Log summary of the generated prompt
+  console.log(`[SEARCH-PLAN] Generated prompt of ${finalPrompt.length} chars with ${techContext ? 'tech context' : 'no tech context'}`);
+  
+  return finalPrompt;
 } 

@@ -70,7 +70,7 @@ export const ProjectContent = ({ project, onShowDemo }: ProjectContentProps) => 
     <div ref={contentRef} className="flex flex-col py-2 sm:py-4 md:py-6 pb-32 sm:pb-28 md:pb-24 transition-all duration-300 w-full">
       <div className="w-full max-w-4xl mx-auto space-y-3 sm:space-y-5 overflow-visible">
         <div className={clsx("space-y-2", getPadding())}>
-          <p className={clsx("font-mono text-[rgb(var(--text-primary))]", getDescriptionFontSize())}>
+          <p className={clsx(" text-[rgb(var(--text-primary))]", getDescriptionFontSize())}>
             {project.description}
           </p>
 
@@ -82,7 +82,7 @@ export const ProjectContent = ({ project, onShowDemo }: ProjectContentProps) => 
                   href="https://squish-web-development.vercel.app/"
                   target="_blank"
                   rel="noopener noreferrer"
-                  className={clsx("font-mono text-[rgb(var(--text-secondary))] hover:text-[rgb(var(--text-primary))] transition-colors", getActionButtonFontSize())}
+                  className={clsx(" text-[rgb(var(--text-secondary))] hover:text-[rgb(var(--text-primary))] transition-colors", getActionButtonFontSize())}
                 >
                   app →
                 </a>
@@ -90,7 +90,7 @@ export const ProjectContent = ({ project, onShowDemo }: ProjectContentProps) => 
                   href="https://squish-docs.vercel.app/"
                   target="_blank"
                   rel="noopener noreferrer"
-                  className={clsx("font-mono text-[rgb(var(--text-secondary))] hover:text-[rgb(var(--text-primary))] transition-colors", getActionButtonFontSize())}
+                  className={clsx(" text-[rgb(var(--text-secondary))] hover:text-[rgb(var(--text-primary))] transition-colors", getActionButtonFontSize())}
                 >
                   docs →
                 </a>
@@ -101,7 +101,7 @@ export const ProjectContent = ({ project, onShowDemo }: ProjectContentProps) => 
                 href="https://voet-app.vercel.app/"
                 target="_blank"
                 rel="noopener noreferrer"
-                className={clsx("font-mono text-[rgb(var(--text-secondary))] hover:text-[rgb(var(--text-primary))] transition-colors", getActionButtonFontSize())}
+                className={clsx(" text-[rgb(var(--text-secondary))] hover:text-[rgb(var(--text-primary))] transition-colors", getActionButtonFontSize())}
               >
                 app →
               </a>
@@ -111,7 +111,7 @@ export const ProjectContent = ({ project, onShowDemo }: ProjectContentProps) => 
                 href="https://www.sine-labs.com/"
                 target="_blank"
                 rel="noopener noreferrer"
-                className={clsx("font-mono text-[rgb(var(--text-secondary))] hover:text-[rgb(var(--text-primary))] transition-colors", getActionButtonFontSize())}
+                className={clsx(" text-[rgb(var(--text-secondary))] hover:text-[rgb(var(--text-primary))] transition-colors", getActionButtonFontSize())}
               >
                 app →
               </a>
@@ -121,7 +121,7 @@ export const ProjectContent = ({ project, onShowDemo }: ProjectContentProps) => 
                 href={project.demoUrl}
                 target="_blank"
                 rel="noopener noreferrer"
-                className={clsx("font-mono text-[rgb(var(--text-secondary))] hover:text-[rgb(var(--text-primary))] transition-colors", getActionButtonFontSize())}
+                className={clsx(" text-[rgb(var(--text-secondary))] hover:text-[rgb(var(--text-primary))] transition-colors", getActionButtonFontSize())}
               >
                 app →
               </a>
@@ -131,7 +131,7 @@ export const ProjectContent = ({ project, onShowDemo }: ProjectContentProps) => 
                 href="https://lupe-xyz.vercel.app"
                 target="_blank"
                 rel="noopener noreferrer"
-                className={clsx("font-mono text-[rgb(var(--text-secondary))] hover:text-[rgb(var(--text-primary))] transition-colors", getActionButtonFontSize())}
+                className={clsx(" text-[rgb(var(--text-secondary))] hover:text-[rgb(var(--text-primary))] transition-colors", getActionButtonFontSize())}
               >
                 app →
               </a>
@@ -141,7 +141,7 @@ export const ProjectContent = ({ project, onShowDemo }: ProjectContentProps) => 
                 href={project.appUrl}
                 target="_blank"
                 rel="noopener noreferrer"
-                className={clsx("font-mono text-[rgb(var(--text-secondary))] hover:text-[rgb(var(--text-primary))] transition-colors", getActionButtonFontSize())}
+                className={clsx(" text-[rgb(var(--text-secondary))] hover:text-[rgb(var(--text-primary))] transition-colors", getActionButtonFontSize())}
               >
                 app →
               </a>
@@ -149,7 +149,7 @@ export const ProjectContent = ({ project, onShowDemo }: ProjectContentProps) => 
             {project.videos && project.videos.length > 0 && project.id !== 'voet' && (
               <button 
                 onClick={onShowDemo}
-                className={clsx("font-mono text-[rgb(var(--text-secondary))] hover:text-[rgb(var(--text-primary))] transition-colors", getActionButtonFontSize())}
+                className={clsx(" text-[rgb(var(--text-secondary))] hover:text-[rgb(var(--text-primary))] transition-colors", getActionButtonFontSize())}
               >
                 demo →
               </button>
@@ -159,7 +159,7 @@ export const ProjectContent = ({ project, onShowDemo }: ProjectContentProps) => 
                 href={project.sourceUrl}
                 target="_blank"
                 rel="noopener noreferrer"
-                className={clsx("font-mono text-[rgb(var(--text-secondary))] hover:text-[rgb(var(--text-primary))] transition-colors", getActionButtonFontSize())}
+                className={clsx(" text-[rgb(var(--text-secondary))] hover:text-[rgb(var(--text-primary))] transition-colors", getActionButtonFontSize())}
               >
                 source →
               </a>
@@ -179,25 +179,23 @@ export const ProjectContent = ({ project, onShowDemo }: ProjectContentProps) => 
             <div className="grid grid-cols-1 gap-3 sm:gap-4 md:gap-6">
               <div className="space-y-3 sm:space-y-4">
                 <ProjectSection 
-                  title={project.content.overview.title} 
-                  items={project.content.overview.items}
+                  title={project?.content?.overview?.title || 'Overview'} 
+                  items={project?.content?.overview?.items || []}
                   defaultExpanded={true}
                 />
                 <ProjectSection 
-                  title={project.content.core.title} 
-                  items={project.content.core.items}
+                  title={project?.content?.core?.title || 'Core Features'} 
+                  items={project?.content?.core?.items || []}
                   defaultExpanded={true}
                 />
                 <ProjectSection 
-                  title={project.content.architecture.title} 
-                  items={project.content.architecture.items}
-                  defaultExpanded={true}
+                  title={project?.content?.architecture?.title || 'Architecture'} 
+                  items={project?.content?.architecture?.items || []}
                 />
                 <ProjectSection 
-                  title={project.content.tech.title} 
-                  items={project.content.tech.items}
+                  title={project?.content?.tech?.title || 'Technology'} 
+                  items={project?.content?.tech?.items || []}
                   isTechSection={true}
-                  defaultExpanded={true}
                 />
               </div>
             </div>

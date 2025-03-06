@@ -60,3 +60,39 @@ model GeneratedProject {
   userIp          String?
   userFingerprint String?
 }
+
+// Job posting model for job search and application
+model JobPosting {
+  id          String    @id
+  title       String
+  company     String
+  location    String
+  type        String    // Remote, Hybrid, On-site
+  description String    @db.Text
+  url         String    @unique
+  source      String    // Source of the job (HN, Wellfound, etc.)
+  techs       String[]  // Technologies mentioned in job
+  salary      String?   // Salary information if available
+  crawledAt   DateTime  @default(now())
+  processed   Boolean   @default(false)
+  matches     Int?      // Match score with resume (0-100)
+  
+  // Relation to analysis
+  analysis    JobAnalysis?
+}
+
+// Job analysis model containing AI-generated application materials
+model JobAnalysis {
+  id                String   @id
+  coverLetter       String   @db.Text
+  keyPoints         String[] // Key points to highlight in application
+  questions         Json     // Array of question/answer pairs
+  techFit           Int      // 0-100 tech stack match
+  cultureFit        Int      // 0-100 culture fit
+  roleFit           Int      // 0-100 role fit
+  overallFit        Int      // 0-100 overall fit
+  suggestedApproach String   @db.Text
+  
+  // Relation to job posting
+  jobPosting        JobPosting @relation(fields: [id], references: [id], onDelete: Cascade)
+}

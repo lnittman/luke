@@ -63,7 +63,7 @@ export const useDocumentManager = (): UseDocumentManagerResult => {
     toast.success(`New document: ${cleanTitle}`, {
       description: 'Click to view document',
       duration: 5000,
-      className: "h-[72px] flex flex-col justify-center font-mono",
+      className: "h-[72px] flex flex-col justify-center ",
       action: {
         label: 'view',
         onClick: () => {

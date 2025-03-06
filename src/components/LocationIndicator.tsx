@@ -184,7 +184,7 @@ export function ContactCard() {
 
                   {/* Location text */}
                   <div className="absolute inset-0 flex items-center justify-center">
-                    <span className="text-xs text-[rgb(var(--text-secondary))] font-mono">
+                    <span className="text-xs text-[rgb(var(--text-secondary))] ">
                       Los Angeles, CA
                     </span>
                   </div>

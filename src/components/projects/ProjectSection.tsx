@@ -84,7 +84,7 @@ export const ProjectSection = ({
       <motion.button 
         onClick={() => setIsExpanded(!isExpanded)}
         className={clsx(
-          "w-full flex items-center justify-between font-mono text-[rgb(var(--text-secondary))]",
+          "w-full flex items-center justify-between  text-[rgb(var(--text-secondary))]",
           getTitleFontSize(),
           "hover:text-[rgb(var(--text-primary))] transition-colors"
         )}
@@ -136,7 +136,7 @@ export const ProjectSection = ({
                     animate={{ opacity: 1, x: 0 }}
                     transition={{ delay: i * 0.05 }}
                     className={clsx(
-                      "font-mono text-[rgb(var(--text-primary))] break-words",
+                      " text-[rgb(var(--text-primary))] break-words",
                       getItemFontSize()
                     )}
                     layout
