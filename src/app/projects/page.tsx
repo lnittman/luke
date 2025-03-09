@@ -76,8 +76,8 @@ function ProjectsContent() {
   const [isLoading, setIsLoading] = useState(false);
   const [isLocalhost, setIsLocalhost] = useState(false);
   const [showArborTooltip, setShowArborTooltip] = useState(false);
+  const [selectedGeneratedProject, setSelectedGeneratedProject] = useState<string | null>(null);
   const [currentPage, setCurrentPage] = useState(1);
-  const [totalPages, setTotalPages] = useState(1);
   const [isCreatingProject, setIsCreatingProject] = useState(false);
   
   // Use refs to access hash directly since NextJS sometimes has issues with hash fragments
