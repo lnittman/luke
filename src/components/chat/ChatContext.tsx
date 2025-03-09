@@ -67,7 +67,7 @@ export const ChatProvider = ({ children }: { children: ReactNode }) => {
     const systemMessage: Message = {
       id: Date.now().toString(),
       role: 'assistant',
-      content: "Hi there! I'm Luke's assistant. Feel free to ask me anything about Luke, his projects, or his experience.",
+      content: "hi there! i'm Luke's assistant. feel free to ask me anything about Luke, his projects, or his experience",
       timestamp: new Date()
     };
     

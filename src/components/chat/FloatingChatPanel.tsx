@@ -328,18 +328,23 @@ export const FloatingChatPanel: React.FC<FloatingChatPanelProps> = ({
         <AnimatePresence>
           {isOpen && (
             <motion.div 
-              className={`absolute bottom-16 right-0 w-80 sm:w-96 rounded-lg shadow-lg border border-[rgb(var(--border))] overflow-hidden ${getBackgroundColor()}`}
-              style={{ 
-                height: '420px'
-              }}
+              className="absolute bottom-16 right-0 w-80 sm:w-96 rounded-lg shadow-lg border border-[rgb(var(--border))] overflow-hidden"
               initial={{ opacity: 0, y: 10, scale: 0.95 }}
               animate={{ opacity: 1, y: 0, scale: 1 }}
               exit={{ opacity: 0, y: 10, scale: 0.95 }}
               transition={{ duration: 0.2 }}
+              style={{ 
+                height: '420px',
+                backgroundColor: isDarkTheme ? 'rgb(22, 28, 36)' : 'rgb(255, 255, 255)'
+              }}
             >
-              <div className="flex flex-col h-full">
+              <div className="flex flex-col h-full" style={{ 
+                backgroundColor: isDarkTheme ? 'rgb(22, 28, 36)' : 'rgb(255, 255, 255)'
+              }}>
                 {/* Header - Tab buttons and close button on same row */}
-                <div className="flex justify-between items-center px-4 py-2 border-b border-[rgb(var(--border))]">
+                <div className="flex justify-between items-center px-4 py-2 border-b border-[rgb(var(--border))]" style={{ 
+                  backgroundColor: isDarkTheme ? 'rgb(22, 28, 36)' : 'rgb(255, 255, 255)'
+                }}>
                   {/* Tab Buttons - Left aligned */}
                   <div className="flex space-x-6">
                     {tabs.map(tab => (
@@ -368,12 +373,18 @@ export const FloatingChatPanel: React.FC<FloatingChatPanelProps> = ({
                 </div>
                 
                 {/* Content Area */}
-                <div className="flex-1 flex flex-col h-full">
+                <div className="flex-1 flex flex-col h-full" style={{ 
+                  backgroundColor: isDarkTheme ? 'rgb(22, 28, 36)' : 'rgb(255, 255, 255)'
+                }}>
                   {/* Chat Content */}
                   {activeTabState === 'chat' && (
-                    <div className="flex flex-col h-full">
+                    <div className="flex flex-col h-full" style={{ 
+                      backgroundColor: isDarkTheme ? 'rgb(22, 28, 36)' : 'rgb(255, 255, 255)'
+                    }}>
                       {/* Messages - Scrollable with contained content */}
-                      <div className="flex-1 overflow-y-auto scrollbar-thin" ref={messagesContainerRef}>
+                      <div className="flex-1 overflow-y-auto scrollbar-thin" ref={messagesContainerRef} style={{ 
+                        backgroundColor: isDarkTheme ? 'rgb(22, 28, 36)' : 'rgb(255, 255, 255)'
+                      }}>
                         <div className="p-3 space-y-3">
                           {messages.map((message, index) => (
                             <div
@@ -413,7 +424,9 @@ export const FloatingChatPanel: React.FC<FloatingChatPanelProps> = ({
                       
                       {/* Input Area with separate send button */}
                       {onAddMessage && (
-                        <div className="absolute bottom-0 left-0 right-0 border-t border-[rgb(var(--border))] p-2 bg-[rgb(var(--background))]">
+                        <div className="absolute bottom-0 left-0 right-0 border-t border-[rgb(var(--border))] p-2" style={{ 
+                          backgroundColor: isDarkTheme ? 'rgb(22, 28, 36)' : 'rgb(255, 255, 255)'
+                        }}>
                           <div className="flex items-center gap-2">
                             <input
                               type="text"
