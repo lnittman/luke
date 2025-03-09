@@ -63,7 +63,6 @@ function Hero() {
           }}
           whileHover={{ 
             scale: 1.05,
-            filter: "drop-shadow(0 0 8px rgb(var(--accent-1)/0.6))",
             transition: { type: "spring", stiffness: 500, damping: 15 }
           }}
           whileTap={{
