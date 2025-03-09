@@ -217,7 +217,7 @@ function createServerApiProvider(): LLMProvider {
     const { createServerApiProvider } = require('../providers');
     return createServerApiProvider();
   } catch (error) {
-    logError('Error creating server API provider:', { error, tag: 'CONTEXT' });
+    logError('Error creating server API provider:', { tag: 'CONTEXT', data: error });
     throw new Error('Failed to create LLM provider');
   }
 }

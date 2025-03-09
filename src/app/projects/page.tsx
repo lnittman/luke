@@ -1,7 +1,7 @@
 'use client';
 
 import { motion, AnimatePresence, useMotionValue, useTransform, useSpring } from 'framer-motion';
-import { useState, useEffect, useCallback, useMemo, useRef } from 'react';
+import { useState, useEffect, useCallback, useMemo, useRef, Suspense } from 'react';
 import { PROJECTS, type Project } from '@/utils/constants/projects';
 import { ProjectContent } from '@/components/projects/ProjectContent';
 import { VideoPlayer } from '@/components/projects/VideoPlayer';
@@ -60,7 +60,8 @@ const noThemeTransition = `
   }
 `;
 
-export default function Projects() {
+// Wrapper component that uses search params
+function ProjectsContent() {
   const [currentVideo, setCurrentVideo] = useState<number | null>(null);
   const [mounted, setMounted] = useState(false);
   const [generatedProjects, setGeneratedProjects] = useState<GeneratedProject[]>([]);
@@ -391,5 +392,13 @@ export default function Projects() {
         )}
       </AnimatePresence>
     </div>
+  );
+}
+
+export default function Projects() {
+  return (
+    <Suspense fallback={<div>Loading...</div>}>
+      <ProjectsContent />
+    </Suspense>
   );
 }
