@@ -154,7 +154,7 @@ export function Header() {
                 {/* Contact Info */}
                 <div className="space-y-2.5 text-sm sm:text-base text-[rgb(var(--text-secondary))] ">
                   <a 
-                    href={`tel:${CONTACT_INFO.phone}`}
+                    href={`tel:${CONTACT_INFO.phone.replace(/\D/g, '')}`}
                     className="block hover:text-[rgb(var(--text-primary))] transition-colors"
                   >
                     {CONTACT_INFO.phone}

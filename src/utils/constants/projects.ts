@@ -32,9 +32,9 @@ export const PROJECTS: Project[] = [
     id: 'arbor',
     name: 'arbor',
     emoji: '🌳',
-    description: 'project management agent',
+    description: 'a framework for digital horticulture',
     appUrl: 'https://arbor-xyz.vercel.app/',
-    sourceUrl: 'https://github.com/lukenittmann/arbor',
+    sourceUrl: 'https://github.com/lnittman/arbor',
     content: {
       overview: {
         title: 'overview',

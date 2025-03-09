@@ -3,7 +3,6 @@
 import { motion, AnimatePresence, useMotionValue, useTransform, useSpring } from 'framer-motion';
 import { useState, useEffect, useCallback, useMemo, useRef, Suspense } from 'react';
 import { PROJECTS, type Project } from '@/utils/constants/projects';
-import { ProjectContent } from '@/components/projects/ProjectContent';
 import { VideoPlayer } from '@/components/projects/VideoPlayer';
 import { useVideoPreload } from '@/hooks/useVideoPreload';
 import Link from 'next/link';
@@ -11,15 +10,6 @@ import { useRouter, useSearchParams, usePathname } from 'next/navigation';
 import { ProjectsList } from '@/components/projects/ProjectsList';
 import { GeneratedProjectsList } from '@/components/projects/GeneratedProjectsList';
 import { ProjectDetail } from '@/components/projects/ProjectDetail';
-
-// Define the GeneratedProject interface
-interface GeneratedProject {
-  id: string;
-  name: string;
-  emoji: string;
-  description: string;
-  createdAt: string;
-}
 
 // Project icons map for custom icons
 const PROJECT_ICONS: Record<string, string> = {
@@ -68,26 +58,14 @@ function ProjectsContent() {
   
   // Get the project ID from the URL
   const projectId = searchParams?.get('project');
-  const generatedProjectId = searchParams?.get('generated');
   
   const [currentVideo, setCurrentVideo] = useState<number | null>(null);
   const [mounted, setMounted] = useState(false);
-  const [generatedProjects, setGeneratedProjects] = useState<GeneratedProject[]>([]);
-  const [isLoading, setIsLoading] = useState(false);
   const [isLocalhost, setIsLocalhost] = useState(false);
-  const [showArborTooltip, setShowArborTooltip] = useState(false);
-  const [selectedGeneratedProject, setSelectedGeneratedProject] = useState<string | null>(null);
   const [currentPage, setCurrentPage] = useState(1);
-  const [isCreatingProject, setIsCreatingProject] = useState(false);
-  
-  // Use refs to access hash directly since NextJS sometimes has issues with hash fragments
-  const generatedSectionRef = useRef<HTMLDivElement>(null);
-  
-  // Track if user has explicitly requested to view generated projects
-  const [userRequestedGenerated, setUserRequestedGenerated] = useState(false);
   
   // Use explicit state for view management to ensure proper transitions
-  const [currentView, setCurrentView] = useState<'list' | 'detail' | 'generated'>(
+  const [currentView, setCurrentView] = useState<'list' | 'detail'>(
     projectId ? 'detail' : 'list'
   );
   
@@ -105,48 +83,12 @@ function ProjectsContent() {
         window.location.hostname === '127.0.0.1'
       );
     }
-    
-    // Check if the URL has #generated hash on initial load
-    if (window.location.hash === '#generated') {
-      setUserRequestedGenerated(true);
-      setCurrentView('generated');
-    }
   }, []);
-
-  // Fetch generated projects
-  const fetchGeneratedProjects = useCallback(async () => {
-    // Only fetch if user has explicitly requested to view generated projects
-    if (!userRequestedGenerated) return;
-    
-    setIsLoading(true);
-    try {
-      const response = await fetch('/api/projects?limit=50');
-      if (response.ok) {
-        const data = await response.json();
-        setGeneratedProjects(data.projects);
-      }
-    } catch (error) {
-      console.error('Error fetching generated projects:', error);
-    } finally {
-      setIsLoading(false);
-    }
-  }, [userRequestedGenerated]);
-
-  // Fetch generated projects when user requests them
-  useEffect(() => {
-    if (userRequestedGenerated) {
-      fetchGeneratedProjects();
-    }
-  }, [userRequestedGenerated, fetchGeneratedProjects]);
 
   // Handle URL changes
   useEffect(() => {
     const handleUrlChange = () => {
-      // Only transition to generated view if the hash is explicitly set to #generated
-      // and user has explicitly requested to view generated projects
-      if (window.location.hash === '#generated' && userRequestedGenerated) {
-        setCurrentView('generated');
-      } else if (projectId) {
+      if (projectId) {
         setCurrentView('detail');
       } else {
         setCurrentView('list');
@@ -159,14 +101,12 @@ function ProjectsContent() {
     // Initial view setup - prioritize project detail view if projectId exists
     if (projectId) {
       setCurrentView('detail');
-    } else if (window.location.hash === '#generated' && userRequestedGenerated) {
-      setCurrentView('generated');
     } else {
       setCurrentView('list');
     }
     
     return () => window.removeEventListener('hashchange', handleUrlChange);
-  }, [projectId, userRequestedGenerated]);
+  }, [projectId]);
 
   // Sort projects in custom order
   const sortedProjects = useMemo(() => {
@@ -226,15 +166,37 @@ function ProjectsContent() {
 
   // Handle navigation to generated projects
   const goToGenerated = useCallback(() => {
-    setUserRequestedGenerated(true);
-    router.push('/projects#generated');
-    setCurrentView('generated');
+    router.push('/projects/generated');
   }, [router]);
 
-  // Handle creating a new generated project
-  const handleCreateGeneratedProject = () => {
-    // Navigate to project generator page or open modal
-    router.push('/projects/generate');
+  // Calculate total pages for pagination
+  const totalPages = useMemo(() => {
+    return Math.ceil(PROJECTS.length / 9);
+  }, [PROJECTS.length]);
+
+  // Get the projects to display based on current pagination
+  const paginatedProjects = useMemo(() => {
+    const startIndex = (currentPage - 1) * 9;
+    return sortedProjects.slice(startIndex, startIndex + 9);
+  }, [currentPage, sortedProjects]);
+
+  // Handle changing page
+  const paginate = (pageNumber: number) => {
+    setCurrentPage(pageNumber);
+  };
+
+  // Handle going to next page
+  const nextPage = () => {
+    if (currentPage < totalPages) {
+      setCurrentPage(prev => prev + 1);
+    }
+  };
+
+  // Handle going to previous page
+  const prevPage = () => {
+    if (currentPage > 1) {
+      setCurrentPage(prev => prev - 1);
+    }
   };
 
   // Generate mouse tracking animations for list items
@@ -259,7 +221,7 @@ function ProjectsContent() {
     
     return (
       <Link 
-        href="/projects#generated"
+        href="/projects/generated"
         className="block relative group"
         onClick={(e) => {
           e.preventDefault();
@@ -307,39 +269,6 @@ function ProjectsContent() {
     );
   };
 
-  // Calculate total pages for pagination
-  const totalPages = useMemo(() => {
-    const totalItems = currentView === 'list' ? PROJECTS.length : generatedProjects.length;
-    return Math.ceil(totalItems / 9);
-  }, [currentView, generatedProjects.length, PROJECTS.length]);
-
-  // Get the projects to display based on current pagination
-  const paginatedProjects = useMemo(() => {
-    const startIndex = (currentPage - 1) * 9;
-    return currentView === 'list' 
-      ? sortedProjects.slice(startIndex, startIndex + 9) as Project[]
-      : generatedProjects.slice(startIndex, startIndex + 9) as GeneratedProject[];
-  }, [currentPage, currentView, generatedProjects, sortedProjects]);
-
-  // Handle changing page
-  const paginate = (pageNumber: number) => {
-    setCurrentPage(pageNumber);
-  };
-
-  // Handle going to next page
-  const nextPage = () => {
-    if (currentPage < totalPages) {
-      setCurrentPage(prev => prev + 1);
-    }
-  };
-
-  // Handle going to previous page
-  const prevPage = () => {
-    if (currentPage > 1) {
-      setCurrentPage(prev => prev - 1);
-    }
-  };
-
   // Don't render anything until client-side hydration is complete
   if (!mounted) {
     return null;
@@ -353,59 +282,16 @@ function ProjectsContent() {
       <div className="w-full max-w-2xl mx-auto flex flex-col items-center">
         <AnimatePresence mode="wait" initial={false}>
           {currentView === 'detail' && currentProject ? (
-            // Project detail view
-            <ProjectDetail
-              key="project-detail"
-              project={currentProject}
-              onBackClick={goToList}
-              onShowDemo={showDemo}
-              projectIcons={PROJECT_ICONS}
+            // Project detail view - redirect to the new URL structure
+            <motion.div
+              key="redirect"
+              initial={{ opacity: 0 }}
+              animate={{ opacity: 0 }}
+              exit={{ opacity: 0 }}
+              onAnimationComplete={() => {
+                router.push(`/projects/${currentProject.id}`);
+              }}
             />
-          ) : currentView === 'generated' && userRequestedGenerated ? (
-            // Generated projects view with loading state - only show if user explicitly requested
-            isLoading ? (
-              <motion.div
-                key="generated-loading"
-                initial={{ opacity: 0 }}
-                animate={{ opacity: 1 }}
-                exit={{ opacity: 0 }}
-                transition={{ duration: 0.3 }}
-                className="w-full flex flex-col items-center justify-center py-20"
-              >
-                <div className="text-[rgb(var(--text-secondary))] text-lg font-mono">
-                  loading...
-                </div>
-              </motion.div>
-            ) : (
-              <motion.div
-                key="generated-list"
-                initial={{ opacity: 0 }}
-                animate={{ opacity: 1 }}
-                exit={{ opacity: 0 }}
-                transition={{ duration: 0.3 }}
-                className="w-full"
-              >
-                <GeneratedProjectsList
-                  projects={paginatedProjects as GeneratedProject[]}
-                  currentPage={currentPage}
-                  totalPages={totalPages}
-                  onPageChange={paginate}
-                  onProjectClick={(project) => {
-                    router.push(`/projects?project=${project.id}`);
-                    setCurrentView('detail');
-                  }}
-                  onBackClick={goToList}
-                  showArborTooltip={selectedGeneratedProject === 'arbor'}
-                  setShowArborTooltip={(show) => {
-                    if (show) {
-                      setSelectedGeneratedProject('arbor');
-                    } else {
-                      setSelectedGeneratedProject(null);
-                    }
-                  }}
-                />
-              </motion.div>
-            )
           ) : (
             // Main projects list view
             <ProjectsList
@@ -415,8 +301,7 @@ function ProjectsContent() {
               totalPages={totalPages}
               onPageChange={paginate}
               onProjectClick={(project) => {
-                router.push(`/projects?project=${project.id}`);
-                setCurrentView('detail');
+                router.push(`/projects/${project.id}`);
               }}
               GeneratedProjectsBorderGlow={GeneratedProjectsBorderGlow}
             />
@@ -446,7 +331,7 @@ export default function Projects() {
     <Suspense fallback={
       <div className="min-h-screen flex items-center justify-center">
         <div className="text-center">
-          <div className="text-xl mb-4">Loading projects...</div>
+          <div className="text-xl mb-4">loading...</div>
         </div>
       </div>
     }>

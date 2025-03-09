@@ -124,9 +124,9 @@ export function TechPill({ text, index = 0, onClick, isActive = false, container
   // Spring configuration for smooth transitions
   const springConfig = {
     type: "spring" as const,
-    stiffness: 500,
-    damping: 30, // Increased damping for less bouncy motion
-    mass: 0.7,    // Reduced mass for quicker settling
+    stiffness: 400,
+    damping: 35, // Increased damping for less bouncy motion
+    mass: 0.8,    // Increased mass for more stable motion
     restDelta: 0.001, // Ensures animation completes fully
     restSpeed: 0.001  // Ensures animation settles completely
   };
@@ -138,45 +138,45 @@ export function TechPill({ text, index = 0, onClick, isActive = false, container
       color: `rgb(${color.text} / 0.5)`,
       boxShadow: `0 0 0 0 rgb(${color.glow} / 0)`,
       textShadow: `0 0 0 rgb(${color.glow} / 0)`,
-      scale: 0.97, // Slightly larger initial scale to reduce appearance of scaling
+      scale: 0.98, // Slightly larger initial scale to reduce appearance of scaling
       rotate: 0
     },
     animate: {
       backgroundColor: `rgb(${color.bg} / ${isActive ? 0.5 : 0.2})`,
       color: `rgb(${color.text} / ${isActive ? 1 : 0.85})`,
-      boxShadow: `0 0 ${isActive ? '35px' : '15px'} 0 rgb(${color.glow} / ${isActive ? 0.35 : 0.1})`,
-      textShadow: `0 0 ${isActive ? '25px' : '10px'} rgb(${color.glow} / ${isActive ? 0.8 : 0.4})`,
-      scale: isActive ? 1.05 : 1, // Reduced from 1.1 to 1.05
-      rotate: isActive ? randomRotation * 0.3 : 0, // Reduced rotation
+      boxShadow: `0 0 ${isActive ? '20px' : '10px'} 0 rgb(${color.glow} / ${isActive ? 0.25 : 0.1})`,
+      textShadow: `0 0 ${isActive ? '15px' : '8px'} rgb(${color.glow} / ${isActive ? 0.6 : 0.3})`,
+      scale: isActive ? 1.03 : 1, // Reduced scale effect
+      rotate: isActive ? randomRotation * 0.2 : 0, // Reduced rotation
       transition: {
-        duration: 0.3, // Slightly faster
-        delay: index * 0.05,
+        duration: 0.25, // Slightly faster
+        delay: 0, // No delay - all pills appear at once
         ease: [0.23, 1, 0.32, 1],
         scale: springConfig,
         rotate: springConfig,
-        backgroundColor: { duration: 0.3 },
-        boxShadow: { duration: 0.5 },
-        textShadow: { duration: 0.5 }
+        backgroundColor: { duration: 0.25 },
+        boxShadow: { duration: 0.3 },
+        textShadow: { duration: 0.3 }
       }
     },
     hover: {
-      backgroundColor: `rgb(${color.bg} / ${isActive ? 0.7 : 0.35})`,
+      backgroundColor: `rgb(${color.bg} / ${isActive ? 0.6 : 0.3})`,
       color: `rgb(${color.text})`,
-      boxShadow: `0 0 ${isActive ? '45px' : '20px'} 0 rgb(${color.glow} / ${isActive ? 0.5 : 0.2})`,
-      textShadow: `0 0 ${isActive ? '30px' : '12px'} rgb(${color.glow} / ${isActive ? 1 : 0.6})`,
-      rotate: isActive ? randomRotation * 0.4 : randomRotation * 0.6, // Less rotation
-      scale: isActive ? 1.07 : 1.08, // Reduced from 1.12/1.15 to 1.07/1.08
+      boxShadow: `0 0 ${isActive ? '25px' : '15px'} 0 rgb(${color.glow} / ${isActive ? 0.35 : 0.15})`,
+      textShadow: `0 0 ${isActive ? '20px' : '10px'} rgb(${color.glow} / ${isActive ? 0.7 : 0.4})`,
+      rotate: isActive ? randomRotation * 0.3 : randomRotation * 0.4, // Less rotation
+      scale: isActive ? 1.05 : 1.06, // Reduced scale effect
       transition: {
         ...springConfig,
-        damping: 25, // Slightly different damping for hover
+        damping: 30, // More damping for hover
       }
     },
     tap: {
-      scale: 0.96, // Less scale down on tap (was 0.95)
-      rotate: randomRotation * 0.2, // Less rotation
+      scale: 0.97, // Less scale down on tap
+      rotate: randomRotation * 0.1, // Less rotation
       transition: {
         ...springConfig,
-        damping: 15, // Still bouncy for tap response
+        damping: 20, // More damping for tap
       }
     }
   };
