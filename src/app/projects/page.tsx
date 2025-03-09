@@ -104,30 +104,28 @@ function ProjectsContent() {
     }
   }, []);
 
-  // Fetch generated projects when in generated view
+  // Fetch generated projects
   const fetchGeneratedProjects = useCallback(async () => {
-    if (currentView === 'generated') {
-      setIsLoading(true);
-      try {
-        const response = await fetch('/api/projects?limit=50');
-        if (response.ok) {
-          const data = await response.json();
-          setGeneratedProjects(data.projects);
-        }
-      } catch (error) {
-        console.error('Error fetching generated projects:', error);
-      } finally {
-        setIsLoading(false);
+    setIsLoading(true);
+    try {
+      const response = await fetch('/api/projects?limit=50');
+      if (response.ok) {
+        const data = await response.json();
+        setGeneratedProjects(data.projects);
       }
+    } catch (error) {
+      console.error('Error fetching generated projects:', error);
+    } finally {
+      setIsLoading(false);
     }
-  }, [currentView]);
+  }, []);
 
-  // Set mounted state and fetch generated projects if needed
+  // Fetch generated projects on mount
   useEffect(() => {
-    if (currentView === 'generated') {
+    if (mounted) {
       fetchGeneratedProjects();
     }
-  }, [currentView, fetchGeneratedProjects]);
+  }, [mounted, fetchGeneratedProjects]);
 
   // Handle URL changes
   useEffect(() => {

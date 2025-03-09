@@ -13,7 +13,7 @@ export interface BlogPost {
 export const blogPosts: BlogPost[] = [
   {
     id: 'agentic-ui',
-    date: new Date('2025-01-10'),
+    date: new Date('2025-03-02'),
     title: 'building agentic UIs that feel magical',
     timeToRead: '4 min',
     slug: 'agentic-ui',
@@ -102,7 +102,7 @@ export const blogPosts: BlogPost[] = [
   },
   {
     id: 'floaty-animations',
-    date: new Date('2024-10-15'),
+    date: new Date('2025-02-13'),
     title: 'the art of floaty animations',
     timeToRead: '6 min',
     slug: 'floaty-animations',
@@ -196,7 +196,7 @@ export const blogPosts: BlogPost[] = [
   },
   {
     id: 'semantic-search',
-    date: new Date('2024-08-20'),
+    date: new Date('2025-01-09'),
     title: 'semantic search and why embeddings matter',
     timeToRead: '8 min',
     slug: 'semantic-search',
@@ -311,7 +311,7 @@ export const blogPosts: BlogPost[] = [
   },
   {
     id: 'audio-interfaces',
-    date: new Date('2024-06-12'),
+    date: new Date('2024-12-20'),
     title: 'audio interfaces: engineering the invisible',
     timeToRead: '5 min',
     slug: 'audio-interfaces',
@@ -429,7 +429,7 @@ export const blogPosts: BlogPost[] = [
   },
   {
     id: 'less-code-more-design',
-    date: new Date('2024-04-05'),
+    date: new Date('2024-11-05'),
     title: 'less code, more design: the dieter rams approach',
     timeToRead: '7 min',
     slug: 'less-code-more-design',
@@ -542,7 +542,7 @@ export const blogPosts: BlogPost[] = [
   },
   {
     id: 'context-aware-ai',
-    date: new Date('2024-02-18'),
+    date: new Date('2024-10-18'),
     title: 'crafting context-aware AI assistants',
     timeToRead: '9 min',
     slug: 'context-aware-ai',

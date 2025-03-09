@@ -13,7 +13,7 @@ type DocumentType = 'tech' | 'index' | 'design' | 'code' | 'init' | 'search' | '
 interface FloatingChatPanelProps {
   messages: Message[];
   onAddMessage?: (message: string, isSystem?: boolean) => void;
-  activeTab?: 'chat' | 'log' | 'search'; 
+  activeTab?: 'chat' | 'search'; 
   onClose?: () => void;
   onTabChange?: (tab: string) => void;
   onLatestLogChange?: (logEntry: { timestamp: Date; message: string; type: string } | null) => void;
@@ -43,15 +43,12 @@ export const FloatingChatPanel: React.FC<FloatingChatPanelProps> = ({
 }) => {
   const [isOpen, setIsOpen] = useState(false);
   const [activeTabState, setActiveTabState] = useState(initialTab);
-  const [logFilter, setLogFilter] = useState<DocumentType>('all');
   const [inputValue, setInputValue] = useState('');
   const [unreadCount, setUnreadCount] = useState(0);
   const [tooltipVisible, setTooltipVisible] = useState<DocumentType | 'chat' | null>(null);
   const dropdownRef = useRef<HTMLDivElement>(null);
   const messagesContainerRef = useRef<HTMLDivElement>(null);
-  const logsContainerRef = useRef<HTMLDivElement>(null);
-  const searchContainerRef = useRef<HTMLDivElement>(null);
-  const { theme } = useTheme();
+  const { theme, setTheme } = useTheme();
   const isDarkTheme = theme === 'dark';
   
   // Glows based on theme
@@ -128,8 +125,6 @@ export const FloatingChatPanel: React.FC<FloatingChatPanelProps> = ({
       setTimeout(() => {
         if (activeTabState === 'chat' && messagesContainerRef.current) {
           messagesContainerRef.current.scrollTop = messagesContainerRef.current.scrollHeight;
-        } else if (activeTabState === 'log' && logsContainerRef.current) {
-          logsContainerRef.current.scrollTop = logsContainerRef.current.scrollHeight;
         }
       }, 100);
     }
@@ -166,33 +161,26 @@ export const FloatingChatPanel: React.FC<FloatingChatPanelProps> = ({
 
   // Get emoji for document type
   const getEmoji = (type: DocumentType): string => {
-    if (type === 'all') return '📋';
-    
-    const emojiMap: Record<Exclude<DocumentType, 'all'>, string> = {
-      index: '📄',
-      design: '🎨',
-      tech: '🔧',
-      code: '💻',
-      init: '🚀',
-      search: '🔍',
-      implementation: '⚙️',
-      web: '🌐',
-      marketing: '📢',
-      sales: '💼',
-      architect: '🔨',
-    };
-    
-    return emojiMap[type];
+    switch (type) {
+      case 'tech': return '🔧';
+      case 'index': return '📚';
+      case 'design': return '🎨';
+      case 'code': return '💻';
+      case 'init': return '🚀';
+      case 'search': return '🔍';
+      case 'implementation': return '⚙️';
+      case 'web': return '🌐';
+      case 'marketing': return '📢';
+      case 'sales': return '💰';
+      case 'architect': return '🏗️';
+      case 'all':
+      default: return '��';
+    }
   };
-
-  // Filter log entries based on selected type
-  const filteredLogEntries = logFilter === 'all' 
-    ? logEntries 
-    : logEntries.filter(entry => entry.type === logFilter);
 
   // Get background color based on theme
   const getBackgroundColor = () => {
-    return isDarkTheme ? 'bg-[rgb(var(--background-start))]' : 'bg-white';
+    return isDarkTheme ? 'bg-[rgb(var(--background))]' : 'bg-[rgb(var(--background))]';
   };
 
   // Get log entry background color based on theme
@@ -221,15 +209,14 @@ export const FloatingChatPanel: React.FC<FloatingChatPanelProps> = ({
     'web', 'marketing', 'sales', 'architect'
   ];
 
-  // Update tabs to include search
+  // Update tabs to only include chat
   const tabs = [
-    { id: 'chat', label: 'chat' },
-    { id: 'log', label: 'logs' }
+    { id: 'chat', label: 'chat' }
   ];
 
   // Handle tab changes
   const handleTabClick = (tabId: string) => {
-    if (tabId === 'chat' || tabId === 'log') {
+    if (tabId === 'chat') {
       setActiveTabState(tabId as any);
       if (onTabChange) {
         onTabChange(tabId);
@@ -341,15 +328,14 @@ export const FloatingChatPanel: React.FC<FloatingChatPanelProps> = ({
         <AnimatePresence>
           {isOpen && (
             <motion.div 
-              className="absolute bottom-16 right-0 w-80 sm:w-96 rounded-lg shadow-lg border border-[rgb(var(--border))] overflow-hidden"
+              className={`absolute bottom-16 right-0 w-80 sm:w-96 rounded-lg shadow-lg border border-[rgb(var(--border))] overflow-hidden ${getBackgroundColor()}`}
               style={{ 
-                height: '420px',
-                backgroundColor: getBackgroundColor()
+                height: '420px'
               }}
               initial={{ opacity: 0, y: 10, scale: 0.95 }}
               animate={{ opacity: 1, y: 0, scale: 1 }}
               exit={{ opacity: 0, y: 10, scale: 0.95 }}
-              transition={{ type: 'spring', stiffness: 500, damping: 30 }}
+              transition={{ duration: 0.2 }}
             >
               <div className="flex flex-col h-full">
                 {/* Header - Tab buttons and close button on same row */}
@@ -447,88 +433,6 @@ export const FloatingChatPanel: React.FC<FloatingChatPanelProps> = ({
                           </div>
                         </div>
                       )}
-                    </div>
-                  )}
-                  
-                  {/* Log Content */}
-                  {activeTabState === 'log' && (
-                    <div className="flex flex-col h-full">
-                      {/* Logs Content - Scrollable with contained content */}
-                      <div className="flex-1 overflow-y-auto scrollbar-thin" ref={logsContainerRef}>
-                        <div className="p-2 space-y-2">
-                          {filteredLogEntries.map((entry, index) => (
-                            <div 
-                              key={index} 
-                              className={`px-3 py-2 ${getLogEntryBgColor()} ${getBorderColor()} border rounded-sm`}
-                            >
-                              <div className="flex items-center justify-between">
-                                <span className={`text-xs ${getMutedTextColor()}`}>[{entry.type}]</span>
-                                <span className="text-base">{getEmoji(entry.type as DocumentType)}</span>
-                              </div>
-                              <div className="text-xs text-[rgb(var(--text-primary))] mt-1.5 mb-1">
-                                {entry.message}
-                              </div>
-                              <div className={`text-[10px] ${getMutedTextColor()} mt-0.5`}>
-                                {formatTime(entry.timestamp)}
-                              </div>
-                            </div>
-                          ))}
-                          
-                          {filteredLogEntries.length === 0 && (
-                            <div className={`text-center py-4 ${getMutedTextColor()} text-xs`}>
-                              no logs for this filter
-                            </div>
-                          )}
-                        </div>
-                      </div>
-                      
-                      {/* Fixed filter bar at bottom - matching height of message input */}
-                      <div className="border-t border-[rgb(var(--border))] p-2">
-                        <div className="grid grid-cols-8 w-full">
-                          {documentTypes.map(type => (
-                            <div className="relative" key={type}>
-                              <motion.button 
-                                onClick={() => setLogFilter(type)}
-                                onHoverStart={() => setTooltipVisible(type)}
-                                onHoverEnd={() => setTooltipVisible(null)}
-                                className={clsx(
-                                  "flex items-center justify-center w-full h-8 rounded-md transition-colors duration-150",
-                                  logFilter === type
-                                    ? `${getSelectedBgColor()} text-[rgb(var(--accent-1))]` 
-                                    : `${getMutedTextColor()} hover:text-[rgb(var(--text-primary))] hover:bg-[rgb(var(--surface-1)/0.1)]`
-                                )}
-                              >
-                                <div className="flex items-center justify-center w-6 h-6">
-                                  <span className="text-lg leading-[0]">{getEmoji(type)}</span>
-                                </div>
-                              </motion.button>
-                              
-                              {/* Custom tooltip matching Navigation.tsx */}
-                              <AnimatePresence>
-                                {tooltipVisible === type && (
-                                  <motion.div
-                                    initial={{ opacity: 0, y: -5 }}
-                                    animate={{ opacity: 1, y: 0 }}
-                                    exit={{ opacity: 0, y: -5 }}
-                                    transition={{ duration: 0.2 }}
-                                    className="absolute bottom-full mb-1 z-50"
-                                  >
-                                    <div className="relative flex flex-col items-center">
-                                      <div className="px-2.5 py-1 rounded-md bg-[rgb(var(--surface-1)/0.9)] backdrop-blur-sm text-xs lowercase whitespace-nowrap">
-                                        {type}
-                                      </div>
-                                      <div 
-                                        className="absolute -bottom-1 left-1/2 -translate-x-1/2 w-2 h-2 rotate-45 bg-[rgb(var(--surface-1)/0.9)]"
-                                        style={{ backdropFilter: 'blur(4px)' }}
-                                      />
-                                    </div>
-                                  </motion.div>
-                                )}
-                              </AnimatePresence>
-                            </div>
-                          ))}
-                        </div>
-                      </div>
                     </div>
                   )}
                 </div>

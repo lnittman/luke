@@ -26,9 +26,9 @@ export const GlobalChatPanel = () => {
     }
   }, [contextUnreadCount, localUnreadCount]);
 
-  // Adapter function to handle the type difference between ChatContext and FloatingChatPanel
+  // Adapter function to handle the tab change
   const handleTabChange = (tab: string) => {
-    if (tab === 'chat' || tab === 'log') {
+    if (tab === 'chat') {
       setActiveTab(tab);
     }
   };
@@ -51,7 +51,7 @@ export const GlobalChatPanel = () => {
     <FloatingChatPanel 
       messages={messages}
       onAddMessage={addMessage}
-      activeTab={activeTab}
+      activeTab={activeTab === 'log' ? 'chat' : activeTab} // Default to chat if log was selected
       onTabChange={handleTabChange}
       onLatestLogChange={handleLogEntryChange}
       onClose={handleChatPanelClose}
