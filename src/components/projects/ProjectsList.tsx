@@ -1,6 +1,7 @@
 import React from 'react';
 import { motion } from 'framer-motion';
 import Link from 'next/link';
+import Image from 'next/image';
 import { Project } from '@/utils/constants/projects';
 
 interface ProjectsListProps {
@@ -34,6 +35,41 @@ export const ProjectsList: React.FC<ProjectsListProps> = ({
   const prevPage = () => {
     if (currentPage > 1) {
       onPageChange(currentPage - 1);
+    }
+  };
+
+  // Function to render project icon or emoji
+  const renderProjectIcon = (project: Project) => {
+    if (project.id === 'voet') {
+      return (
+        <div className="flex items-center justify-center w-8 h-8">
+          <Image 
+            src="/assets/voet.png" 
+            alt="Voet" 
+            width={24} 
+            height={24} 
+            className="object-contain"
+          />
+        </div>
+      );
+    } else if (project.id === 'loops') {
+      return (
+        <div className="flex items-center justify-center w-8 h-8">
+          <Image 
+            src="/assets/loops-xyz.png" 
+            alt="Loops" 
+            width={24} 
+            height={24} 
+            className="object-contain"
+          />
+        </div>
+      );
+    } else {
+      return (
+        <div className="flex items-center justify-center w-8 h-8 text-2xl">
+          {project.emoji}
+        </div>
+      );
     }
   };
   
@@ -75,8 +111,8 @@ export const ProjectsList: React.FC<ProjectsListProps> = ({
               whileHover={{ opacity: 1 }}
               whileTap={{ opacity: 0.9 }}
             >
-              <div className="col-span-2 text-2xl flex items-center">
-                {project.emoji}
+              <div className="col-span-2 flex items-center">
+                {renderProjectIcon(project)}
               </div>
               <div className="col-span-4 flex items-center">
                 <div className="text-[rgb(var(--text-primary))] group-hover:text-[rgb(var(--text-accent))] transition-colors text-sm lowercase">

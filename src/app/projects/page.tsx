@@ -350,26 +350,48 @@ function ProjectsContent() {
               projectIcons={PROJECT_ICONS}
             />
           ) : currentView === 'generated' ? (
-            // Generated projects view
-            <GeneratedProjectsList
-              projects={paginatedProjects as GeneratedProject[]}
-              currentPage={currentPage}
-              totalPages={totalPages}
-              onPageChange={paginate}
-              onProjectClick={(project) => {
-                router.push(`/projects?project=${project.id}`);
-                setCurrentView('detail');
-              }}
-              onBackClick={goToList}
-              showArborTooltip={selectedGeneratedProject === 'arbor'}
-              setShowArborTooltip={(show) => {
-                if (show) {
-                  setSelectedGeneratedProject('arbor');
-                } else {
-                  setSelectedGeneratedProject(null);
-                }
-              }}
-            />
+            // Generated projects view with loading state
+            isLoading ? (
+              <motion.div
+                initial={{ opacity: 0 }}
+                animate={{ opacity: 1 }}
+                exit={{ opacity: 0 }}
+                transition={{ duration: 0.3 }}
+                className="w-full flex flex-col items-center justify-center py-20"
+              >
+                <div className="text-[rgb(var(--text-secondary))] text-lg font-mono">
+                  loading...
+                </div>
+              </motion.div>
+            ) : (
+              <motion.div
+                initial={{ opacity: 0 }}
+                animate={{ opacity: 1 }}
+                exit={{ opacity: 0 }}
+                transition={{ duration: 0.3 }}
+                className="w-full"
+              >
+                <GeneratedProjectsList
+                  projects={paginatedProjects as GeneratedProject[]}
+                  currentPage={currentPage}
+                  totalPages={totalPages}
+                  onPageChange={paginate}
+                  onProjectClick={(project) => {
+                    router.push(`/projects?project=${project.id}`);
+                    setCurrentView('detail');
+                  }}
+                  onBackClick={goToList}
+                  showArborTooltip={selectedGeneratedProject === 'arbor'}
+                  setShowArborTooltip={(show) => {
+                    if (show) {
+                      setSelectedGeneratedProject('arbor');
+                    } else {
+                      setSelectedGeneratedProject(null);
+                    }
+                  }}
+                />
+              </motion.div>
+            )
           ) : (
             // Main projects list view
             <ProjectsList

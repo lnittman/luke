@@ -1,6 +1,7 @@
 import React from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import Link from 'next/link';
+import Image from 'next/image';
 
 interface GeneratedProject {
   id: string;
@@ -47,6 +48,42 @@ export const GeneratedProjectsList: React.FC<GeneratedProjectsListProps> = ({
       onPageChange(currentPage - 1);
     }
   };
+
+  // Function to render project icon or emoji
+  const renderProjectIcon = (project: GeneratedProject) => {
+    // Check if the project name contains "voet" or "loops" (case insensitive)
+    if (project.name.toLowerCase().includes('voet')) {
+      return (
+        <div className="flex items-center justify-center w-8 h-8">
+          <Image 
+            src="/assets/voet.png" 
+            alt="Voet" 
+            width={24} 
+            height={24} 
+            className="object-contain"
+          />
+        </div>
+      );
+    } else if (project.name.toLowerCase().includes('loops')) {
+      return (
+        <div className="flex items-center justify-center w-8 h-8">
+          <Image 
+            src="/assets/loops-xyz.png" 
+            alt="Loops" 
+            width={24} 
+            height={24} 
+            className="object-contain"
+          />
+        </div>
+      );
+    } else {
+      return (
+        <div className="flex items-center justify-center w-8 h-8 text-2xl">
+          {project.emoji}
+        </div>
+      );
+    }
+  };
   
   return (
     <motion.div
@@ -80,8 +117,8 @@ export const GeneratedProjectsList: React.FC<GeneratedProjectsListProps> = ({
             <div 
               className="px-4 py-3 border-b border-[rgb(var(--border))] grid grid-cols-12 hover:bg-[rgb(var(--background-hover))] transition-all duration-300 cursor-pointer group h-[52px] items-center"
             >
-              <div className="col-span-2 text-2xl flex items-center">
-                {project.emoji}
+              <div className="col-span-2 flex items-center">
+                {renderProjectIcon(project)}
               </div>
               <div className="col-span-4 flex items-center">
                 <div className="text-[rgb(var(--text-accent))] text-sm lowercase font-medium transition-colors">
