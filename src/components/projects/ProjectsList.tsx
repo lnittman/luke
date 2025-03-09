@@ -42,31 +42,31 @@ export const ProjectsList: React.FC<ProjectsListProps> = ({
   const renderProjectIcon = (project: Project) => {
     if (project.id === 'voet') {
       return (
-        <div className="flex items-center justify-center w-8 h-8">
+        <div className="flex items-center justify-center w-6 h-6">
           <Image 
             src="/assets/voet.png" 
             alt="Voet" 
-            width={24} 
-            height={24} 
+            width={20} 
+            height={20} 
             className="object-contain"
           />
         </div>
       );
     } else if (project.id === 'loops') {
       return (
-        <div className="flex items-center justify-center w-8 h-8">
+        <div className="flex items-center justify-center w-6 h-6">
           <Image 
             src="/assets/loops-xyz.png" 
             alt="Loops" 
-            width={24} 
-            height={24} 
+            width={20} 
+            height={20} 
             className="object-contain"
           />
         </div>
       );
     } else {
       return (
-        <div className="flex items-center justify-center w-8 h-8 text-2xl">
+        <div className="flex items-center justify-center w-6 h-6 text-xl leading-none">
           {project.emoji}
         </div>
       );
@@ -80,13 +80,17 @@ export const ProjectsList: React.FC<ProjectsListProps> = ({
       animate={{ opacity: 1 }}
       exit={{ opacity: 0 }}
       transition={{ duration: 0.4 }}
-      className="w-full flex flex-col"
+      className="w-full flex flex-col transform-gpu scale-[0.95] origin-top"
+      style={{ 
+        maxWidth: '100%',
+        overflow: 'hidden'
+      }}
     >
       {/* Project list header */}
-      <div className="px-4 py-3 border-b border-[rgb(var(--border))] grid grid-cols-12 text-sm text-[rgb(var(--text-secondary))] w-full">
-        <div className="col-span-2">emoji</div>
-        <div className="col-span-4">project</div>
-        <div className="col-span-6">description</div>
+      <div className="px-3 py-2 border-b border-[rgb(var(--border))] grid grid-cols-12 text-xs text-[rgb(var(--text-secondary))] w-full">
+        <div className="col-span-2 flex items-center">emoji</div>
+        <div className="col-span-4 flex items-center">project</div>
+        <div className="col-span-6 flex items-center">description</div>
       </div>
       
       {/* Project list - exactly 9 rows with fixed height */}
@@ -106,21 +110,21 @@ export const ProjectsList: React.FC<ProjectsListProps> = ({
             }}
           >
             <motion.div 
-              className="px-4 py-3 border-b border-[rgb(var(--border))] grid grid-cols-12 hover:bg-[rgb(var(--background-hover))] transition-all duration-300 cursor-pointer group h-[52px] items-center"
+              className="px-3 py-2 border-b border-[rgb(var(--border))] grid grid-cols-12 hover:bg-[rgb(var(--background-hover))] transition-all duration-300 cursor-pointer group h-[46px] items-center"
               initial={{ opacity: 0.85 }}
               whileHover={{ opacity: 1 }}
               whileTap={{ opacity: 0.9 }}
             >
-              <div className="col-span-2 flex items-center">
+              <div className="col-span-2 flex items-center justify-start">
                 {renderProjectIcon(project)}
               </div>
               <div className="col-span-4 flex items-center">
-                <div className="text-[rgb(var(--text-primary))] group-hover:text-[rgb(var(--text-accent))] transition-colors text-sm lowercase">
+                <div className="text-[rgb(var(--text-primary))] group-hover:text-[rgb(var(--text-accent))] transition-colors text-xs lowercase leading-none">
                   {project.name}
                 </div>
               </div>
               <div className="col-span-6 flex items-center">
-                <div className="text-[rgb(var(--text-secondary))] text-sm transition-colors">
+                <div className="text-[rgb(var(--text-secondary))] text-xs transition-colors leading-tight line-clamp-2">
                   {project.description}
                 </div>
               </div>
@@ -133,21 +137,21 @@ export const ProjectsList: React.FC<ProjectsListProps> = ({
           Array.from({ length: 8 - projects.length }).map((_, index) => (
             <div 
               key={`empty-${index}`} 
-              className="px-4 py-3 grid grid-cols-12 h-[52px]"
+              className="px-3 py-2 grid grid-cols-12 h-[46px]"
             />
           ))
         }
       </div>
       
       {/* Pagination controls - centered */}
-      <div className="w-full flex justify-center items-center py-4 px-4">
-        <div className="flex items-center space-x-2">
+      <div className="w-full flex justify-center items-center py-3 px-3">
+        <div className="flex items-center space-x-1">
           {/* Previous page button */}
           <button
             onClick={() => prevPage()}
             disabled={currentPage === 1}
             className={`
-              px-3 py-1 rounded-md text-xs flex items-center justify-center
+              px-2 py-1 rounded-md text-xs flex items-center justify-center
               ${currentPage === 1 
                 ? "opacity-50 cursor-not-allowed text-[rgb(var(--text-secondary))]" 
                 : "text-[rgb(var(--text-accent))] hover:bg-[rgb(var(--accent-1)/0.1)]"}
@@ -166,7 +170,7 @@ export const ProjectsList: React.FC<ProjectsListProps> = ({
                 Math.abs(pageNum - currentPage) <= 1;
               
               if (!isVisible && pageNum === 2 || (!isVisible && pageNum === totalPages - 1)) {
-                return <span key={`ellipsis-${pageNum}`} className="w-4 text-center text-xs text-[rgb(var(--text-secondary))]">...</span>;
+                return <span key={`ellipsis-${pageNum}`} className="w-3 text-center text-xs text-[rgb(var(--text-secondary))]">...</span>;
               }
               
               return isVisible ? (
@@ -174,7 +178,7 @@ export const ProjectsList: React.FC<ProjectsListProps> = ({
                   key={index}
                   onClick={() => paginate(pageNum)}
                   className={`
-                    w-6 h-6 rounded-full flex items-center justify-center text-xs
+                    w-5 h-5 rounded-full flex items-center justify-center text-xs
                     ${currentPage === pageNum 
                       ? "bg-[rgb(var(--accent-1)/0.15)] text-[rgb(var(--text-accent))]" 
                       : "text-[rgb(var(--text-secondary))] hover:bg-[rgb(var(--surface-1)/0.1)]"}
@@ -191,7 +195,7 @@ export const ProjectsList: React.FC<ProjectsListProps> = ({
             onClick={() => nextPage()}
             disabled={currentPage === totalPages}
             className={`
-              px-3 py-1 rounded-md text-xs flex items-center justify-center
+              px-2 py-1 rounded-md text-xs flex items-center justify-center
               ${currentPage === totalPages 
                 ? "opacity-50 cursor-not-allowed text-[rgb(var(--text-secondary))]" 
                 : "text-[rgb(var(--text-accent))] hover:bg-[rgb(var(--accent-1)/0.1)]"}

@@ -242,52 +242,38 @@ function ProjectsContent() {
         }}
       >
         <motion.div 
-          className="px-4 py-3 border-b border-[rgb(var(--border))] grid grid-cols-12 transition-opacity duration-300 cursor-pointer group/item h-16 items-center"
+          className="px-3 py-2 border-b border-[rgb(var(--border))] grid grid-cols-12 transition-opacity duration-300 cursor-pointer group/item h-[46px] items-center"
           onMouseMove={handleMouseMove}
           whileHover={{ opacity: 1 }}
           whileTap={{ opacity: 0.9 }}
-          initial={{ opacity: 0.85 }}
         >
-          {/* Top border glow */}
+          {/* Glow effect */}
           <motion.div 
-            className="absolute top-0 left-0 right-0 h-px z-0"
+            className="absolute inset-0 opacity-0 group-hover/item:opacity-100 transition-opacity duration-300"
             style={{
-              background: `linear-gradient(
-                90deg, 
-                rgba(var(--accent-1), 0) 0%, 
-                rgba(var(--accent-1), 0.1) 10%,
-                rgba(var(--accent-1), 0.6) ${springX}, 
-                rgba(var(--accent-1), 0.1) 90%,
-                rgba(var(--accent-1), 0) 100%
-              )`
+              background: `
+                radial-gradient(
+                  circle at ${springX} 50%, 
+                  rgba(var(--accent-1), 0.15) 0%, 
+                  transparent 70%
+                )
+              `,
+              zIndex: 0
             }}
           />
           
-          {/* Bottom border glow */}
-          <motion.div 
-            className="absolute bottom-0 left-0 right-0 h-px z-0"
-            style={{
-              background: `linear-gradient(
-                90deg, 
-                rgba(var(--accent-1), 0) 0%, 
-                rgba(var(--accent-1), 0.1) 10%,
-                rgba(var(--accent-1), 0.6) ${springX}, 
-                rgba(var(--accent-1), 0.1) 90%,
-                rgba(var(--accent-1), 0) 100%
-              )`
-            }}
-          />
-          
-          <div className="col-span-2 text-2xl flex items-center relative z-10">
-            ✨
+          <div className="col-span-2 flex items-center justify-start z-10">
+            <div className="flex items-center justify-center w-6 h-6 text-xl leading-none">
+              ✨
+            </div>
           </div>
-          <div className="col-span-4 flex items-center relative z-10">
-            <div className="text-[rgb(var(--text-accent))] transition-colors text-base lowercase font-medium">
+          <div className="col-span-4 flex items-center z-10">
+            <div className="text-[rgb(var(--text-primary))] group-hover/item:text-[rgb(var(--text-accent))] transition-colors text-xs lowercase leading-none">
               generated
             </div>
           </div>
-          <div className="col-span-6 flex items-center relative z-10">
-            <div className="text-[rgb(var(--text-secondary))] text-sm">
+          <div className="col-span-6 flex items-center z-10">
+            <div className="text-[rgb(var(--text-secondary))] text-xs transition-colors leading-tight line-clamp-2">
               agent-generated projects
             </div>
           </div>

@@ -328,7 +328,7 @@ export const FloatingChatPanel: React.FC<FloatingChatPanelProps> = ({
         <AnimatePresence>
           {isOpen && (
             <motion.div 
-              className="absolute bottom-16 right-0 w-80 sm:w-96 rounded-lg shadow-lg border border-[rgb(var(--border))] overflow-hidden"
+              className="absolute bottom-20 right-0 w-80 sm:w-96 rounded-lg shadow-lg border border-[rgb(var(--border))] overflow-hidden"
               initial={{ opacity: 0, y: 10, scale: 0.95 }}
               animate={{ opacity: 1, y: 0, scale: 1 }}
               exit={{ opacity: 0, y: 10, scale: 0.95 }}
