@@ -83,9 +83,12 @@ function ProjectsContent() {
   // Use refs to access hash directly since NextJS sometimes has issues with hash fragments
   const generatedSectionRef = useRef<HTMLDivElement>(null);
   
+  // Track if user has explicitly requested to view generated projects
+  const [userRequestedGenerated, setUserRequestedGenerated] = useState(false);
+  
   // Use explicit state for view management to ensure proper transitions
   const [currentView, setCurrentView] = useState<'list' | 'detail' | 'generated'>(
-    projectId ? 'detail' : (window?.location?.hash === '#generated' ? 'generated' : 'list')
+    projectId ? 'detail' : 'list'
   );
   
   // Find the current project based on the ID in the URL
@@ -102,10 +105,19 @@ function ProjectsContent() {
         window.location.hostname === '127.0.0.1'
       );
     }
+    
+    // Check if the URL has #generated hash on initial load
+    if (window.location.hash === '#generated') {
+      setUserRequestedGenerated(true);
+      setCurrentView('generated');
+    }
   }, []);
 
   // Fetch generated projects
   const fetchGeneratedProjects = useCallback(async () => {
+    // Only fetch if user has explicitly requested to view generated projects
+    if (!userRequestedGenerated) return;
+    
     setIsLoading(true);
     try {
       const response = await fetch('/api/projects?limit=50');
@@ -118,19 +130,21 @@ function ProjectsContent() {
     } finally {
       setIsLoading(false);
     }
-  }, []);
+  }, [userRequestedGenerated]);
 
-  // Fetch generated projects on mount
+  // Fetch generated projects when user requests them
   useEffect(() => {
-    if (mounted) {
+    if (userRequestedGenerated) {
       fetchGeneratedProjects();
     }
-  }, [mounted, fetchGeneratedProjects]);
+  }, [userRequestedGenerated, fetchGeneratedProjects]);
 
   // Handle URL changes
   useEffect(() => {
     const handleUrlChange = () => {
-      if (window.location.hash === '#generated') {
+      // Only transition to generated view if the hash is explicitly set to #generated
+      // and user has explicitly requested to view generated projects
+      if (window.location.hash === '#generated' && userRequestedGenerated) {
         setCurrentView('generated');
       } else if (projectId) {
         setCurrentView('detail');
@@ -139,10 +153,20 @@ function ProjectsContent() {
       }
     };
 
-    handleUrlChange(); // Call once on mount
+    // Set up the listener for hash changes
     window.addEventListener('hashchange', handleUrlChange);
+    
+    // Initial view setup - prioritize project detail view if projectId exists
+    if (projectId) {
+      setCurrentView('detail');
+    } else if (window.location.hash === '#generated' && userRequestedGenerated) {
+      setCurrentView('generated');
+    } else {
+      setCurrentView('list');
+    }
+    
     return () => window.removeEventListener('hashchange', handleUrlChange);
-  }, [projectId]);
+  }, [projectId, userRequestedGenerated]);
 
   // Sort projects in custom order
   const sortedProjects = useMemo(() => {
@@ -202,6 +226,7 @@ function ProjectsContent() {
 
   // Handle navigation to generated projects
   const goToGenerated = useCallback(() => {
+    setUserRequestedGenerated(true);
     router.push('/projects#generated');
     setCurrentView('generated');
   }, [router]);
@@ -326,19 +351,21 @@ function ProjectsContent() {
       <style jsx global>{noThemeTransition}</style>
       
       <div className="w-full max-w-2xl mx-auto flex flex-col items-center">
-        <AnimatePresence mode="wait">
+        <AnimatePresence mode="wait" initial={false}>
           {currentView === 'detail' && currentProject ? (
             // Project detail view
             <ProjectDetail
+              key="project-detail"
               project={currentProject}
               onBackClick={goToList}
               onShowDemo={showDemo}
               projectIcons={PROJECT_ICONS}
             />
-          ) : currentView === 'generated' ? (
-            // Generated projects view with loading state
+          ) : currentView === 'generated' && userRequestedGenerated ? (
+            // Generated projects view with loading state - only show if user explicitly requested
             isLoading ? (
               <motion.div
+                key="generated-loading"
                 initial={{ opacity: 0 }}
                 animate={{ opacity: 1 }}
                 exit={{ opacity: 0 }}
@@ -351,6 +378,7 @@ function ProjectsContent() {
               </motion.div>
             ) : (
               <motion.div
+                key="generated-list"
                 initial={{ opacity: 0 }}
                 animate={{ opacity: 1 }}
                 exit={{ opacity: 0 }}
@@ -381,6 +409,7 @@ function ProjectsContent() {
           ) : (
             // Main projects list view
             <ProjectsList
+              key="projects-list"
               projects={paginatedProjects as Project[]}
               currentPage={currentPage}
               totalPages={totalPages}

@@ -12,53 +12,36 @@ const noThemeTransition = `
   /* Disable all transitions related to colors and borders */
   .blog-list-item,
   .blog-list-item *,
-  .project-list-item,
-  .project-list-item *,
   [class*="border-[rgb(var(--border))]"],
   [class*="text-[rgb(var(--text"],
   [class*="bg-[rgb(var(--background"],
-  .generated-name,
-  .project-name,
-  .project-description {
+  .blog-title,
+  .blog-date {
     transition-property: none !important;
   }
 
   /* Selectively enable only the transitions we want */
   .blog-list-item:hover,
-  .blog-list-item:active,
-  .project-list-item:hover,
-  .project-list-item:active {
+  .blog-list-item:active {
     transition: opacity 300ms ease !important;
   }
 `;
 
 function Hero() {
-  const handleLogoPress = () => {
-    // Trigger a theme change
-    const html = document.querySelector('html');
-    if (html?.classList.contains('dark')) {
-      html.classList.remove('dark');
-      localStorage.setItem('theme', 'light');
-    } else {
-      html?.classList.add('dark');
-      localStorage.setItem('theme', 'dark');
-    }
-  };
-
   return (
-    <div className="flex items-center justify-center min-h-screen px-4">
+    <div className="fixed inset-0 flex items-center justify-center px-4" style={{ paddingTop: 'calc(50vh - 320px)' }}>
       {/* Add style to completely disable transitions during theme changes */}
       <style jsx global>{noThemeTransition}</style>
       
       <motion.div 
-        className="relative w-full max-w-2xl mx-auto overflow-hidden select-none flex flex-col items-center"
+        className="relative w-full max-w-2xl mx-auto overflow-hidden select-none flex flex-col items-center pb-48"
         initial={{ opacity: 0 }}
         animate={{ opacity: 1 }}
         transition={{ duration: 0.8, ease: [0.23, 1, 0.32, 1] }}
       >
         {/* Logo centered */}
         <motion.div
-          className="relative cursor-pointer w-16 h-16 sm:w-20 sm:h-20 mb-8"
+          className="relative cursor-pointer w-16 h-16 sm:w-20 sm:h-20 mb-6"
           initial={{ opacity: 0, y: -20 }}
           animate={{ opacity: 1, y: 0 }}
           transition={{ 
@@ -74,7 +57,6 @@ function Hero() {
             rotate: -8,
             transition: { type: "spring", stiffness: 400, damping: 8 }
           }}
-          onTapStart={handleLogoPress}
         >
           <Image
             src="/assets/logo.png"
@@ -142,7 +124,7 @@ function Hero() {
 
 export default function Home() {
   return (
-    <div className="relative min-h-screen">
+    <div className="overflow-hidden h-screen">
       <Hero />
     </div>
   );

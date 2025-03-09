@@ -62,8 +62,8 @@ export const ProjectDetail: React.FC<ProjectDetailProps> = ({
             </h1>
           </div>
           
-          {/* App Button (if available) */}
-          {(project.demoUrl || project.appUrl) && (
+          {/* App Button (if available and not Helios) */}
+          {(project.demoUrl || project.appUrl) && project.id !== 'helios' && (
             <a 
               href={project.appUrl || project.demoUrl}
               target="_blank"
@@ -73,12 +73,26 @@ export const ProjectDetail: React.FC<ProjectDetailProps> = ({
               app →
             </a>
           )}
+          
+          {/* Source Button for Helios */}
+          {project.id === 'helios' && (
+            <a 
+              href={project.sourceUrl}
+              target="_blank"
+              rel="noopener noreferrer"
+              className="py-2 text-sm text-[rgb(var(--text-secondary))] hover:text-[rgb(var(--text-primary))] transition-colors"
+            >
+              source →
+            </a>
+          )}
         </div>
         
-        {/* Project description */}
-        <p className="text-base text-[rgb(var(--text-secondary))] mb-6">
-          {project.description}
-        </p>
+        {/* Project description - centered */}
+        <div className="flex justify-center">
+          <p className="text-base text-[rgb(var(--text-secondary))] mb-6 text-center max-w-2xl">
+            {project.description}
+          </p>
+        </div>
       </div>
       
       {/* Project content */}

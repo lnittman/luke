@@ -67,23 +67,15 @@ export const ProjectContent = ({ project, onShowDemo }: ProjectContentProps) => 
   };
 
   return (
-    <div ref={contentRef} className="flex flex-col py-2 sm:py-4 md:py-6 pb-32 sm:pb-28 md:pb-24 transition-all duration-300 w-full">
+    <div 
+      ref={contentRef} 
+      className="flex flex-col pb-32 transition-all duration-300 w-full"
+      style={{ paddingTop: 'max(16px, env(safe-area-inset-top, 16px) + 60px)' }}
+    >
       <div className="w-full max-w-4xl mx-auto space-y-3 sm:space-y-5 overflow-visible">
         <div className={clsx("space-y-2", getPadding())}>
-          <p className={clsx(" text-[rgb(var(--text-primary))]", getDescriptionFontSize())}>
-            {project.description}
-          </p>
-
-          {/* Action Buttons - Only show demo and source buttons */}
-          <div className="flex flex-wrap gap-2 sm:gap-3 md:gap-4 pt-2">
-            {project.videos && project.videos.length > 0 && project.id !== 'voet' && onShowDemo && (
-              <button 
-                onClick={onShowDemo}
-                className={clsx(" text-[rgb(var(--text-secondary))] hover:text-[rgb(var(--text-primary))] transition-colors", getActionButtonFontSize())}
-              >
-                demo →
-              </button>
-            )}
+          {/* Action Buttons - Only show source button for specific projects */}
+          <div className="flex flex-wrap gap-2 sm:gap-3 md:gap-4 pt-2 justify-center">
             {(project.id === 'sine' || project.id === 'helios') && (
               <a 
                 href={project.sourceUrl}
@@ -98,7 +90,7 @@ export const ProjectContent = ({ project, onShowDemo }: ProjectContentProps) => 
         </div>
 
         {/* Project Sections */}
-        <div className="space-y-6 sm:space-y-8">
+        <div className="space-y-6 sm:space-y-8 mt-8">
           <ProjectSection 
             title={project.content.overview.title} 
             items={project.content.overview.items} 
