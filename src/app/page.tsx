@@ -34,19 +34,23 @@ const noThemeTransition = `
 
 function Hero() {
   const handleLogoPress = () => {
-    // Trigger haptic feedback if available
-    if (window.navigator.vibrate) {
-      window.navigator.vibrate(50);
+    // Trigger a theme change
+    const html = document.querySelector('html');
+    if (html?.classList.contains('dark')) {
+      html.classList.remove('dark');
+      localStorage.setItem('theme', 'light');
+    } else {
+      html?.classList.add('dark');
+      localStorage.setItem('theme', 'dark');
     }
   };
 
   return (
-    <div className="relative w-full h-[100dvh] flex flex-col items-center justify-center px-4 overflow-hidden">
+    <div className="flex items-center justify-center min-h-screen px-4">
       {/* Add style to completely disable transitions during theme changes */}
       <style jsx global>{noThemeTransition}</style>
       
-      {/* Main container */}
-      <motion.div
+      <motion.div 
         className="relative w-full max-w-2xl mx-auto overflow-hidden select-none flex flex-col items-center"
         initial={{ opacity: 0 }}
         animate={{ opacity: 1 }}
@@ -86,7 +90,11 @@ function Hero() {
         
         {/* Blog posts container */}
         <motion.div
-          className="w-full bg-[rgb(var(--background-secondary))] rounded-lg overflow-hidden"
+          className="w-full bg-[rgb(var(--background-secondary))] rounded-lg overflow-hidden transform-gpu scale-[0.95] origin-top"
+          style={{ 
+            maxWidth: '100%',
+            overflow: 'hidden'
+          }}
           initial={{ opacity: 0, y: 40 }}
           animate={{ opacity: 1, y: 0 }}
           transition={{ 
@@ -96,10 +104,10 @@ function Hero() {
           }}
         >
           {/* Blog post header */}
-          <div className="px-4 py-3 border-b border-[rgb(var(--border))] grid grid-cols-12 text-sm text-[rgb(var(--text-secondary))]">
-            <div className="col-span-2">date</div>
-            <div className="col-span-8">title</div>
-            <div className="col-span-2 text-right">read</div>
+          <div className="px-3 py-2 border-b border-[rgb(var(--border))] grid grid-cols-12 text-xs text-[rgb(var(--text-secondary))]">
+            <div className="col-span-2 flex items-center">date</div>
+            <div className="col-span-8 flex items-center">title</div>
+            <div className="col-span-2 flex items-center justify-end">read</div>
           </div>
           
           {/* Blog post list - scrollable */}
@@ -111,15 +119,15 @@ function Hero() {
                 className="block"
               >
                 <div 
-                  className="blog-list-item px-4 py-3 border-b border-[rgb(var(--border))] grid grid-cols-12 hover:bg-[rgb(var(--background-hover))] transition-all duration-300 cursor-pointer group"
+                  className="blog-list-item px-3 py-2 border-b border-[rgb(var(--border))] grid grid-cols-12 hover:bg-[rgb(var(--background-hover))] transition-all duration-300 cursor-pointer group h-[46px] items-center"
                 >
-                  <div className="col-span-2 text-sm text-[rgb(var(--text-secondary))]">
+                  <div className="col-span-2 text-xs text-[rgb(var(--text-secondary))] flex items-center leading-none">
                     {format(post.date, 'yyyy')}
                   </div>
-                  <div className="col-span-8 text-[rgb(var(--text-primary))] group-hover:text-[rgb(var(--text-accent))] transition-colors">
+                  <div className="col-span-8 text-[rgb(var(--text-primary))] group-hover:text-[rgb(var(--text-accent))] transition-colors text-xs flex items-center leading-tight line-clamp-2">
                     {post.title}
                   </div>
-                  <div className="col-span-2 text-right text-sm text-[rgb(var(--text-secondary))]">
+                  <div className="col-span-2 text-right text-xs text-[rgb(var(--text-secondary))] flex items-center justify-end leading-none">
                     {post.timeToRead}
                   </div>
                 </div>
