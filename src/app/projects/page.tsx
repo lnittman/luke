@@ -21,7 +21,7 @@ interface GeneratedProject {
   createdAt: string;
 }
 
-// Project icons map for custom icons (keep this definition)
+// Project icons map for custom icons
 const PROJECT_ICONS: Record<string, string> = {
   voet: '/assets/voet.png',
   loops: '/assets/loops-xyz.png'
@@ -63,19 +63,22 @@ const noThemeTransition = `
 // Wrapper component that uses search params
 function ProjectsContent() {
   const searchParams = useSearchParams();
+  const router = useRouter();
+  const pathname = usePathname();
+  
+  // Get the project ID from the URL
+  const projectId = searchParams?.get('project');
+  const generatedProjectId = searchParams?.get('generated');
+  
   const [currentVideo, setCurrentVideo] = useState<number | null>(null);
   const [mounted, setMounted] = useState(false);
   const [generatedProjects, setGeneratedProjects] = useState<GeneratedProject[]>([]);
   const [isLoading, setIsLoading] = useState(false);
   const [isLocalhost, setIsLocalhost] = useState(false);
   const [showArborTooltip, setShowArborTooltip] = useState(false);
-  const [selectedProject, setSelectedProject] = useState<string | null>(null);
-  const [selectedGeneratedProject, setSelectedGeneratedProject] = useState<string | null>(null);
   const [currentPage, setCurrentPage] = useState(1);
   const [totalPages, setTotalPages] = useState(1);
   const [isCreatingProject, setIsCreatingProject] = useState(false);
-  const router = useRouter();
-  const pathname = usePathname();
   
   // Use refs to access hash directly since NextJS sometimes has issues with hash fragments
   const generatedSectionRef = useRef<HTMLDivElement>(null);
@@ -90,12 +93,9 @@ function ProjectsContent() {
     ? PROJECTS.find(p => p.id === projectId) || null
     : null;
 
-  // Get the project ID from the URL
-  const projectId = searchParams?.get('project');
-  const generatedProjectId = searchParams?.get('generated');
-
   // Check for localhost on mount
   useEffect(() => {
+    setMounted(true);
     if (typeof window !== 'undefined') {
       setIsLocalhost(
         window.location.hostname === 'localhost' || 
@@ -124,7 +124,6 @@ function ProjectsContent() {
 
   // Set mounted state and fetch generated projects if needed
   useEffect(() => {
-    setMounted(true);
     if (currentView === 'generated') {
       fetchGeneratedProjects();
     }
@@ -142,6 +141,7 @@ function ProjectsContent() {
       }
     };
 
+    handleUrlChange(); // Call once on mount
     window.addEventListener('hashchange', handleUrlChange);
     return () => window.removeEventListener('hashchange', handleUrlChange);
   }, [projectId]);
