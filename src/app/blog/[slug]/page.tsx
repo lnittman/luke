@@ -9,8 +9,8 @@ import { format } from 'date-fns';
 // Import from the correct location
 import { blogPosts } from '@/app/blogData';
 
-export default function BlogPost({ params }: { params: { slug: string } }) {
-  const { slug } = params;
+export default async function BlogPost({ params }: { params: Promise<{ slug: string }> }) {
+  const { slug } = await params;
   const post = blogPosts.find(post => post.slug === slug);
 
   if (!post) {

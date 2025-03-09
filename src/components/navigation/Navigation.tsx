@@ -54,7 +54,7 @@ function NavigationIcon({ item, isActive }: { item: NavigationItem; isActive: bo
     <div className="relative group">
       <motion.div
         className={clsx(
-          "relative p-1.5 sm:p-2.5 rounded-xl transition-colors duration-300",
+          "relative p-1.5 rounded-xl transition-colors duration-300",
           "hover:bg-[rgb(var(--surface-1)/0.1)]",
           isActive && "bg-[rgb(var(--surface-1)/0.15)]"
         )}
@@ -68,7 +68,7 @@ function NavigationIcon({ item, isActive }: { item: NavigationItem; isActive: bo
           alt={item.label}
           width={40}
           height={40}
-          className="w-9 h-9 sm:w-12 sm:h-12 relative z-10 select-none touch-none"
+          className="w-9 h-9 relative z-10 select-none touch-none"
           priority
           draggable={false}
         />
@@ -141,7 +141,13 @@ export default function Navigation() {
     >
       <ul className="flex gap-1.5 sm:gap-3">
         {navigationItems.map(item => {
-          const isActive = pathname === item.href;
+          // Consider an item active if the current path starts with the item's href
+          // but make sure we don't match '/projects' for '/' (home)
+          const isActive = 
+            item.href === '/' 
+              ? pathname === '/' 
+              : pathname.startsWith(item.href);
+              
           return (
             <li key={item.href}>
               <Link href={item.href} data-navigation>

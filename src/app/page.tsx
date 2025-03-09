@@ -7,6 +7,31 @@ import Link from 'next/link';
 import { format } from 'date-fns';
 import { blogPosts } from '@/app/blogData';
 
+// Style to completely disable all transitions during theme changes
+const noThemeTransition = `
+  /* Disable all transitions related to colors and borders */
+  .blog-list-item,
+  .blog-list-item *,
+  .project-list-item,
+  .project-list-item *,
+  [class*="border-[rgb(var(--border))]"],
+  [class*="text-[rgb(var(--text"],
+  [class*="bg-[rgb(var(--background"],
+  .generated-name,
+  .project-name,
+  .project-description {
+    transition-property: none !important;
+  }
+
+  /* Selectively enable only the transitions we want */
+  .blog-list-item:hover,
+  .blog-list-item:active,
+  .project-list-item:hover,
+  .project-list-item:active {
+    transition: opacity 300ms ease !important;
+  }
+`;
+
 function Hero() {
   const handleLogoPress = () => {
     // Trigger haptic feedback if available
@@ -17,6 +42,9 @@ function Hero() {
 
   return (
     <div className="relative w-full h-[100dvh] flex flex-col items-center justify-center px-4 overflow-hidden">
+      {/* Add style to completely disable transitions during theme changes */}
+      <style jsx global>{noThemeTransition}</style>
+      
       {/* Main container */}
       <motion.div
         className="relative w-full max-w-2xl mx-auto overflow-hidden select-none flex flex-col items-center"
@@ -35,6 +63,7 @@ function Hero() {
           }}
           whileHover={{ 
             scale: 1.05,
+            filter: "drop-shadow(0 0 8px rgb(var(--accent-1)/0.6))",
             transition: { type: "spring", stiffness: 500, damping: 15 }
           }}
           whileTap={{
@@ -83,7 +112,7 @@ function Hero() {
                 className="block"
               >
                 <div 
-                  className="px-4 py-3 border-b border-[rgb(var(--border))] grid grid-cols-12 hover:bg-[rgb(var(--background-hover))] transition-colors cursor-pointer group"
+                  className="blog-list-item px-4 py-3 border-b border-[rgb(var(--border))] grid grid-cols-12 hover:bg-[rgb(var(--background-hover))] transition-all duration-300 cursor-pointer group"
                 >
                   <div className="col-span-2 text-sm text-[rgb(var(--text-secondary))]">
                     {format(post.date, 'yyyy')}

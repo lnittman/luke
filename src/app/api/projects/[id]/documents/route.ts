@@ -4,10 +4,10 @@ import { loadInitTemplate, loadTechStackTemplates } from '@/lib/templates';
 
 export async function GET(
   request: NextRequest,
-  { params }: { params: { id: string } }
+  { params }: { params: Promise<{ id: string }> }
 ) {
   try {
-    const { id } = params;
+    const { id } = await params;
 
     if (!id) {
       return NextResponse.json(
@@ -77,7 +77,7 @@ export async function GET(
           }
         }
       } catch (e) {
-        console.error(`Failed to parse techItemsJson for project ${project.id}:`, e);
+        console.error(`Failed to parse techItemsJson for project ${id}:`, e);
       }
     }
     

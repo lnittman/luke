@@ -712,7 +712,7 @@ export const ProjectGenerator = ({ onProjectGenerated, onCancel, techData }: Pro
     {
       id: 'initial',
       role: 'assistant',
-      content: "what project would you like to create?",
+      content: "hi there! what kind of project should create together?",
       timestamp: new Date(),
     }
   ]);

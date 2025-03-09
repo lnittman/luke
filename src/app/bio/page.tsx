@@ -8,8 +8,8 @@ import { getZenColor } from '@/utils/colors';
 function GlowingText({ text }: { text: string }) {
   return (
     <motion.span 
-      className="relative inline-block group"
-      whileHover={{ scale: 1.05 }}
+      className="whitespace-pre relative inline-block group"
+      whileHover={{ scale: 1.00 }}
     >
       {text.split('').map((char, i) => (
         <motion.span
@@ -81,7 +81,7 @@ function Bio() {
                   alt="digital craftsman"
                   width={96}
                   height={96}
-                  className="w-20 h-20 sm:w-32 sm:h-32 md:w-40 md:h-40 object-contain relative z-10 select-none touch-none pointer-events-none"
+                  className="w-40 h-40 object-contain relative z-10 select-none touch-none pointer-events-none pb-8"
                   priority
                   draggable={false}
                 />
@@ -98,7 +98,7 @@ function Bio() {
                     delay: 0.3
                   }}
                 >
-                  <GlowingText text="hello" />
+                  <GlowingText text="nice person" />
                 </motion.p>
               </div>
             </div>

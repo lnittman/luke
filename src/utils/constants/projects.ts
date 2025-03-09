@@ -29,6 +29,56 @@ export interface Project {
 
 export const PROJECTS: Project[] = [
   {
+    id: 'arbor',
+    name: 'arbor',
+    emoji: '🌳',
+    description: 'project management agent',
+    appUrl: 'https://arbor-xyz.vercel.app/',
+    sourceUrl: 'https://github.com/lukenittmann/arbor',
+    content: {
+      overview: {
+        title: 'overview',
+        items: [
+          'agentic project research + documentation generation',
+          'LLM-driven development companion',
+          'interactive coding assistance',
+          'tech documentation search'
+        ]
+      },
+      core: {
+        title: 'core',
+        items: [
+          'generates complete projects with a single prompt',
+          'creates comprehensive documentation',
+          'provides interactive chat assistance',
+          'integrates with tech documentation'
+        ]
+      },
+      architecture: {
+        title: 'architecture',
+        items: [
+          'Next.js + React for frontend',
+          'OpenAI API for core LLM capabilities',
+          'Jina API for document search and retrieval',
+          'modular prompting framework built with priompt'
+        ]
+      },
+      tech: {
+        title: 'stack',
+        items: [
+          'Next.js',
+          'React',
+          'TypeScript',
+          'TailwindCSS',
+          'Framer Motion',
+          'OpenAI API',
+          'Jina API',
+          'Vercel Blob Storage'
+        ]
+      }
+    }
+  },
+  {
     id: 'squish',
     name: 'squish',
     emoji: '🐙',
@@ -94,7 +144,7 @@ export const PROJECTS: Project[] = [
     id: 'voet',
     name: 'voet',
     emoji: '⚽️',
-    description: 'football intelligence platform with AI-powered analysis',
+    description: 'football intelligence platform',
     demoUrl: 'https://voet-app.vercel.app/',
     sourceUrl: 'https://github.com/nithya/voet',
     videos: [
@@ -265,7 +315,7 @@ export const PROJECTS: Project[] = [
     id: 'ther',
     name: 'ther',
     emoji: '🌸',
-    description: 'empathetic AI companion for mental wellness',
+    description: 'empathetic mental wellness companion',
     demoUrl: 'https://ther-app.vercel.app/',
     sourceUrl: 'https://github.com/nithya/ther',
     content: {
@@ -386,7 +436,7 @@ export const PROJECTS: Project[] = [
     id: 'jobs',
     name: 'jobs',
     emoji: '💼',
-    description: 'personalized job application tracking platform with AI capabilities',
+    description: 'linkedin + cursor',
     appUrl: 'https://jobs-xyz.vercel.app/',
     sourceUrl: 'https://github.com/nithya/jobs',
     videos: [

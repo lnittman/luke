@@ -8,19 +8,11 @@ import { VideoPlayer } from '@/components/projects/VideoPlayer';
 import { useVideoPreload } from '@/hooks/useVideoPreload';
 import Link from 'next/link';
 import { useRouter, useSearchParams, usePathname } from 'next/navigation';
+import { ProjectsList } from '@/components/projects/ProjectsList';
+import { GeneratedProjectsList } from '@/components/projects/GeneratedProjectsList';
+import { ProjectDetail } from '@/components/projects/ProjectDetail';
 
-// Custom order for projects
-const PROJECT_ORDER = [
-  'ther',
-  'jobs',
-  'loops',
-  'voet',
-  'squish',
-  'helios',
-  'sine',
-];
-
-// Generated project interface
+// Define the GeneratedProject interface
 interface GeneratedProject {
   id: string;
   name: string;
@@ -29,12 +21,53 @@ interface GeneratedProject {
   createdAt: string;
 }
 
+// Project icons map for custom icons (keep this definition)
+const PROJECT_ICONS: Record<string, string> = {
+  voet: '/assets/voet.png',
+  loops: '/assets/loops-xyz.png'
+};
+
+// Custom order for projects
+const PROJECT_ORDER = [
+  'arbor',
+  'ther',
+  'jobs',
+  'voet',
+  'loops',
+  'helios',
+  'squish',
+  'sine',
+];
+
+// Add the noThemeTransition style at the top of the file
+const noThemeTransition = `
+  /* Disable all transitions related to colors and borders */
+  .project-list-item,
+  .project-list-item *,
+  [class*="border-[rgb(var(--border))]"],
+  [class*="text-[rgb(var(--text"],
+  [class*="bg-[rgb(var(--background"],
+  .generated-name,
+  .project-name,
+  .project-description {
+    transition-property: none !important;
+  }
+
+  /* Selectively enable only the transitions we want */
+  .project-list-item:hover,
+  .project-list-item:active {
+    transition: opacity 300ms ease !important;
+  }
+`;
+
 export default function Projects() {
   const [currentVideo, setCurrentVideo] = useState<number | null>(null);
   const [mounted, setMounted] = useState(false);
   const [generatedProjects, setGeneratedProjects] = useState<GeneratedProject[]>([]);
   const [isLoading, setIsLoading] = useState(false);
   const [isLocalhost, setIsLocalhost] = useState(false);
+  const [showArborTooltip, setShowArborTooltip] = useState(false);
+  const [currentPage, setCurrentPage] = useState(1);
   
   const router = useRouter();
   const searchParams = useSearchParams();
@@ -260,246 +293,103 @@ export default function Projects() {
     );
   };
 
+  // Calculate total pages for pagination
+  const totalPages = useMemo(() => {
+    const totalItems = currentView === 'list' ? PROJECTS.length : generatedProjects.length;
+    return Math.ceil(totalItems / 9);
+  }, [currentView, generatedProjects.length, PROJECTS.length]);
+
+  // Get the projects to display based on current pagination
+  const paginatedProjects = useMemo(() => {
+    const startIndex = (currentPage - 1) * 9;
+    return currentView === 'list' 
+      ? sortedProjects.slice(startIndex, startIndex + 9) as Project[]
+      : generatedProjects.slice(startIndex, startIndex + 9) as GeneratedProject[];
+  }, [currentPage, currentView, generatedProjects, sortedProjects]);
+
+  // Handle changing page
+  const paginate = (pageNumber: number) => {
+    setCurrentPage(pageNumber);
+  };
+
+  // Handle going to next page
+  const nextPage = () => {
+    if (currentPage < totalPages) {
+      setCurrentPage(prev => prev + 1);
+    }
+  };
+
+  // Handle going to previous page
+  const prevPage = () => {
+    if (currentPage > 1) {
+      setCurrentPage(prev => prev - 1);
+    }
+  };
+
   // Don't render anything until client-side hydration is complete
   if (!mounted) {
     return null;
   }
 
   return (
-    <div className="relative w-full h-[100dvh] flex flex-col items-center justify-center px-4 overflow-hidden">
-      <div className="relative w-full max-w-2xl mx-auto">
+    <div className="fixed inset-0 flex items-center justify-center px-4 overflow-hidden">
+      {/* Add style to completely disable transitions during theme changes */}
+      <style jsx global>{noThemeTransition}</style>
+      
+      <div className="w-full max-w-2xl mx-auto flex flex-col items-center">
         <AnimatePresence mode="wait">
           {currentView === 'detail' && currentProject ? (
             // Project detail view
-            <motion.div
-              key={`project-${currentProject.id}`}
-              initial={{ opacity: 0 }}
-              animate={{ opacity: 1 }}
-              exit={{ opacity: 0 }}
-              transition={{ duration: 0.4 }}
-            >
-              {/* Header with back button */}
-              <div className="mb-8">
-                <Link 
-                  href="/projects"
-                  className="inline-block py-2 px-1 -ml-1 mb-4 text-sm text-[rgb(var(--text-secondary))] hover:text-[rgb(var(--text-accent))] transition-colors cursor-pointer"
-                  onClick={(e) => {
-                    e.preventDefault();
-                    goToList();
-                  }}
-                >
-                  ← projects
-                </Link>
-                
-                <div className="flex items-center gap-3 mb-6">
-                  <span className="text-3xl">{currentProject.emoji}</span>
-                  <h1 className="text-xl sm:text-2xl text-[rgb(var(--text-primary))]">
-                    {currentProject.name.toLowerCase()}
-                  </h1>
-                </div>
-              </div>
-              
-              {/* Project content */}
-              <ProjectContent project={currentProject} onShowDemo={showDemo} />
-              
-              {/* Video player */}
-              <AnimatePresence>
-                {currentVideo !== null && currentProject?.videos && (
-                  <VideoPlayer
-                    videos={currentProject.videos}
-                    currentIndex={currentVideo}
-                    onClose={closeVideo}
-                    onNext={nextVideo}
-                    onPrev={prevVideo}
-                  />
-                )}
-              </AnimatePresence>
-            </motion.div>
+            <ProjectDetail
+              project={currentProject}
+              onBackClick={goToList}
+              onShowDemo={showDemo}
+              projectIcons={PROJECT_ICONS}
+            />
           ) : currentView === 'generated' ? (
             // Generated projects view
-            <motion.div
-              key="generated-projects-list"
-              initial={{ opacity: 0, y: 40 }}
-              animate={{ opacity: 1, y: 0 }}
-              exit={{ opacity: 0 }}
-              transition={{ 
-                duration: 0.8,
-                ease: [0.23, 1, 0.32, 1]
+            <GeneratedProjectsList
+              projects={paginatedProjects as GeneratedProject[]}
+              currentPage={currentPage}
+              totalPages={totalPages}
+              onPageChange={paginate}
+              onProjectClick={(project) => {
+                router.push(`/projects?id=${project.id}`);
+                setCurrentView('detail');
               }}
-              className="w-full"
-              ref={generatedSectionRef}
-            >
-              {/* Fixed header with back button and add button */}
-              <div className="fixed top-0 left-0 right-0 z-10 bg-[rgb(var(--background))] pt-14 pb-4">
-                <div className="max-w-2xl mx-auto px-4">
-                  <div className="flex justify-between items-center pt-4">
-                    <Link 
-                      href="/projects"
-                      className="inline-block py-2 px-1 -ml-1 text-sm text-[rgb(var(--text-secondary))] hover:text-[rgb(var(--text-accent))] transition-colors cursor-pointer"
-                      onClick={(e) => {
-                        e.preventDefault();
-                        goToList();
-                      }}
-                    >
-                      ← back
-                    </Link>
-                    {isLocalhost && (
-                      <button
-                        onClick={handleCreateGeneratedProject}
-                        className="py-1 px-3 text-sm text-[rgb(var(--text-accent))] hover:bg-[rgb(var(--accent-1)/0.1)] rounded-full transition-colors"
-                        aria-label="Create new project"
-                      >
-                        + new
-                      </button>
-                    )}
-                  </div>
-                  
-                  <div className="mt-6 mb-4">
-                    <div className="flex items-center gap-3 mb-2">
-                      <span className="text-3xl">✨</span>
-                      <h1 className="text-xl sm:text-2xl text-[rgb(var(--text-primary))]">
-                        agent-generated projects
-                      </h1>
-                    </div>
-                    <p className="text-[rgb(var(--text-secondary))] text-sm ml-11">
-                      ideas transformed into complete technical specifications
-                    </p>
-                  </div>
-                </div>
-              </div>
-              
-              {/* Generated projects list - with top padding to account for fixed header */}
-              <div className="w-full bg-[rgb(var(--background-secondary))] rounded-lg overflow-hidden relative mt-52">
-                {/* List header */}
-                <div className="px-4 py-3 border-b border-[rgb(var(--border))] grid grid-cols-12 text-sm text-[rgb(var(--text-secondary))]">
-                  <div className="col-span-2">emoji</div>
-                  <div className="col-span-3">project</div>
-                  <div className="col-span-7">description</div>
-                </div>
-                
-                {isLoading ? (
-                  // Loading state
-                  <div className="px-4 py-12 text-center text-[rgb(var(--text-secondary))]">
-                    Loading projects...
-                  </div>
-                ) : generatedProjects.length === 0 ? (
-                  // Empty state
-                  <div className="px-4 py-12 text-center text-[rgb(var(--text-secondary))]">
-                    <p>No generated projects yet.</p>
-                    {isLocalhost && (
-                      <button
-                        onClick={handleCreateGeneratedProject}
-                        className="mt-4 py-2 px-4 text-sm text-[rgb(var(--text-accent))] hover:bg-[rgb(var(--accent-1)/0.1)] rounded-full transition-colors"
-                      >
-                        Create your first project
-                      </button>
-                    )}
-                  </div>
-                ) : (
-                  // Projects list
-                  <div className="max-h-[calc(100vh-300px)] overflow-y-auto">
-                    {generatedProjects.map((project) => (
-                      <Link 
-                        key={project.id}
-                        href={`/projects/generated/${project.id}`}
-                        className="block"
-                      >
-                        <motion.div 
-                          className="px-4 py-3 border-b border-[rgb(var(--border))] grid grid-cols-12 hover:bg-[rgb(var(--background-hover))] transition-all duration-300 cursor-pointer group h-16 items-center"
-                          initial={{ opacity: 0.85 }}
-                          whileHover={{ opacity: 1 }}
-                          whileTap={{ opacity: 0.9 }}
-                        >
-                          <div className="col-span-2 text-2xl flex items-center">
-                            {project.emoji}
-                          </div>
-                          <div className="col-span-3 flex items-center">
-                            <div className="text-[rgb(var(--text-primary))] group-hover:text-[rgb(var(--text-accent))] transition-colors text-base lowercase">
-                              {project.name}
-                            </div>
-                          </div>
-                          <div className="col-span-7 flex items-center">
-                            <div className="text-[rgb(var(--text-secondary))] text-xs line-clamp-2 leading-tight">
-                              {project.description}
-                            </div>
-                          </div>
-                        </motion.div>
-                      </Link>
-                    ))}
-                    
-                    {/* Fade-out gradient for the bottom of the list */}
-                    <div className="absolute bottom-0 left-0 right-0 h-20 pointer-events-none" 
-                      style={{ 
-                        background: 'linear-gradient(to bottom, rgba(var(--background-secondary), 0), rgba(var(--background-secondary), 1))' 
-                      }}
-                    />
-                  </div>
-                )}
-              </div>
-            </motion.div>
+              onBackClick={goToList}
+              showArborTooltip={showArborTooltip}
+              setShowArborTooltip={setShowArborTooltip}
+            />
           ) : (
-            // Main project list view
-            <motion.div
-              key="project-list"
-              initial={{ opacity: 0, y: 40 }}
-              animate={{ opacity: 1, y: 0 }}
-              transition={{ 
-                duration: 0.8,
-                ease: [0.23, 1, 0.32, 1]
+            // Main projects list view
+            <ProjectsList
+              projects={paginatedProjects as Project[]}
+              currentPage={currentPage}
+              totalPages={totalPages}
+              onPageChange={paginate}
+              onProjectClick={(project) => {
+                router.push(`/projects?id=${project.id}`);
+                setCurrentView('detail');
               }}
-              className="w-full"
-            >
-              {/* Project list header */}
-              <div className="px-4 py-3 border-b border-[rgb(var(--border))] grid grid-cols-12 text-sm text-[rgb(var(--text-secondary))]">
-                <div className="col-span-2">emoji</div>
-                <div className="col-span-4">project</div>
-                <div className="col-span-6">description</div>
-              </div>
-              
-              {/* Project list */}
-              <div className="w-full bg-[rgb(var(--background-secondary))] rounded-lg overflow-hidden">
-                {/* Generated projects entry with mouse tracking border glow */}
-                <GeneratedProjectsBorderGlow />
-                
-                {/* Regular projects in custom order */}
-                {sortedProjects.map((project) => (
-                  <Link 
-                    key={project.id}
-                    href={`/projects?id=${project.id}`}
-                    className="block"
-                    onClick={(e) => {
-                      e.preventDefault();
-                      router.push(`/projects?id=${project.id}`);
-                      setCurrentView('detail');
-                    }}
-                  >
-                    <motion.div 
-                      className="px-4 py-3 border-b border-[rgb(var(--border))] grid grid-cols-12 hover:bg-[rgb(var(--background-hover))] transition-all duration-300 cursor-pointer group h-16 items-center"
-                      initial={{ opacity: 0.85 }}
-                      whileHover={{ opacity: 1 }}
-                      whileTap={{ opacity: 0.9 }}
-                    >
-                      <div className="col-span-2 text-2xl flex items-center">
-                        {project.emoji}
-                      </div>
-                      <div className="col-span-4 flex items-center">
-                        <div className="text-[rgb(var(--text-primary))] group-hover:text-[rgb(var(--text-accent))] transition-colors text-base lowercase">
-                          {project.name}
-                        </div>
-                      </div>
-                      <div className="col-span-6 flex items-center">
-                        <div className="text-[rgb(var(--text-secondary))] text-sm line-clamp-2 leading-tight">
-                          {project.description}
-                        </div>
-                      </div>
-                    </motion.div>
-                  </Link>
-                ))}
-              </div>
-            </motion.div>
+              GeneratedProjectsBorderGlow={GeneratedProjectsBorderGlow}
+            />
           )}
         </AnimatePresence>
       </div>
+      
+      {/* Video player popup */}
+      <AnimatePresence>
+        {currentProject && currentVideo !== null && currentProject.videos && currentProject.videos.length > 0 && (
+          <VideoPlayer 
+            videos={currentProject.videos}
+            currentIndex={currentVideo}
+            onClose={closeVideo}
+            onNext={nextVideo}
+            onPrev={prevVideo}
+          />
+        )}
+      </AnimatePresence>
     </div>
   );
 }

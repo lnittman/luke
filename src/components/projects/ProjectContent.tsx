@@ -6,7 +6,7 @@ import clsx from 'clsx';
 
 interface ProjectContentProps {
   project: Project;
-  onShowDemo: () => void;
+  onShowDemo?: () => void;
 }
 
 export const ProjectContent = ({ project, onShowDemo }: ProjectContentProps) => {
@@ -74,79 +74,9 @@ export const ProjectContent = ({ project, onShowDemo }: ProjectContentProps) => 
             {project.description}
           </p>
 
-          {/* Action Buttons */}
+          {/* Action Buttons - Only show demo and source buttons */}
           <div className="flex flex-wrap gap-2 sm:gap-3 md:gap-4 pt-2">
-            {project.id === 'squish' && (
-              <>
-                <a 
-                  href="https://squish-web-development.vercel.app/"
-                  target="_blank"
-                  rel="noopener noreferrer"
-                  className={clsx(" text-[rgb(var(--text-secondary))] hover:text-[rgb(var(--text-primary))] transition-colors", getActionButtonFontSize())}
-                >
-                  app →
-                </a>
-                <a 
-                  href="https://squish-docs.vercel.app/"
-                  target="_blank"
-                  rel="noopener noreferrer"
-                  className={clsx(" text-[rgb(var(--text-secondary))] hover:text-[rgb(var(--text-primary))] transition-colors", getActionButtonFontSize())}
-                >
-                  docs →
-                </a>
-              </>
-            )}
-            {project.id === 'voet' && (
-              <a 
-                href="https://voet-app.vercel.app/"
-                target="_blank"
-                rel="noopener noreferrer"
-                className={clsx(" text-[rgb(var(--text-secondary))] hover:text-[rgb(var(--text-primary))] transition-colors", getActionButtonFontSize())}
-              >
-                app →
-              </a>
-            )}
-            {project.id === 'sine' && (
-              <a 
-                href="https://www.sine-labs.com/"
-                target="_blank"
-                rel="noopener noreferrer"
-                className={clsx(" text-[rgb(var(--text-secondary))] hover:text-[rgb(var(--text-primary))] transition-colors", getActionButtonFontSize())}
-              >
-                app →
-              </a>
-            )}
-            {project.id === 'ther' && (
-              <a 
-                href={project.demoUrl}
-                target="_blank"
-                rel="noopener noreferrer"
-                className={clsx(" text-[rgb(var(--text-secondary))] hover:text-[rgb(var(--text-primary))] transition-colors", getActionButtonFontSize())}
-              >
-                app →
-              </a>
-            )}
-            {project.id === 'loops' && (
-              <a 
-                href="https://lupe-xyz.vercel.app"
-                target="_blank"
-                rel="noopener noreferrer"
-                className={clsx(" text-[rgb(var(--text-secondary))] hover:text-[rgb(var(--text-primary))] transition-colors", getActionButtonFontSize())}
-              >
-                app →
-              </a>
-            )}
-            {project.id === 'jobs' && (
-              <a 
-                href={project.appUrl}
-                target="_blank"
-                rel="noopener noreferrer"
-                className={clsx(" text-[rgb(var(--text-secondary))] hover:text-[rgb(var(--text-primary))] transition-colors", getActionButtonFontSize())}
-              >
-                app →
-              </a>
-            )}
-            {project.videos && project.videos.length > 0 && project.id !== 'voet' && (
+            {project.videos && project.videos.length > 0 && project.id !== 'voet' && onShowDemo && (
               <button 
                 onClick={onShowDemo}
                 className={clsx(" text-[rgb(var(--text-secondary))] hover:text-[rgb(var(--text-primary))] transition-colors", getActionButtonFontSize())}
@@ -167,40 +97,28 @@ export const ProjectContent = ({ project, onShowDemo }: ProjectContentProps) => 
           </div>
         </div>
 
-        <motion.div
-          className="relative p-2 sm:p-3 md:p-4"
-          initial={{ opacity: 0, y: 20 }}
-          animate={{ opacity: 1, y: 0 }}
-          transition={{ duration: 0.4 }}
-          layout
-        >
-          <div className="relative z-10 space-y-3 sm:space-y-4 md:space-y-5">
-            {/* Content Sections - Single column layout for all screen sizes */}
-            <div className="grid grid-cols-1 gap-3 sm:gap-4 md:gap-6">
-              <div className="space-y-3 sm:space-y-4">
-                <ProjectSection 
-                  title={project?.content?.overview?.title || 'Overview'} 
-                  items={project?.content?.overview?.items || []}
-                  defaultExpanded={true}
-                />
-                <ProjectSection 
-                  title={project?.content?.core?.title || 'Core Features'} 
-                  items={project?.content?.core?.items || []}
-                  defaultExpanded={true}
-                />
-                <ProjectSection 
-                  title={project?.content?.architecture?.title || 'Architecture'} 
-                  items={project?.content?.architecture?.items || []}
-                />
-                <ProjectSection 
-                  title={project?.content?.tech?.title || 'Technology'} 
-                  items={project?.content?.tech?.items || []}
-                  isTechSection={true}
-                />
-              </div>
-            </div>
-          </div>
-        </motion.div>
+        {/* Project Sections */}
+        <div className="space-y-6 sm:space-y-8">
+          <ProjectSection 
+            title={project.content.overview.title} 
+            items={project.content.overview.items} 
+            defaultExpanded={true}
+          />
+          <ProjectSection 
+            title={project.content.core.title} 
+            items={project.content.core.items} 
+            defaultExpanded={true}
+          />
+          <ProjectSection 
+            title={project.content.architecture.title} 
+            items={project.content.architecture.items}
+          />
+          <ProjectSection 
+            title={project.content.tech.title} 
+            items={project.content.tech.items}
+            isTechSection={true}
+          />
+        </div>
       </div>
     </div>
   );

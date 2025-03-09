@@ -378,7 +378,7 @@ export const blogPosts: BlogPost[] = [
         
         <h3 className="text-lg mt-6 mb-3">latency management</h3>
         <p>
-          audio feedback must be tightly synchronized with user actions. even small delays (>50ms) between action and sound can break the sense of causality and create a disconnected experience.
+          audio feedback must be tightly synchronized with user actions. even small delays between action and sound can break the sense of causality and create a disconnected experience.
         </p>
         
         <h3 className="text-lg mt-6 mb-3">environmental adaptation</h3>

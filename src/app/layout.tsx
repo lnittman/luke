@@ -18,8 +18,8 @@ export const viewport: Viewport = {
 };
 
 export const metadata: Metadata = {
-  title: 'luke nittmann // home',
-  description: '2025',
+  title: 'luke nittmann',
+  description: 'digital craftsman',
   appleWebApp: {
     capable: true,
     statusBarStyle: 'default',

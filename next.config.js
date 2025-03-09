@@ -1,6 +1,7 @@
 /** @type {import('next').NextConfig} */
 const nextConfig = {
   transpilePackages: ['@repo/ui'],
+  devIndicators: false,
   images: {
     formats: ['image/avif', 'image/webp'],
     dangerouslyAllowSVG: true,
@@ -18,4 +19,4 @@ const nextConfig = {
   }
 }
 
-module.exports = nextConfig 
+module.exports = nextConfig

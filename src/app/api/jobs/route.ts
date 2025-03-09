@@ -30,10 +30,10 @@ interface JobPosting {
   url: string;         // Original job URL
   source: string;      // Source of the job (HN, Wellfound, etc.)
   techs: string[];     // Technologies mentioned in job
-  salary?: string;     // Salary information if available
+  salary?: string | null; // Salary information if available
   crawledAt: Date;     // When the job was crawled
   processed: boolean;  // Whether AI has processed this job
-  matches?: number;    // Match score with resume (0-100)
+  matches?: number | null;    // Match score with resume (0-100)
 }
 
 // Interface for structured job analysis
@@ -370,7 +370,7 @@ function extractJobDetails(url: string, source: string, jobData: any) {
 /**
  * Generate job analysis with LLM for a specific job
  */
-async function generateJobAnalysis(job) {
+async function generateJobAnalysis(job: JobPosting) {
   // Load the resume content from the user's resume repository or file
   // This would need to be customized based on where the resume is stored
   const resumeContent = `
@@ -432,11 +432,7 @@ Respond with ONLY a JSON object with these fields:
 `;
 
   // Call the LLM
-  const result = await llmProvider.chat({
-    messages: [
-      { role: 'system', content: 'You are a career advisor helping analyze job postings.' },
-      { role: 'user', content: prompt }
-    ],
+  const result = await llmProvider.generate(prompt, {
     temperature: 0.3,
     response_format: { type: 'json_object' }
   });
@@ -445,7 +441,7 @@ Respond with ONLY a JSON object with these fields:
   let analysis;
   
   try {
-    const parsedResult = JSON.parse(result.content);
+    const parsedResult = JSON.parse(result);
     
     analysis = {
       id: job.id,
