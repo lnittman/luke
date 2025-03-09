@@ -62,18 +62,20 @@ const noThemeTransition = `
 
 // Wrapper component that uses search params
 function ProjectsContent() {
+  const searchParams = useSearchParams();
   const [currentVideo, setCurrentVideo] = useState<number | null>(null);
   const [mounted, setMounted] = useState(false);
   const [generatedProjects, setGeneratedProjects] = useState<GeneratedProject[]>([]);
   const [isLoading, setIsLoading] = useState(false);
   const [isLocalhost, setIsLocalhost] = useState(false);
   const [showArborTooltip, setShowArborTooltip] = useState(false);
+  const [selectedProject, setSelectedProject] = useState<string | null>(null);
+  const [selectedGeneratedProject, setSelectedGeneratedProject] = useState<string | null>(null);
   const [currentPage, setCurrentPage] = useState(1);
-  
+  const [totalPages, setTotalPages] = useState(1);
+  const [isCreatingProject, setIsCreatingProject] = useState(false);
   const router = useRouter();
-  const searchParams = useSearchParams();
   const pathname = usePathname();
-  const projectId = searchParams?.get('id');
   
   // Use refs to access hash directly since NextJS sometimes has issues with hash fragments
   const generatedSectionRef = useRef<HTMLDivElement>(null);
@@ -87,6 +89,10 @@ function ProjectsContent() {
   const currentProject = projectId 
     ? PROJECTS.find(p => p.id === projectId) || null
     : null;
+
+  // Get the project ID from the URL
+  const projectId = searchParams?.get('project');
+  const generatedProjectId = searchParams?.get('generated');
 
   // Check for localhost on mount
   useEffect(() => {
@@ -124,7 +130,7 @@ function ProjectsContent() {
     }
   }, [currentView, fetchGeneratedProjects]);
 
-  // Handle URL changes including hash changes
+  // Handle URL changes
   useEffect(() => {
     const handleUrlChange = () => {
       if (window.location.hash === '#generated') {
@@ -135,8 +141,6 @@ function ProjectsContent() {
         setCurrentView('list');
       }
     };
-
-    handleUrlChange();
 
     window.addEventListener('hashchange', handleUrlChange);
     return () => window.removeEventListener('hashchange', handleUrlChange);
@@ -355,12 +359,18 @@ function ProjectsContent() {
               totalPages={totalPages}
               onPageChange={paginate}
               onProjectClick={(project) => {
-                router.push(`/projects?id=${project.id}`);
+                router.push(`/projects?project=${project.id}`);
                 setCurrentView('detail');
               }}
               onBackClick={goToList}
-              showArborTooltip={showArborTooltip}
-              setShowArborTooltip={setShowArborTooltip}
+              showArborTooltip={selectedGeneratedProject === 'arbor'}
+              setShowArborTooltip={(show) => {
+                if (show) {
+                  setSelectedGeneratedProject('arbor');
+                } else {
+                  setSelectedGeneratedProject(null);
+                }
+              }}
             />
           ) : (
             // Main projects list view
@@ -370,7 +380,7 @@ function ProjectsContent() {
               totalPages={totalPages}
               onPageChange={paginate}
               onProjectClick={(project) => {
-                router.push(`/projects?id=${project.id}`);
+                router.push(`/projects?project=${project.id}`);
                 setCurrentView('detail');
               }}
               GeneratedProjectsBorderGlow={GeneratedProjectsBorderGlow}
@@ -395,9 +405,16 @@ function ProjectsContent() {
   );
 }
 
+// Main component with Suspense boundary
 export default function Projects() {
   return (
-    <Suspense fallback={<div>Loading...</div>}>
+    <Suspense fallback={
+      <div className="min-h-screen flex items-center justify-center">
+        <div className="text-center">
+          <div className="text-xl mb-4">Loading projects...</div>
+        </div>
+      </div>
+    }>
       <ProjectsContent />
     </Suspense>
   );

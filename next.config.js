@@ -15,7 +15,7 @@ const nextConfig = {
     ],
   },
   experimental: {
-    reactMode: 'concurrent'
+    // reactMode option has been removed as it's no longer supported in Next.js 15
   }
 }
 
