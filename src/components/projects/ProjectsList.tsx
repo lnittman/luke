@@ -1,5 +1,5 @@
 import React from 'react';
-import { motion } from 'framer-motion';
+import { motion, stagger } from 'framer-motion';
 import Link from 'next/link';
 import Image from 'next/image';
 import { Project } from '@/utils/constants/projects';
@@ -73,13 +73,46 @@ export const ProjectsList: React.FC<ProjectsListProps> = ({
     }
   };
   
+  // Animation variants for staggered animations
+  const containerVariants = {
+    hidden: { opacity: 0 },
+    visible: { 
+      opacity: 1,
+      transition: { 
+        duration: 0.6,
+        ease: [0.22, 1, 0.36, 1],
+        when: "beforeChildren",
+        staggerChildren: 0.08
+      }
+    },
+    exit: { 
+      opacity: 0,
+      transition: { 
+        duration: 0.4,
+        ease: [0.22, 1, 0.36, 1]
+      }
+    }
+  };
+  
+  const itemVariants = {
+    hidden: { opacity: 0, y: 10 },
+    visible: { 
+      opacity: 1, 
+      y: 0,
+      transition: { 
+        duration: 0.4,
+        ease: [0.22, 1, 0.36, 1]
+      }
+    }
+  };
+  
   return (
     <motion.div
       key="project-list"
-      initial={{ opacity: 0 }}
-      animate={{ opacity: 1 }}
-      exit={{ opacity: 0 }}
-      transition={{ duration: 0.4 }}
+      variants={containerVariants}
+      initial="hidden"
+      animate="visible"
+      exit="exit"
       className="w-full flex flex-col transform-gpu scale-[0.95] origin-top"
       style={{ 
         maxWidth: '100%',
@@ -87,56 +120,63 @@ export const ProjectsList: React.FC<ProjectsListProps> = ({
       }}
     >
       {/* Project list header */}
-      <div className="px-3 py-2 border-b border-[rgb(var(--border))] grid grid-cols-12 text-xs text-[rgb(var(--text-secondary))] w-full">
+      <motion.div 
+        variants={itemVariants}
+        className="px-3 py-2 border-b border-[rgb(var(--border))] grid grid-cols-12 text-xs text-[rgb(var(--text-secondary))] w-full"
+      >
         <div className="col-span-2 flex items-center">emoji</div>
         <div className="col-span-4 flex items-center">project</div>
         <div className="col-span-6 flex items-center">description</div>
-      </div>
+      </motion.div>
       
       {/* Project list - exactly 9 rows with fixed height */}
       <div className="w-full bg-[rgb(var(--background-secondary))] rounded-b-lg">
         {/* Generated projects entry with border glow */}
-        <GeneratedProjectsBorderGlow />
+        <motion.div variants={itemVariants}>
+          <GeneratedProjectsBorderGlow />
+        </motion.div>
         
         {/* Regular projects in custom order */}
         {projects.map((project) => (
-          <Link 
-            key={project.id}
-            href={`/projects?id=${project.id}`}
-            className="block"
-            onClick={(e) => {
-              e.preventDefault();
-              onProjectClick(project);
-            }}
-          >
-            <motion.div 
-              className="px-3 py-2 border-b border-[rgb(var(--border))] grid grid-cols-12 hover:bg-[rgb(var(--background-hover))] transition-all duration-300 cursor-pointer group h-[46px] items-center"
-              initial={{ opacity: 0.85 }}
-              whileHover={{ opacity: 1 }}
-              whileTap={{ opacity: 0.9 }}
+          <motion.div key={project.id} variants={itemVariants}>
+            <Link 
+              href={`/projects?id=${project.id}`}
+              className="block"
+              onClick={(e) => {
+                e.preventDefault();
+                onProjectClick(project);
+              }}
             >
-              <div className="col-span-2 flex items-center justify-start">
-                {renderProjectIcon(project)}
-              </div>
-              <div className="col-span-4 flex items-center">
-                <div className="text-[rgb(var(--text-primary))] group-hover:text-[rgb(var(--text-accent))] transition-colors text-xs lowercase leading-none">
-                  {project.name}
+              <motion.div 
+                className="px-3 py-2 border-b border-[rgb(var(--border))] grid grid-cols-12 hover:bg-[rgb(var(--background-hover))] transition-all duration-300 cursor-pointer group h-[46px] items-center"
+                initial={{ opacity: 0.85 }}
+                whileHover={{ opacity: 1 }}
+                whileTap={{ opacity: 0.9 }}
+              >
+                <div className="col-span-2 flex items-center justify-start">
+                  {renderProjectIcon(project)}
                 </div>
-              </div>
-              <div className="col-span-6 flex items-center">
-                <div className="text-[rgb(var(--text-secondary))] text-xs transition-colors leading-tight line-clamp-2">
-                  {project.description}
+                <div className="col-span-4 flex items-center">
+                  <div className="text-[rgb(var(--text-primary))] group-hover:text-[rgb(var(--text-accent))] transition-colors text-xs lowercase leading-none">
+                    {project.name}
+                  </div>
                 </div>
-              </div>
-            </motion.div>
-          </Link>
+                <div className="col-span-6 flex items-center">
+                  <div className="text-[rgb(var(--text-secondary))] text-xs transition-colors leading-tight line-clamp-2">
+                    {project.description}
+                  </div>
+                </div>
+              </motion.div>
+            </Link>
+          </motion.div>
         ))}
         
         {/* Add empty rows to ensure exactly 9 rows when we have fewer than 8 projects (accounting for GeneratedProjectsBorderGlow) */}
         {projects.length < 8 && 
           Array.from({ length: 8 - projects.length }).map((_, index) => (
-            <div 
-              key={`empty-${index}`} 
+            <motion.div
+              key={`empty-${index}`}
+              variants={itemVariants}
               className="px-3 py-2 grid grid-cols-12 h-[46px]"
             />
           ))
@@ -144,7 +184,10 @@ export const ProjectsList: React.FC<ProjectsListProps> = ({
       </div>
       
       {/* Pagination controls - centered */}
-      <div className="w-full flex justify-center items-center py-3 px-3">
+      <motion.div 
+        variants={itemVariants}
+        className="w-full flex justify-center items-center py-3 px-3"
+      >
         <div className="flex items-center space-x-1">
           {/* Previous page button */}
           <button
@@ -204,7 +247,7 @@ export const ProjectsList: React.FC<ProjectsListProps> = ({
             next
           </button>
         </div>
-      </div>
+      </motion.div>
     </motion.div>
   );
 }; 

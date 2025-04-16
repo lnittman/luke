@@ -97,7 +97,7 @@ export default function GeneratedProjectPage({ params }: { params: Promise<{ pro
   }
 
   return (
-    <div className="w-full min-h-screen flex flex-col items-center justify-start px-4">
+    <div className="fixed inset-0 flex items-center justify-center px-4 overflow-hidden">
       <div className="w-full max-w-2xl mx-auto flex flex-col items-center">
         <ProjectDetail
           key="project-detail"

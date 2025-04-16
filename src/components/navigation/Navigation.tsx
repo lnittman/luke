@@ -33,13 +33,6 @@ const DEFAULT_NAVIGATION_ITEMS: NavigationItem[] = [
   },
 ];
 
-// Additional item for jobs page (only shown on localhost)
-const JOBS_NAVIGATION_ITEM: NavigationItem = {
-  href: '/jobs',
-  label: 'Jobs',
-  icon: '/assets/jobs.png', // Using jobs.png
-};
-
 function NavigationIcon({ item, isActive }: { item: NavigationItem; isActive: boolean }) {
   const [showTooltip, setShowTooltip] = useState(false);
   const { theme } = useTheme();
@@ -82,7 +75,7 @@ function NavigationIcon({ item, isActive }: { item: NavigationItem; isActive: bo
             exit={{ opacity: 0 }}
             transition={{ duration: 0.2 }}
             className="absolute inset-0 rounded-xl"
-            style={{ 
+            style={{
               background: `radial-gradient(circle at center, rgb(var(--accent-1) / ${glowOpacity}) 0%, transparent ${glowRadius})`,
               boxShadow: `${glowSpread} rgb(var(--accent-1) / ${glowOpacity})`,
             }}
@@ -104,7 +97,7 @@ function NavigationIcon({ item, isActive }: { item: NavigationItem; isActive: bo
               <div className="px-2.5 py-1.5 rounded-md bg-[rgb(var(--surface-1)/0.9)] backdrop-blur-sm  text-sm lowercase whitespace-nowrap">
                 {item.label.toLowerCase()}
               </div>
-              <div 
+              <div
                 className="absolute -bottom-1 left-1/2 -translate-x-1/2 w-2 h-2 rotate-45 bg-[rgb(var(--surface-1)/0.9)]"
                 style={{ backdropFilter: 'blur(8px)' }}
               />
@@ -118,36 +111,22 @@ function NavigationIcon({ item, isActive }: { item: NavigationItem; isActive: bo
 
 export default function Navigation() {
   const pathname = usePathname();
-  const [navigationItems, setNavigationItems] = useState<NavigationItem[]>(DEFAULT_NAVIGATION_ITEMS);
-  
-  // Check if we're on localhost and add the jobs link if so
-  useEffect(() => {
-    if (typeof window !== 'undefined') {
-      const isLocalhost = window.location.hostname === 'localhost' || window.location.hostname === '127.0.0.1';
-      
-      if (isLocalhost) {
-        setNavigationItems([...DEFAULT_NAVIGATION_ITEMS, JOBS_NAVIGATION_ITEM]);
-      } else {
-        setNavigationItems(DEFAULT_NAVIGATION_ITEMS);
-      }
-    }
-  }, []);
 
   return (
-    <nav 
+    <nav
       className="fixed bottom-4 sm:bottom-8 left-1/2 -translate-x-1/2 px-3 sm:px-6 py-1.5 sm:py-3 glass-effect rounded-2xl z-[300]"
       style={{ pointerEvents: 'auto' }}
       data-navigation
     >
       <ul className="flex gap-1.5 sm:gap-3">
-        {navigationItems.map(item => {
+        {DEFAULT_NAVIGATION_ITEMS.map(item => {
           // Consider an item active if the current path starts with the item's href
           // but make sure we don't match '/projects' for '/' (home)
-          const isActive = 
-            item.href === '/' 
-              ? pathname === '/' 
+          const isActive =
+            item.href === '/'
+              ? pathname === '/'
               : pathname.startsWith(item.href);
-              
+
           return (
             <li key={item.href}>
               <Link href={item.href} data-navigation>

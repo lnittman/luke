@@ -1,18 +1,29 @@
 'use client';
 
-export type Theme = 'light' | 'system' | 'dark';
+import React from 'react';
+import { useTheme } from 'next-themes';
+import { motion } from 'framer-motion';
 
-export const THEMES = [
-  { value: 'light' as Theme, label: 'Light', icon: '🌅' },
-  { value: 'system' as Theme, label: 'System', icon: '🍃' },
-  { value: 'dark' as Theme, label: 'Dark', icon: '🌙' },
-];
-
-export function setTheme(theme: Theme) {
-  if (theme === 'system') {
-    const isDark = window.matchMedia('(prefers-color-scheme: dark)').matches;
-    document.documentElement.classList.toggle('dark', isDark);
-  } else {
-    document.documentElement.classList.toggle('dark', theme === 'dark');
-  }
-}
+export function ThemeSwitcher() {
+  const { theme, setTheme } = useTheme();
+  
+  const toggleTheme = () => {
+    setTheme(theme === 'light' ? 'dark' : 'light');
+  };
+  
+  // Default to 'light' if theme is undefined (during initial load)
+  const currentTheme = theme === 'light' ? 'light' : 'dark';
+  
+  return (
+    <motion.button
+      onClick={toggleTheme}
+      className="py-2 px-1 text-sm text-[rgb(var(--text-secondary))] hover:text-[rgb(var(--text-accent))] transition-colors cursor-pointer"
+      initial={{ opacity: 1 }}
+      whileHover={{ opacity: 0.8 }}
+      whileTap={{ opacity: 0.6 }}
+      transition={{ duration: 0.2 }}
+    >
+      {currentTheme}
+    </motion.button>
+  );
+} 

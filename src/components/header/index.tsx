@@ -3,8 +3,8 @@
 import { motion, AnimatePresence } from 'framer-motion';
 import { useState, useEffect, useRef } from 'react';
 import { usePathname } from 'next/navigation';
-import Link from 'next/link';
-import { ThemeSwitcher } from '@/components/ThemeSwitcher';
+import { ThemeSwitcher } from '@/components/theme/ThemeSwitcher';
+import Image from 'next/image';
 
 interface ContactInfo {
   name: string;
@@ -60,12 +60,6 @@ export function Header() {
   const displayHours = hours % 12 || 12;
   const displayMinutes = minutes.toString().padStart(2, '0');
 
-  const formattedTime = currentTime.toLocaleTimeString('en-US', {
-    hour: 'numeric',
-    minute: '2-digit',
-    hour12: true
-  }).toLowerCase();
-
   // Get emoji based on time of day
   const getTimeEmoji = () => {
     const hour = currentTime.getHours();
@@ -96,7 +90,7 @@ export function Header() {
         >
           {/* Name and Page Indicator */}
           <motion.div 
-            className="text-base sm:text-lg font-medium text-[rgb(var(--text-primary))]"
+            className="text-base sm:text-lg font-medium text-[rgb(var(--text-primary))] flex items-center gap-2"
             layout="position"
             onMouseEnter={() => setIsHovered(true)}
             onMouseLeave={() => setIsHovered(false)}
@@ -112,18 +106,19 @@ export function Header() {
             }}
             animate={isExpanded || isHovered ? "glow" : "noGlow"}
           >
+            <div className="relative w-6 h-6 sm:w-7 sm:h-7">
+              <Image
+                src="/assets/logo.png"
+                alt="logo"
+                width={28}
+                height={28}
+                className="w-full h-full object-contain select-none touch-none"
+                priority
+                draggable={false}
+                quality={95}
+              />
+            </div>
             <span className="font-mono">{CONTACT_INFO.name}</span>
-            <span className="hidden sm:inline opacity-50 ml-2 font-mono">//</span>
-            <motion.span
-              key={pageName}
-              className="hidden sm:inline-block ml-2 font-mono"
-              initial={{ opacity: 0 }}
-              animate={{ opacity: 1 }}
-              exit={{ opacity: 0 }}
-              transition={{ duration: 0.2 }}
-            >
-              {pageName}
-            </motion.span>
           </motion.div>
 
           {/* Time Indicator */}

@@ -7,7 +7,7 @@ import Link from 'next/link';
 import { format } from 'date-fns';
 
 // Import from the correct location
-import { blogPosts } from '@/app/blogData';
+import { blogPosts } from '@/app/blog/blogData';
 
 export default async function BlogPost({ params }: { params: Promise<{ slug: string }> }) {
   const { slug } = await params;

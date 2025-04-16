@@ -11,11 +11,6 @@
  * @returns The properly formatted OpenRouter API key or null if not available
  */
 export function getOpenRouterKey(): string | null {
-  // Hardcoded API key as requested by the user
-  return "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";
-  
-  // Original implementation below (commented out)
-  /*
   let key = process.env.OPENROUTER_API_KEY || '';
   
   // Remove any quotes from the key
@@ -31,7 +26,6 @@ export function getOpenRouterKey(): string | null {
   }
   
   return key;
-  */
 }
 
 /**

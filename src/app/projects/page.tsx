@@ -3,13 +3,10 @@
 import { motion, AnimatePresence, useMotionValue, useTransform, useSpring } from 'framer-motion';
 import { useState, useEffect, useCallback, useMemo, useRef, Suspense } from 'react';
 import { PROJECTS, type Project } from '@/utils/constants/projects';
-import { VideoPlayer } from '@/components/projects/VideoPlayer';
 import { useVideoPreload } from '@/hooks/useVideoPreload';
 import Link from 'next/link';
 import { useRouter, useSearchParams, usePathname } from 'next/navigation';
 import { ProjectsList } from '@/components/projects/ProjectsList';
-import { GeneratedProjectsList } from '@/components/projects/GeneratedProjectsList';
-import { ProjectDetail } from '@/components/projects/ProjectDetail';
 
 // Project icons map for custom icons
 const PROJECT_ICONS: Record<string, string> = {
@@ -280,7 +277,7 @@ function ProjectsContent() {
       <style jsx global>{noThemeTransition}</style>
       
       <div className="w-full max-w-2xl mx-auto flex flex-col items-center">
-        <AnimatePresence mode="wait" initial={false}>
+        <AnimatePresence mode="wait" initial={true}>
           {currentView === 'detail' && currentProject ? (
             // Project detail view - redirect to the new URL structure
             <motion.div
@@ -308,19 +305,6 @@ function ProjectsContent() {
           )}
         </AnimatePresence>
       </div>
-      
-      {/* Video player popup */}
-      <AnimatePresence>
-        {currentProject && currentVideo !== null && currentProject.videos && currentProject.videos.length > 0 && (
-          <VideoPlayer 
-            videos={currentProject.videos}
-            currentIndex={currentVideo}
-            onClose={closeVideo}
-            onNext={nextVideo}
-            onPrev={prevVideo}
-          />
-        )}
-      </AnimatePresence>
     </div>
   );
 }
