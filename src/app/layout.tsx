@@ -1,12 +1,9 @@
 import { Analytics } from '@vercel/analytics/next';
 import type { Metadata, Viewport } from 'next';
-import { Inter } from 'next/font/google';
 
 import './globals.css';
 import { ClientLayout } from './ClientLayout';
 import { ThemeProviderWrapper } from './ThemeProviderWrapper';
-
-const inter = Inter({ subsets: ['latin'] });
 
 export const viewport: Viewport = {
   width: 'device-width',
@@ -47,7 +44,7 @@ export default function RootLayout({
         <meta name="apple-mobile-web-app-title" content="luke nittmann" />
         <meta name="mobile-web-app-capable" content="yes" />
       </head>
-      <body className={inter.className} suppressHydrationWarning>
+      <body suppressHydrationWarning>
         <ThemeProviderWrapper>
           <ClientLayout>
             {children}
