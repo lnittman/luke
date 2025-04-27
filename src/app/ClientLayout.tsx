@@ -3,9 +3,7 @@
 import clsx from 'clsx';
 import { motion } from 'framer-motion';
 
-import GlobalChatPanel from '@/components/chat/GlobalChatPanel';
 import { Header } from '@/components/header';
-import Navigation from '@/components/navigation/Navigation';
 
 export function ClientLayout({ children }: { children: React.ReactNode }) {
   return (
@@ -26,12 +24,9 @@ export function ClientLayout({ children }: { children: React.ReactNode }) {
       <main className="flex flex-col min-h-screen w-full max-w-4xl mx-auto px-4">
         <Header />
 
-        <div className="flex-1 pb-24">
+        <div className="flex-1">
           {children}
         </div>
-
-        <Navigation />
-        <GlobalChatPanel />
       </main>
     </motion.div>
   );

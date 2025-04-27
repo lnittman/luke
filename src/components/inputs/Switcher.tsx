@@ -20,7 +20,7 @@ export function Switcher<T>({ options, value, onChange }: SwitcherProps<T>) {
   const [isOpen, setIsOpen] = useState(false);
   const containerRef = useRef<HTMLDivElement>(null);
 
-  useClickAway(containerRef, () => setIsOpen(false));
+  useClickAway(containerRef as React.RefObject<HTMLElement>, () => setIsOpen(false));
 
   const selectedOption = options.find(option => option.value === value);
 

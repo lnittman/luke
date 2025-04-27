@@ -30,18 +30,6 @@ export function LogoName({ name, isHovered, isExpanded, onMouseEnter, onMouseLea
       }}
       animate={isExpanded || isHovered ? "glow" : "noGlow"}
     >
-      <div className="relative w-6 h-6 sm:w-7 sm:h-7">
-        <Image
-          src="/assets/logo.png"
-          alt="logo"
-          width={28}
-          height={28}
-          className="w-full h-full object-contain select-none touch-none"
-          priority
-          draggable={false}
-          quality={95}
-        />
-      </div>
       <span className="font-mono">{name}</span>
     </motion.div>
   );

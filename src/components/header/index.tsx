@@ -2,10 +2,12 @@
 
 import { useState, useEffect, useRef } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
+import Link from 'next/link';
 
 import { ContactPanel } from './components/ContactPanel';
 import { LogoName } from './components/LogoName';
 import { TimeDisplay } from './components/TimeDisplay';
+import { ThemeSwitcher } from '@/components/theme/ThemeSwitcher';
 
 const CONTACT_INFO = {
   name: "luke nittmann",
@@ -34,48 +36,58 @@ export function Header() {
   }, []);
 
   return (
-    <motion.header 
-      className="fixed top-0 left-0 right-0 z-[200] px-4 sm:px-6 py-4"
-      initial={{ opacity: 0, y: -20 }}
-      animate={{ opacity: 1, y: 0 }}
-      transition={{ duration: 0.5 }}
-    >
+    <>
+      {/* Top Items */}
       <motion.div 
-        ref={headerRef}
-        className="max-w-3xl mx-auto glass-effect-strong rounded-lg relative overflow-hidden"
-        layout="preserve-aspect"
-        layoutRoot
-        style={{ zIndex: isExpanded ? 200 : 50 }}
+        className="fixed top-0 left-0 right-0 z-50 p-4 flex justify-between items-center"
+        initial={{ opacity: 0, y: -10 }}
+        animate={{ opacity: 1, y: 0 }}
+        transition={{ duration: 0.5 }}
       >
-        <motion.div 
-          className="flex items-center justify-between px-4 sm:px-6 h-[52px] sm:h-14 cursor-pointer"
-          onClick={() => setIsExpanded(!isExpanded)}
-          layout="position"
-        >
-          {/* Logo and Name Component */}
-          <LogoName 
-            name={CONTACT_INFO.name}
-            isHovered={isHovered}
-            isExpanded={isExpanded}
-            onMouseEnter={() => setIsHovered(true)}
-            onMouseLeave={() => setIsHovered(false)}
-          />
+        {/* Name - Top Left */}
+        <Link href="/">
+          <motion.div 
+            className="text-base font-mono font-medium text-[rgb(var(--text-primary))] cursor-pointer"
+            whileHover={{ 
+              opacity: 0.8, 
+              textShadow: "0 0 8px rgb(var(--accent-1)/0.6)" 
+            }}
+            transition={{ duration: 0.2 }}
+          >
+            {CONTACT_INFO.name}
+          </motion.div>
+        </Link>
 
-          {/* Time Display Component */}
-          <TimeDisplay />
+        {/* Time - Top Right */}
+        <TimeDisplay />
+      </motion.div>
+
+      {/* Bottom Items */}
+      <motion.div 
+        className="fixed bottom-0 left-0 right-0 z-50 p-4 flex justify-between items-center"
+        initial={{ opacity: 0, y: 10 }}
+        animate={{ opacity: 1, y: 0 }}
+        transition={{ duration: 0.5 }}
+      >
+        {/* Contact Info - Bottom Left */}
+        <motion.div className="flex flex-col text-xs font-mono text-[rgb(var(--text-secondary))]">
+          <a 
+            href={`mailto:${CONTACT_INFO.email}`} 
+            className="hover:text-[rgb(var(--text-primary))] transition-colors"
+          >
+            {CONTACT_INFO.email}
+          </a>
+          <a 
+            href={`tel:${CONTACT_INFO.phone}`} 
+            className="hover:text-[rgb(var(--text-primary))] transition-colors"
+          >
+            {CONTACT_INFO.phone}
+          </a>
         </motion.div>
 
-        {/* Expanded Contact Panel */}
-        <AnimatePresence>
-          {isExpanded && (
-            <ContactPanel 
-              isExpanded={isExpanded}
-              phone={CONTACT_INFO.phone}
-              email={CONTACT_INFO.email}
-            />
-          )}
-        </AnimatePresence>
+        {/* Theme Switcher - Bottom Right */}
+        <ThemeSwitcher />
       </motion.div>
-    </motion.header>
+    </>
   );
 }
