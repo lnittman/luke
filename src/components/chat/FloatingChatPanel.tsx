@@ -2,7 +2,7 @@ import React, { useState, useEffect, useRef, useMemo } from 'react';
 import Image from 'next/image';
 import { motion, AnimatePresence } from 'framer-motion';
 import { useTheme } from 'next-themes';
-import { cn } from '@/lib/utils';
+import { cn } from '@/utils';
 import { Message, SearchResult } from './interfaces';
 import { useClickAway } from 'react-use';
 import clsx from 'clsx';
@@ -13,9 +13,7 @@ type DocumentType = 'tech' | 'index' | 'design' | 'code' | 'init' | 'search' | '
 interface FloatingChatPanelProps {
   messages: Message[];
   onAddMessage?: (message: string, isSystem?: boolean) => void;
-  activeTab?: 'chat' | 'search'; 
   onClose?: () => void;
-  onTabChange?: (tab: string) => void;
   onLatestLogChange?: (logEntry: { timestamp: Date; message: string; type: string } | null) => void;
   onUnreadCountChange?: (count: number) => void;
   // New props for search results
@@ -29,9 +27,7 @@ interface FloatingChatPanelProps {
 export const FloatingChatPanel: React.FC<FloatingChatPanelProps> = ({
   messages,
   onAddMessage,
-  activeTab: initialTab = 'chat',
   onClose,
-  onTabChange,
   onLatestLogChange,
   onUnreadCountChange,
   // New props for search results
@@ -42,7 +38,6 @@ export const FloatingChatPanel: React.FC<FloatingChatPanelProps> = ({
   onTechClick
 }) => {
   const [isOpen, setIsOpen] = useState(false);
-  const [activeTabState, setActiveTabState] = useState(initialTab);
   const [inputValue, setInputValue] = useState('');
   const [unreadCount, setUnreadCount] = useState(0);
   const [tooltipVisible, setTooltipVisible] = useState<DocumentType | 'chat' | null>(null);
@@ -56,16 +51,7 @@ export const FloatingChatPanel: React.FC<FloatingChatPanelProps> = ({
   const glowSpread = isDarkTheme ? '0 0 25px' : '0 0 20px';
   const glowRadius = isDarkTheme ? '90%' : '70%';
 
-  // Ref to track initial render for tab change effect
-  const isInitialTabRender = useRef(true);
   const hasNotifiedLogEntry = useRef(false);
-
-  // Add effect to sync activeTabState with initialTab prop
-  useEffect(() => {
-    if (initialTab !== activeTabState) {
-      setActiveTabState(initialTab);
-    }
-  }, [initialTab]);
 
   // Use useMemo for logEntries to prevent recreation on every render
   const logEntries = useMemo(() => [
@@ -97,19 +83,6 @@ export const FloatingChatPanel: React.FC<FloatingChatPanelProps> = ({
     }
   }, [messages, onUnreadCountChange]);
 
-  // Handle tab changes
-  useEffect(() => {
-    // Skip the initial mount to prevent infinite loop
-    if (isInitialTabRender.current) {
-      isInitialTabRender.current = false;
-      return;
-    }
-    
-    if (onTabChange) {
-      onTabChange(activeTabState);
-    }
-  }, [activeTabState, onTabChange]);
-
   // Notify about the latest log entry once on mount
   useEffect(() => {
     if (logEntries.length > 0 && onLatestLogChange && !hasNotifiedLogEntry.current) {
@@ -123,12 +96,12 @@ export const FloatingChatPanel: React.FC<FloatingChatPanelProps> = ({
     if (isOpen) {
       // Use a small timeout to ensure the scroll happens after the animation
       setTimeout(() => {
-        if (activeTabState === 'chat' && messagesContainerRef.current) {
+        if (messagesContainerRef.current) {
           messagesContainerRef.current.scrollTop = messagesContainerRef.current.scrollHeight;
         }
       }, 100);
     }
-  }, [isOpen, activeTabState, messages]);
+  }, [isOpen, messages]);
 
   const handleSendMessage = () => {
     if (inputValue.trim() && onAddMessage) {
@@ -174,7 +147,7 @@ export const FloatingChatPanel: React.FC<FloatingChatPanelProps> = ({
       case 'sales': return '💰';
       case 'architect': return '🏗️';
       case 'all':
-      default: return '��';
+      default: return '';
     }
   };
 
@@ -196,32 +169,6 @@ export const FloatingChatPanel: React.FC<FloatingChatPanelProps> = ({
   // Get text colors based on theme
   const getMutedTextColor = () => {
     return isDarkTheme ? 'text-[#8a8a8a]' : 'text-[rgb(var(--muted-foreground))]';
-  };
-
-  // Get selected state background color
-  const getSelectedBgColor = () => {
-    return isDarkTheme ? 'bg-[rgba(82,82,82,0.3)]' : 'bg-[rgb(var(--surface-1)/0.15)]';
-  };
-
-  // All document types for filter bar
-  const documentTypes: DocumentType[] = [
-    'all', 'tech', 'index', 'design', 'code', 'init', 'search', 'implementation', 
-    'web', 'marketing', 'sales', 'architect'
-  ];
-
-  // Update tabs to only include chat
-  const tabs = [
-    { id: 'chat', label: 'chat' }
-  ];
-
-  // Handle tab changes
-  const handleTabClick = (tabId: string) => {
-    if (tabId === 'chat') {
-      setActiveTabState(tabId as any);
-      if (onTabChange) {
-        onTabChange(tabId);
-      }
-    }
   };
 
   // Handle close button click
@@ -341,29 +288,16 @@ export const FloatingChatPanel: React.FC<FloatingChatPanelProps> = ({
               <div className="flex flex-col h-full" style={{ 
                 backgroundColor: isDarkTheme ? 'rgb(22, 28, 36)' : 'rgb(255, 255, 255)'
               }}>
-                {/* Header - Tab buttons and close button on same row */}
+                {/* Header with title and close button */}
                 <div className="flex justify-between items-center px-4 py-2 border-b border-[rgb(var(--border))]" style={{ 
                   backgroundColor: isDarkTheme ? 'rgb(22, 28, 36)' : 'rgb(255, 255, 255)'
                 }}>
-                  {/* Tab Buttons - Left aligned */}
-                  <div className="flex space-x-6">
-                    {tabs.map(tab => (
-                      <button
-                        key={tab.id}
-                        onClick={() => handleTabClick(tab.id)}
-                        className={clsx(
-                          "text-xs lowercase transition-colors",
-                          activeTabState === tab.id
-                            ? "text-[rgb(var(--text-accent))]"
-                            : "text-[rgb(var(--text-secondary))] hover:text-[rgb(var(--text-primary))]"
-                        )}
-                      >
-                        {tab.label}
-                      </button>
-                    ))}
+                  {/* Chat title */}
+                  <div className="text-xs lowercase text-[rgb(var(--text-primary))]">
+                    chat
                   </div>
                   
-                  {/* Close Button - Right aligned */}
+                  {/* Close Button */}
                   <button
                     className="text-xs text-[rgb(var(--text-secondary))] hover:text-[rgb(var(--text-primary))] transition-colors"
                     onClick={handleCloseClick}
@@ -377,77 +311,75 @@ export const FloatingChatPanel: React.FC<FloatingChatPanelProps> = ({
                   backgroundColor: isDarkTheme ? 'rgb(22, 28, 36)' : 'rgb(255, 255, 255)'
                 }}>
                   {/* Chat Content */}
-                  {activeTabState === 'chat' && (
-                    <div className="flex flex-col h-full" style={{ 
+                  <div className="flex flex-col h-full" style={{ 
+                    backgroundColor: isDarkTheme ? 'rgb(22, 28, 36)' : 'rgb(255, 255, 255)'
+                  }}>
+                    {/* Messages - Scrollable with contained content */}
+                    <div className="flex-1 overflow-y-auto scrollbar-thin" ref={messagesContainerRef} style={{ 
                       backgroundColor: isDarkTheme ? 'rgb(22, 28, 36)' : 'rgb(255, 255, 255)'
                     }}>
-                      {/* Messages - Scrollable with contained content */}
-                      <div className="flex-1 overflow-y-auto scrollbar-thin" ref={messagesContainerRef} style={{ 
-                        backgroundColor: isDarkTheme ? 'rgb(22, 28, 36)' : 'rgb(255, 255, 255)'
-                      }}>
-                        <div className="p-3 space-y-3">
-                          {messages.map((message, index) => (
-                            <div
-                              key={message.id || index}
-                              className={cn(
-                                "p-3 rounded-lg",
-                                message.role === 'user' 
-                                  ? "bg-[rgba(var(--blue-1)/0.1)] ml-8"
-                                  : "bg-[rgba(var(--surface-1)/0.1)]"
+                      <div className="p-3 space-y-3">
+                        {messages.map((message, index) => (
+                          <div
+                            key={message.id || index}
+                            className={cn(
+                              "p-3 rounded-lg",
+                              message.role === 'user' 
+                                ? "bg-[rgba(var(--blue-1)/0.1)] ml-8"
+                                : "bg-[rgba(var(--surface-1)/0.1)]"
+                            )}
+                          >
+                            <div className="flex items-start gap-2">
+                              {message.role !== 'user' && (
+                                <div className="h-6 w-6 rounded-full bg-[rgba(var(--purple-1)/0.2)] flex items-center justify-center text-xs">
+                                  🤖
+                                </div>
                               )}
-                            >
-                              <div className="flex items-start gap-2">
-                                {message.role !== 'user' && (
-                                  <div className="h-6 w-6 rounded-full bg-[rgba(var(--purple-1)/0.2)] flex items-center justify-center text-xs">
-                                    🤖
-                                  </div>
-                                )}
-                                <div className="flex-1 min-w-0">
-                                  <div className="text-xs text-[rgb(var(--text-primary))] whitespace-pre-wrap break-words">
-                                    {message.content}
-                                  </div>
-                                  <div className="text-[10px] text-[rgb(var(--text-secondary))] mt-1">
-                                    {formatTime(new Date(message.timestamp))}
-                                  </div>
+                              <div className="flex-1 min-w-0">
+                                <div className="text-xs text-[rgb(var(--text-primary))] whitespace-pre-wrap break-words">
+                                  {message.content}
+                                </div>
+                                <div className="text-[10px] text-[rgb(var(--text-secondary))] mt-1">
+                                  {formatTime(new Date(message.timestamp))}
                                 </div>
                               </div>
                             </div>
-                          ))}
-                          
-                          {messages.length === 0 && (
-                            <div className="text-center py-8 text-[rgb(var(--text-secondary))] text-xs">
-                              no messages yet
-                            </div>
-                          )}
+                          </div>
+                        ))}
+                        
+                        {messages.length === 0 && (
+                          <div className="text-center py-8 text-[rgb(var(--text-secondary))] text-xs">
+                            no messages yet
+                          </div>
+                        )}
+                      </div>
+                    </div>
+                    
+                    {/* Input Area with separate send button */}
+                    {onAddMessage && (
+                      <div className="absolute bottom-0 left-0 right-0 border-t border-[rgb(var(--border))] p-2" style={{ 
+                        backgroundColor: isDarkTheme ? 'rgb(22, 28, 36)' : 'rgb(255, 255, 255)'
+                      }}>
+                        <div className="flex items-center gap-2">
+                          <input
+                            type="text"
+                            value={inputValue}
+                            onChange={(e) => setInputValue(e.target.value)}
+                            onKeyDown={handleKeyDown}
+                            placeholder="type a message..."
+                            className="flex-1 py-2 px-3 bg-transparent text-xs rounded-md border border-[rgb(var(--border))] focus:outline-none focus:ring-1 focus:ring-[rgb(var(--accent-1)/0.5)]"
+                          />
+                          <button
+                            onClick={handleSendMessage}
+                            disabled={!inputValue.trim()}
+                            className="text-xs py-2 px-3 rounded-md text-[rgb(var(--text-accent))] disabled:opacity-50 disabled:cursor-not-allowed transition-colors hover:text-[rgb(var(--accent-1))]"
+                          >
+                            send
+                          </button>
                         </div>
                       </div>
-                      
-                      {/* Input Area with separate send button */}
-                      {onAddMessage && (
-                        <div className="absolute bottom-0 left-0 right-0 border-t border-[rgb(var(--border))] p-2" style={{ 
-                          backgroundColor: isDarkTheme ? 'rgb(22, 28, 36)' : 'rgb(255, 255, 255)'
-                        }}>
-                          <div className="flex items-center gap-2">
-                            <input
-                              type="text"
-                              value={inputValue}
-                              onChange={(e) => setInputValue(e.target.value)}
-                              onKeyDown={handleKeyDown}
-                              placeholder="type a message..."
-                              className="flex-1 py-2 px-3 bg-transparent text-xs rounded-md border border-[rgb(var(--border))] focus:outline-none focus:ring-1 focus:ring-[rgb(var(--accent-1)/0.5)]"
-                            />
-                            <button
-                              onClick={handleSendMessage}
-                              disabled={!inputValue.trim()}
-                              className="text-xs py-2 px-3 rounded-md text-[rgb(var(--text-accent))] disabled:opacity-50 disabled:cursor-not-allowed transition-colors hover:text-[rgb(var(--accent-1))]"
-                            >
-                              send
-                            </button>
-                          </div>
-                        </div>
-                      )}
-                    </div>
-                  )}
+                    )}
+                  </div>
                 </div>
               </div>
             </motion.div>

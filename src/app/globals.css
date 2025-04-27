@@ -1,13 +1,10 @@
+@import 'tailwindcss';
+
 @font-face {
   font-family: 'IosevkaTerm-Regular';
   src: url('https://intdev-global.s3.us-west-2.amazonaws.com/public/internet-dev/6397be61-3ea4-459d-8a3e-fd95168cb214.woff2') format('woff2');
 }
 
-@tailwind base;
-@tailwind components;
-@tailwind utilities;
-
-/* Add Iosevka font */
 @font-face {
   font-family: 'Iosevka';
   src: url('/fonts/iosevka-regular.woff2') format('woff2');
@@ -24,55 +21,44 @@
   font-display: swap;
 }
 
-/* Tailwind v4 configuration - migrated from tailwind.config.ts */
-@config {
-  theme: {
-    extend: {
-      colors: {
-        glass: {
-          light: 'rgba(255, 255, 255, 0.1)',
-          DEFAULT: 'rgba(255, 255, 255, 0.05)',
-          dark: 'rgba(0, 0, 0, 0.1)',
-        },
-        stone: {
-          50: '#f8f8f7',
-          100: '#f0efee',
-          200: '#e6e4e1',
-          300: '#d8d4ce',
-          400: '#baB7b0',
-          500: '#9e9a91',
-          600: '#85817a',
-          700: '#6f6b65',
-          800: '#5c5954',
-          900: '#4c4945',
-          950: '#292725',
-        },
-      },
-      backdropBlur: {
-        xs: '2px',
-      },
-      animation: {
-        'slide-up': 'slide-up 0.5s ease-out',
-        'slide-down': 'slide-down 0.5s ease-out',
-        'fade-in': 'fade-in 0.5s ease-out',
-      },
-      keyframes: {
-        'slide-up': {
-          '0%': { transform: 'translateY(100%)', opacity: '0' },
-          '100%': { transform: 'translateY(0)', opacity: '1' },
-        },
-        'slide-down': {
-          '0%': { transform: 'translateY(-100%)', opacity: '0' },
-          '100%': { transform: 'translateY(0)', opacity: '1' },
-        },
-        'fade-in': {
-          '0%': { opacity: '0' },
-          '100%': { opacity: '1' },
-        },
-      },
-    },
-  },
-  darkMode: 'class',
+/* Tailwind v4 configuration */
+@theme {
+  --color-glass-light: rgba(255, 255, 255, 0.1);
+  --color-glass: rgba(255, 255, 255, 0.05);
+  --color-glass-dark: rgba(0, 0, 0, 0.1);
+
+  --color-stone-50: #f8f8f7;
+  --color-stone-100: #f0efee;
+  --color-stone-200: #e6e4e1;
+  --color-stone-300: #d8d4ce;
+  --color-stone-400: #baB7b0;
+  --color-stone-500: #9e9a91;
+  --color-stone-600: #85817a;
+  --color-stone-700: #6f6b65;
+  --color-stone-800: #5c5954;
+  --color-stone-900: #4c4945;
+  --color-stone-950: #292725;
+
+  --backdrop-blur-xs: 2px;
+
+  --animation-slide-up: slide-up 0.5s ease-out;
+  --animation-slide-down: slide-down 0.5s ease-out;
+  --animation-fade-in: fade-in 0.5s ease-out;
+}
+
+@keyframes slide-up {
+  0% { transform: translateY(100%); opacity: 0; }
+  100% { transform: translateY(0); opacity: 1; }
+}
+
+@keyframes slide-down {
+  0% { transform: translateY(-100%); opacity: 0; }
+  100% { transform: translateY(0); opacity: 1; }
+}
+
+@keyframes fade-in {
+  0% { opacity: 0; }
+  100% { opacity: 1; }
 }
 
 @layer base {

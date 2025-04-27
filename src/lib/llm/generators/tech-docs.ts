@@ -1,5 +1,5 @@
 import { LLMProvider } from '../types/models';
-import { logInfo, logError, logWarn, logLLMRequest, logLLMResponse } from '../../logger';
+import { logInfo, logError, logWarn, logLLMRequest, logLLMResponse } from '../logger';
 import { TechStack } from '../types/project';
 import { formatTechStack, safeGet } from '../helpers/safe-operations';
 

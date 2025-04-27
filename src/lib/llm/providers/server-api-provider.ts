@@ -1,6 +1,6 @@
 import { LLMProvider } from '../types';
 import { getApiUrl } from '../helpers/api';
-import { logInfo, logError, logLLMRequest, logLLMResponse } from '../../logger';
+import { logInfo, logError, logLLMRequest, logLLMResponse } from '../logger';
 
 /**
  * Server API provider implementation

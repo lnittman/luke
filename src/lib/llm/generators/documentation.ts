@@ -1,5 +1,5 @@
 import { LLMProvider } from '../types/models';
-import { logInfo, logError } from '../../logger';
+import { logInfo, logError } from '../logger';
 import { ProjectContent, TechStack } from '../types/project';
 import { safeJoin, formatProjectContent } from '../helpers/safe-operations';
 

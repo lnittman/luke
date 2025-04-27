@@ -1,6 +1,6 @@
 import { TechStack, LLMProvider } from '../types';
-import { searchDocumentation } from '../../jina';
-import { logInfo, logWarn, logError } from '../../logger';
+import { searchDocumentation } from '../jina';
+import { logInfo, logWarn, logError } from '../logger';
 
 /**
  * Generate a technology stack based on a project prompt

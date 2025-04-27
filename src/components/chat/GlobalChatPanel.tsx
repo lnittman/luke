@@ -1,37 +1,28 @@
 'use client';
 
-import React, { useEffect, useRef, useState } from 'react';
-import { useChat, LogEntry } from './ChatContext';
+import React, { useEffect, useState } from 'react';
 import { FloatingChatPanel } from './FloatingChatPanel';
+import { useChatStore, LogEntry } from '@/lib/store/chatStore';
 
 export const GlobalChatPanel = () => {
   const { 
     messages, 
-    activeTab, 
     latestLogEntry,
-    unreadCount: contextUnreadCount,
+    unreadCount: storeUnreadCount,
     addMessage, 
-    setActiveTab, 
     handleLatestLogChange,
     handleChatPanelClose
-  } = useChat();
+  } = useChatStore();
   
   // Local state to handle unread count updates from FloatingChatPanel
   const [localUnreadCount, setLocalUnreadCount] = useState(0);
   
-  // Effect to sync context unread count with local
+  // Effect to sync store unread count with local
   useEffect(() => {
-    if (contextUnreadCount !== localUnreadCount) {
-      setLocalUnreadCount(contextUnreadCount);
+    if (storeUnreadCount !== localUnreadCount) {
+      setLocalUnreadCount(storeUnreadCount);
     }
-  }, [contextUnreadCount, localUnreadCount]);
-
-  // Adapter function to handle the tab change
-  const handleTabChange = (tab: string) => {
-    if (tab === 'chat') {
-      setActiveTab(tab);
-    }
-  };
+  }, [storeUnreadCount, localUnreadCount]);
   
   // Adapter function to convert LogEntry type if needed
   const handleLogEntryChange = (logEntry: { timestamp: Date; message: string; type: string } | null) => {
@@ -51,8 +42,6 @@ export const GlobalChatPanel = () => {
     <FloatingChatPanel 
       messages={messages}
       onAddMessage={addMessage}
-      activeTab={activeTab === 'log' ? 'chat' : activeTab} // Default to chat if log was selected
-      onTabChange={handleTabChange}
       onLatestLogChange={handleLogEntryChange}
       onClose={handleChatPanelClose}
       onUnreadCountChange={setLocalUnreadCount}

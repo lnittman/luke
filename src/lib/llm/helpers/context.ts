@@ -1,6 +1,6 @@
 import { LLMProvider } from '../types';
 import { generateProjectSearchPlanPrompt } from '../prompts/project-generation';
-import { logInfo, logError } from '@/lib/logger';
+import { logInfo, logError } from '@/lib/llm/logger';
 import axios from 'axios';
 
 /**

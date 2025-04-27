@@ -38,7 +38,7 @@ export default function RootLayout({
   children: React.ReactNode;
 }) {
   return (
-    <html lang="en" className="dark">
+    <html lang="en" className="dark" suppressHydrationWarning>
       <head>
         <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover, user-scalable=no, maximum-scale=1" />
         <meta name="apple-mobile-web-app-capable" content="yes" />
@@ -46,7 +46,7 @@ export default function RootLayout({
         <meta name="apple-mobile-web-app-title" content="luke nittmann" />
         <meta name="mobile-web-app-capable" content="yes" />
       </head>
-      <body className={inter.className}>
+      <body className={inter.className} suppressHydrationWarning>
         <ThemeProviderWrapper>
           <ClientLayout>
             {children}

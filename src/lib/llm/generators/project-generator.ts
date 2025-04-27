@@ -1,6 +1,6 @@
 import { LLMProvider } from '../types';
 import { createServerApiProvider } from '../providers';
-import { logInfo, logError, logWarn } from '../../logger';
+import { logInfo, logError, logWarn } from '../logger';
 import { 
   TechStack, 
   ProjectContent, 

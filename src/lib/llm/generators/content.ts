@@ -1,5 +1,5 @@
 import { ProjectContent, TechStack, LLMProvider } from '../types';
-import { logInfo, logWarn, logError } from '../../logger';
+import { logInfo, logWarn, logError } from '../logger';
 
 /**
  * Generate project content based on a prompt and tech stack

@@ -1,7 +1,7 @@
 /**
  * API utilities for robust fetching and error handling
  */
-import { log, LogLevel } from './logger';
+import { log, LogLevel } from './llm/logger';
 
 /**
  * Options for controlling retry behavior
