@@ -1,8 +1,9 @@
+import { Analytics } from '@vercel/analytics/next';
 import type { Metadata, Viewport } from 'next';
 import { Inter } from 'next/font/google';
+
 import './globals.css';
 import { ClientLayout } from './ClientLayout';
-import { Analytics } from '@vercel/analytics/next';
 import { ThemeProviderWrapper } from './ThemeProviderWrapper';
 
 const inter = Inter({ subsets: ['latin'] });
@@ -18,7 +19,7 @@ export const viewport: Viewport = {
 
 export const metadata: Metadata = {
   title: 'luke nittmann',
-  description: 'digital craftsman',
+  description: 'software engineer',
   appleWebApp: {
     capable: true,
     statusBarStyle: 'default',
