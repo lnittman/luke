@@ -7,7 +7,7 @@ import Link from 'next/link';
 import { ContactPanel } from './components/ContactPanel';
 import { LogoName } from './components/LogoName';
 import { TimeDisplay } from './components/TimeDisplay';
-import { ThemeSwitcher } from '@/components/theme/ThemeSwitcher';
+import { ThemeSwitcher } from '@/components/theme/theme-switcher';
 
 const CONTACT_INFO = {
   name: "luke nittmann",

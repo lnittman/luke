@@ -2,8 +2,8 @@ import { Analytics } from '@vercel/analytics/next';
 import type { Metadata, Viewport } from 'next';
 
 import './globals.css';
-import { ClientLayout } from './ClientLayout';
-import { ThemeProviderWrapper } from './ThemeProviderWrapper';
+import { ClientLayout } from './client-layout';
+import { ThemeProviderWrapper } from '@/components/theme/theme-provider-wrapper';
 
 export const viewport: Viewport = {
   width: 'device-width',
@@ -38,7 +38,7 @@ export default function RootLayout({
   return (
     <html lang="en" className="dark" suppressHydrationWarning>
       <head>
-        <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover, user-scalable=no, maximum-scale=1" />
+        {/* PWA meta tags */}
         <meta name="apple-mobile-web-app-capable" content="yes" />
         <meta name="apple-mobile-web-app-status-bar-style" content="default" />
         <meta name="apple-mobile-web-app-title" content="luke nittmann" />

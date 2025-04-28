@@ -1,7 +1,7 @@
 'use client';
 
 import { motion } from 'framer-motion';
-import { ThemeSwitcher } from '@/components/theme/ThemeSwitcher';
+import { ThemeSwitcher } from '@/components/theme/theme-switcher';
 
 interface ContactPanelProps {
   isExpanded: boolean;

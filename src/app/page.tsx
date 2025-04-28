@@ -20,6 +20,14 @@ const noThemeTransition = `
   .blog-list-item:active {
     transition: opacity 300ms ease !important;
   }
+
+  /* Prevent any scrolling on the page */
+  body {
+    overflow: hidden !important;
+    position: fixed !important;
+    width: 100% !important;
+    height: 100% !important;
+  }
 `;
 
 function Hero() {
@@ -29,7 +37,7 @@ function Hero() {
       <style jsx global>{noThemeTransition}</style>
       
       <motion.div 
-        className="relative w-full max-w-2xl mx-auto overflow-hidden select-none flex flex-col items-center pb-48"
+        className="relative w-full max-w-2xl mx-auto select-none flex flex-col items-center"
         initial={{ opacity: 0 }}
         animate={{ opacity: 1 }}
         transition={{ duration: 0.8, ease: [0.23, 1, 0.32, 1] }}
@@ -41,7 +49,7 @@ function Hero() {
 
 export default function Home() {
   return (
-    <div className="overflow-hidden h-screen">
+    <div className="overflow-hidden h-[100svh] w-full">
       <Hero />
     </div>
   );

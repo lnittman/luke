@@ -21,10 +21,10 @@ export function ClientLayout({ children }: { children: React.ReactNode }) {
         background: 'rgb(var(--background))',
       }}
     >
-      <main className="flex flex-col min-h-screen w-full max-w-4xl mx-auto px-4">
+      <main className="flex flex-col min-h-screen w-full max-w-4xl mx-auto px-4 overflow-hidden">
         <Header />
 
-        <div className="flex-1">
+        <div className="flex-1 overflow-hidden">
           {children}
         </div>
       </main>
