@@ -1,11 +1,22 @@
 'use client';
 
-import React from 'react';
+import React, { useEffect, useState } from 'react';
 import { useTheme } from 'next-themes';
 import { motion } from 'framer-motion';
 
 export function ThemeSwitcher() {
   const { theme, setTheme } = useTheme();
+  const [mounted, setMounted] = useState(false);
+  
+  // Only show the theme switcher after client-side hydration is complete
+  useEffect(() => {
+    setMounted(true);
+  }, []);
+
+  // Don't render anything until client-side hydration is complete
+  if (!mounted) {
+    return <div className="flex items-center gap-2 text-xs font-mono invisible h-[24px]" />;
+  }
   
   // Default to 'light' if theme is undefined (during initial load)
   const currentTheme = theme === 'light' ? 'light' : 'dark';
