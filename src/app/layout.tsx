@@ -1,34 +1,10 @@
 import { Analytics } from '@vercel/analytics/next';
-import type { Metadata, Viewport } from 'next';
 
-import './globals.css';
-import { ClientLayout } from './client-layout';
 import { ThemeProviderWrapper } from '@/components/theme/theme-provider-wrapper';
 
-export const viewport: Viewport = {
-  width: 'device-width',
-  initialScale: 1,
-  viewportFit: 'cover',
-  minimumScale: 1,
-  maximumScale: 1,
-  userScalable: false,
-};
-
-export const metadata: Metadata = {
-  title: 'luke nittmann',
-  description: 'software engineer',
-  appleWebApp: {
-    capable: true,
-    statusBarStyle: 'default',
-    title: 'luke nittmann'
-  },
-  manifest: '/manifest.json',
-  icons: {
-    icon: '/assets/luke-home.png',
-    shortcut: '/assets/luke-home.png',
-    apple: '/assets/luke-home.png',
-  },
-};
+import { ClientLayout } from './client-layout';
+import './globals.css';
+import { viewport, metadata } from './metadata';
 
 export default function RootLayout({
   children,
@@ -55,3 +31,5 @@ export default function RootLayout({
     </html>
   );
 }
+
+export { viewport, metadata };

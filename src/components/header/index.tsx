@@ -78,7 +78,7 @@ export function Header() {
             {CONTACT_INFO.email}
           </a>
           <a 
-            href={`tel:${CONTACT_INFO.phone}`} 
+            href={`sms:${CONTACT_INFO.phone}`} 
             className="hover:text-[rgb(var(--text-primary))] transition-colors"
           >
             {CONTACT_INFO.phone}
