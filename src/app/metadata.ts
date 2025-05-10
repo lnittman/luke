@@ -17,7 +17,7 @@ export const metadata: Metadata = {
     statusBarStyle: 'default',
     title: 'luke nittmann'
   },
-  manifest: '/manifest.json',
+  // Next.js will automatically link the manifest from src/app/manifest.ts
   icons: {
     icon: '/assets/luke-home.png',
     shortcut: '/assets/luke-home.png',

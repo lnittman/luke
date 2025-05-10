@@ -32,6 +32,18 @@ export function ThemeProviderWrapper({ children }: { children: React.ReactNode }
     }
     metaThemeColor.setAttribute('content', themeColor);
 
+    // Update the manifest.json's theme-color via a manifest link element
+    const manifestLinks = document.querySelectorAll('link[rel="manifest"]');
+    manifestLinks.forEach(link => {
+      // Add a query parameter with the theme to the manifest URL
+      // This doesn't actually modify the manifest file, but can be used
+      // by a server middleware to serve different manifest content
+      const linkElement = link as HTMLLinkElement;
+      const manifestUrl = new URL(linkElement.href, window.location.origin);
+      manifestUrl.searchParams.set('theme', currentTheme);
+      linkElement.setAttribute('href', manifestUrl.toString());
+    });
+
     // Listen for theme changes
     const observer = new MutationObserver((mutations) => {
       mutations.forEach((mutation) => {
@@ -39,6 +51,15 @@ export function ThemeProviderWrapper({ children }: { children: React.ReactNode }
           const newTheme = document.documentElement.classList.contains('dark') ? 'dark' : 'light';
           const newThemeColor = newTheme === 'dark' ? '#161c24' : '#FFFFFF';
           metaThemeColor.setAttribute('content', newThemeColor);
+          
+          // Update manifest link when theme changes
+          manifestLinks.forEach(link => {
+            const linkElement = link as HTMLLinkElement;
+            const manifestUrl = new URL(linkElement.href, window.location.origin);
+            manifestUrl.searchParams.set('theme', newTheme);
+            linkElement.setAttribute('href', manifestUrl.toString());
+          });
+          
           setTheme(newTheme);
         }
       });
