@@ -25,17 +25,21 @@ export default function Home() {
     return () => window.removeEventListener('resize', updateDimensions);
   }, []);
 
-  // Calculate responsive size (40-70% of the smallest dimension)
+  // Calculate responsive size (50% of the smallest dimension)
   const size = Math.min(dimensions.width, dimensions.height) * 0.5;
 
   return (
-    <div className="flex items-center justify-center h-full w-full min-h-screen overflow-hidden">
-      <div className="relative" style={{ width: size, height: size }}>
+    <div className="flex items-center justify-center h-screen w-full overflow-hidden">
+      <div 
+        className="relative flex items-center justify-center"
+        style={{ width: size, height: size }}
+      >
         <Image
           src="/assets/logo-2.png"
           alt="Logo"
           fill
           priority
+          className="pb-16"
           sizes="(max-width: 640px) 70vw, (max-width: 1024px) 50vw, 33vw"
           style={{
             objectFit: 'contain',

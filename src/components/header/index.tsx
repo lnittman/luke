@@ -1,18 +1,13 @@
 'use client';
 
 import { useState, useEffect, useRef } from 'react';
-import { motion, AnimatePresence } from 'framer-motion';
+import { motion } from 'framer-motion';
 import Link from 'next/link';
 
-import { ContactPanel } from './components/ContactPanel';
-import { LogoName } from './components/LogoName';
 import { TimeDisplay } from './components/TimeDisplay';
-import { ThemeSwitcher } from '@/components/theme/theme-switcher';
 
 const CONTACT_INFO = {
   name: "luke nittmann",
-  phone: "(313) 500-1244",
-  email: "luke.nittmann@gmail.com",
 };
 
 export function Header() {
@@ -36,10 +31,9 @@ export function Header() {
   }, []);
 
   return (
-    <>
-      {/* Top Items */}
+    <div className="fixed top-0 left-0 right-0 z-50">
       <motion.div 
-        className="fixed top-0 left-0 right-0 z-50 p-4 flex justify-between items-center"
+        className="max-w-4xl mx-auto p-4 flex justify-between items-center"
         initial={{ opacity: 0, y: -10 }}
         animate={{ opacity: 1, y: 0 }}
         transition={{ duration: 0.5 }}
@@ -61,33 +55,6 @@ export function Header() {
         {/* Time - Top Right */}
         <TimeDisplay />
       </motion.div>
-
-      {/* Bottom Items */}
-      <motion.div 
-        className="fixed bottom-0 left-0 right-0 z-50 p-4 flex justify-between items-center"
-        initial={{ opacity: 0, y: 10 }}
-        animate={{ opacity: 1, y: 0 }}
-        transition={{ duration: 0.5 }}
-      >
-        {/* Contact Info - Bottom Left */}
-        <motion.div className="flex flex-col text-xs font-mono text-[rgb(var(--text-secondary))]">
-          <a 
-            href={`mailto:${CONTACT_INFO.email}`} 
-            className="hover:text-[rgb(var(--text-primary))] transition-colors"
-          >
-            {CONTACT_INFO.email}
-          </a>
-          <a 
-            href={`sms:${CONTACT_INFO.phone}`} 
-            className="hover:text-[rgb(var(--text-primary))] transition-colors"
-          >
-            {CONTACT_INFO.phone}
-          </a>
-        </motion.div>
-
-        {/* Theme Switcher - Bottom Right */}
-        <ThemeSwitcher />
-      </motion.div>
-    </>
+    </div>
   );
 }

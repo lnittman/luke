@@ -4,6 +4,7 @@ import clsx from 'clsx';
 import { motion } from 'framer-motion';
 
 import { Header } from '@/components/header';
+import { Footer } from '@/components/footer/index';
 
 export function ClientLayout({ children }: { children: React.ReactNode }) {
   return (
@@ -16,19 +17,22 @@ export function ClientLayout({ children }: { children: React.ReactNode }) {
         "min-h-screen w-full",
         "selection:bg-[rgb(var(--accent-1)/0.2)]",
         "transition-colors duration-700",
-        "overflow-hidden"
+        "overflow-hidden",
+        "relative"
       )}
       style={{
         background: 'rgb(var(--background))',
       }}
     >
+      <Header />
+      
       <main className="flex flex-col min-h-screen w-full max-w-4xl mx-auto p-4 overflow-hidden">
-        <Header />
-
-        <div className="flex-1 overflow-hidden">
+        <div className="flex-1 overflow-hidden pb-16">
           {children}
         </div>
       </main>
+      
+      <Footer />
     </motion.div>
   );
 } 
