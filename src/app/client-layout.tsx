@@ -18,7 +18,7 @@ export function ClientLayout({ children }: { children: React.ReactNode }) {
         "selection:bg-[rgb(var(--accent-1)/0.2)]",
         "transition-colors duration-700",
         "overflow-hidden",
-        "relative"
+        "relative flex flex-col"
       )}
       style={{
         background: 'rgb(var(--background))',
@@ -26,8 +26,8 @@ export function ClientLayout({ children }: { children: React.ReactNode }) {
     >
       <Header />
       
-      <main className="flex flex-col min-h-screen w-full max-w-4xl mx-auto overflow-hidden relative">
-        <div className="flex-1 overflow-hidden">
+      <main className="flex-1 flex flex-col w-full max-w-4xl mx-auto overflow-hidden p-4">
+        <div className="flex-1 flex items-center justify-center overflow-auto">
           {children}
         </div>
       </main>

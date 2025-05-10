@@ -4,50 +4,41 @@ import Image from 'next/image';
 import { useEffect, useState } from 'react';
 
 export default function Home() {
-  const [dimensions, setDimensions] = useState({ width: 0, height: 0 });
+  const [imageSize, setImageSize] = useState({ width: 300, height: 500 });
 
   useEffect(() => {
-    // Get initial window dimensions
-    function updateDimensions() {
-      setDimensions({
-        width: window.innerWidth,
-        height: window.innerHeight,
-      });
+    function updateImageDimensions() {
+      // Make image responsive based on viewport height
+      const newHeight = window.innerHeight * 0.5; // 50% of viewport height
+      const aspectRatio = 0.6; // Portrait aspect ratio
+      const newWidth = newHeight * aspectRatio;
+      
+      setImageSize({ width: newWidth, height: newHeight });
     }
 
-    // Set initial dimensions
-    updateDimensions();
+    updateImageDimensions();
 
-    // Add event listener for window resize
-    window.addEventListener('resize', updateDimensions);
+    window.addEventListener('resize', updateImageDimensions);
 
-    // Clean up event listener on component unmount
-    return () => window.removeEventListener('resize', updateDimensions);
+    return () => window.removeEventListener('resize', updateImageDimensions);
   }, []);
 
-  // Calculate responsive size for portrait image 
-  // Use 70% of height and adjust width to maintain portrait aspect ratio
-  const height = dimensions.height * 0.7;
-  const width = height * 0.6; // Portrait aspect ratio (adjust as needed)
-
   return (
-    <div className="flex items-center justify-center h-full w-full absolute inset-0">
-      <div 
-        className="relative"
-        style={{ width, height }}
-      >
-        <Image
-          src="/assets/hero.png"
-          alt="Logo"
-          fill
-          priority
-          sizes="(max-width: 640px) 85vw, (max-width: 1024px) 70vw, 60vw"
-          style={{
-            objectFit: 'contain',
-            objectPosition: 'center',
-          }}
-        />
-      </div>
+    <div 
+      className="relative"
+      style={{ width: imageSize.width, height: imageSize.height }}
+    >
+      <Image
+        src="/assets/hero.png"
+        alt="Hero Image"
+        fill
+        priority
+        sizes="(max-width: 768px) 80vw, (max-width: 1200px) 50vw, 33vw"
+        style={{
+          objectFit: 'contain',
+          objectPosition: 'center',
+        }}
+      />
     </div>
   );
 }
