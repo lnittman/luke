@@ -31,9 +31,9 @@ export default function Home() {
   const width = height * 0.6; // Portrait aspect ratio (adjust as needed)
 
   return (
-    <div className="flex items-center justify-center h-screen w-full overflow-hidden">
+    <div className="flex items-center justify-center h-full w-full absolute inset-0">
       <div 
-        className="relative flex items-center justify-center"
+        className="relative"
         style={{ width, height }}
       >
         <Image
@@ -44,6 +44,7 @@ export default function Home() {
           sizes="(max-width: 640px) 85vw, (max-width: 1024px) 70vw, 60vw"
           style={{
             objectFit: 'contain',
+            objectPosition: 'center',
           }}
         />
       </div>
