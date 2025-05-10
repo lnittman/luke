@@ -22,8 +22,9 @@ export function ThemeProviderWrapper({ children }: { children: React.ReactNode }
 
     // Set the theme color based on the current theme
     const themeColor = currentTheme === 'dark' ? '#161c24' : '#FFFFFF';
+    const backgroundColor = currentTheme === 'dark' ? '#161c24' : '#FFFFFF';
     
-    // Update the theme-color meta tag
+    // Update the theme-color meta tag (used by browsers and PWAs)
     let metaThemeColor = document.querySelector('meta[name="theme-color"]');
     if (!metaThemeColor) {
       metaThemeColor = document.createElement('meta');
@@ -31,18 +32,16 @@ export function ThemeProviderWrapper({ children }: { children: React.ReactNode }
       document.head.appendChild(metaThemeColor);
     }
     metaThemeColor.setAttribute('content', themeColor);
-
-    // Update the manifest.json's theme-color via a manifest link element
-    const manifestLinks = document.querySelectorAll('link[rel="manifest"]');
-    manifestLinks.forEach(link => {
-      // Add a query parameter with the theme to the manifest URL
-      // This doesn't actually modify the manifest file, but can be used
-      // by a server middleware to serve different manifest content
-      const linkElement = link as HTMLLinkElement;
-      const manifestUrl = new URL(linkElement.href, window.location.origin);
-      manifestUrl.searchParams.set('theme', currentTheme);
-      linkElement.setAttribute('href', manifestUrl.toString());
-    });
+    
+    // Add/update meta tags specific to PWA display
+    // These won't replace the manifest but can enhance the PWA experience
+    let metaBackgroundColor = document.querySelector('meta[name="background-color"]');
+    if (!metaBackgroundColor) {
+      metaBackgroundColor = document.createElement('meta');
+      metaBackgroundColor.setAttribute('name', 'background-color');
+      document.head.appendChild(metaBackgroundColor);
+    }
+    metaBackgroundColor.setAttribute('content', backgroundColor);
 
     // Listen for theme changes
     const observer = new MutationObserver((mutations) => {
@@ -50,15 +49,11 @@ export function ThemeProviderWrapper({ children }: { children: React.ReactNode }
         if (mutation.attributeName === 'class' && mutation.target === document.documentElement) {
           const newTheme = document.documentElement.classList.contains('dark') ? 'dark' : 'light';
           const newThemeColor = newTheme === 'dark' ? '#161c24' : '#FFFFFF';
-          metaThemeColor.setAttribute('content', newThemeColor);
+          const newBackgroundColor = newTheme === 'dark' ? '#161c24' : '#FFFFFF';
           
-          // Update manifest link when theme changes
-          manifestLinks.forEach(link => {
-            const linkElement = link as HTMLLinkElement;
-            const manifestUrl = new URL(linkElement.href, window.location.origin);
-            manifestUrl.searchParams.set('theme', newTheme);
-            linkElement.setAttribute('href', manifestUrl.toString());
-          });
+          // Update the meta tags when theme changes
+          metaThemeColor.setAttribute('content', newThemeColor);
+          metaBackgroundColor.setAttribute('content', newBackgroundColor);
           
           setTheme(newTheme);
         }
