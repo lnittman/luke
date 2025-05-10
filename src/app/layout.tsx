@@ -3,8 +3,9 @@ import { Analytics } from '@vercel/analytics/next';
 import { ThemeProviderWrapper } from '@/components/theme/theme-provider-wrapper';
 
 import { ClientLayout } from './client-layout';
-import './globals.css';
 import { viewport, metadata } from './metadata';
+
+import '../styles/globals.css';
 
 export default function RootLayout({
   children,
@@ -12,15 +13,14 @@ export default function RootLayout({
   children: React.ReactNode;
 }) {
   return (
-    <html lang="en" className="dark" suppressHydrationWarning>
+    <html lang="en" className="dark overflow-hidden h-screen" suppressHydrationWarning>
       <head>
-        {/* PWA meta tags */}
         <meta name="apple-mobile-web-app-capable" content="yes" />
         <meta name="apple-mobile-web-app-status-bar-style" content="default" />
         <meta name="apple-mobile-web-app-title" content="luke nittmann" />
         <meta name="mobile-web-app-capable" content="yes" />
       </head>
-      <body suppressHydrationWarning>
+      <body className="overflow-hidden h-screen" suppressHydrationWarning>
         <ThemeProviderWrapper>
           <ClientLayout>
             {children}

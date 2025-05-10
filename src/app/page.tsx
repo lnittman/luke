@@ -1,56 +1,47 @@
 'use client';
 
-import { motion } from 'framer-motion';
-
-// Style to completely disable all transitions during theme changes
-const noThemeTransition = `
-  /* Disable all transitions related to colors and borders */
-  .blog-list-item,
-  .blog-list-item *,
-  [class*="border-[rgb(var(--border))]"],
-  [class*="text-[rgb(var(--text"],
-  [class*="bg-[rgb(var(--background"],
-  .blog-title,
-  .blog-date {
-    transition-property: none !important;
-  }
-
-  /* Selectively enable only the transitions we want */
-  .blog-list-item:hover,
-  .blog-list-item:active {
-    transition: opacity 300ms ease !important;
-  }
-
-  /* Prevent any scrolling on the page */
-  body {
-    overflow: hidden !important;
-    position: fixed !important;
-    width: 100% !important;
-    height: 100% !important;
-  }
-`;
-
-function Hero() {
-  return (
-    <div className="fixed inset-0 flex items-center justify-center px-4" style={{ paddingTop: 'calc(50vh - 320px)' }}>
-      {/* Add style to completely disable transitions during theme changes */}
-      <style jsx global>{noThemeTransition}</style>
-      
-      <motion.div 
-        className="relative w-full max-w-2xl mx-auto select-none flex flex-col items-center"
-        initial={{ opacity: 0 }}
-        animate={{ opacity: 1 }}
-        transition={{ duration: 0.8, ease: [0.23, 1, 0.32, 1] }}
-      >
-      </motion.div>
-    </div>
-  );
-}
+import Image from 'next/image';
+import { useEffect, useState } from 'react';
 
 export default function Home() {
+  const [dimensions, setDimensions] = useState({ width: 0, height: 0 });
+
+  useEffect(() => {
+    // Get initial window dimensions
+    function updateDimensions() {
+      setDimensions({
+        width: window.innerWidth,
+        height: window.innerHeight,
+      });
+    }
+
+    // Set initial dimensions
+    updateDimensions();
+
+    // Add event listener for window resize
+    window.addEventListener('resize', updateDimensions);
+
+    // Clean up event listener on component unmount
+    return () => window.removeEventListener('resize', updateDimensions);
+  }, []);
+
+  // Calculate responsive size (40-70% of the smallest dimension)
+  const size = Math.min(dimensions.width, dimensions.height) * 0.5;
+
   return (
-    <div className="overflow-hidden h-[100svh] w-full">
-      <Hero />
+    <div className="flex items-center justify-center h-full w-full min-h-screen overflow-hidden">
+      <div className="relative" style={{ width: size, height: size }}>
+        <Image
+          src="/assets/logo-2.png"
+          alt="Logo"
+          fill
+          priority
+          sizes="(max-width: 640px) 70vw, (max-width: 1024px) 50vw, 33vw"
+          style={{
+            objectFit: 'contain',
+          }}
+        />
+      </div>
     </div>
   );
 }

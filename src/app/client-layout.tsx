@@ -15,13 +15,14 @@ export function ClientLayout({ children }: { children: React.ReactNode }) {
         "text-[rgb(var(--text-primary))]",
         "min-h-screen w-full",
         "selection:bg-[rgb(var(--accent-1)/0.2)]",
-        "transition-colors duration-700"
+        "transition-colors duration-700",
+        "overflow-hidden"
       )}
       style={{
         background: 'rgb(var(--background))',
       }}
     >
-      <main className="flex flex-col min-h-screen w-full max-w-4xl mx-auto px-4 overflow-hidden">
+      <main className="flex flex-col min-h-screen w-full max-w-4xl mx-auto p-4 overflow-hidden">
         <Header />
 
         <div className="flex-1 overflow-hidden">
