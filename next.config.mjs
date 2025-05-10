@@ -1,12 +1,30 @@
-import withPWAInit from "@ducanh2912/next-pwa";
+/** @type {import('next').NextConfig} */
+const nextConfig = {
+  devIndicators: false,
+  // Next.js now supports PWA features natively through the file-based API
+  // You can add headers if needed for PWA security, etc.
+  async headers() {
+    return [
+      {
+        source: '/sw.js',
+        headers: [
+          {
+            key: 'Cache-Control',
+            value: 'public, max-age=0, must-revalidate',
+          },
+        ],
+      },
+      {
+        source: '/manifest.json',
+        headers: [
+          {
+            key: 'Cache-Control',
+            value: 'public, max-age=0, must-revalidate',
+          },
+        ],
+      },
+    ];
+  },
+};
 
-const withPWA = withPWAInit({
-  dest: 'public',
-  register: true,
-  skipWaiting: true,
-  disable: process.env.NODE_ENV === 'development'
-});
-
-export default withPWA({
-  devIndicators: false
-});
+export default nextConfig;
