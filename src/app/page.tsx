@@ -25,22 +25,23 @@ export default function Home() {
     return () => window.removeEventListener('resize', updateDimensions);
   }, []);
 
-  // Calculate responsive size (50% of the smallest dimension)
-  const size = Math.min(dimensions.width, dimensions.height) * 0.5;
+  // Calculate responsive size for portrait image 
+  // Use 70% of height and adjust width to maintain portrait aspect ratio
+  const height = dimensions.height * 0.7;
+  const width = height * 0.6; // Portrait aspect ratio (adjust as needed)
 
   return (
     <div className="flex items-center justify-center h-screen w-full overflow-hidden">
       <div 
         className="relative flex items-center justify-center"
-        style={{ width: size, height: size }}
+        style={{ width, height }}
       >
         <Image
-          src="/assets/logo-2.png"
+          src="/assets/hero.png"
           alt="Logo"
           fill
           priority
-          className="pb-16"
-          sizes="(max-width: 640px) 70vw, (max-width: 1024px) 50vw, 33vw"
+          sizes="(max-width: 640px) 85vw, (max-width: 1024px) 70vw, 60vw"
           style={{
             objectFit: 'contain',
           }}

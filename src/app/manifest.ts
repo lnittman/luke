@@ -18,13 +18,13 @@ export default function manifest(): MetadataRoute.Manifest {
     prefer_related_applications: false,
     icons: [
       {
-        src: '/assets/logo.png',
+        src: '/assets/logo-2.png',
         sizes: '192x192',
         type: 'image/png',
         purpose: 'any'
       },
       {
-        src: '/assets/logo.png',
+        src: '/assets/logo-2.png',
         sizes: '512x512',
         type: 'image/png',
         purpose: 'any'
