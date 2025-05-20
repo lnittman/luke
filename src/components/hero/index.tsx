@@ -5,8 +5,8 @@ import Image from 'next/image';
 
 export function Hero() {
     return (
-        <motion.div 
-            className="relative" 
+        <motion.div
+            className="relative"
             style={{ width: 300, height: 500 }}
             initial={{ opacity: 0, y: 10 }}
             animate={{ opacity: 1, y: 0 }}
