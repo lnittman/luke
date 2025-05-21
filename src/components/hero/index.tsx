@@ -1,24 +1,24 @@
-'use client';
+'use client'
 
-import { motion } from 'framer-motion';
-import Image from 'next/image';
+import { useEffect, useState } from 'react'
 
 export function Hero() {
-    return (
-        <motion.div
-            className="relative"
-            style={{ width: 300, height: 500 }}        >>>>>>> main
-            initial={{ opacity: 0, y: 10 }}
-            animate={{ opacity: 1, y: 0 }}
-            transition={{ duration: 0.5 }}
-        >
-            <Image
-                src="/assets/hero.png"
-                alt="Hero Image"
-                fill
-                priority
-                className="object-contain object-center"
-            />
-        </motion.div>
-    );
+  const [text, setText] = useState('')
+
+  useEffect(() => {
+    const controller = new AbortController()
+    fetch('/api/hero', { signal: controller.signal }).then(async (res) => {
+      const reader = res.body?.getReader()
+      if (!reader) return
+      const decoder = new TextDecoder()
+      while (true) {
+        const { value, done } = await reader.read()
+        if (done) break
+        if (value) setText((t) => t + decoder.decode(value))
+      }
+    })
+    return () => controller.abort()
+  }, [])
+
+  return <div className="whitespace-pre-wrap font-mono p-4">{text}</div>
 }

@@ -1,6 +1,7 @@
 import { Analytics } from '@vercel/analytics/next';
 
 import { ThemeProviderWrapper } from '@/components/theme/theme-provider-wrapper';
+import { ViewTransitions } from 'next-view-transitions';
 
 import { ClientLayout } from './client-layout';
 import { viewport, metadata } from './metadata';
@@ -21,12 +22,14 @@ export default function RootLayout({
         <meta name="mobile-web-app-capable" content="yes" />
       </head>
       <body className="overflow-hidden h-screen" suppressHydrationWarning>
-        <ThemeProviderWrapper>
-          <ClientLayout>
-            {children}
-            <Analytics />
-          </ClientLayout>
-        </ThemeProviderWrapper>
+        <ViewTransitions>
+          <ThemeProviderWrapper>
+            <ClientLayout>
+              {children}
+              <Analytics />
+            </ClientLayout>
+          </ThemeProviderWrapper>
+        </ViewTransitions>
       </body>
     </html>
   );
