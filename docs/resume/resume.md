@@ -4,7 +4,7 @@
 
 📱 +1 (313) 500-1244 
 
-📍 3038 Isabel Dr, Los Angeles, CA 90026 
+📍 6819 N West Torch Lake Dr, Kewadin MI 49648
 
 🌐 https://luke-nittmann.vercel.app
 
@@ -12,7 +12,7 @@
 
 ### Independent Projects (2023 - Present)
 
-Building production-grade applications, focusing on AI-native experiences and real-time collaboration:
+Building production-grade applications, focusing on AI-native experiences and thoughtul UI/UX design:
 
 #### Ther https://ther-app.vercel.app/
 *Empathetic AI companion for mental wellness*

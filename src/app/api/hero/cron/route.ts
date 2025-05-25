@@ -1,10 +1,11 @@
-import { updateHeroFile } from '@/utils/hero'
 import { NextResponse } from 'next/server'
+import { generateHeroText } from '@/utils/hero'
 
-export const runtime = 'edge'
+// Remove Edge runtime directive to allow using server-only components
+// export const runtime = 'edge'
 
 export async function GET() {
-  const prompt = process.env.HERO_PROMPT
-  await updateHeroFile(prompt)
-  return NextResponse.json({ ok: true })
+  // Redirect to the main /api/hero endpoint
+  // This avoids using updateHeroFile which requires Node.js modules
+  return NextResponse.redirect(new URL('/api/hero', process.env.VERCEL_URL || 'http://localhost:3000'))
 }

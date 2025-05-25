@@ -10,7 +10,9 @@ export function Hero() {
     fetch('/api/hero', { signal: controller.signal }).then(async (res) => {
       const reader = res.body?.getReader()
       if (!reader) return
+
       const decoder = new TextDecoder()
+
       while (true) {
         const { value, done } = await reader.read()
         if (done) break
@@ -20,5 +22,11 @@ export function Hero() {
     return () => controller.abort()
   }, [])
 
-  return <div className="whitespace-pre-wrap font-mono p-4">{text}</div>
+  return (
+    <div className="flex h-full w-full items-center justify-center">
+      <div className="max-w-2xl w-full text-left font-mono p-4 whitespace-pre-wrap">
+        {text}
+      </div>
+    </div>
+  )
 }
