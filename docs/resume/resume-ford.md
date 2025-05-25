@@ -19,7 +19,7 @@ https://luke-nittmann.vercel.app
   - Resolved customer issues through direct support and code changes
   - Promoted to SDE II and moved teams to Address Intelligence
 
-**Tech Stack:** 
+<p class="tech-stack"><strong>Tech Stack:</strong></p>
   - **Languages:** [C++](https://isocpp.org/), [Python](https://www.python.org/), [Ruby](https://www.ruby-lang.org/)
   - **Cloud:** [AWS](https://aws.amazon.com/), [EC2](https://aws.amazon.com/ec2/), [S3](https://aws.amazon.com/s3/), [CloudFront](https://aws.amazon.com/cloudfront/)
   - **Media:** [FFmpeg](https://ffmpeg.org/), [H.264/H.265](https://en.wikipedia.org/wiki/Advanced_Video_Coding), [VP9](https://en.wikipedia.org/wiki/VP9), [AV1](https://en.wikipedia.org/wiki/AV1)
@@ -36,7 +36,7 @@ https://luke-nittmann.vercel.app
   - Maintained high service reliability across multiple regions
   - Led migration from monolith to microservices architecture
 
-**Tech Stack:** 
+<p class="tech-stack"><strong>Tech Stack:</strong></p>
   - **Frontend:** [React Native](https://reactnative.dev/), [TypeScript](https://www.typescriptlang.org/), [Redux](https://redux.js.org/), [Jest](https://jestjs.io/)
   - **Cloud:** [AWS](https://aws.amazon.com/), [Lambda](https://aws.amazon.com/lambda/), [DynamoDB](https://aws.amazon.com/dynamodb/), [S3](https://aws.amazon.com/s3/), [CloudFormation](https://aws.amazon.com/cloudformation/)
   - **Backend:** [Java](https://www.java.com/), [Python](https://www.python.org/), [Node.js](https://nodejs.org/), [Redis](https://redis.io/)
@@ -55,7 +55,7 @@ https://luke-nittmann.vercel.app
   - Implemented mobile security best practices including secure authentication and data encryption
   - Optimized application performance through memory profiling and performance analysis
 
-**Tech Stack:** 
+<p class="tech-stack"><strong>Tech Stack:</strong></p>
   - **iOS:** [Swift](https://www.swift.org/), [SwiftUI](https://developer.apple.com/xcode/swiftui/), [Combine](https://developer.apple.com/documentation/combine), [Core Data](https://developer.apple.com/documentation/coredata)
   - **Architecture:** [MVVM](https://en.wikipedia.org/wiki/Model%E2%80%93view%E2%80%93viewmodel), [Protocol-Oriented Programming](https://developer.apple.com/videos/play/wwdc2015/408/), [Dependency Injection](https://en.wikipedia.org/wiki/Dependency_injection)
   - **Testing:** [XCTest](https://developer.apple.com/documentation/xctest), [UI Testing](https://developer.apple.com/library/archive/documentation/DeveloperTools/Conceptual/testing_with_xcode/chapters/09-ui_testing.html), [TDD](https://en.wikipedia.org/wiki/Test-driven_development)
@@ -73,7 +73,7 @@ https://luke-nittmann.vercel.app
   - Created robust state management system with efficient navigation patterns
   - Implemented app analytics and monitoring for user behavior tracking and crash reporting
 
-**Tech Stack:** 
+<p class="tech-stack"><strong>Tech Stack:</strong></p>
   - **iOS:** [Swift](https://www.swift.org/), [SwiftUI](https://developer.apple.com/xcode/swiftui/), [The Composable Architecture](https://github.com/pointfreeco/swift-composable-architecture)
   - **State Management:** [Combine](https://developer.apple.com/documentation/combine), [Swift Concurrency](https://docs.swift.org/swift-book/LanguageGuide/Concurrency.html)
   - **Networking:** [URLSession](https://developer.apple.com/documentation/foundation/urlsession), [Alamofire](https://github.com/Alamofire/Alamofire), [Async/Await](https://docs.swift.org/swift-book/LanguageGuide/Concurrency.html)
@@ -92,7 +92,7 @@ https://luke-nittmann.vercel.app
   - Created extensive unit and UI testing suite with XCTest and CI integration
   - Implemented advanced memory management and performance optimization techniques
 
-**Tech Stack:** 
+<p class="tech-stack"><strong>Tech Stack:</strong></p>
   - **iOS:** [Swift](https://www.swift.org/), [SwiftUI](https://developer.apple.com/xcode/swiftui/), [Combine](https://developer.apple.com/documentation/combine), [Core Data](https://developer.apple.com/documentation/coredata)
   - **Architecture:** [MVVM](https://en.wikipedia.org/wiki/Model%E2%80%93view%E2%80%93viewmodel), [Clean Architecture](https://blog.cleancoder.com/uncle-bob/2012/08/13/the-clean-architecture.html)
   - **Audio:** [AVFoundation](https://developer.apple.com/av-foundation/), [AudioKit](https://audiokit.io/), [CoreAudio](https://developer.apple.com/documentation/coreaudio), [MIDIKit](https://github.com/orchetect/MIDIKit)
@@ -109,7 +109,7 @@ https://luke-nittmann.vercel.app
   - Developed comprehensive automated testing framework
   - Implemented enterprise-grade security features for sensitive user data
 
-**Tech Stack:** 
+<p class="tech-stack"><strong>Tech Stack:</strong></p>
   - **iOS:** [Swift](https://www.swift.org/), [SwiftUI](https://developer.apple.com/xcode/swiftui/)
   - **Architecture:** [The Composable Architecture](https://github.com/pointfreeco/swift-composable-architecture), [MVVM](https://en.wikipedia.org/wiki/Model%E2%80%93view%E2%80%93viewmodel)
   - **Cross-platform:** [Tauri](https://tauri.app/) (iOS/macOS native support)
@@ -125,7 +125,7 @@ https://luke-nittmann.vercel.app
   - Built distributed job queue for resilient scheduled data updates
   - Developed relational schema with rich entity relationships
 
-**Tech Stack:** 
+<p class="tech-stack"><strong>Tech Stack:</strong></p>
   - **Frontend:** [Next.js](https://nextjs.org/), [TypeScript](https://www.typescriptlang.org/), [Tailwind](https://tailwindcss.com/), [Framer Motion](https://www.framer.com/motion/), [Recharts](https://recharts.org/)
   - **Backend:** [Prisma](https://www.prisma.io/), [Redis](https://redis.io/), [Upstash](https://upstash.com/), [tRPC](https://trpc.io/)
   - **Database:** [PostgreSQL](https://www.postgresql.org/)

@@ -20,7 +20,7 @@ Building production-grade applications, focusing on AI-native experiences and th
 - Implemented adaptive suggestion engine with contextual intelligence
 - Developed secure subscription management with Stripe integration
 - Created cross-platform experience with Tauri (iOS/macOS native support)
-- **Tech Stack:** 
+- <span class="tech-stack">**Tech Stack:**</span> 
   - **Frontend:** [Next.js](https://nextjs.org/), [React](https://react.dev/), [TypeScript](https://www.typescriptlang.org/), [Tailwind](https://tailwindcss.com/), [Framer Motion](https://www.framer.com/motion/)
   - **Backend:** [Prisma](https://www.prisma.io/), [PostgreSQL](https://www.postgresql.org/)
   - **AI/ML:** [Gemini API](https://ai.google.dev/), Prompt Engineering
@@ -35,7 +35,7 @@ Building production-grade applications, focusing on AI-native experiences and th
 - Generated personalized job application cards from user's links, resume, and web presence
 - Implemented context-aware prompt engineering for coherent AI responses
 - Created serverless AI processing pipeline with edge function optimization
-- **Tech Stack:** 
+- <span class="tech-stack">**Tech Stack:**</span> 
   - **Frontend:** [Next.js](https://nextjs.org/), [React](https://react.dev/), [TypeScript](https://www.typescriptlang.org/), [Tailwind](https://tailwindcss.com/), [Framer Motion](https://www.framer.com/motion/), [shadcn/ui](https://ui.shadcn.com/)
   - **Backend:** [Prisma](https://www.prisma.io/), [NextAuth](https://next-auth.js.org/)
   - **Database:** [Neon Database](https://neon.tech/), [Vercel KV](https://vercel.com/storage/kv), [pgvector](https://github.com/pgvector/pgvector)
@@ -48,7 +48,7 @@ Building production-grade applications, focusing on AI-native experiences and th
 - Implemented intelligent content analysis with entity recognition using agentic workflows
 - Built distributed job queue for resilient scheduled data updates
 - Developed relational schema with rich entity relationships
-- **Tech Stack:** 
+- <span class="tech-stack">**Tech Stack:**</span> 
   - **Frontend:** [Next.js](https://nextjs.org/), [TypeScript](https://www.typescriptlang.org/), [Tailwind](https://tailwindcss.com/), [Framer Motion](https://www.framer.com/motion/), [Recharts](https://recharts.org/)
   - **Backend:** [Prisma](https://www.prisma.io/), [Redis](https://redis.io/), [Upstash](https://upstash.com/), [tRPC](https://trpc.io/)
   - **Database:** [PostgreSQL](https://www.postgresql.org/)
@@ -62,7 +62,7 @@ Building production-grade applications, focusing on AI-native experiences and th
 - Built real-time collaborative boards with interactive comments
 - Created modular, service-based FastAPI backend with monorepo webapp
 - Implemented fluid animations and interactions for enhanced UX
-- **Tech Stack:** 
+- <span class="tech-stack">**Tech Stack:**</span> 
   - **Frontend:** [Next.js](https://nextjs.org/), [TypeScript](https://www.typescriptlang.org/), [Tailwind](https://tailwindcss.com/), [Motion](https://motion.dev/), [Radix UI](https://www.radix-ui.com/), [react-spring](https://www.react-spring.dev/)
   - **Backend:** [Python](https://www.python.org/), [FastAPI](https://fastapi.tiangolo.com/), [asyncio](https://docs.python.org/3/library/asyncio.html), [pydantic](https://docs.pydantic.dev/)
   - **Database:** [PostgreSQL](https://www.postgresql.org/), [pgvector](https://github.com/pgvector/pgvector), [Neon](https://neon.tech/)
@@ -77,7 +77,7 @@ Building production-grade applications, focusing on AI-native experiences and th
 - Built AI-powered stem isolation system for vocals, drums, bass, and other
 - Implemented client-side audio processing engine with Web Audio API
 - Developed efficient audio file streaming and caching system
-- **Tech Stack:** 
+- <span class="tech-stack">**Tech Stack:**</span> 
   - **Frontend:** [Next.js](https://nextjs.org/), [React](https://react.dev/), [TypeScript](https://www.typescriptlang.org/), [Tailwind](https://tailwindcss.com/), [Framer Motion](https://www.framer.com/motion/)
   - **Audio:** [Tone.js](https://tonejs.github.io/), [Web Audio API](https://developer.mozilla.org/en-US/docs/Web/API/Web_Audio_API), [AudioWorklet](https://developer.mozilla.org/en-US/docs/Web/API/AudioWorklet), [WebMIDI](https://developer.mozilla.org/en-US/docs/Web/API/Web_MIDI_API), [FFmpeg.wasm](https://ffmpegwasm.github.io/)
   - **Backend:** [FastAPI](https://fastapi.tiangolo.com/), [Python](https://www.python.org/)
@@ -92,7 +92,7 @@ Building production-grade applications, focusing on AI-native experiences and th
 - Developed web-based MIDI/sound pack upload utility
 - Implemented AI audio manipulation and semantic search with agentic asset organization
 - Created real-time sync with websocket streaming
-- **Tech Stack:** 
+- <span class="tech-stack">**Tech Stack:**</span> 
   - **iOS:** [Swift](https://www.swift.org/), [AVFoundation](https://developer.apple.com/av-foundation/), [AudioKit](https://audiokit.io/), [CoreAudio](https://developer.apple.com/documentation/coreaudio), [MIDIKit](https://github.com/orchetect/MIDIKit), [App Intents](https://developer.apple.com/documentation/appintents)
   - **Web:** [Next.js](https://nextjs.org/), [TypeScript](https://www.typescriptlang.org/)
   - **Audio:** [Pedalboard](https://github.com/spotify/pedalboard), [FFmpeg](https://ffmpeg.org/), [Soundpipe](https://github.com/PaulBatchelor/Soundpipe), [AudioUnits](https://developer.apple.com/documentation/audiounit), [VST3](https://www.steinberg.net/developers/)
@@ -107,7 +107,7 @@ Building production-grade applications, focusing on AI-native experiences and th
 - Led development of cross-platform notification system for web3 image generation platform
 - Built semantic image search system with Gemini multimodal embeddings and agentic asset organization
 - Architected full-stack features across iOS, web, and backend systems
-- **Tech Stack:** 
+- <span class="tech-stack">**Tech Stack:**</span> 
   - **Frontend:** [React](https://react.dev/), [TypeScript](https://www.typescriptlang.org/), [Tailwind CSS](https://tailwindcss.com/), [React Three Fiber](https://docs.pmnd.rs/react-three-fiber/getting-started/introduction)
   - **Mobile:** [Swift](https://www.swift.org/), [SwiftUI](https://developer.apple.com/xcode/swiftui/)
   - **Backend:** [Firebase](https://firebase.google.com/), [Cloud Functions](https://firebase.google.com/docs/functions), [Firestore](https://firebase.google.com/docs/firestore)
@@ -123,7 +123,7 @@ Building production-grade applications, focusing on AI-native experiences and th
 - Integrated Python audio models and CoreML for on-device audio processing
 - Optimized processing costs through AI-powered effects generation
 - Built integration layer supporting major streaming platforms (Spotify, Apple Music)
-- **Tech Stack:** 
+- <span class="tech-stack">**Tech Stack:**</span> 
   - **Mobile:** [Swift](https://www.swift.org/), [AVFoundation](https://developer.apple.com/av-foundation/), [CoreAudio](https://developer.apple.com/documentation/coreaudio), [AudioKit](https://audiokit.io/), [MIDI](https://developer.apple.com/documentation/coremidi)
   - **Frontend:** [React](https://react.dev/), [WebGL](https://developer.mozilla.org/en-US/docs/Web/API/WebGL_API)
   - **Backend:** [Python](https://www.python.org/), [Golang](https://go.dev/), [FastAPI](https://fastapi.tiangolo.com/), [GraphQL](https://graphql.org/), [Redis](https://redis.io/)
@@ -140,7 +140,7 @@ Building production-grade applications, focusing on AI-native experiences and th
 - Built self-service permission system automating internal workflows
 - Maintained high service reliability across multiple regions
 - Led migration from monolith to microservices architecture
-- **Tech Stack:** 
+- <span class="tech-stack">**Tech Stack:**</span> 
   - **Frontend:** [React Native](https://reactnative.dev/), [TypeScript](https://www.typescriptlang.org/), [Redux](https://redux.js.org/), [Jest](https://jestjs.io/)
   - **Cloud:** [AWS](https://aws.amazon.com/), [Lambda](https://aws.amazon.com/lambda/), [DynamoDB](https://aws.amazon.com/dynamodb/), [S3](https://aws.amazon.com/s3/), [CloudFormation](https://aws.amazon.com/cloudformation/)
   - **Backend:** [Java](https://www.java.com/), [Python](https://www.python.org/), [Node.js](https://nodejs.org/), [Redis](https://redis.io/)
@@ -154,7 +154,7 @@ Building production-grade applications, focusing on AI-native experiences and th
 - Rewrote Quicktime decoder enhancing metadata parsing accuracy
 - Developed automated testing framework for validation components
 - Resolved customer issues through direct support and code changes
-- **Tech Stack:** 
+- <span class="tech-stack">**Tech Stack:**</span> 
   - **Languages:** [C++](https://isocpp.org/), [Python](https://www.python.org/), [Ruby](https://www.ruby-lang.org/)
   - **Cloud:** [AWS](https://aws.amazon.com/), [EC2](https://aws.amazon.com/ec2/), [S3](https://aws.amazon.com/s3/), [CloudFront](https://aws.amazon.com/cloudfront/)
   - **Media:** [FFmpeg](https://ffmpeg.org/), [H.264/H.265](https://en.wikipedia.org/wiki/Advanced_Video_Coding), [VP9](https://en.wikipedia.org/wiki/VP9), [AV1](https://en.wikipedia.org/wiki/AV1)

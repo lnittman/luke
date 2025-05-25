@@ -3,13 +3,15 @@
 # Change to the script directory
 cd "$(dirname "$0")"
 
-# Run the md-to-pdf command
-npx md-to-pdf resume-ford-ios.md --stylesheet styles/resume.css --pdf-options '{"format": "A4", "margin": "3mm", "printBackground": true}'
 
-# Copy to the final filename
-cp resume-ford-ios.pdf resume-ford-ios.pdf
-
-# Show the file details
-ls -la resume-ford-ios.pdf
+# Generate PDF versions of the resumes
+for file in resume.md resume-ford.md; do
+  name="${file%.md}"
+  npx md-to-pdf "$file" \
+    --stylesheet styles/resume.css \
+    --pdf-options '{"format": "A4", "margin": "3mm", "printBackground": true}' \
+    -o "${name}.pdf"
+  ls -la "${name}.pdf"
+done
 
 echo "PDF generated successfully!" 
