@@ -1,15 +1,16 @@
 #!/bin/bash
+set -e
 
 # Change to the script directory
 cd "$(dirname "$0")"
 
-# Run the md-to-pdf command
-npx md-to-pdf resume-ford-ios.md --stylesheet styles/resume.css --pdf-options '{"format": "A4", "margin": "3mm", "printBackground": true}'
+# Generate default resume
+npx md-to-pdf resume.md --stylesheet styles/resume.css --pdf-options '{"format": "A4", "margin": "3mm", "printBackground": true}'
 
-# Copy to the final filename
-cp resume-ford-ios.pdf resume-ford-ios.pdf
+# Generate Ford-specific resume
+npx md-to-pdf resume-ford.md --stylesheet styles/resume.css --pdf-options '{"format": "A4", "margin": "3mm", "printBackground": true}'
 
-# Show the file details
-ls -la resume-ford-ios.pdf
+# Show the resulting PDFs
+ls -la resume.pdf resume-ford.pdf
 
 echo "PDF generated successfully!" 
