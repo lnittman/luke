@@ -1,0 +1,23 @@
+# Generated PDFs in output directory
+output/
+
+# Legacy PDFs in root (optional - you may want to track these)
+*.pdf
+
+# LaTeX temporary files
+*.aux
+*.log
+*.out
+*.fls
+*.fdb_latexmk
+*.synctex.gz
+*.toc
+*.lof
+*.lot
+*.luabridge.lua
+*.markdown.in
+missfont.log
+
+# System files
+.DS_Store
+Thumbs.db 

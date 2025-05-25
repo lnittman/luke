@@ -117,7 +117,7 @@ Building production-grade applications, focusing on AI-native experiences and th
   - **DevOps:** [CI/CD](https://about.gitlab.com/topics/ci-cd/), [Docker](https://www.docker.com/)
 
 ### Stems Labs
-*Senior Software Engineer (Remote) | November 2022 - Present*
+*Senior Software Engineer (Remote) | November 2022 - February 2024*
 - Led creation and development of Stem Studio, a mobile audio remixing platform
 - Architected full-stack system for professional audio processing with intelligent agents for effects recommendation
 - Integrated Python audio models and CoreML for on-device audio processing

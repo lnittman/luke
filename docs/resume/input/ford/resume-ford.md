@@ -46,7 +46,7 @@ https://luke-nittmann.vercel.app
 
 ### Stems Labs
 
-*Senior Software Engineer (Remote) | November 2022 - Present*
+*Senior Software Engineer (Remote) | November 2022 - February 2024*
   - Leading development of Stem Studio, a professional iOS audio remixing platform
   - Architected modular iOS application following MVVM architecture with efficient state management
   - Implemented extensive SwiftUI interfaces with custom design system and animations
