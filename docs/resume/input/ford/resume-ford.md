@@ -117,7 +117,7 @@ https://luke-nittmann.vercel.app
   - **Persistence:** [Core Data](https://developer.apple.com/documentation/coredata), [CloudKit](https://developer.apple.com/icloud/cloudkit/)
   - **Security:** [Keychain](https://developer.apple.com/documentation/security/keychain_services), [App Transport Security](https://developer.apple.com/documentation/bundleresources/information_property_list/nsapptransportsecurity)
 
-#### Voet https://voet-app.vercel.app/
+#### Voet https://voet-xyz.vercel.app/
 
 *Football intelligence platform with AI-powered analysis*
   - Architected real-time data aggregation system with multi-source orchestration

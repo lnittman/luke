@@ -145,7 +145,7 @@ export const PROJECTS: Project[] = [
     name: 'voet',
     emoji: '⚽️',
     description: 'football intelligence platform',
-    demoUrl: 'https://voet-app.vercel.app/',
+    demoUrl: 'https://voet-xyz.vercel.app/',
     sourceUrl: 'https://github.com/nithya/voet',
     videos: [
       { src: 'assets/voet-demo.mp4', title: 'platform demo' },

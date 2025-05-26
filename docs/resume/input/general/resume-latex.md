@@ -31,7 +31,7 @@ Building production-grade applications, focusing on AI-native experiences and th
 - Created serverless AI processing pipeline with edge function optimization
 - **Tech Stack:** Next.js, React, TypeScript, Tailwind, Framer Motion, shadcn/ui, Prisma, NextAuth, Neon Database, Vercel KV, pgvector, OpenRouter, Jina, Vercel AI SDK, Zustand, SWR, Zod
 
-#### Voet https://voet-app.vercel.app/
+#### Voet https://voet-xyz.vercel.app/
 *Football intelligence platform with AI-powered analysis*
 - Architected real-time data aggregation system with multi-source orchestration
 - Implemented intelligent content analysis with entity recognition using agentic workflows

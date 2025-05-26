@@ -81,7 +81,7 @@ https://luke-nittmann.vercel.app
 
 **Tech Stack:** Swift, SwiftUI, The Composable Architecture, MVVM, Tauri, Swift Concurrency, Combine, Core Data, CloudKit, Keychain, App Transport Security
 
-### Voet https://voet-app.vercel.app/
+### Voet https://voet-xyz.vercel.app/
 
 *Football intelligence platform with AI-powered analysis*
   - Architected real-time data aggregation system with multi-source orchestration

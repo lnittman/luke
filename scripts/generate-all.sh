@@ -69,16 +69,20 @@ generate_latex_pdf() {
     
     echo "📄 Generating LaTeX PDF for $md_file (using $latex_file)..."
     
-    pandoc "$latex_file" \
+    # Add timeout and better error handling
+    if timeout 60 pandoc "$latex_file" \
         -o "output/latex/${base_name}-latex.pdf" \
         --pdf-engine=xelatex \
         --variable geometry:margin=0.75in \
         --variable fontsize=11pt \
         --variable colorlinks=true \
         --variable linkcolor=black \
-        --variable urlcolor=blue
-    
-    echo "   ✓ output/latex/${base_name}-latex.pdf"
+        --variable urlcolor=blue 2>/dev/null; then
+        echo "   ✓ output/latex/${base_name}-latex.pdf"
+    else
+        echo "   ❌ Failed to generate LaTeX PDF for $latex_file (timeout or error)"
+        return 1
+    fi
 }
 
 # Find and process resume files
@@ -111,7 +115,7 @@ for md_file in input/*/resume*.md; do
     
     # Generate LaTeX PDF if latex version exists
     if [[ -f "$latex_file" ]]; then
-        generate_latex_pdf "$md_file" "$latex_file"
+        generate_latex_pdf "$md_file" "$latex_file" || echo "   ⚠️  Continuing despite LaTeX generation failure..."
     else
         echo "⚠️  No LaTeX version found for $md_file (expected: $latex_file)"
     fi

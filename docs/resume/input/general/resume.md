@@ -42,7 +42,7 @@ Building production-grade applications, focusing on AI-native experiences and th
   - **AI/ML:** [OpenRouter](https://openrouter.ai/), [Jina](https://jina.ai/), [Vercel AI SDK](https://sdk.vercel.ai/docs)
   - **State/Utilities:** [Zustand](https://zustand-demo.pmnd.rs/), [SWR](https://swr.vercel.app/), [Zod](https://zod.dev/)
 
-#### Voet https://voet-app.vercel.app/
+#### Voet https://voet-xyz.vercel.app/
 *Football intelligence platform with AI-powered analysis*
 - Architected real-time data aggregation system with multi-source orchestration
 - Implemented intelligent content analysis with entity recognition using agentic workflows
