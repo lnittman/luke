@@ -1,7 +1,7 @@
 import { NextResponse } from 'next/server'
-import { getHeroInstructions, setHeroInstructions } from '@/utils/hero'
+import { getHeroInstructions, setHeroInstructions } from '@/lib/utils/hero'
 
-export const runtime = 'edge'
+// Removed edge runtime - this route needs Node.js file system access
 
 export async function GET() {
   const instructions = await getHeroInstructions()

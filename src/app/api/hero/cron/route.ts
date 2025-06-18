@@ -1,5 +1,5 @@
 import { NextResponse } from 'next/server'
-import { generateHeroText } from '@/utils/hero'
+import { generateHeroText } from '@/lib/utils/hero'
 
 // Remove Edge runtime directive to allow using server-only components
 // export const runtime = 'edge'

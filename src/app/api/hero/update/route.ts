@@ -1,4 +1,4 @@
-import { updateHeroFile } from '@/utils/hero'
+import { updateHeroFile } from '@/lib/utils/hero'
 import { NextResponse } from 'next/server'
 
 // Server route (no edge runtime) - can use Node.js APIs
