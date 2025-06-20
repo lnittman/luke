@@ -1,7 +1,6 @@
 export const WORK_EXPERIENCES = [
   {
     id: 'independent',
-    title: 'Senior Software Engineer',
     company: 'Independent Developer',
     period: '2023 to Present',
     description: 'Building AI-powered developer tools and applications. Focus on full-stack web development, mobile applications, and machine learning systems.',
