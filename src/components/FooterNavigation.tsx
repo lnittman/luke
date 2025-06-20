@@ -3,6 +3,7 @@
 import React from 'react';
 import { useRouter, usePathname } from 'next/navigation';
 import classNames from 'classnames';
+import { useIsMobile } from '@/hooks/useIsMobile';
 import styles from './FooterNavigation.module.scss';
 
 const NAV_ITEMS = [
@@ -15,6 +16,7 @@ const NAV_ITEMS = [
 export function FooterNavigation() {
   const router = useRouter();
   const pathname = usePathname();
+  const isMobile = useIsMobile();
 
   React.useEffect(() => {
     const handleKeyPress = (event: KeyboardEvent) => {
@@ -53,7 +55,9 @@ export function FooterNavigation() {
               })}
             >
               {item.label}
-              <span className={styles.hotkey}>({item.hotkey})</span>
+              {!isMobile && (
+                <span className={styles.hotkey}>({item.hotkey})</span>
+              )}
             </button>
             {index < NAV_ITEMS.length - 1 && (
               <span className={styles.separator}>|</span>

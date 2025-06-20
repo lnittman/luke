@@ -5,12 +5,20 @@
   width: 100%;
   font-family: var(--font-mono);
   font-size: 0.875rem;
+  
+  @media (max-width: 768px) {
+    font-size: 0.8125rem; // Slightly smaller on mobile
+  }
 }
 
 .nav {
   display: flex;
   align-items: center;
   gap: 0.75rem;
+  
+  @media (max-width: 768px) {
+    gap: 0.5rem; // Tighter spacing on mobile
+  }
 }
 
 .button {
@@ -47,6 +55,10 @@
   display: flex;
   align-items: center;
   gap: 0.75rem;
+  
+  @media (max-width: 768px) {
+    gap: 0.5rem; // Tighter spacing on mobile
+  }
 }
 
 .link {
