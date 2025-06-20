@@ -23,7 +23,7 @@ export default function Home() {
             <div className={styles.column}>
               <h2>AI ENGINEER</h2>
               <p>
-                I build production-grade software that makes AI feel more interesting.
+                I build production-grade software that makes AI feel more human.
               </p>
               <p>
                 Currently focused on removing the friction between human intent
