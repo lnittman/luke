@@ -82,7 +82,7 @@ export const PROJECTS: Project[] = [
     id: 'squish',
     name: 'squish',
     emoji: '🐙',
-    description: 'semantic social network for content sharing and discovery',
+    description: 'AI-powered semantic content network with real-time collaboration',
     demoUrl: 'https://squish-web.vercel.app/',
     sourceUrl: 'https://github.com/orgs/squish-xyz/repositories',
     videos: [
@@ -93,49 +93,52 @@ export const PROJECTS: Project[] = [
       overview: {
         title: 'overview',
         items: [
-          'fun file storage',
-          'abstract content discovery pain with AI',
-          'customizable, column-based home page',
-          'fluid animations + interactions'
+          'multimodal AI embeddings for intelligent content organization',
+          'semantic search across images, videos, audio, and text',
+          'real-time collaborative boards with Liveblocks integration',
+          'column-based interface with fluid drag-and-drop interactions'
         ]
       },
       core: {
         title: 'core',
         items: [
-          'embedding-based content organization',
-          'semantic search engine',
-          'interactive boards + comments',
-          'real-time collaborative boards',
+          'Vertex AI multimodal embeddings for content understanding',
+          'vector similarity search with pgvector and custom indexing',
+          'WebSocket-based real-time collaboration with presence awareness',
+          'distributed async job processing for embedding generation',
+          'scalable file processing pipeline with progress tracking'
         ]
       },
       architecture: {
         title: 'architecture',
         items: [
-          'monorepo webapp with shared packages',
-          'modular, service-based fastapi backend',
-          'interactive + living documentation',
+          'Turborepo monorepo with 15+ modular packages',
+          'FastAPI async backend with SQLModel and Alembic migrations',
+          'Next.js 15 App Router with React Server Components',
+          'microservices architecture with Railway and Neon deployment',
+          'comprehensive API with OpenAPI/Swagger documentation'
         ]
       },
       tech: {
         title: 'tech',
         items: [
-          'next.js',
-          'turborepo',
+          { name: 'next.js 15', documentationUrl: 'https://nextjs.org/docs' },
+          { name: 'turborepo', documentationUrl: 'https://turbo.build/repo/docs' },
           'typescript',
-          'tailwind',
-          'motion',
-          'liveblocks',
-          'python',
-          'fastapi',
-          'postgresql',
-          'alembic',
-          'sqlmodel',
-          'pgvector',
+          'react 19',
+          { name: 'liveblocks', documentationUrl: 'https://liveblocks.io/docs' },
+          { name: 'fastapi', documentationUrl: 'https://fastapi.tiangolo.com/' },
+          { name: 'sqlmodel', documentationUrl: 'https://sqlmodel.tiangolo.com/' },
+          { name: 'pgvector', documentationUrl: 'https://github.com/pgvector/pgvector' },
+          { name: 'vertex ai', documentationUrl: 'https://cloud.google.com/vertex-ai/docs' },
+          'pnpm workspaces',
           'railway',
           'neon',
-          'docker',
-          'vertexai',
-          'openai'
+          'redis',
+          'twilio',
+          'framer motion',
+          'zustand',
+          'zod'
         ]
       }
     }

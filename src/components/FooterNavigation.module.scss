@@ -1,0 +1,60 @@
+.container {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  width: 100%;
+  font-family: var(--font-mono);
+  font-size: 0.875rem;
+}
+
+.nav {
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+}
+
+.button {
+  background: none;
+  border: none;
+  color: rgb(var(--text-secondary));
+  cursor: pointer;
+  font-family: inherit;
+  font-size: inherit;
+  padding: 0.25rem 0;
+  transition: color 0.2s ease;
+  
+  &:hover {
+    color: rgb(var(--text-primary));
+  }
+  
+  &.active {
+    color: rgb(var(--accent-1));
+  }
+}
+
+.hotkey {
+  margin-left: 0.25rem;
+  opacity: 0.6;
+  font-size: 0.75rem;
+}
+
+.separator {
+  color: rgb(var(--text-secondary));
+  opacity: 0.4;
+}
+
+.contact {
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+}
+
+.link {
+  color: rgb(var(--text-secondary));
+  text-decoration: none;
+  transition: color 0.2s ease;
+  
+  &:hover {
+    color: rgb(var(--accent-1));
+  }
+}

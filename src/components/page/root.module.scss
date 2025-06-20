@@ -1,0 +1,141 @@
+// Root layout container
+.root {
+  display: flex;
+  flex-direction: column;
+  height: 100vh;
+  width: 100%;
+  overflow: hidden;
+  
+  // Side borders that extend full viewport height
+  &::before,
+  &::after {
+    content: '';
+    position: fixed;
+    top: 0;
+    bottom: 0;
+    width: 1px;
+    background: rgb(var(--border));
+    z-index: 100;
+  }
+  
+  &::before {
+    left: calc(50% - 400px - 1px);
+    
+    @media (max-width: 832px) {
+      left: calc(50% - 50vw + 1rem);
+    }
+  }
+  
+  &::after {
+    right: calc(50% - 400px - 1px);
+    
+    @media (max-width: 832px) {
+      right: calc(50% - 50vw + 1rem);
+    }
+  }
+}
+
+// Sticky header
+.header {
+  position: sticky;
+  top: 0;
+  z-index: 90;
+  background: linear-gradient(
+    135deg,
+    rgb(var(--background-start)),
+    rgb(var(--background-end))
+  );
+  border-bottom: 1px solid rgb(var(--border));
+  
+  .column {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 2rem;
+    max-width: 800px;
+    margin: 0 auto;
+    padding: 2rem 1rem;
+    
+    @media (min-width: 768px) {
+      padding: 3rem 2rem;
+    }
+  }
+}
+
+// Scrollable content area with custom scrollbar
+.content {
+  flex: 1;
+  overflow-y: auto;
+  overflow-x: hidden;
+  
+  // Custom scrollbar
+  &::-webkit-scrollbar {
+    width: 1ch;
+  }
+  
+  &::-webkit-scrollbar-track {
+    background: transparent;
+  }
+  
+  &::-webkit-scrollbar-thumb {
+    background: rgb(var(--border));
+    border-radius: 0;
+  }
+  
+  &::-webkit-scrollbar-thumb:hover {
+    background: rgb(var(--accent-1));
+  }
+  
+  // Firefox scrollbar
+  scrollbar-width: thin;
+  scrollbar-color: rgb(var(--border)) transparent;
+}
+
+// Inner viewport for content within margins
+.innerViewport {
+  max-width: 800px;
+  margin: 0 auto;
+  min-height: 100%;
+}
+
+// Content rows
+.row {
+  border-bottom: 1px solid rgb(var(--border));
+  
+  &:last-child {
+    border-bottom: none;
+  }
+}
+
+// Content columns
+.column {
+  padding: 2rem 1rem;
+  
+  @media (min-width: 768px) {
+    padding: 3rem 2rem;
+  }
+}
+
+// Footer spans full width
+.footer {
+  background: linear-gradient(
+    135deg,
+    rgb(var(--background-start)),
+    rgb(var(--background-end))
+  );
+  border-top: 1px solid rgb(var(--border));
+  z-index: 50;
+  
+  .column {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    max-width: 800px;
+    margin: 0 auto;
+    padding: 1rem;
+    
+    @media (min-width: 768px) {
+      padding: 1.5rem 2rem;
+    }
+  }
+}

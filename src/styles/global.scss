@@ -1,0 +1,156 @@
+@use 'tailwindcss';
+
+// Font imports
+@font-face {
+  font-family: 'IosevkaTerm-Regular';
+  src: url('/fonts/iosevka-regular.woff2') format('woff2');
+  font-weight: normal;
+  font-style: normal;
+  font-display: swap;
+}
+
+// CSS Variables for theming
+:root {
+  // Font
+  --font-mono: 'IosevkaTerm-Regular', monospace;
+  
+  // Colors - Light theme (default)
+  --background-start: 255 255 255;
+  --background-end: 255 255 255;
+  --accent-1: 125 145 125;
+  --accent-2: 145 165 145;
+  --text-primary: 45 55 45;
+  --text-secondary: 95 105 95;
+  --surface-1: 250 250 250;
+  --surface-2: 245 245 245;
+  --border: 230 230 230;
+  --glow: 145 165 145;
+}
+
+// Dark theme
+@media (prefers-color-scheme: dark) {
+  :root {
+    --background-start: 22 28 36;
+    --background-end: 18 24 32;
+    --accent-1: 145 165 195;
+    --accent-2: 165 185 215;
+    --text-primary: 220 230 240;
+    --text-secondary: 170 180 200;
+    --surface-1: 30 36 44;
+    --surface-2: 26 32 40;
+    --border: 40 46 54;
+    --glow: 165 185 215;
+  }
+}
+
+// Base styles
+* {
+  box-sizing: border-box;
+  padding: 0;
+  margin: 0;
+}
+
+html {
+  font-family: var(--font-mono);
+  font-size: 16px;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+}
+
+body {
+  color: rgb(var(--text-primary));
+  background: linear-gradient(
+    135deg,
+    rgb(var(--background-start)),
+    rgb(var(--background-end))
+  );
+  height: 100vh;
+  overflow: hidden;
+}
+
+// Typography
+h1, h2, h3, h4, h5, h6 {
+  font-weight: normal;
+  line-height: 1.2;
+  margin: 0;
+}
+
+h1 {
+  font-size: 1.5rem;
+  letter-spacing: 0.02em;
+}
+
+h2 {
+  font-size: 1rem;
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+  margin-bottom: 1rem;
+}
+
+h3 {
+  font-size: 0.875rem;
+  margin: 1.5rem 0 0.75rem 0;
+}
+
+p {
+  line-height: 1.6;
+  margin: 0.75rem 0;
+}
+
+ul {
+  list-style: none;
+  padding: 0;
+  margin: 0.75rem 0;
+  
+  li {
+    position: relative;
+    padding-left: 1.5rem;
+    margin: 0.5rem 0;
+    
+    &:before {
+      content: '•';
+      position: absolute;
+      left: 0;
+    }
+  }
+}
+
+a {
+  color: rgb(var(--accent-1));
+  text-decoration: none;
+  transition: opacity 0.2s ease;
+  
+  &:hover {
+    opacity: 0.8;
+  }
+}
+
+button {
+  font-family: inherit;
+  cursor: pointer;
+}
+
+// Utility classes
+.font-mono {
+  font-family: var(--font-mono);
+}
+
+.text-secondary {
+  color: rgb(var(--text-secondary));
+  font-size: 0.875rem;
+}
+
+// Spacing utilities
+.mb-8 {
+  margin-bottom: 2rem;
+}
+
+.space-y-0 > * + * {
+  margin-top: 0;
+}
+
+// Selection
+::selection {
+  background: rgb(var(--accent-1) / 0.2);
+  color: rgb(var(--text-primary));
+}

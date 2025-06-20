@@ -257,6 +257,79 @@
 }
 
 @layer components {
+  /* Brutalist foundation styles */
+  .brutalist-container {
+    @apply max-w-4xl mx-auto px-6 py-4;
+    border: 1px solid rgb(var(--border));
+  }
+  
+  /* Border layout system - Adam/www-internet-v2 style */
+  .layout-column {
+    @apply max-w-4xl mx-auto relative;
+    border-left: 1px solid rgb(var(--border));
+    border-right: 1px solid rgb(var(--border));
+    min-height: 100vh;
+  }
+  
+  .layout-row {
+    border-bottom: 1px solid rgb(var(--border));
+  }
+  
+  .layout-section {
+    @apply px-6 py-8;
+  }
+  
+  .layout-header {
+    @apply px-6 py-4;
+    border-bottom: 1px solid rgb(var(--border));
+  }
+  
+  .layout-footer {
+    @apply px-6 py-4;
+    border-top: 1px solid rgb(var(--border));
+  }
+  
+  .brutalist-section {
+    @apply border border-solid;
+    border-color: rgb(var(--border));
+    background: rgb(var(--surface-1) / 0.3);
+  }
+  
+  .brutalist-button {
+    @apply px-4 py-2 border font-mono text-sm;
+    border-color: rgb(var(--border));
+    background: rgb(var(--surface-1));
+    color: rgb(var(--text-primary));
+    transition: all 0.15s ease;
+  }
+  
+  .brutalist-button:hover {
+    background: rgb(var(--surface-2));
+    border-color: rgb(var(--accent-1));
+  }
+  
+  .brutalist-input {
+    @apply px-3 py-2 border font-mono text-sm bg-transparent;
+    border-color: rgb(var(--border));
+    color: rgb(var(--text-primary));
+  }
+  
+  .brutalist-input:focus {
+    outline: none;
+    border-color: rgb(var(--accent-1));
+  }
+  
+  .brutalist-card {
+    @apply border p-4;
+    border-color: rgb(var(--border));
+    background: rgb(var(--surface-1) / 0.5);
+  }
+  
+  .brutalist-divider {
+    @apply border-t;
+    border-color: rgb(var(--border));
+  }
+  
   .glass {
     @apply backdrop-blur-md bg-glass border border-glass-light rounded-xl;
     transition: all 500ms cubic-bezier(0.4, 0, 0.2, 1);

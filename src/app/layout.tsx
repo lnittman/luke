@@ -1,12 +1,8 @@
 import { Analytics } from '@vercel/analytics/next';
-
-import { ThemeProviderWrapper } from '@/components/theme/theme-provider-wrapper';
-import { ViewTransitions } from 'next-view-transitions';
-
-import { ClientLayout } from './client-layout';
+import { ModalProvider } from '@/lib/modal-context';
 import { viewport, metadata } from './metadata';
 
-import '../styles/globals.css';
+import '../styles/global.scss';
 
 export default function RootLayout({
   children,
@@ -14,22 +10,18 @@ export default function RootLayout({
   children: React.ReactNode;
 }) {
   return (
-    <html lang="en" className="dark overflow-hidden h-screen" suppressHydrationWarning>
+    <html lang="en" suppressHydrationWarning>
       <head>
         <meta name="apple-mobile-web-app-capable" content="yes" />
         <meta name="apple-mobile-web-app-status-bar-style" content="default" />
         <meta name="apple-mobile-web-app-title" content="luke nittmann" />
         <meta name="mobile-web-app-capable" content="yes" />
       </head>
-      <body className="overflow-hidden h-screen" suppressHydrationWarning>
-        <ViewTransitions>
-          <ThemeProviderWrapper>
-            <ClientLayout>
-              {children}
-              <Analytics />
-            </ClientLayout>
-          </ThemeProviderWrapper>
-        </ViewTransitions>
+      <body suppressHydrationWarning>
+        <ModalProvider>
+          {children}
+          <Analytics />
+        </ModalProvider>
       </body>
     </html>
   );
