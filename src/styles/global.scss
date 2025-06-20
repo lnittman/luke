@@ -27,6 +27,20 @@
   --glow: 140 130 120;
 }
 
+// Light theme (explicit)
+[data-theme='light'] {
+  --background-start: 245 244 242;
+  --background-end: 242 241 239;
+  --accent-1: 120 110 100;
+  --accent-2: 140 130 120;
+  --text-primary: 35 30 25;
+  --text-secondary: 85 80 75;
+  --surface-1: 248 247 245;
+  --surface-2: 245 244 242;
+  --border: 220 215 210;
+  --glow: 140 130 120;
+}
+
 // Dark theme
 [data-theme='dark'] {
   --background-start: 22 28 36;

@@ -78,19 +78,6 @@ export function ProjectAccordion({ project, defaultOpen = false }: ProjectAccord
             </div>
           ))}
           
-          {/* Additional links if available */}
-          <div className={styles.additionalLinks}>
-            {project.sourceUrl && project.sourceUrl !== primaryLink && (
-              <a href={project.sourceUrl} target="_blank" rel="noopener noreferrer">
-                SOURCE CODE →
-              </a>
-            )}
-            {project.demoUrl && project.demoUrl !== primaryLink && (
-              <a href={project.demoUrl} target="_blank" rel="noopener noreferrer">
-                DEMO →
-              </a>
-            )}
-          </div>
         </div>
       )}
     </div>
