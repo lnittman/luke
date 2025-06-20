@@ -26,7 +26,13 @@ export function ProjectAccordion({ project, defaultOpen = false }: ProjectAccord
       >
         <div className={styles.titleWrapper}>
           <div className={styles.titleLine}>
-            <span className={styles.emoji}>{project.emoji}</span>
+            <span className={styles.emoji}>
+              {project.id === 'loops' ? (
+                <img src="/assets/loops.png" alt="loops logo" />
+              ) : (
+                project.emoji
+              )}
+            </span>
             <span className={styles.name}>{project.name}</span>
           </div>
           <div className={styles.description}>{project.description}</div>

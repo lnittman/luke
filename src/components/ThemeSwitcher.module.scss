@@ -1,0 +1,29 @@
+.themeSwitcher {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 2rem;
+  height: 2rem;
+  background: none;
+  border: 1px solid rgb(var(--border));
+  color: rgb(var(--text-primary));
+  cursor: pointer;
+  transition: all 0.2s ease;
+  font-family: var(--font-mono);
+  padding: 0;
+  
+  &:hover {
+    background: rgb(var(--surface-1));
+    border-color: rgb(var(--accent-1));
+  }
+  
+  &:active {
+    transform: scale(0.95);
+  }
+}
+
+.icon {
+  font-size: 1rem;
+  line-height: 1;
+  display: block;
+}

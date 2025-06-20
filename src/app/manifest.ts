@@ -11,8 +11,8 @@ export default function manifest(): MetadataRoute.Manifest {
     scope: '/',
     display: 'standalone',
     display_override: ['standalone', 'fullscreen'],
-    background_color: '#161c24', // Dark theme background
-    theme_color: '#161c24', // Dark theme color
+    background_color: '#121820', // Dark theme background (rgb(18, 24, 32))
+    theme_color: '#121820', // Dark theme color (rgb(18, 24, 32))
     orientation: 'portrait',
     categories: ['portfolio', 'development'],
     prefer_related_applications: false,

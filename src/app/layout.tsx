@@ -1,5 +1,6 @@
 import { Analytics } from '@vercel/analytics/next';
 import { ModalProvider } from '@/lib/modal-context';
+import { ThemeColorMeta } from '@/components/ThemeColorMeta';
 import { viewport, metadata } from './metadata';
 
 import '../styles/global.scss';
@@ -16,8 +17,10 @@ export default function RootLayout({
         <meta name="apple-mobile-web-app-status-bar-style" content="default" />
         <meta name="apple-mobile-web-app-title" content="luke nittmann" />
         <meta name="mobile-web-app-capable" content="yes" />
+        <meta name="theme-color" content="#f2f1ef" />
       </head>
       <body suppressHydrationWarning>
+        <ThemeColorMeta />
         <ModalProvider>
           {children}
           <Analytics />

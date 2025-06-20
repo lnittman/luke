@@ -1,6 +1,7 @@
 import { DefaultLayout } from '@/components/page/DefaultLayout';
 import { FooterNavigation } from '@/components/FooterNavigation';
 import { BlockLoader } from '@/components/BlockLoader';
+import { ThemeSwitcher } from '@/components/ThemeSwitcher';
 import { ProjectAccordion } from '@/components/ProjectAccordion';
 import { PROJECTS } from '@/constants/projects';
 import styles from '@/components/page/root.module.scss';
@@ -10,8 +11,11 @@ export default function Projects() {
     <DefaultLayout>
       <div className={styles.header}>
         <div className={styles.column}>
-          <h1>PROJECTS</h1>
-          <BlockLoader mode={3} />
+          <div style={{ display: 'flex', alignItems: 'center', gap: '1rem' }}>
+            <BlockLoader mode={3} />
+            <h1>PROJECTS</h1>
+          </div>
+          <ThemeSwitcher />
         </div>
       </div>
       

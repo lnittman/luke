@@ -14,22 +14,36 @@
   // Font - Iosevka with system monospace fallback
   --font-mono: 'IosevkaTerm-Regular', ui-monospace, SFMono-Regular, SF Mono, Menlo, Consolas, Liberation Mono, monospace;
   
-  // Colors - Light theme (default)
-  --background-start: 255 255 255;
-  --background-end: 255 255 255;
-  --accent-1: 125 145 125;
-  --accent-2: 145 165 145;
-  --text-primary: 45 55 45;
-  --text-secondary: 95 105 95;
-  --surface-1: 250 250 250;
-  --surface-2: 245 245 245;
-  --border: 230 230 230;
-  --glow: 145 165 145;
+  // Colors - Light theme (stone-colored, default)
+  --background-start: 245 244 242;
+  --background-end: 242 241 239;
+  --accent-1: 120 110 100;
+  --accent-2: 140 130 120;
+  --text-primary: 35 30 25;
+  --text-secondary: 85 80 75;
+  --surface-1: 248 247 245;
+  --surface-2: 245 244 242;
+  --border: 220 215 210;
+  --glow: 140 130 120;
 }
 
 // Dark theme
+[data-theme='dark'] {
+  --background-start: 22 28 36;
+  --background-end: 18 24 32;
+  --accent-1: 145 165 195;
+  --accent-2: 165 185 215;
+  --text-primary: 220 230 240;
+  --text-secondary: 170 180 200;
+  --surface-1: 30 36 44;
+  --surface-2: 26 32 40;
+  --border: 40 46 54;
+  --glow: 165 185 215;
+}
+
+// System preference fallback
 @media (prefers-color-scheme: dark) {
-  :root {
+  :root:not([data-theme]) {
     --background-start: 22 28 36;
     --background-end: 18 24 32;
     --accent-1: 145 165 195;
