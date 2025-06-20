@@ -68,18 +68,20 @@ export const PROJECTS: Project[] = [
       tech: {
         title: 'stack',
         items: [
-          'Next.js 15',
-          'TypeScript',
+          { name: 'Next.js 15', documentationUrl: 'https://nextjs.org' },
+          { name: 'TypeScript', documentationUrl: 'https://www.typescriptlang.org' },
           { name: 'Mastra', documentationUrl: 'https://mastra.ai' },
           { name: 'MCP', documentationUrl: 'https://modelcontextprotocol.io' },
-          'Prisma + PostgreSQL',
-          'Clerk Auth',
-          'Turborepo',
-          'Swift + SwiftUI (iOS native)',
-          'Tauri (desktop daemon)',
-          'Vercel AI SDK',
-          'Tailwind CSS v4',
-          'Radix UI'
+          { name: 'Prisma', documentationUrl: 'https://www.prisma.io' },
+          { name: 'PostgreSQL', documentationUrl: 'https://www.postgresql.org' },
+          { name: 'Clerk Auth', documentationUrl: 'https://clerk.com' },
+          { name: 'Turborepo', documentationUrl: 'https://turbo.build/repo' },
+          { name: 'Swift', documentationUrl: 'https://www.swift.org' },
+          { name: 'SwiftUI', documentationUrl: 'https://developer.apple.com/xcode/swiftui' },
+          { name: 'Tauri', documentationUrl: 'https://tauri.app' },
+          { name: 'Vercel AI SDK', documentationUrl: 'https://sdk.vercel.ai/docs' },
+          { name: 'Tailwind CSS v4', documentationUrl: 'https://tailwindcss.com' },
+          { name: 'Radix UI', documentationUrl: 'https://www.radix-ui.com' }
         ]
       }
     }
@@ -122,20 +124,20 @@ export const PROJECTS: Project[] = [
       tech: {
         title: 'tech',
         items: [
-          'typescript',
-          'preact',
+          { name: 'TypeScript', documentationUrl: 'https://www.typescriptlang.org' },
+          { name: 'Preact', documentationUrl: 'https://preactjs.com' },
           { name: 'bippy', documentationUrl: 'https://github.com/aidenybai/bippy' },
-          'sqlite wasm',
-          'openrouter api',
-          'file system access api',
-          'shadow dom',
-          'web workers',
-          'opfs',
-          'turbo',
-          'tsup',
-          'vitest',
-          'marked',
-          '@preact/signals'
+          { name: 'SQLite WASM', documentationUrl: 'https://sqlite.org/wasm/doc/about.md' },
+          { name: 'OpenRouter API', documentationUrl: 'https://openrouter.ai/docs' },
+          { name: 'File System Access API', documentationUrl: 'https://developer.mozilla.org/en-US/docs/Web/API/File_System_Access_API' },
+          { name: 'Shadow DOM', documentationUrl: 'https://developer.mozilla.org/en-US/docs/Web/API/Web_components/Using_shadow_DOM' },
+          { name: 'Web Workers', documentationUrl: 'https://developer.mozilla.org/en-US/docs/Web/API/Web_Workers_API' },
+          { name: 'OPFS', documentationUrl: 'https://developer.mozilla.org/en-US/docs/Web/API/File_System_API' },
+          { name: 'Turbo', documentationUrl: 'https://turbo.build' },
+          { name: 'tsup', documentationUrl: 'https://tsup.egoist.dev' },
+          { name: 'Vitest', documentationUrl: 'https://vitest.dev' },
+          { name: 'marked', documentationUrl: 'https://marked.js.org' },
+          { name: '@preact/signals', documentationUrl: 'https://preactjs.com/guide/v10/signals' }
         ]
       }
     }
@@ -180,19 +182,20 @@ export const PROJECTS: Project[] = [
       tech: {
         title: 'tech',
         items: [
-          'Next.js 15.3',
-          'React 19',
-          'TypeScript',
-          'Tailwind CSS v4',
+          { name: 'Next.js 15.3', documentationUrl: 'https://nextjs.org' },
+          { name: 'React 19', documentationUrl: 'https://react.dev' },
+          { name: 'TypeScript', documentationUrl: 'https://www.typescriptlang.org' },
+          { name: 'Tailwind CSS v4', documentationUrl: 'https://tailwindcss.com' },
           { name: 'Mastra', documentationUrl: 'https://mastra.ai' },
-          'PostgreSQL + Prisma',
-          'Server-Sent Events',
-          'Jotai',
-          'SWR',
-          'Clerk',
-          'PostHog',
-          'Turborepo',
-          'pnpm workspaces'
+          { name: 'PostgreSQL', documentationUrl: 'https://www.postgresql.org' },
+          { name: 'Prisma', documentationUrl: 'https://www.prisma.io' },
+          { name: 'Server-Sent Events', documentationUrl: 'https://developer.mozilla.org/en-US/docs/Web/API/Server-sent_events' },
+          { name: 'Jotai', documentationUrl: 'https://jotai.org' },
+          { name: 'SWR', documentationUrl: 'https://swr.vercel.app' },
+          { name: 'Clerk', documentationUrl: 'https://clerk.com' },
+          { name: 'PostHog', documentationUrl: 'https://posthog.com' },
+          { name: 'Turborepo', documentationUrl: 'https://turbo.build/repo' },
+          { name: 'pnpm workspaces', documentationUrl: 'https://pnpm.io/workspaces' }
         ]
       }
     }
@@ -237,24 +240,24 @@ export const PROJECTS: Project[] = [
       tech: {
         title: 'tech',
         items: [
-          'Next.js 15',
+          { name: 'Next.js 15', documentationUrl: 'https://nextjs.org' },
           { name: 'Turborepo', documentationUrl: 'https://turbo.build/repo' },
-          'TypeScript',
-          'Tailwind CSS',
+          { name: 'TypeScript', documentationUrl: 'https://www.typescriptlang.org' },
+          { name: 'Tailwind CSS', documentationUrl: 'https://tailwindcss.com' },
           { name: 'Framer Motion', documentationUrl: 'https://www.framer.com/motion/' },
           { name: 'Liveblocks', documentationUrl: 'https://liveblocks.io/' },
-          'Python',
+          { name: 'Python', documentationUrl: 'https://www.python.org' },
           { name: 'FastAPI', documentationUrl: 'https://fastapi.tiangolo.com/' },
-          'PostgreSQL',
+          { name: 'PostgreSQL', documentationUrl: 'https://www.postgresql.org' },
           { name: 'pgvector', documentationUrl: 'https://github.com/pgvector/pgvector' },
           { name: 'SQLModel', documentationUrl: 'https://sqlmodel.tiangolo.com/' },
-          'Redis',
-          'Vertex AI',
-          'OpenAI',
-          'Docker',
-          'Railway',
-          'Neon',
-          'pnpm workspaces'
+          { name: 'Redis', documentationUrl: 'https://redis.io' },
+          { name: 'Vertex AI', documentationUrl: 'https://cloud.google.com/vertex-ai' },
+          { name: 'OpenAI', documentationUrl: 'https://platform.openai.com/docs' },
+          { name: 'Docker', documentationUrl: 'https://www.docker.com' },
+          { name: 'Railway', documentationUrl: 'https://railway.app' },
+          { name: 'Neon', documentationUrl: 'https://neon.tech' },
+          { name: 'pnpm workspaces', documentationUrl: 'https://pnpm.io/workspaces' }
         ]
       }
     }
@@ -300,7 +303,7 @@ export const PROJECTS: Project[] = [
         title: 'tech',
         items: [
           { name: 'Mastra', documentationUrl: 'https://mastra.ai' },
-          'Next.js 15',
+          { name: 'Next.js 15', documentationUrl: 'https://nextjs.org' },
           { name: 'Turborepo', documentationUrl: 'https://turbo.build/repo' },
           { name: 'Prisma', documentationUrl: 'https://www.prisma.io' },
           { name: 'NeonDB', documentationUrl: 'https://neon.tech' },
@@ -308,9 +311,9 @@ export const PROJECTS: Project[] = [
           { name: 'Firecrawl', documentationUrl: 'https://firecrawl.dev' },
           { name: 'Clerk Auth', documentationUrl: 'https://clerk.com' },
           { name: 'PostHog', documentationUrl: 'https://posthog.com' },
-          'TypeScript',
-          'Zod validation',
-          'Framer Motion'
+          { name: 'TypeScript', documentationUrl: 'https://www.typescriptlang.org' },
+          { name: 'Zod', documentationUrl: 'https://zod.dev' },
+          { name: 'Framer Motion', documentationUrl: 'https://www.framer.com/motion' }
         ]
       }
     }
@@ -355,23 +358,23 @@ export const PROJECTS: Project[] = [
       tech: {
         title: 'tech',
         items: [
-          'SwiftUI',
-          'SwiftData',
+          { name: 'SwiftUI', documentationUrl: 'https://developer.apple.com/xcode/swiftui' },
+          { name: 'SwiftData', documentationUrl: 'https://developer.apple.com/documentation/swiftdata' },
           { name: 'MIDIKit', documentationUrl: 'https://github.com/orchetect/MIDIKit' },
-          'AVFoundation',
-          'Next.js',
-          'TypeScript',
+          { name: 'AVFoundation', documentationUrl: 'https://developer.apple.com/av-foundation' },
+          { name: 'Next.js', documentationUrl: 'https://nextjs.org' },
+          { name: 'TypeScript', documentationUrl: 'https://www.typescriptlang.org' },
           { name: 'Tone.js', documentationUrl: 'https://tonejs.github.io/' },
-          'FastAPI',
+          { name: 'FastAPI', documentationUrl: 'https://fastapi.tiangolo.com' },
           { name: 'Pedalboard', documentationUrl: 'https://spotify.github.io/pedalboard/' },
-          'WebSockets',
-          'PostgreSQL',
-          'Prisma',
-          'Google Cloud Storage',
-          'OpenAI API',
-          'Vertex AI',
-          'Docker',
-          'Vercel'
+          { name: 'WebSockets', documentationUrl: 'https://developer.mozilla.org/en-US/docs/Web/API/WebSockets_API' },
+          { name: 'PostgreSQL', documentationUrl: 'https://www.postgresql.org' },
+          { name: 'Prisma', documentationUrl: 'https://www.prisma.io' },
+          { name: 'Google Cloud Storage', documentationUrl: 'https://cloud.google.com/storage' },
+          { name: 'OpenAI API', documentationUrl: 'https://platform.openai.com/docs' },
+          { name: 'Vertex AI', documentationUrl: 'https://cloud.google.com/vertex-ai' },
+          { name: 'Docker', documentationUrl: 'https://www.docker.com' },
+          { name: 'Vercel', documentationUrl: 'https://vercel.com' }
         ]
       }
     }
@@ -415,16 +418,16 @@ export const PROJECTS: Project[] = [
       tech: {
         title: 'tech',
         items: [
-          'Swift',
-          'SwiftUI',
-          'Metal',
-          'Combine',
-          'AppKit',
-          'CoreDisplay',
-          'SQLite',
-          'HotKey',
-          'UserDefaults',
-          'XCTest'
+          { name: 'Swift', documentationUrl: 'https://www.swift.org' },
+          { name: 'SwiftUI', documentationUrl: 'https://developer.apple.com/xcode/swiftui' },
+          { name: 'Metal', documentationUrl: 'https://developer.apple.com/metal' },
+          { name: 'Combine', documentationUrl: 'https://developer.apple.com/documentation/combine' },
+          { name: 'AppKit', documentationUrl: 'https://developer.apple.com/documentation/appkit' },
+          { name: 'CoreDisplay', documentationUrl: 'https://developer.apple.com/documentation/coregraphics/quartz_display_services' },
+          { name: 'SQLite', documentationUrl: 'https://www.sqlite.org' },
+          { name: 'HotKey', documentationUrl: 'https://github.com/soffes/HotKey' },
+          { name: 'UserDefaults', documentationUrl: 'https://developer.apple.com/documentation/foundation/userdefaults' },
+          { name: 'XCTest', documentationUrl: 'https://developer.apple.com/documentation/xctest' }
         ]
       }
     }
@@ -469,23 +472,23 @@ export const PROJECTS: Project[] = [
       tech: {
         title: 'tech',
         items: [
-          'next.js',
-          'react 19',
-          'typescript',
-          'tailwind',
-          'framer motion',
-          'prisma',
-          'postgresql',
-          'generative AI',
-          'stripe',
-          'tauri',
-          'iOS',
-          'macOS',
-          'rust',
-          'zustand',
-          'zod',
-          'SWR',
-          'vercel'
+          { name: 'Next.js', documentationUrl: 'https://nextjs.org' },
+          { name: 'React 19', documentationUrl: 'https://react.dev' },
+          { name: 'TypeScript', documentationUrl: 'https://www.typescriptlang.org' },
+          { name: 'Tailwind CSS', documentationUrl: 'https://tailwindcss.com' },
+          { name: 'Framer Motion', documentationUrl: 'https://www.framer.com/motion' },
+          { name: 'Prisma', documentationUrl: 'https://www.prisma.io' },
+          { name: 'PostgreSQL', documentationUrl: 'https://www.postgresql.org' },
+          { name: 'Gemini API', documentationUrl: 'https://ai.google.dev' },
+          { name: 'Stripe', documentationUrl: 'https://stripe.com/docs' },
+          { name: 'Tauri', documentationUrl: 'https://tauri.app' },
+          { name: 'iOS', documentationUrl: 'https://developer.apple.com/ios' },
+          { name: 'macOS', documentationUrl: 'https://developer.apple.com/macos' },
+          { name: 'Rust', documentationUrl: 'https://www.rust-lang.org' },
+          { name: 'Zustand', documentationUrl: 'https://zustand-demo.pmnd.rs' },
+          { name: 'Zod', documentationUrl: 'https://zod.dev' },
+          { name: 'SWR', documentationUrl: 'https://swr.vercel.app' },
+          { name: 'Vercel', documentationUrl: 'https://vercel.com' }
         ]
       }
     }
@@ -531,21 +534,21 @@ export const PROJECTS: Project[] = [
       tech: {
         title: 'tech',
         items: [
-          'next.js',
-          'react',
-          'typescript',
-          'tailwind',
-          'tone.js',
-          'web audio API',
-          'framer motion',
-          'spleeter',
-          'fastAPI',
-          'python',
-          'docker',
-          'vercel KV',
-          'vercel blob storage',
-          'zustand',
-          'railway'
+          { name: 'Next.js', documentationUrl: 'https://nextjs.org' },
+          { name: 'React', documentationUrl: 'https://react.dev' },
+          { name: 'TypeScript', documentationUrl: 'https://www.typescriptlang.org' },
+          { name: 'Tailwind CSS', documentationUrl: 'https://tailwindcss.com' },
+          { name: 'Tone.js', documentationUrl: 'https://tonejs.github.io' },
+          { name: 'Web Audio API', documentationUrl: 'https://developer.mozilla.org/en-US/docs/Web/API/Web_Audio_API' },
+          { name: 'Framer Motion', documentationUrl: 'https://www.framer.com/motion' },
+          { name: 'Spleeter', documentationUrl: 'https://github.com/deezer/spleeter' },
+          { name: 'FastAPI', documentationUrl: 'https://fastapi.tiangolo.com' },
+          { name: 'Python', documentationUrl: 'https://www.python.org' },
+          { name: 'Docker', documentationUrl: 'https://www.docker.com' },
+          { name: 'Vercel KV', documentationUrl: 'https://vercel.com/storage/kv' },
+          { name: 'Vercel Blob Storage', documentationUrl: 'https://vercel.com/storage/blob' },
+          { name: 'Zustand', documentationUrl: 'https://zustand-demo.pmnd.rs' },
+          { name: 'Railway', documentationUrl: 'https://railway.app' }
         ]
       }
     }
@@ -588,22 +591,22 @@ export const PROJECTS: Project[] = [
       tech: {
         title: 'tech',
         items: [
-          'next.js 14',
-          'typescript',
-          'tailwind',
-          'prisma',
-          'vercel ai sdk',
-          'neon database',
-          'vercel kv',
-          'next-auth',
-          'openrouter',
-          'jina',
-          'zustand',
-          'swr',
-          'zod',
-          'framer motion',
-          'edge functions',
-          'pgvector'
+          { name: 'Next.js 14', documentationUrl: 'https://nextjs.org' },
+          { name: 'TypeScript', documentationUrl: 'https://www.typescriptlang.org' },
+          { name: 'Tailwind CSS', documentationUrl: 'https://tailwindcss.com' },
+          { name: 'Prisma', documentationUrl: 'https://www.prisma.io' },
+          { name: 'Vercel AI SDK', documentationUrl: 'https://sdk.vercel.ai/docs' },
+          { name: 'Neon Database', documentationUrl: 'https://neon.tech' },
+          { name: 'Vercel KV', documentationUrl: 'https://vercel.com/storage/kv' },
+          { name: 'NextAuth.js', documentationUrl: 'https://next-auth.js.org' },
+          { name: 'OpenRouter', documentationUrl: 'https://openrouter.ai' },
+          { name: 'Jina', documentationUrl: 'https://jina.ai' },
+          { name: 'Zustand', documentationUrl: 'https://zustand-demo.pmnd.rs' },
+          { name: 'SWR', documentationUrl: 'https://swr.vercel.app' },
+          { name: 'Zod', documentationUrl: 'https://zod.dev' },
+          { name: 'Framer Motion', documentationUrl: 'https://www.framer.com/motion' },
+          { name: 'Edge Functions', documentationUrl: 'https://vercel.com/docs/functions/edge-functions' },
+          { name: 'pgvector', documentationUrl: 'https://github.com/pgvector/pgvector' }
         ]
       }
     }

@@ -16,49 +16,53 @@ export default function About() {
           <ThemeSwitcher />
         </div>
       </div>
-      
+
       <div className={styles.content}>
         <div className={styles.innerViewport}>
           <div className={styles.row}>
             <div className={styles.column}>
               <h2>BACKGROUND</h2>
               <p>
-                Software engineer with a focus on AI/ML systems and developer tools. 
-                I build full-stack applications that solve real problems, from semantic 
-                social networks to AI-powered development companions.
+                Started my career optimizing video transcoding engines at AWS Elemental,
+                then architected distributed systems for address intelligence at Amazon.
+                Left big tech to try startups, where I could ship faster and own the full stack.
               </p>
               <p>
-                My work spans web applications, mobile apps, and machine learning 
-                systems. I'm particularly interested in how AI can enhance developer 
-                productivity and create more intuitive user experiences.
+                Now I'm enjoying building my own products. Each one explores a simple question:
+                how do we make AI feel less like an infinite black box and more like
+                a useful friend? The answer is always in the implementation details.
               </p>
             </div>
           </div>
 
           <div className={styles.row}>
             <div className={styles.column}>
-              <h2>APPROACH</h2>
+              <h2>ENGINEERING PHILOSOPHY</h2>
               <p>
-                I believe technology should amplify human creativity and reduce 
-                friction in creative processes. The best tools are invisible—they 
-                work so seamlessly that users can focus entirely on their goals 
-                rather than the mechanics of achievement.
+                Good constraints lead to better products. At Teenage Engineering,
+                designers use six colors and one typeface. At Braun, Dieter Rams outlined ten
+                fundamental principles of 'good design'. I look to apply a similar rigor to AI systems—
+                strict rules that paradoxically create more freedom for users.
+              </p>
+              <p>
+                Every technical decision is a design decision. The best products
+                feel inevitable, like they couldn't exist any other way. This
+                requires obsessing over details that most people never notice.
               </p>
             </div>
           </div>
 
           <div className={styles.row}>
             <div className={styles.column}>
-              <h2>INTERESTS</h2>
+              <h2>CURRENT INTERESTS</h2>
               <ul>
-                <li>Machine Learning & AI Systems</li>
-                <li>Developer Experience & Tooling</li>
-                <li>Full-Stack Web Development</li>
-                <li>Mobile Application Development</li>
-                <li>Audio/Music Technology</li>
-                <li>Real-time Data Processing</li>
-                <li>Semantic Search & NLP</li>
-                <li>UI/UX Design</li>
+                <li>Agentic UI/UX patterns</li>
+                <li>Semantic interfaces for content and knowledge</li>
+                <li>Vector databases and embedding systems</li>
+                <li>Making LLMs feel less like chatbots</li>
+                <li>MIDI generation/manipulation, audio synthesis, and real-time processing</li>
+                <li>Cross-platform native experiences (iOS/macOS/Web)</li>
+                <li>The intersection of taste and technology</li>
               </ul>
             </div>
           </div>
