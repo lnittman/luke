@@ -32,48 +32,167 @@ export const PROJECTS: Project[] = [
     id: 'arbor',
     name: 'arbor',
     emoji: '🌳',
-    description: 'a framework for digital horticulture',
+    description: 'enterprise-grade AI chat framework with multi-agent orchestration',
     appUrl: 'https://arbor-xyz.vercel.app/',
     sourceUrl: 'https://github.com/lnittman/arbor',
     content: {
       overview: {
         title: 'overview',
         items: [
-          'agentic project research + documentation generation',
-          'LLM-driven development companion',
-          'interactive coding assistance',
-          'tech documentation search'
+          'production-ready AI chat framework with cross-platform deployment',
+          'multi-agent orchestration through Mastra framework',
+          'Model Context Protocol (MCP) tool integration',
+          'native iOS and desktop applications via Tauri'
         ]
       },
       core: {
         title: 'core',
         items: [
-          'generates complete projects with a single prompt',
-          'creates comprehensive documentation',
-          'provides interactive chat assistance',
-          'integrates with tech documentation'
+          'dynamic MCP tool injection for GitHub, Gmail, web scraping',
+          'project-based chat organization with PostgreSQL persistence',
+          'real-time streaming with tool call visualization',
+          'multi-model support (Claude, GPT-4, Gemini)',
+          'comprehensive auth with Clerk integration'
         ]
       },
       architecture: {
         title: 'architecture',
         items: [
-          'Next.js + React for frontend',
-          'OpenAI API for core LLM capabilities',
-          'Jina API for document search and retrieval',
-          'modular prompting framework built with priompt'
+          'turborepo monorepo with separate AI microservice',
+          'Next.js 15 App Router with React Server Components',
+          'Mastra AI framework for agent orchestration',
+          'shared design system and component library',
+          'production-ready logging and error handling'
         ]
       },
       tech: {
         title: 'stack',
         items: [
-          'Next.js',
-          'React',
+          'Next.js 15',
           'TypeScript',
-          'TailwindCSS',
-          'Framer Motion',
-          'OpenAI API',
-          'Jina API',
-          'Vercel Blob Storage'
+          { name: 'Mastra', documentationUrl: 'https://mastra.ai' },
+          { name: 'MCP', documentationUrl: 'https://modelcontextprotocol.io' },
+          'Prisma + PostgreSQL',
+          'Clerk Auth',
+          'Turborepo',
+          'Swift + SwiftUI (iOS native)',
+          'Tauri (desktop daemon)',
+          'Vercel AI SDK',
+          'Tailwind CSS v4',
+          'Radix UI'
+        ]
+      }
+    }
+  },
+  {
+    id: 'react-llm',
+    name: 'react-llm',
+    emoji: '💬',
+    description: 'browser-native AI coding assistant for React developers',
+    demoUrl: 'https://react-llm.dev',
+    sourceUrl: 'https://github.com/lnittman/react-llm',
+    content: {
+      overview: {
+        title: 'overview',
+        items: [
+          'visual component selection through React fiber traversal',
+          'multi-model AI chat with 100+ LLMs via OpenRouter',
+          'live code editing with File System Access API',
+          'browser-native architecture requiring zero extensions'
+        ]
+      },
+      core: {
+        title: 'core',
+        items: [
+          'bippy-powered React fiber instrumentation for component detection',
+          'shadow DOM isolation for seamless UI integration',
+          'SQLite WASM with OPFS for persistent local storage',
+          'unified LLM hub supporting OpenRouter, OpenAI, Anthropic, and Google'
+        ]
+      },
+      architecture: {
+        title: 'architecture',
+        items: [
+          'monorepo structure with core library, docs, and marketing sites',
+          'preact-based UI for minimal bundle size (~50KB gzipped)',
+          'web worker architecture for performance isolation',
+          'plugin system for Next.js, Vite, and browser extension'
+        ]
+      },
+      tech: {
+        title: 'tech',
+        items: [
+          'typescript',
+          'preact',
+          { name: 'bippy', documentationUrl: 'https://github.com/aidenybai/bippy' },
+          'sqlite wasm',
+          'openrouter api',
+          'file system access api',
+          'shadow dom',
+          'web workers',
+          'opfs',
+          'turbo',
+          'tsup',
+          'vitest',
+          'marked',
+          '@preact/signals'
+        ]
+      }
+    }
+  },
+  {
+    id: 'webs-xyz',
+    name: 'webs',
+    emoji: '🌐',
+    description: 'AI-native web research platform that transforms URLs into intelligent insights',
+    appUrl: 'https://webs.xyz',
+    sourceUrl: 'https://github.com/lnittman/webs-xyz',
+    content: {
+      overview: {
+        title: 'overview',
+        items: [
+          'AI-powered content analysis replacing traditional browsing',
+          'organized workspaces (Spaces) with custom AI settings',
+          'real-time streaming responses with progressive UI updates',
+          'collaborative research with shared insights and annotations'
+        ]
+      },
+      core: {
+        title: 'core',
+        items: [
+          'multi-URL batch analysis with parallel AI processing',
+          'context-aware chat conversations about analyzed content',
+          'AI-generated charts and data visualizations',
+          'knowledge graph visualization of URL relationships',
+          'mobile-first PWA with offline capabilities'
+        ]
+      },
+      architecture: {
+        title: 'architecture',
+        items: [
+          'turborepo monorepo with 14+ shared packages',
+          'Next.js 15 with React Server Components',
+          'Mastra AI framework for agent orchestration',
+          'Server-Sent Events for real-time streaming',
+          'Clerk auth with row-level security'
+        ]
+      },
+      tech: {
+        title: 'tech',
+        items: [
+          'Next.js 15.3',
+          'React 19',
+          'TypeScript',
+          'Tailwind CSS v4',
+          { name: 'Mastra', documentationUrl: 'https://mastra.ai' },
+          'PostgreSQL + Prisma',
+          'Server-Sent Events',
+          'Jotai',
+          'SWR',
+          'Clerk',
+          'PostHog',
+          'Turborepo',
+          'pnpm workspaces'
         ]
       }
     }
@@ -82,21 +201,17 @@ export const PROJECTS: Project[] = [
     id: 'squish',
     name: 'squish',
     emoji: '🐙',
-    description: 'AI-powered semantic content network with real-time collaboration',
+    description: 'multimodal AI content platform with semantic search and real-time collaboration',
     demoUrl: 'https://squish-web.vercel.app/',
     sourceUrl: 'https://github.com/orgs/squish-xyz/repositories',
-    videos: [
-      { src: 'assets/squish-demo-2.mp4', title: 'asset organization' },
-      { src: 'assets/squish-demo.mp4', title: 'semantic search demo' }
-    ],
     content: {
       overview: {
         title: 'overview',
         items: [
-          'multimodal AI embeddings for intelligent content organization',
-          'semantic search across images, videos, audio, and text',
-          'real-time collaborative boards with Liveblocks integration',
-          'column-based interface with fluid drag-and-drop interactions'
+          'multimodal AI embeddings for intelligent content understanding',
+          'real-time collaborative boards with WebSocket synchronization',
+          'customizable column-based layouts with drag-and-drop',
+          'fluid animations and polished interaction design'
         ]
       },
       core: {
@@ -104,7 +219,7 @@ export const PROJECTS: Project[] = [
         items: [
           'Vertex AI multimodal embeddings for content understanding',
           'vector similarity search with pgvector and custom indexing',
-          'WebSocket-based real-time collaboration with presence awareness',
+          'real-time board collaboration via Liveblocks CRDT',
           'distributed async job processing for embedding generation',
           'scalable file processing pipeline with progress tracking'
         ]
@@ -113,32 +228,33 @@ export const PROJECTS: Project[] = [
         title: 'architecture',
         items: [
           'Turborepo monorepo with 15+ modular packages',
-          'FastAPI async backend with SQLModel and Alembic migrations',
           'Next.js 15 App Router with React Server Components',
-          'microservices architecture with Railway and Neon deployment',
-          'comprehensive API with OpenAPI/Swagger documentation'
+          'FastAPI microservices with SQLModel ORM',
+          'PostgreSQL with pgvector for semantic search',
+          'scalable deployment on Railway and Neon'
         ]
       },
       tech: {
         title: 'tech',
         items: [
-          { name: 'next.js 15', documentationUrl: 'https://nextjs.org/docs' },
-          { name: 'turborepo', documentationUrl: 'https://turbo.build/repo/docs' },
-          'typescript',
-          'react 19',
-          { name: 'liveblocks', documentationUrl: 'https://liveblocks.io/docs' },
-          { name: 'fastapi', documentationUrl: 'https://fastapi.tiangolo.com/' },
-          { name: 'sqlmodel', documentationUrl: 'https://sqlmodel.tiangolo.com/' },
+          'Next.js 15',
+          { name: 'Turborepo', documentationUrl: 'https://turbo.build/repo' },
+          'TypeScript',
+          'Tailwind CSS',
+          { name: 'Framer Motion', documentationUrl: 'https://www.framer.com/motion/' },
+          { name: 'Liveblocks', documentationUrl: 'https://liveblocks.io/' },
+          'Python',
+          { name: 'FastAPI', documentationUrl: 'https://fastapi.tiangolo.com/' },
+          'PostgreSQL',
           { name: 'pgvector', documentationUrl: 'https://github.com/pgvector/pgvector' },
-          { name: 'vertex ai', documentationUrl: 'https://cloud.google.com/vertex-ai/docs' },
-          'pnpm workspaces',
-          'railway',
-          'neon',
-          'redis',
-          'twilio',
-          'framer motion',
-          'zustand',
-          'zod'
+          { name: 'SQLModel', documentationUrl: 'https://sqlmodel.tiangolo.com/' },
+          'Redis',
+          'Vertex AI',
+          'OpenAI',
+          'Docker',
+          'Railway',
+          'Neon',
+          'pnpm workspaces'
         ]
       }
     }
@@ -147,57 +263,54 @@ export const PROJECTS: Project[] = [
     id: 'voet',
     name: 'voet',
     emoji: '⚽️',
-    description: 'football intelligence platform',
+    description: 'AI-powered football intelligence platform with real-time data orchestration',
     demoUrl: 'https://voet-xyz.vercel.app/',
     sourceUrl: 'https://github.com/nithya/voet',
-    videos: [
-      { src: 'assets/voet-demo.mp4', title: 'platform demo' },
-    ],
     content: {
       overview: {
         title: 'overview',
         items: [
-          'real-time football data aggregation platform',
-          'AI-powered news analysis with entity extraction',
-          'comprehensive football statistics visualization',
-          'intelligent data scraping and enrichment pipeline'
+          'AI-native football data platform aggregating multi-league statistics',
+          'distributed data pipeline with entity extraction and linking',
+          'real-time streaming chat with contextual football knowledge',
+          'automated news summarization and match report generation'
         ]
       },
       core: {
         title: 'core',
         items: [
-          'multi-source data orchestration system',
-          'Gemini-powered content analysis & entity recognition',
-          'automated entity linking for players, teams, and matches',
-          'distributed job queue for scheduled data updates'
+          'Mastra-powered AI workflows for intelligent data processing',
+          'multi-stage extraction pipelines with schema validation',
+          'entity recognition linking players, teams, and matches',
+          'distributed cron orchestration for real-time updates',
+          'structured data extraction from unstructured web content'
         ]
       },
       architecture: {
         title: 'architecture',
         items: [
-          'modular scraper system with orchestration layer',
-          'LLM pipeline for content extraction and classification',
-          'Redis queue for resilient distributed processing',
-          'relational schema with rich entity relationships'
+          'Turborepo monorepo with Next.js 15 microservices',
+          'event-driven architecture with job queue processing',
+          'PostgreSQL with Prisma ORM for complex entity relationships',
+          'AI service layer with OpenRouter LLM integration',
+          'Firecrawl web scraping with intelligent content parsing'
         ]
       },
       tech: {
         title: 'tech',
         items: [
-          'next.js',
-          'typescript',
-          'tailwind',
-          'prisma',
-          'postgresql',
-          'redis',
-          'upstash',
-          'gemini api',
-          'cheerio',
-          'SWR',
-          'zustand',
-          'framer motion',
-          'jina',
-          'vercel',
+          { name: 'Mastra', documentationUrl: 'https://mastra.ai' },
+          'Next.js 15',
+          { name: 'Turborepo', documentationUrl: 'https://turbo.build/repo' },
+          { name: 'Prisma', documentationUrl: 'https://www.prisma.io' },
+          { name: 'NeonDB', documentationUrl: 'https://neon.tech' },
+          { name: 'OpenRouter', documentationUrl: 'https://openrouter.ai' },
+          { name: 'Firecrawl', documentationUrl: 'https://firecrawl.dev' },
+          { name: 'Clerk Auth', documentationUrl: 'https://clerk.com' },
+          { name: 'PostHog', documentationUrl: 'https://posthog.com' },
+          'TypeScript',
+          'Zod validation',
+          'Framer Motion'
         ]
       }
     }
@@ -206,58 +319,59 @@ export const PROJECTS: Project[] = [
     id: 'sine',
     name: 'sine',
     emoji: '🎵',
-    description: 'midi-based beatmaking app for ios',
+    description: 'AI-powered MIDI sequencer and collaborative music creation platform for iOS',
     demoUrl: 'https://sine.app',
     sourceUrl: 'https://github.com/nithya/sine',
-    videos: [
-      { src: 'assets/sine-ios.mp4', title: 'ios app demo' },
-      { src: 'assets/sine-pack-utility.mp4', title: 'pack utility' }
-    ],
     content: {
       overview: {
         title: 'overview',
         items: [
-          'midi pattern sequencing',
-          'web-based midi/sound pack upload utility',
-          'collaborative sound sharing',
-          'ai audio manipulation'
+          'native iOS MIDI sequencer with multi-track pattern composition',
+          'AI-powered audio processing with VST3 plugin integration',
+          'web-based sound pack management and collaborative sharing',
+          'real-time audio manipulation through WebSocket streaming'
         ]
       },
       core: {
         title: 'core',
         items: [
-          'midi engine + patterns',
-          'semantic search',
-          'pack management',
-          'real-time sync'
+          'custom MIDI engine with AVAudioUnitSampler for low-latency playback',
+          'Pedalboard-based audio effects processing with customizable presets',
+          'semantic search for sound discovery using AI embeddings',
+          'distributed job queue for scalable audio processing',
+          'cross-platform sync between iOS app and web utility'
         ]
       },
       architecture: {
         title: 'architecture',
         items: [
-          'native ios client',
-          'websocket streaming',
-          'edge deployment',
-          'vector search'
+          'SwiftUI/SwiftData iOS app with MIDIKit integration',
+          'FastAPI service layer with WebSocket audio streaming',
+          'Next.js web platform with drag-and-drop pack management',
+          'Google Cloud Storage for processed audio distribution',
+          'PostgreSQL with Prisma ORM for metadata and user data'
         ]
       },
       tech: {
         title: 'tech',
         items: [
-          'swift',
-          'webkit',
-          'next.js',
-          'typescript',
-          'rust',
-          'audio tools',
-          'video server',
-          'postgresql',
-          'vertexai',
-          'openai',
-          'worker',
-          'streams',
-          's3',
-          'vapor'
+          'SwiftUI',
+          'SwiftData',
+          { name: 'MIDIKit', documentationUrl: 'https://github.com/orchetect/MIDIKit' },
+          'AVFoundation',
+          'Next.js',
+          'TypeScript',
+          { name: 'Tone.js', documentationUrl: 'https://tonejs.github.io/' },
+          'FastAPI',
+          { name: 'Pedalboard', documentationUrl: 'https://spotify.github.io/pedalboard/' },
+          'WebSockets',
+          'PostgreSQL',
+          'Prisma',
+          'Google Cloud Storage',
+          'OpenAI API',
+          'Vertex AI',
+          'Docker',
+          'Vercel'
         ]
       }
     }
@@ -266,50 +380,52 @@ export const PROJECTS: Project[] = [
     id: 'helios',
     name: 'helios',
     emoji: '☀️',
-    description: 'display temperature control menu bar widget for macOS',
+    description: 'native macOS menu bar app for display temperature control with fluid animations',
     demoUrl: 'https://helios.app',
     sourceUrl: 'https://github.com/orgs/helios-xyz/repositories',
-    videos: [
-      { src: 'assets/helios.mp4', title: 'app demo' }
-    ],
     content: {
       overview: {
         title: 'overview',
         items: [
-          'native menu bar interface',
-          'keyboard shortcuts',
-          'fluid animations',
-          'minimal interactions'
+          'native macOS menu bar app with instant access controls',
+          'global keyboard shortcuts for quick adjustments',
+          'smooth animated transitions with SwiftUI',
+          'minimal, focused interface design'
         ]
       },
       core: {
         title: 'core',
         items: [
-          'display control',
-          'atomic operations',
-          'event system',
-          'state persistence'
+          'CoreDisplay API integration for hardware control',
+          'real-time display temperature adjustments',
+          'global hotkey system with customizable shortcuts',
+          'persistent preferences with automatic restore',
+          'multi-monitor support with individual controls'
         ]
       },
       architecture: {
         title: 'architecture',
         items: [
-          'native macos app',
-          'metal rendering',
-          'event streaming',
-          'local storage'
+          'pure SwiftUI architecture with AppKit integration',
+          'Metal shaders for real-time preview rendering',
+          'Combine framework for reactive state management',
+          'UserDefaults and SQLite for data persistence',
+          'background daemon for system-level integration'
         ]
       },
       tech: {
         title: 'tech',
         items: [
-          'swift',
-          'swiftui',
-          'metal',
-          'combine',
-          'appkit',
-          'sqlite',
-          'hotkey',
+          'Swift',
+          'SwiftUI',
+          'Metal',
+          'Combine',
+          'AppKit',
+          'CoreDisplay',
+          'SQLite',
+          'HotKey',
+          'UserDefaults',
+          'XCTest'
         ]
       }
     }
@@ -381,7 +497,7 @@ export const PROJECTS: Project[] = [
     emoji: '∞',
     description: 'stem player for your music with intelligent audio processing',
     demoUrl: 'https://loops-app.vercel.app/',
-    sourceUrl: 'https://github.com/yourusername/loops',
+    sourceUrl: 'https://github.com/lnittman/loops',
     content: {
       overview: {
         title: 'overview',
@@ -439,12 +555,9 @@ export const PROJECTS: Project[] = [
     id: 'jobs',
     name: 'jobs',
     emoji: '💼',
-    description: 'linkedin + cursor',
+    description: 'AI-powered job application platform with multi-LLM orchestration',
     appUrl: 'https://jobs-xyz.vercel.app/',
     sourceUrl: 'https://github.com/nithya/jobs',
-    videos: [
-      { src: 'assets/jobs-demo.mp4', title: 'app demo' }
-    ],
     content: {
       overview: {
         title: 'overview',

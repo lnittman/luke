@@ -1,18 +1,9 @@
 @use 'tailwindcss';
 
-// Font imports
-@font-face {
-  font-family: 'IosevkaTerm-Regular';
-  src: url('/fonts/iosevka-regular.woff2') format('woff2');
-  font-weight: normal;
-  font-style: normal;
-  font-display: swap;
-}
-
 // CSS Variables for theming
 :root {
-  // Font
-  --font-mono: 'IosevkaTerm-Regular', monospace;
+  // Font - system monospace stack for better mobile support
+  --font-mono: ui-monospace, SFMono-Regular, SF Mono, Menlo, Consolas, Liberation Mono, monospace;
   
   // Colors - Light theme (default)
   --background-start: 255 255 255;
@@ -55,6 +46,11 @@ html {
   font-size: 16px;
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
+  -webkit-text-size-adjust: 100%; // Prevent font size adjustments on iOS
+  
+  @media (max-width: 568px) {
+    font-size: 14px; // Slightly smaller on very small screens
+  }
 }
 
 body {

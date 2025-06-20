@@ -6,7 +6,7 @@
   width: 100%;
   overflow: hidden;
   
-  // Side borders that extend full viewport height
+  // Side borders - following www-internet-v2 approach
   &::before,
   &::after {
     content: '';
@@ -16,22 +16,18 @@
     width: 1px;
     background: rgb(var(--border));
     z-index: 100;
+    
+    @media (max-width: 768px) {
+      display: none; // Hide side borders on mobile
+    }
   }
   
   &::before {
-    left: calc(50% - 400px - 1px);
-    
-    @media (max-width: 832px) {
-      left: calc(50% - 50vw + 1rem);
-    }
+    left: calc(50% - 384px); // 768px / 2
   }
   
   &::after {
-    right: calc(50% - 400px - 1px);
-    
-    @media (max-width: 832px) {
-      right: calc(50% - 50vw + 1rem);
-    }
+    right: calc(50% - 384px); // 768px / 2
   }
 }
 
@@ -52,12 +48,19 @@
     align-items: center;
     justify-content: space-between;
     gap: 2rem;
-    max-width: 800px;
+    max-width: 768px;
     margin: 0 auto;
-    padding: 2rem 1rem;
+    padding: 1.5rem 24px;
+    border-left: 1px solid rgb(var(--border));
+    border-right: 1px solid rgb(var(--border));
+    
+    @media (max-width: 768px) {
+      border-left: none;
+      border-right: none;
+    }
     
     @media (min-width: 768px) {
-      padding: 3rem 2rem;
+      padding: 2rem 24px;
     }
   }
 }
@@ -67,6 +70,7 @@
   flex: 1;
   overflow-y: auto;
   overflow-x: hidden;
+  -webkit-overflow-scrolling: touch; // Smooth scrolling on iOS
   
   // Custom scrollbar
   &::-webkit-scrollbar {
@@ -91,11 +95,19 @@
   scrollbar-color: rgb(var(--border)) transparent;
 }
 
-// Inner viewport for content within margins
+// Inner viewport for content - follows www-internet-v2 approach
 .innerViewport {
-  max-width: 800px;
+  max-width: 768px;
   margin: 0 auto;
   min-height: 100%;
+  border-left: 1px solid rgb(var(--border));
+  border-right: 1px solid rgb(var(--border));
+  
+  @media (max-width: 768px) {
+    // On mobile, content is naturally flush with viewport edges
+    border-left: none;
+    border-right: none;
+  }
 }
 
 // Content rows
@@ -107,12 +119,12 @@
   }
 }
 
-// Content columns
+// Content columns - consistent padding like www-internet-v2
 .column {
-  padding: 2rem 1rem;
+  padding: 1.5rem 24px;
   
   @media (min-width: 768px) {
-    padding: 3rem 2rem;
+    padding: 2rem 24px;
   }
 }
 
@@ -130,12 +142,19 @@
     display: flex;
     align-items: center;
     justify-content: space-between;
-    max-width: 800px;
+    max-width: 768px;
     margin: 0 auto;
-    padding: 1rem;
+    padding: 1rem 24px;
+    border-left: 1px solid rgb(var(--border));
+    border-right: 1px solid rgb(var(--border));
+    
+    @media (max-width: 768px) {
+      border-left: none;
+      border-right: none;
+    }
     
     @media (min-width: 768px) {
-      padding: 1.5rem 2rem;
+      padding: 1.5rem 24px;
     }
   }
 }
