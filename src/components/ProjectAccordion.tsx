@@ -15,7 +15,7 @@ export function ProjectAccordion({ project, defaultOpen = false }: ProjectAccord
   
   // Determine the primary link
   const primaryLink = project.appUrl || project.demoUrl || project.sourceUrl;
-  const linkText = project.appUrl ? 'VIEW APP' : project.demoUrl ? 'VIEW DEMO' : 'VIEW SOURCE';
+  const linkText = 'VIEW';
 
   return (
     <div className={styles.accordion}>

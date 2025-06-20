@@ -89,7 +89,7 @@ export const PROJECTS: Project[] = [
     name: 'react-llm',
     emoji: '💬',
     description: 'browser-native AI coding assistant for React developers',
-    demoUrl: 'https://react-llm.dev',
+    demoUrl: 'https://react-llm.vercel.app',
     sourceUrl: 'https://github.com/lnittman/react-llm',
     content: {
       overview: {
@@ -145,7 +145,7 @@ export const PROJECTS: Project[] = [
     name: 'webs',
     emoji: '🌐',
     description: 'AI-native web research platform that transforms URLs into intelligent insights',
-    appUrl: 'https://webs.xyz',
+    appUrl: 'https://webs-xyz.vercel.app',
     sourceUrl: 'https://github.com/lnittman/webs-xyz',
     content: {
       overview: {
@@ -202,7 +202,7 @@ export const PROJECTS: Project[] = [
     name: 'squish',
     emoji: '🐙',
     description: 'multimodal AI content platform with semantic search and real-time collaboration',
-    demoUrl: 'https://squish-web.vercel.app/',
+    demoUrl: 'https://squish-xyz.vercel.app/',
     sourceUrl: 'https://github.com/orgs/squish-xyz/repositories',
     content: {
       overview: {
@@ -320,7 +320,7 @@ export const PROJECTS: Project[] = [
     name: 'sine',
     emoji: '🎵',
     description: 'AI-powered MIDI sequencer and collaborative music creation platform for iOS',
-    demoUrl: 'https://sine.app',
+    demoUrl: 'https://sine-labs.com',
     sourceUrl: 'https://github.com/nithya/sine',
     content: {
       overview: {
@@ -381,7 +381,6 @@ export const PROJECTS: Project[] = [
     name: 'helios',
     emoji: '☀️',
     description: 'native macOS menu bar app for display temperature control with fluid animations',
-    demoUrl: 'https://helios.app',
     sourceUrl: 'https://github.com/orgs/helios-xyz/repositories',
     content: {
       overview: {
@@ -553,10 +552,10 @@ export const PROJECTS: Project[] = [
   },
   {
     id: 'jobs',
-    name: 'jobs',
+    name: 'cards',
     emoji: '💼',
     description: 'AI-powered job application platform with multi-LLM orchestration',
-    appUrl: 'https://jobs-xyz.vercel.app/',
+    appUrl: 'https://cards-xyz.vercel.app/',
     sourceUrl: 'https://github.com/nithya/jobs',
     content: {
       overview: {

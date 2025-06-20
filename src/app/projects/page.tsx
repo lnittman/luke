@@ -25,16 +25,14 @@ export default function Projects() {
                   mobile apps, and developer tools.
                 </p>
               </div>
-              
-              <div className="space-y-0">
-                {PROJECTS.map((project) => (
-                  <ProjectAccordion 
-                    key={project.id} 
-                    project={project} 
-                  />
-                ))}
-              </div>
             </div>
+          </div>
+          
+          {/* Projects list with full-width items */}
+          <div className="space-y-0">
+            {PROJECTS.map((project) => (
+              <ProjectAccordion key={project.id} project={project} />
+            ))}
           </div>
         </div>
       </div>

@@ -59,17 +59,6 @@ export default function Work() {
             <p>BSc in Computer Science and German Studies (2017)</p>
           </div>
         </div>
-
-        <div className={styles.row}>
-          <div className={styles.column}>
-            <h2>RESUME</h2>
-            <p>
-              <a href="https://github.com/lnittman/resume" target="_blank" rel="noopener noreferrer">
-                View Resume Repository →
-              </a>
-            </p>
-          </div>
-        </div>
         </div>
       </div>
 

@@ -1,9 +1,18 @@
 @use 'tailwindcss';
 
+// Font imports
+@font-face {
+  font-family: 'IosevkaTerm-Regular';
+  src: url('/fonts/IosevkaTerm-Regular.woff2') format('woff2');
+  font-weight: normal;
+  font-style: normal;
+  font-display: swap;
+}
+
 // CSS Variables for theming
 :root {
-  // Font - system monospace stack for better mobile support
-  --font-mono: ui-monospace, SFMono-Regular, SF Mono, Menlo, Consolas, Liberation Mono, monospace;
+  // Font - Iosevka with system monospace fallback
+  --font-mono: 'IosevkaTerm-Regular', ui-monospace, SFMono-Regular, SF Mono, Menlo, Consolas, Liberation Mono, monospace;
   
   // Colors - Light theme (default)
   --background-start: 255 255 255;
