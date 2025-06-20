@@ -2,9 +2,11 @@
 .root {
   display: flex;
   flex-direction: column;
-  height: 100vh;
+  min-height: 100vh;
+  min-height: 100dvh; // Dynamic viewport height for mobile
   width: 100%;
   overflow: hidden;
+  position: relative;
   
   // Side borders - following www-internet-v2 approach
   &::before,
@@ -137,6 +139,7 @@
   );
   border-top: 1px solid rgb(var(--border));
   z-index: 50;
+  margin-top: auto; // Push footer to bottom
   
   .column {
     display: flex;
