@@ -84,6 +84,7 @@ html {
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
   -webkit-text-size-adjust: 100%; // Prevent font size adjustments on iOS
+  height: 100%; // Ensure proper height inheritance
   
   @media (max-width: 568px) {
     font-size: 14px; // Slightly smaller on very small screens
@@ -97,8 +98,7 @@ body {
     rgb(var(--background-start)),
     rgb(var(--background-end))
   );
-  min-height: 100vh;
-  min-height: 100dvh; // Dynamic viewport height for mobile
+  height: 100%;
   overflow: hidden;
 }
 

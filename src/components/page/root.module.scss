@@ -2,11 +2,9 @@
 .root {
   display: flex;
   flex-direction: column;
-  min-height: 100vh;
-  min-height: 100dvh; // Dynamic viewport height for mobile
+  height: 100vh;
   width: 100%;
   overflow: hidden;
-  position: relative;
   
   // Side borders - following www-internet-v2 approach
   &::before,
@@ -73,6 +71,7 @@
   overflow-y: auto;
   overflow-x: hidden;
   -webkit-overflow-scrolling: touch; // Smooth scrolling on iOS
+  min-height: 0; // Fix for mobile Safari flexbox issue
   
   // Custom scrollbar
   &::-webkit-scrollbar {
@@ -139,7 +138,9 @@
   );
   border-top: 1px solid rgb(var(--border));
   z-index: 50;
-  margin-top: auto; // Push footer to bottom
+  flex-shrink: 0; // Prevent footer from shrinking
+  position: sticky;
+  bottom: 0;
   
   .column {
     display: flex;
