@@ -16,20 +16,19 @@ export default function Home() {
           <ThemeSwitcher />
         </div>
       </div>
-      
+
       <div className={styles.content}>
         <div className={styles.innerViewport}>
           <div className={styles.row}>
             <div className={styles.column}>
               <h2>AI ENGINEER</h2>
               <p>
-                I build production software that makes AI accessible and useful. 
-                Not theoretical—actual tools people use every day.
+                I build production-grade software that makes AI feel more interesting.
               </p>
               <p>
-                Currently focused on removing the friction between human intent 
-                and machine capability. Each project is an experiment in making 
-                complex technology feel simple.
+                Currently focused on removing the friction between human intent
+                and machine capability. Each project is an experiment in translating
+                complex interaction patterns to more delightful and instinctive-feeling ones.
               </p>
             </div>
           </div>
@@ -38,14 +37,26 @@ export default function Home() {
             <div className={styles.column}>
               <h2>PATTERN RECOGNITION</h2>
               <p>
-                After shipping code at Amazon and AWS, leading teams at startups, 
-                and building my own products, I've noticed the same principles 
-                appear across disciplines. Good engineering is good design. 
-                Constraints breed creativity. The best interface is no interface.
+                After shipping code at Amazon and AWS, leading teams at startups,
+                and building my own products, I've noticed the same principles
+                appear across disciplines:
               </p>
+
               <p>
-                Now I apply these patterns to AI systems—making them feel less 
-                like alien technology and more like natural extensions of thought.
+                Good engineering is good design.
+              </p>
+
+              <p>
+                Constraints breed creativity.
+              </p>
+
+              <p>
+                The best interface is no interface.
+              </p>
+
+              <p>
+                I enjoy applying these patterns in building LLM integrations into my products — making it feel less
+                like alien technology and more like a natural extension of creative thought.
               </p>
             </div>
           </div>
@@ -54,13 +65,11 @@ export default function Home() {
             <div className={styles.column}>
               <h2>CURRENT FOCUS</h2>
               <p>
-                Building tools that democratize AI development. From browser-native 
-                coding assistants to semantic content networks, each project explores 
-                how to make powerful technology accessible without dumbing it down.
+                How to make powerful technology accessible, without dumbing it down.
               </p>
               <p>
-                The goal isn't to build AI for AI's sake, but to create products 
-                where the technology disappears into the experience.
+                The goal isn't to build for AI's sake, but to create products
+                where the product itself disappears into the experience.
               </p>
             </div>
           </div>
