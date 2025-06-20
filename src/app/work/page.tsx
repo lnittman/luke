@@ -24,12 +24,13 @@ export default function Work() {
         <div className={styles.row}>
           <div className={styles.column}>
             <h2>EXPERIENCE</h2>
-            <div style={{ marginTop: '1.5rem' }}>
-              {WORK_EXPERIENCES.map((experience) => (
-                <WorkExperience key={experience.id} experience={experience} />
-              ))}
-            </div>
           </div>
+        </div>
+        
+        <div className="space-y-0">
+          {WORK_EXPERIENCES.map((experience) => (
+            <WorkExperience key={experience.id} experience={experience} />
+          ))}
         </div>
 
         <div className={styles.row}>

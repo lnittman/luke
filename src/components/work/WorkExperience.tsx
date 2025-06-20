@@ -7,6 +7,7 @@ interface Experience {
   id: string;
   title: string;
   company: string;
+  companyUrl?: string;
   location?: string;
   period: string;
   description?: string;
@@ -29,7 +30,18 @@ export function WorkExperience({ experience }: WorkExperienceProps) {
       >
         <div className={styles.titleWrapper}>
           <div className={styles.titleLine}>
-            <span className={styles.company}>{experience.company}</span>
+            {experience.companyUrl ? (
+              <a 
+                href={experience.companyUrl} 
+                target="_blank" 
+                rel="noopener noreferrer"
+                className={styles.companyLink}
+              >
+                {experience.company}
+              </a>
+            ) : (
+              <span className={styles.company}>{experience.company}</span>
+            )}
             <span className={styles.divider}>—</span>
             <span className={styles.title}>{experience.title}</span>
           </div>
@@ -43,7 +55,7 @@ export function WorkExperience({ experience }: WorkExperienceProps) {
             )}
           </div>
         </div>
-        <span className={styles.arrow}>{isOpen ? '↑' : '↓'}</span>
+        <span className={styles.arrow}>{isOpen ? '▾' : '▸'}</span>
       </button>
       
       {isOpen && (

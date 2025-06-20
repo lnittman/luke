@@ -16,6 +16,7 @@ export const WORK_EXPERIENCES = [
     id: 'titles',
     title: 'Senior Software Engineer',
     company: 'Titles, Inc.',
+    companyUrl: 'https://titles.xyz',
     location: 'Remote',
     period: 'May 2024 - November 2024',
     highlights: [
@@ -28,6 +29,7 @@ export const WORK_EXPERIENCES = [
     id: 'stems',
     title: 'Senior Software Engineer',
     company: 'Stems Labs',
+    companyUrl: 'https://apps.apple.com/us/app/lowkey/id6667115190',
     location: 'Remote',
     period: 'November 2022 - February 2024',
     highlights: [
@@ -39,9 +41,25 @@ export const WORK_EXPERIENCES = [
     ]
   },
   {
+    id: 'video-store',
+    title: 'Audio Engineer',
+    company: 'Video Store Records',
+    companyUrl: 'https://www.instagram.com/videostored/?hl=en',
+    location: 'Los Angeles, CA',
+    period: '2021 - 2022',
+    highlights: [
+      'Responsible for tracking artists including BROCKHAMPTON, Tommy Richman, and Merlyn Wood',
+      'Produced original compositions with artists',
+      'Delivered rough mixes for clients',
+      'Operated professional recording sessions',
+      'Managed studio workflow and session documentation'
+    ]
+  },
+  {
     id: 'amazon',
     title: 'Software Engineer, Address Intelligence',
     company: 'Amazon, Inc.',
+    companyUrl: 'https://www.amazon.com',
     location: 'Portland, OR',
     period: 'June 2019 - December 2021',
     highlights: [
@@ -57,6 +75,7 @@ export const WORK_EXPERIENCES = [
     id: 'aws',
     title: 'Software Engineer, AWS MediaConvert',
     company: 'AWS Elemental',
+    companyUrl: 'https://aws.amazon.com/media-services/elemental/',
     location: 'Portland, OR',
     period: 'January 2018 - June 2019',
     highlights: [
