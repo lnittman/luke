@@ -42,8 +42,12 @@ export function WorkExperience({ experience }: WorkExperienceProps) {
             ) : (
               <span className={styles.company}>{experience.company}</span>
             )}
-            <span className={styles.divider}>—</span>
-            <span className={styles.title}>{experience.title}</span>
+            {experience.id !== 'independent' && (
+              <>
+                <span className={styles.divider}>—</span>
+                <span className={styles.title}>{experience.title}</span>
+              </>
+            )}
           </div>
           <div className={styles.metadata}>
             <span className={styles.period}>{experience.period}</span>

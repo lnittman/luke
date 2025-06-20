@@ -2,9 +2,10 @@
   width: 100%;
   border-bottom: 1px solid rgb(var(--border));
   
-  &:last-child {
-    border-bottom: none;
-  }
+  // Remove this to ensure all items have bottom border
+  // &:last-child {
+  //   border-bottom: none;
+  // }
 }
 
 .header {
