@@ -32,7 +32,7 @@ export const PROJECTS: Project[] = [
     id: 'arbor',
     name: 'arbor',
     emoji: '🌳',
-    description: 'enterprise-grade AI chat framework with multi-agent orchestration',
+    description: 'LLM chat app with workspaces and task-based coding agent',
     appUrl: 'https://arbor-xyz.vercel.app/',
     sourceUrl: 'https://github.com/lnittman/arbor',
     content: {
@@ -90,7 +90,7 @@ export const PROJECTS: Project[] = [
     id: 'react-llm',
     name: 'react-llm',
     emoji: '💬',
-    description: 'browser-native AI coding assistant for React developers',
+    description: 'browser-native coding assistant for React developers',
     demoUrl: 'https://react-llm.vercel.app',
     sourceUrl: 'https://github.com/lnittman/react-llm',
     content: {
@@ -98,7 +98,7 @@ export const PROJECTS: Project[] = [
         title: 'overview',
         items: [
           'visual component selection through React fiber traversal',
-          'multi-model AI chat with 100+ LLMs via OpenRouter',
+          'multi-model chat with support for all major providers',
           'live code editing with File System Access API',
           'browser-native architecture requiring zero extensions'
         ]
@@ -268,7 +268,7 @@ export const PROJECTS: Project[] = [
     emoji: '⚽️',
     description: 'AI-powered football intelligence platform with real-time data orchestration',
     demoUrl: 'https://voet-xyz.vercel.app/',
-    sourceUrl: 'https://github.com/nithya/voet',
+    sourceUrl: 'https://github.com/lnittman/voet',
     content: {
       overview: {
         title: 'overview',
@@ -322,9 +322,9 @@ export const PROJECTS: Project[] = [
     id: 'sine',
     name: 'sine',
     emoji: '🎵',
-    description: 'AI-powered MIDI sequencer and collaborative music creation platform for iOS',
     demoUrl: 'https://sine-labs.com',
-    sourceUrl: 'https://github.com/nithya/sine',
+    description: 'MIDI-based music creation platform for iOS',
+    sourceUrl: 'https://github.com/lnittman/sine',
     content: {
       overview: {
         title: 'overview',
@@ -438,7 +438,7 @@ export const PROJECTS: Project[] = [
     emoji: '🌸',
     description: 'empathetic mental wellness companion',
     demoUrl: 'https://ther-app.vercel.app/',
-    sourceUrl: 'https://github.com/nithya/ther',
+    sourceUrl: 'https://github.com/lnittman/ther',
     content: {
       overview: {
         title: 'overview',
@@ -554,12 +554,12 @@ export const PROJECTS: Project[] = [
     }
   },
   {
-    id: 'jobs',
+    id: 'cards',
     name: 'cards',
     emoji: '💼',
-    description: 'AI-powered job application platform with multi-LLM orchestration',
+    description: 'AI-native professional identity platform',
     appUrl: 'https://cards-xyz.vercel.app/',
-    sourceUrl: 'https://github.com/nithya/jobs',
+    sourceUrl: 'https://github.com/lnittman/cards',
     content: {
       overview: {
         title: 'overview',

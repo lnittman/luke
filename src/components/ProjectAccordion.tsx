@@ -4,6 +4,7 @@ import React, { useState } from 'react';
 import classNames from 'classnames';
 import styles from './ProjectAccordion.module.scss';
 import { Project } from '@/constants/projects';
+import { SineMoodRingIcon } from './SineMoodRingIcon';
 
 interface ProjectAccordionProps {
   project: Project;
@@ -27,8 +28,10 @@ export function ProjectAccordion({ project, defaultOpen = false }: ProjectAccord
         <div className={styles.titleWrapper}>
           <div className={styles.titleLine}>
             <span className={styles.emoji}>
-              {project.id === 'loops' ? (
-                <img src="/assets/loops.png" alt="loops logo" />
+              {project.id === 'sine' ? (
+                <SineMoodRingIcon />
+              ) : ['loops', 'arbor', 'voet', 'ther', 'webs-xyz', 'react-llm'].includes(project.id) ? (
+                <img src={`/assets/${project.id === 'webs-xyz' ? 'webs' : project.id}.png`} alt={`${project.name} logo`} />
               ) : (
                 project.emoji
               )}

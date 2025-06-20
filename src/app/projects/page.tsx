@@ -23,17 +23,15 @@ export default function Projects() {
         <div className={styles.innerViewport}>
           <div className={styles.row}>
             <div className={styles.column}>
-              <div className="mb-8">
-                <p className="text-[rgb(var(--text-secondary))]">
-                  A collection of software projects spanning AI/ML, web applications, 
-                  mobile apps, and developer tools.
-                </p>
-              </div>
+              <p className="text-[rgb(var(--text-secondary))]">
+                a collection of software projects spanning AI/ML, web applications, 
+                mobile apps, and developer tools.
+              </p>
             </div>
           </div>
           
           {/* Projects list with full-width items */}
-          <div className="space-y-0">
+          <div className="space-y-0" style={{ marginTop: '0' }}>
             {PROJECTS.map((project) => (
               <ProjectAccordion key={project.id} project={project} />
             ))}

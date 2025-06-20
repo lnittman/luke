@@ -1,0 +1,29 @@
+@keyframes moodRing {
+  0% {
+    fill: #c7f0bd; // Light green
+  }
+  25% {
+    fill: #fde4cf; // Peach/cream
+  }
+  50% {
+    fill: #f7a399; // Coral/pink
+  }
+  75% {
+    fill: #cc9e61; // Brown/amber
+  }
+  100% {
+    fill: #c7f0bd; // Back to light green
+  }
+}
+
+.iconWrapper {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 100%;
+  height: 100%;
+}
+
+.moodRing {
+  animation: moodRing 10s infinite ease-in-out;
+}

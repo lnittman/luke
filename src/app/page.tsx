@@ -23,11 +23,11 @@ export default function Home() {
             <div className={styles.column}>
               <h2>AI ENGINEER</h2>
               <p>
-                I build production-grade software that makes AI feel more human.
+                i build production-grade software that makes AI feel more human.
               </p>
               <p>
-                Currently focused on removing the friction between human intent
-                and machine capability. Each project is an experiment in translating
+                currently focused on removing the friction between human intent
+                and machine capability. each project is an experiment in translating
                 complex interaction patterns to more delightful and instinctive-feeling ones.
               </p>
             </div>
@@ -37,26 +37,26 @@ export default function Home() {
             <div className={styles.column}>
               <h2>PATTERN RECOGNITION</h2>
               <p>
-                After shipping code at Amazon and AWS, leading teams at startups,
-                and building my own products, I've noticed the same principles
+                after shipping code at Amazon and AWS, leading teams at startups,
+                and building my own products, i've noticed the same principles
                 appear across disciplines:
               </p>
 
               <p>
-                Good engineering is good design.
+                good engineering is good design.
               </p>
 
               <p>
-                Constraints breed creativity.
+                constraints breed creativity.
               </p>
 
               <p>
-                The best interface is no interface.
+                the best interface is no interface.
               </p>
 
               <p>
-                I enjoy applying these patterns in building LLM integrations into my products — making it feel less
-                like alien technology and more like a natural extension of creative thought.
+                i enjoy applying these patterns in building LLM integrations into my products — making it feel less
+                like black box technology and more like a natural extension of users' creative thought processes.
               </p>
             </div>
           </div>
@@ -65,11 +65,11 @@ export default function Home() {
             <div className={styles.column}>
               <h2>CURRENT FOCUS</h2>
               <p>
-                How to make powerful technology accessible, without dumbing it down.
+                how to make powerful technology accessible, without dumbing it down?
               </p>
               <p>
-                The goal isn't to build for AI's sake, but to create products
-                where the product itself disappears into the experience.
+                the goal isn't to build for AI's sake, but to create products
+                that disappear into the experience.
               </p>
             </div>
           </div>

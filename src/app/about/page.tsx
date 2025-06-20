@@ -23,14 +23,14 @@ export default function About() {
             <div className={styles.column}>
               <h2>BACKGROUND</h2>
               <p>
-                Started my career optimizing video transcoding engines at AWS Elemental,
+                started my career optimizing video transcoding engines at AWS Elemental,
                 then architected distributed systems for address intelligence at Amazon.
-                Left big tech to try startups, where I could ship faster and own the full stack.
+                left big tech to try startups, where i could ship faster and own the full stack.
               </p>
               <p>
-                Now I'm enjoying building my own products. Each one explores a simple question:
+                now i'm enjoying building my own products. each one explores a simple question:
                 how do we make AI feel less like an infinite black box and more like
-                a useful friend? The answer is always in the implementation details.
+                a useful friend? the answer is always in the implementation details.
               </p>
             </div>
           </div>
@@ -39,14 +39,14 @@ export default function About() {
             <div className={styles.column}>
               <h2>ENGINEERING PHILOSOPHY</h2>
               <p>
-                Good constraints lead to better products. At Teenage Engineering,
-                designers use six colors and one typeface. At Braun, Dieter Rams outlined ten
-                fundamental principles of 'good design'. I look to apply a similar rigor to AI systems—
+                good constraints lead to better products. at Teenage Engineering,
+                designers use six colors and one typeface. at Braun, Dieter Rams outlined ten
+                fundamental principles of 'good design'. i look to apply a similar rigor to AI systems—
                 strict rules that paradoxically create more freedom for users.
               </p>
               <p>
-                Every technical decision is a design decision. The best products
-                feel inevitable, like they couldn't exist any other way. This
+                every technical decision is a design decision. the best products
+                feel inevitable, like they couldn't exist any other way. this
                 requires obsessing over details that most people never notice.
               </p>
             </div>
@@ -56,13 +56,13 @@ export default function About() {
             <div className={styles.column}>
               <h2>CURRENT INTERESTS</h2>
               <ul>
-                <li>Agentic UI/UX patterns</li>
-                <li>Semantic interfaces for content and knowledge</li>
-                <li>Vector databases and embedding systems</li>
-                <li>Making LLMs feel less like chatbots</li>
+                <li>agentic UI/UX patterns</li>
+                <li>semantic interfaces for content and knowledge</li>
+                <li>vector databases and embedding systems</li>
+                <li>making LLMs feel less like chatbots</li>
                 <li>MIDI generation/manipulation, audio synthesis, and real-time processing</li>
-                <li>Cross-platform native experiences (iOS/macOS/Web)</li>
-                <li>The intersection of taste and technology</li>
+                <li>cross-platform native experiences (iOS/macOS/Web)</li>
+                <li>the intersection of taste and technology</li>
               </ul>
             </div>
           </div>
