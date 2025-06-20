@@ -19,8 +19,8 @@ export function ThemeSwitcher() {
       const metaThemeColor = document.querySelector('meta[name="theme-color"]');
       if (metaThemeColor) {
         const themeColors = {
-          light: '#f2f1ef',
-          dark: '#121820'
+          light: '#f5f4f2', // rgb(245 244 242) - from --background-start
+          dark: '#161c24' // rgb(22 28 36) - from --background-start
         };
         metaThemeColor.setAttribute('content', themeColors[theme as 'light' | 'dark']);
       }
