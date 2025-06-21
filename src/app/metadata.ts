@@ -19,8 +19,24 @@ export const metadata: Metadata = {
   },
   // Next.js will automatically link the manifest from src/app/manifest.ts
   icons: {
-    icon: '/assets/luke-home.png',
-    shortcut: '/assets/luke-home.png',
-    apple: '/assets/luke-home.png',
+    icon: [
+      { url: '/favicon.ico' },
+      { url: '/favicon-16x16.png', sizes: '16x16', type: 'image/png' },
+      { url: '/favicon-32x32.png', sizes: '32x32', type: 'image/png' },
+    ],
+    shortcut: '/favicon.ico',
+    apple: '/apple-touch-icon.png',
+    other: [
+      {
+        rel: 'android-chrome',
+        url: '/android-chrome-192x192.png',
+        sizes: '192x192',
+      },
+      {
+        rel: 'android-chrome',
+        url: '/android-chrome-512x512.png',
+        sizes: '512x512',
+      },
+    ],
   },
 };
