@@ -4,7 +4,6 @@ export const WORK_EXPERIENCES = [
     title: 'Senior Software Engineer',
     company: 'Independent Developer',
     period: '2023 to Present',
-    description: 'Building AI-powered developer tools and applications. Focus on full-stack web development, mobile applications, and machine learning systems.',
     highlights: [
       'developed 8+ production applications across web, mobile, and AI domains',
       'built semantic social networks and AI development companions',
