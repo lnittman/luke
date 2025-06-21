@@ -39,7 +39,7 @@ export const PROJECTS: Project[] = [
       overview: {
         title: 'overview',
         items: [
-          'production-ready AI chat framework with cross-platform deployment',
+          'production-ready chat framework with cross-platform deployment',
           'multi-agent orchestration through Mastra framework',
           'Model Context Protocol (MCP) tool integration',
           'native iOS and desktop applications via Tauri'
@@ -58,9 +58,9 @@ export const PROJECTS: Project[] = [
       architecture: {
         title: 'architecture',
         items: [
-          'turborepo monorepo with separate AI microservice',
+          'turborepo monorepo with separate chat microservice',
           'Next.js 15 App Router with React Server Components',
-          'Mastra AI framework for agent orchestration',
+          'Mastra framework for agent orchestration',
           'shared design system and component library',
           'production-ready logging and error handling'
         ]
@@ -146,15 +146,15 @@ export const PROJECTS: Project[] = [
     id: 'webs-xyz',
     name: 'webs',
     emoji: '🌐',
-    description: 'AI-native web research platform that transforms URLs into intelligent insights',
+    description: 'web research platform that transforms URLs into intelligent insights',
     appUrl: 'https://webs-xyz.vercel.app',
     sourceUrl: 'https://github.com/lnittman/webs-xyz',
     content: {
       overview: {
         title: 'overview',
         items: [
-          'AI-powered content analysis replacing traditional browsing',
-          'organized workspaces (Spaces) with custom AI settings',
+          'intelligent content analysis replacing traditional browsing',
+          'organized workspaces (Spaces) with custom settings',
           'real-time streaming responses with progressive UI updates',
           'collaborative research with shared insights and annotations'
         ]
@@ -162,9 +162,9 @@ export const PROJECTS: Project[] = [
       core: {
         title: 'core',
         items: [
-          'multi-URL batch analysis with parallel AI processing',
+          'multi-URL batch analysis with parallel processing',
           'context-aware chat conversations about analyzed content',
-          'AI-generated charts and data visualizations',
+          'automated charts and data visualizations',
           'knowledge graph visualization of URL relationships',
           'mobile-first PWA with offline capabilities'
         ]
@@ -174,7 +174,7 @@ export const PROJECTS: Project[] = [
         items: [
           'turborepo monorepo with 14+ shared packages',
           'Next.js 15 with React Server Components',
-          'Mastra AI framework for agent orchestration',
+          'Mastra framework for agent orchestration',
           'Server-Sent Events for real-time streaming',
           'Clerk auth with row-level security'
         ]
@@ -204,14 +204,14 @@ export const PROJECTS: Project[] = [
     id: 'squish',
     name: 'squish',
     emoji: '🐙',
-    description: 'multimodal AI content platform with semantic search and real-time collaboration',
+    description: 'multimodal content platform with semantic search and real-time collaboration',
     demoUrl: 'https://squish-xyz.vercel.app/',
     sourceUrl: 'https://github.com/orgs/squish-xyz/repositories',
     content: {
       overview: {
         title: 'overview',
         items: [
-          'multimodal AI embeddings for intelligent content understanding',
+          'multimodal embeddings for intelligent content understanding',
           'real-time collaborative boards with WebSocket synchronization',
           'customizable column-based layouts with drag-and-drop',
           'fluid animations and polished interaction design'
@@ -220,7 +220,7 @@ export const PROJECTS: Project[] = [
       core: {
         title: 'core',
         items: [
-          'Vertex AI multimodal embeddings for content understanding',
+          'multimodal embeddings for content understanding',
           'vector similarity search with pgvector and custom indexing',
           'real-time board collaboration via Liveblocks CRDT',
           'distributed async job processing for embedding generation',
@@ -266,14 +266,14 @@ export const PROJECTS: Project[] = [
     id: 'voet',
     name: 'voet',
     emoji: '⚽️',
-    description: 'AI-powered football intelligence platform with real-time data orchestration',
+    description: 'football intelligence platform with real-time data orchestration',
     demoUrl: 'https://voet-xyz.vercel.app/',
     sourceUrl: 'https://github.com/lnittman/voet',
     content: {
       overview: {
         title: 'overview',
         items: [
-          'AI-native football data platform aggregating multi-league statistics',
+          'football data platform aggregating multi-league statistics',
           'distributed data pipeline with entity extraction and linking',
           'real-time streaming chat with contextual football knowledge',
           'automated news summarization and match report generation'
@@ -282,7 +282,7 @@ export const PROJECTS: Project[] = [
       core: {
         title: 'core',
         items: [
-          'Mastra-powered AI workflows for intelligent data processing',
+          'Mastra-powered workflows for intelligent data processing',
           'multi-stage extraction pipelines with schema validation',
           'entity recognition linking players, teams, and matches',
           'distributed cron orchestration for real-time updates',
@@ -295,7 +295,7 @@ export const PROJECTS: Project[] = [
           'Turborepo monorepo with Next.js 15 microservices',
           'event-driven architecture with job queue processing',
           'PostgreSQL with Prisma ORM for complex entity relationships',
-          'AI service layer with OpenRouter LLM integration',
+          'service layer with OpenRouter LLM integration',
           'Firecrawl web scraping with intelligent content parsing'
         ]
       },
@@ -330,7 +330,7 @@ export const PROJECTS: Project[] = [
         title: 'overview',
         items: [
           'native iOS MIDI sequencer with multi-track pattern composition',
-          'AI-powered audio processing with VST3 plugin integration',
+          'advanced audio processing with VST3 plugin integration',
           'web-based sound pack management and collaborative sharing',
           'real-time audio manipulation through WebSocket streaming'
         ]
@@ -340,7 +340,7 @@ export const PROJECTS: Project[] = [
         items: [
           'custom MIDI engine with AVAudioUnitSampler for low-latency playback',
           'Pedalboard-based audio effects processing with customizable presets',
-          'semantic search for sound discovery using AI embeddings',
+          'semantic search for sound discovery using embeddings',
           'distributed job queue for scalable audio processing',
           'cross-platform sync between iOS app and web utility'
         ]
@@ -443,7 +443,7 @@ export const PROJECTS: Project[] = [
       overview: {
         title: 'overview',
         items: [
-          'supportive AI conversations for mental wellness',
+          'supportive conversations for mental wellness',
           'personalized chat experience with contextual suggestions',
           'thoughtful design centered on empathy',
           'subscription-based access with flexible payment options'
@@ -514,7 +514,7 @@ export const PROJECTS: Project[] = [
       core: {
         title: 'core',
         items: [
-          'AI-powered stem isolation (vocals, drums, bass, other)',
+          'advanced stem isolation (vocals, drums, bass, other)',
           'precise loop control with customizable segments',
           'dynamic tempo and playback rate adjustment',
           'individual stem volume and mute controls',
@@ -557,16 +557,16 @@ export const PROJECTS: Project[] = [
     id: 'cards',
     name: 'cards',
     emoji: '💼',
-    description: 'AI-native professional identity platform',
+    description: 'professional identity and career platform',
     appUrl: 'https://cards-xyz.vercel.app/',
     sourceUrl: 'https://github.com/lnittman/cards',
     content: {
       overview: {
         title: 'overview',
         items: [
-          'intelligent job application tracking with LLM integration',
-          'multi-model AI for cover letter generation and job matching',
-          'advanced context management for coherent AI responses',
+          'intelligent job application tracking system',
+          'multi-model cover letter generation and job matching',
+          'advanced context management for coherent responses',
           'customizable workflow automation for job applications'
         ]
       },
@@ -585,7 +585,7 @@ export const PROJECTS: Project[] = [
           'next.js app router with RSC',
           'vercel edge runtime optimization',
           'vector storage integration',
-          'serverless AI processing'
+          'serverless processing'
         ]
       },
       tech: {

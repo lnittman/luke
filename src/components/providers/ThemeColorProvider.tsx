@@ -5,8 +5,8 @@ import { useEffect } from 'react';
 
 const themeColors = {
   light: '#f5f4f2', // rgb(245 244 242)
-  dark: '#161c24',  // rgb(22 28 36)
-  stone: '#2c2a28', // rgb(44 42 40)
+  dark: '#121820',  // rgb(18 24 32) - using gradient end color for better match
+  stone: '#282624', // rgb(40 38 36) - using gradient end color for better match
 };
 
 export function ThemeColorProvider() {
