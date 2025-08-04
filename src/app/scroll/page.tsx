@@ -1,6 +1,6 @@
 'use client';
 
-import React, { useEffect, useRef } from 'react';
+import React, { useEffect, useRef, Suspense } from 'react';
 import { motion, useScroll, useTransform } from 'framer-motion';
 import { LenisProvider } from '@/components/providers/LenisProvider';
 import FluidCanvas from '@/components/interactive/FluidCanvas';
@@ -15,45 +15,11 @@ import {
   AnimatedGroup
 } from '@/components/motion';
 import { PROJECTS } from '@/constants/projects';
+import { FloatingScene, ParticleField } from '@/components/three/FloatingScene';
+import { projectIcons } from '@/components/three/ProjectIcons';
 
-const ASCII_PATTERNS = [
-  `
-╔═══════════════════════════════════════════════════════════════════════╗
-║  ░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░  ║
-║  ░░██╗░░░░░██╗░░░██╗██╗░░██╗███████╗░░░░░░░░░░░░░░░░░░░░░░░░░░░░░  ║
-║  ░░██║░░░░░██║░░░██║██║░██╔╝██╔════╝░░░░░░░░░░░░░░░░░░░░░░░░░░░░░  ║
-║  ░░██║░░░░░██║░░░██║█████╔╝░█████╗░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░  ║
-║  ░░██║░░░░░██║░░░██║██╔═██╗░██╔══╝░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░  ║
-║  ░░███████╗╚██████╔╝██║░░██╗███████╗░░░░░░░░░░░░░░░░░░░░░░░░░░░░░  ║
-║  ░░╚══════╝░╚═════╝░╚═╝░░╚═╝╚══════╝░░░░░░░░░░░░░░░░░░░░░░░░░░░░░  ║
-║  ░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░  ║
-╚═══════════════════════════════════════════════════════════════════════╝
-  `,
-  `
-┌─────────────────────────────────────────────────────────────────────┐
-│ ╱╱╱╱╱╱╱╱╱╱╱╱╱╱╱╱╱╱╱╱╱╱╱╱╱╱╱╱╱╱╱╱╱╱╱╱╱╱╱╱╱╱╱╱╱╱╱╱╱╱╱╱╱╱╱╱╱╱╱╱╱╱╱╱╱ │
-│ ╱╱╲╱╲╱╲╱╲╱╲╱╲╱╲╱╲╱╲╱╲╱╲╱╲╱╲╱╲╱╲╱╲╱╲╱╲╱╲╱╲╱╲╱╲╱╲╱╲╱╲╱╲╱╲╱╲╱╲╱╲╱╱ │
-│ ╱╱╱╲╱╲╱╲╱╲╱╲╱╲╱╲╱╲╱╲╱╲╱╲╱╲╱╲╱╲╱╲╱╲╱╲╱╲╱╲╱╲╱╲╱╲╱╲╱╲╱╲╱╲╱╲╱╲╱╲╱╱╱ │
-│ ╱╱╱╱╲╱╲╱╲╱╲╱╲╱╲╱╲╱╲╱╲╱╲╱╲╱╲╱╲╱╲╱╲╱╲╱╲╱╲╱╲╱╲╱╲╱╲╱╲╱╲╱╲╱╲╱╲╱╲╱╱╱╱ │
-│ ╱╱╱╱╱╲╱╲╱╲╱╲╱╲╱╲╱╲╱╲╱╲╱╲╱╲╱╲╱╲╱╲╱╲╱╲╱╲╱╲╱╲╱╲╱╲╱╲╱╲╱╲╱╲╱╲╱╲╱╱╱╱╱ │
-│ ╱╱╱╱╱╱╲╱╲╱╲╱╲╱╲╱╲╱╲╱╲╱╲╱╲╱╲╱╲╱╲╱╲╱╲╱╲╱╲╱╲╱╲╱╲╱╲╱╲╱╲╱╲╱╲╱╲╱╱╱╱╱╱ │
-│ ╱╱╱╱╱╱╱╱╱╱╱╱╱╱╱╱╱╱╱╱╱╱╱╱╱╱╱╱╱╱╱╱╱╱╱╱╱╱╱╱╱╱╱╱╱╱╱╱╱╱╱╱╱╱╱╱╱╱╱╱╱╱╱╱╱ │
-└─────────────────────────────────────────────────────────────────────┘
-  `,
-  `
-▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓
-▓░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░▓
-▓░░▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒░░▓
-▓░░▒▒▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▒▒░░▓
-▓░░▒▒▓▓█████████████████████████████████████████████████████▓▓▒▒░░▓
-▓░░▒▒▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▒▒░░▓
-▓░░▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒░░▓
-▓░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░▓
-▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓
-  `
-];
-
-function ASCIIInterlude({ pattern, index }: { pattern: string; index: number }) {
+// 3D Interlude with floating icons
+function ThreeInterlude({ icons, index }: { icons: React.ComponentType[]; index: number }) {
   const ref = useRef<HTMLDivElement>(null);
   const { scrollYProgress } = useScroll({
     target: ref,
@@ -66,15 +32,36 @@ function ASCIIInterlude({ pattern, index }: { pattern: string; index: number }) 
   return (
     <motion.section
       ref={ref}
-      className="h-[60vh] flex items-center justify-center px-6"
+      className="h-[60vh] flex items-center justify-center"
       style={{ opacity }}
     >
-      <motion.pre
-        className="font-mono text-xs sm:text-sm text-[rgb(var(--accent-1))] select-none"
+      <motion.div 
+        className="w-full h-full"
         style={{ scale }}
       >
-        {pattern}
-      </motion.pre>
+        <FloatingScene cameraPosition={[0, 0, 8]}>
+          <ParticleField count={200} />
+          <group>
+            {icons.map((Icon, i) => {
+              const angle = (i / icons.length) * Math.PI * 2;
+              const radius = 3;
+              return (
+                <group
+                  key={i}
+                  position={[
+                    Math.cos(angle) * radius,
+                    Math.sin(angle) * radius * 0.5,
+                    Math.sin(angle + index) * 1
+                  ]}
+                  scale={0.8}
+                >
+                  <Icon />
+                </group>
+              );
+            })}
+          </group>
+        </FloatingScene>
+      </motion.div>
     </motion.section>
   );
 }
@@ -92,6 +79,8 @@ function ProjectSection({ project, index }: { project: typeof PROJECTS[0]; index
   const nameY = useTransform(scrollYProgress, [0.2, 0.5], [50, 0]);
   const nameOpacity = useTransform(scrollYProgress, [0.2, 0.4, 0.6, 0.8], [0, 1, 1, 0]);
 
+  const Icon3D = projectIcons[project.id as keyof typeof projectIcons];
+
   return (
     <motion.section
       ref={ref}
@@ -99,26 +88,22 @@ function ProjectSection({ project, index }: { project: typeof PROJECTS[0]; index
     >
       <motion.div
         style={{ y }}
-        className="relative w-full max-w-4xl"
+        className="relative w-full max-w-6xl"
       >
-        {/* Project Icon - Centered */}
+        {/* 3D Project Icon */}
         <motion.div
-          className="flex justify-center mb-12"
+          className="h-[400px] md:h-[500px] mb-12"
           style={{ opacity: iconOpacity, scale: iconScale }}
         >
-          <GlowEffect 
-            intensity={0.3} 
-            radius={60}
-            color={index % 2 === 0 ? 'rgb(var(--accent-1))' : 'rgb(var(--accent-2))'}
-          >
-            <motion.div
-              className="text-[200px] md:text-[300px] select-none"
-              whileHover={{ scale: 1.05 }}
-              transition={{ type: 'spring', stiffness: 300 }}
-            >
-              {project.emoji}
-            </motion.div>
-          </GlowEffect>
+          <Suspense fallback={
+            <div className="flex items-center justify-center h-full">
+              <BlockLoader mode={index % 11} className="text-4xl" />
+            </div>
+          }>
+            <FloatingScene cameraPosition={[0, 0, 5]} enableControls={false}>
+              {Icon3D && <Icon3D />}
+            </FloatingScene>
+          </Suspense>
         </motion.div>
 
         {/* Project Name - Below Icon */}
@@ -212,24 +197,32 @@ export default function ScrollPage() {
         <div className="relative z-10">
           <Hero />
           
-          {PROJECTS.map((project, index) => (
-            <React.Fragment key={project.id}>
-              {index > 0 && (
-                <ASCIIInterlude 
-                  pattern={ASCII_PATTERNS[index % ASCII_PATTERNS.length]} 
-                  index={index} 
-                />
-              )}
-              <div className="relative">
-                {index % 3 === 1 && <AnimatedBackground variant="grid" opacity={0.02} />}
-                {index % 3 === 2 && <AnimatedBackground variant="lines" opacity={0.03} />}
-                <ProjectSection project={project} index={index} />
-              </div>
-            </React.Fragment>
-          ))}
+          {PROJECTS.map((project, index) => {
+            const allIcons = Object.values(projectIcons);
+            const interludeIcons = [
+              ...allIcons.slice(index * 2, (index * 2) + 3),
+              ...allIcons.slice(0, Math.max(0, 3 - (allIcons.length - index * 2)))
+            ].slice(0, 3);
+
+            return (
+              <React.Fragment key={project.id}>
+                {index > 0 && (
+                  <ThreeInterlude 
+                    icons={interludeIcons}
+                    index={index} 
+                  />
+                )}
+                <div className="relative">
+                  {index % 3 === 1 && <AnimatedBackground variant="grid" opacity={0.02} />}
+                  {index % 3 === 2 && <AnimatedBackground variant="lines" opacity={0.03} />}
+                  <ProjectSection project={project} index={index} />
+                </div>
+              </React.Fragment>
+            );
+          })}
           
-          <ASCIIInterlude 
-            pattern={ASCII_PATTERNS[0]} 
+          <ThreeInterlude 
+            icons={Object.values(projectIcons).slice(-3)}
             index={PROJECTS.length} 
           />
           
