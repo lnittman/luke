@@ -4,181 +4,256 @@ import React, { useEffect, useRef } from 'react';
 import { motion, useScroll, useTransform } from 'framer-motion';
 import { LenisProvider } from '@/components/providers/LenisProvider';
 import FluidCanvas from '@/components/interactive/FluidCanvas';
-import { TextScramble } from '@/components/motion/TextScramble';
-import { BlockLoader } from '@/components/motion/BlockLoader';
+import { 
+  TextScramble, 
+  BlockLoader,
+  AnimatedBackground,
+  GlowEffect,
+  TextEffect,
+  InView,
+  Spotlight,
+  AnimatedGroup
+} from '@/components/motion';
+import { PROJECTS } from '@/constants/projects';
 
-const ASCII_ART = `
-╔══════════════════════════════════════════════════════════════════╗
-║                                                                  ║
-║     ██╗     ███████╗███╗   ██╗██╗███████╗                      ║
-║     ██║     ██╔════╝████╗  ██║██║██╔════╝                      ║
-║     ██║     █████╗  ██╔██╗ ██║██║███████╗                      ║
-║     ██║     ██╔══╝  ██║╚██╗██║██║╚════██║                      ║
-║     ███████╗███████╗██║ ╚████║██║███████║                      ║
-║     ╚══════╝╚══════╝╚═╝  ╚═══╝╚═╝╚══════╝                      ║
-║                                                                  ║
-╚══════════════════════════════════════════════════════════════════╝
-`;
-
-const SECTIONS = [
-  {
-    title: 'BAUHAUS MEETS CODE',
-    content: 'Where minimalism intersects with complexity. Every line serves a purpose, every animation tells a story.',
-    blocks: ['◰', '◳', '◲', '◱'],
-  },
-  {
-    title: 'UTILITARIAN DESIGN',
-    content: 'Function follows form follows function. The eternal dance of creation and constraint.',
-    blocks: ['▖', '▘', '▝', '▗'],
-  },
-  {
-    title: 'AI-NATIVE INTERFACES',
-    content: 'Building the bridge between human intuition and machine intelligence. One pixel at a time.',
-    blocks: ['⣾', '⣽', '⣻', '⢿'],
-  },
-  {
-    title: 'SMOOTH AS SILK',
-    content: 'Lenis brings buttery smooth scrolling. WebGL paints fluid dreams. Together, they dance.',
-    blocks: ['◐', '◓', '◑', '◒'],
-  },
+const ASCII_PATTERNS = [
+  `
+╔═══════════════════════════════════════════════════════════════════════╗
+║  ░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░  ║
+║  ░░██╗░░░░░██╗░░░██╗██╗░░██╗███████╗░░░░░░░░░░░░░░░░░░░░░░░░░░░░░  ║
+║  ░░██║░░░░░██║░░░██║██║░██╔╝██╔════╝░░░░░░░░░░░░░░░░░░░░░░░░░░░░░  ║
+║  ░░██║░░░░░██║░░░██║█████╔╝░█████╗░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░  ║
+║  ░░██║░░░░░██║░░░██║██╔═██╗░██╔══╝░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░  ║
+║  ░░███████╗╚██████╔╝██║░░██╗███████╗░░░░░░░░░░░░░░░░░░░░░░░░░░░░░  ║
+║  ░░╚══════╝░╚═════╝░╚═╝░░╚═╝╚══════╝░░░░░░░░░░░░░░░░░░░░░░░░░░░░░  ║
+║  ░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░  ║
+╚═══════════════════════════════════════════════════════════════════════╝
+  `,
+  `
+┌─────────────────────────────────────────────────────────────────────┐
+│ ╱╱╱╱╱╱╱╱╱╱╱╱╱╱╱╱╱╱╱╱╱╱╱╱╱╱╱╱╱╱╱╱╱╱╱╱╱╱╱╱╱╱╱╱╱╱╱╱╱╱╱╱╱╱╱╱╱╱╱╱╱╱╱╱╱ │
+│ ╱╱╲╱╲╱╲╱╲╱╲╱╲╱╲╱╲╱╲╱╲╱╲╱╲╱╲╱╲╱╲╱╲╱╲╱╲╱╲╱╲╱╲╱╲╱╲╱╲╱╲╱╲╱╲╱╲╱╲╱╲╱╱ │
+│ ╱╱╱╲╱╲╱╲╱╲╱╲╱╲╱╲╱╲╱╲╱╲╱╲╱╲╱╲╱╲╱╲╱╲╱╲╱╲╱╲╱╲╱╲╱╲╱╲╱╲╱╲╱╲╱╲╱╲╱╲╱╱╱ │
+│ ╱╱╱╱╲╱╲╱╲╱╲╱╲╱╲╱╲╱╲╱╲╱╲╱╲╱╲╱╲╱╲╱╲╱╲╱╲╱╲╱╲╱╲╱╲╱╲╱╲╱╲╱╲╱╲╱╲╱╲╱╱╱╱ │
+│ ╱╱╱╱╱╲╱╲╱╲╱╲╱╲╱╲╱╲╱╲╱╲╱╲╱╲╱╲╱╲╱╲╱╲╱╲╱╲╱╲╱╲╱╲╱╲╱╲╱╲╱╲╱╲╱╲╱╲╱╱╱╱╱ │
+│ ╱╱╱╱╱╱╲╱╲╱╲╱╲╱╲╱╲╱╲╱╲╱╲╱╲╱╲╱╲╱╲╱╲╱╲╱╲╱╲╱╲╱╲╱╲╱╲╱╲╱╲╱╲╱╲╱╲╱╱╱╱╱╱ │
+│ ╱╱╱╱╱╱╱╱╱╱╱╱╱╱╱╱╱╱╱╱╱╱╱╱╱╱╱╱╱╱╱╱╱╱╱╱╱╱╱╱╱╱╱╱╱╱╱╱╱╱╱╱╱╱╱╱╱╱╱╱╱╱╱╱╱ │
+└─────────────────────────────────────────────────────────────────────┘
+  `,
+  `
+▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓
+▓░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░▓
+▓░░▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒░░▓
+▓░░▒▒▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▒▒░░▓
+▓░░▒▒▓▓█████████████████████████████████████████████████████▓▓▒▒░░▓
+▓░░▒▒▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▒▒░░▓
+▓░░▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒░░▓
+▓░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░▓
+▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓
+  `
 ];
 
-function ScrollSection({ 
-  section, 
-  index 
-}: { 
-  section: typeof SECTIONS[0]; 
-  index: number;
-}) {
+function ASCIIInterlude({ pattern, index }: { pattern: string; index: number }) {
   const ref = useRef<HTMLDivElement>(null);
   const { scrollYProgress } = useScroll({
     target: ref,
     offset: ['start end', 'end start'],
   });
 
-  const y = useTransform(scrollYProgress, [0, 1], ['20%', '-20%']);
   const opacity = useTransform(scrollYProgress, [0, 0.3, 0.7, 1], [0, 1, 1, 0]);
+  const scale = useTransform(scrollYProgress, [0, 0.5, 1], [0.9, 1, 0.9]);
+
+  return (
+    <motion.section
+      ref={ref}
+      className="h-[60vh] flex items-center justify-center px-6"
+      style={{ opacity }}
+    >
+      <motion.pre
+        className="font-mono text-xs sm:text-sm text-[rgb(var(--accent-1))] select-none"
+        style={{ scale }}
+      >
+        {pattern}
+      </motion.pre>
+    </motion.section>
+  );
+}
+
+function ProjectSection({ project, index }: { project: typeof PROJECTS[0]; index: number }) {
+  const ref = useRef<HTMLDivElement>(null);
+  const { scrollYProgress } = useScroll({
+    target: ref,
+    offset: ['start end', 'end start'],
+  });
+
+  const y = useTransform(scrollYProgress, [0, 1], ['10%', '-10%']);
+  const rotate = useTransform(scrollYProgress, [0, 1], [-5, 5]);
   const scale = useTransform(scrollYProgress, [0, 0.5, 1], [0.8, 1, 0.8]);
 
   return (
     <motion.section
       ref={ref}
-      className="min-h-screen flex items-center justify-center px-6 py-20"
-      style={{ opacity }}
+      className="min-h-[80vh] flex items-center justify-center px-6 py-20"
     >
       <motion.div
-        className="layout-section max-w-4xl w-full"
-        style={{ y, scale }}
+        style={{ y }}
+        className="w-full max-w-6xl"
       >
-        <div className="brutalist-section p-8 md:p-12">
-          <div className="flex items-center gap-4 mb-8">
-            {section.blocks.map((block, i) => (
-              <BlockLoader key={i} mode={index * 2 + i} />
-            ))}
-          </div>
-          
-          <h2 className="text-4xl md:text-6xl font-mono mb-6">
-            <TextScramble text={section.title} />
-          </h2>
-          
-          <p className="text-lg md:text-xl font-mono text-[rgb(var(--text-secondary))] leading-relaxed">
-            {section.content}
-          </p>
-        </div>
-      </motion.div>
-    </motion.section>
-  );
-}
-
-function ASCIISection() {
-  const ref = useRef<HTMLDivElement>(null);
-  const { scrollYProgress } = useScroll({
-    target: ref,
-    offset: ['start end', 'end start'],
-  });
-
-  const chars = ASCII_ART.split('');
-  
-  return (
-    <motion.section
-      ref={ref}
-      className="min-h-screen flex items-center justify-center px-6 py-20"
-    >
-      <pre className="font-mono text-xs sm:text-sm md:text-base text-[rgb(var(--accent-1))]">
-        {chars.map((char, i) => {
-          const progress = i / chars.length;
-          const charDelay = progress * 0.5;
-          
-          return (
-            <motion.span
-              key={i}
-              initial={{ opacity: 0 }}
-              whileInView={{ opacity: 1 }}
-              transition={{ delay: charDelay, duration: 0.1 }}
-              viewport={{ once: true }}
+        <InView
+          variants={{
+            hidden: { opacity: 0, y: 50 },
+            visible: { opacity: 1, y: 0 }
+          }}
+          transition={{ duration: 0.8, ease: 'easeOut' }}
+        >
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-8 items-center">
+            {/* Project Icon */}
+            <motion.div
+              className="flex justify-center"
+              style={{ rotate, scale }}
             >
-              {char}
-            </motion.span>
-          );
-        })}
-      </pre>
+              <GlowEffect 
+                intensity={0.4} 
+                radius={40}
+                color={index % 2 === 0 ? 'rgb(var(--accent-1))' : 'rgb(var(--accent-2))'}
+              >
+                <motion.div
+                  className="text-[150px] md:text-[200px] select-none"
+                  whileHover={{ scale: 1.1 }}
+                  transition={{ type: 'spring', stiffness: 300 }}
+                >
+                  {project.emoji}
+                </motion.div>
+              </GlowEffect>
+            </motion.div>
+
+            {/* Project Info */}
+            <div className="space-y-6">
+              <AnimatedGroup preset="slide">
+                <h2 className="text-4xl md:text-6xl font-mono">
+                  <TextScramble text={project.name} />
+                </h2>
+                
+                <p className="text-lg md:text-xl font-mono text-[rgb(var(--text-secondary))]">
+                  <TextEffect text={project.description} preset="fade" />
+                </p>
+
+                <div className="flex items-center gap-4 mt-6">
+                  {project.content.core.items.slice(0, 4).map((_, i) => (
+                    <BlockLoader key={i} mode={(index * 2 + i) % 11} />
+                  ))}
+                </div>
+
+                <motion.div 
+                  className="flex gap-4 mt-8"
+                  initial={{ opacity: 0 }}
+                  whileInView={{ opacity: 1 }}
+                  transition={{ delay: 1 }}
+                >
+                  {project.demoUrl && (
+                    <a
+                      href={project.demoUrl}
+                      target="_blank"
+                      rel="noopener noreferrer"
+                      className="brutalist-button text-sm"
+                    >
+                      VIEW DEMO →
+                    </a>
+                  )}
+                  <a
+                    href={project.sourceUrl}
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    className="brutalist-button text-sm"
+                  >
+                    SOURCE CODE →
+                  </a>
+                </motion.div>
+              </AnimatedGroup>
+            </div>
+          </div>
+        </InView>
+      </motion.div>
     </motion.section>
   );
 }
 
 function Hero() {
   const { scrollY } = useScroll();
-  const y = useTransform(scrollY, [0, 1000], [0, -500]);
-  const opacity = useTransform(scrollY, [0, 600], [1, 0]);
+  const y = useTransform(scrollY, [0, 800], [0, -200]);
+  const opacity = useTransform(scrollY, [0, 400], [1, 0]);
 
   return (
-    <motion.section 
-      className="min-h-screen flex items-center justify-center relative overflow-hidden"
-      style={{ opacity }}
-    >
+    <section className="h-screen flex items-center justify-center relative">
+      <AnimatedBackground variant="dots" opacity={0.05} />
+      
       <motion.div 
-        className="relative z-10 text-center px-6"
-        style={{ y }}
+        className="relative z-10 text-center px-6 max-w-4xl mx-auto"
+        style={{ y, opacity }}
       >
-        <h1 className="text-6xl md:text-8xl font-mono mb-8">
-          <TextScramble text="LENIS × BAUHAUS" />
-        </h1>
+        <GlowEffect color="rgb(var(--accent-2))" radius={50} intensity={0.3}>
+          <h1 className="text-5xl md:text-7xl lg:text-8xl font-mono mb-8">
+            <TextScramble text="LUKE NITTMANN" />
+          </h1>
+        </GlowEffect>
         
-        <div className="flex items-center justify-center gap-4 mb-8">
+        <AnimatedGroup preset="scale" className="flex items-center justify-center gap-4 mb-8">
           {[0, 1, 2, 3].map((i) => (
             <BlockLoader key={i} mode={i} className="text-2xl" />
           ))}
-        </div>
+        </AnimatedGroup>
         
-        <p className="text-xl md:text-2xl font-mono text-[rgb(var(--text-secondary))]">
-          Smooth scrolling meets brutalist design
-        </p>
+        <InView
+          variants={{
+            hidden: { opacity: 0, scale: 0.8 },
+            visible: { opacity: 1, scale: 1 }
+          }}
+          transition={{ delay: 0.5, duration: 0.8, type: 'spring' }}
+        >
+          <p className="text-xl md:text-2xl font-mono text-[rgb(var(--text-secondary))] mb-12">
+            <TextEffect text="Crafting digital experiences with AI-native thinking" preset="blur" />
+          </p>
+        </InView>
         
         <motion.div
-          className="mt-12"
+          className="inline-block"
           animate={{ y: [0, 10, 0] }}
           transition={{ duration: 2, repeat: Infinity }}
         >
-          <span className="font-mono text-sm">↓ SCROLL TO EXPLORE ↓</span>
+          <GlowEffect intensity={0.6} radius={15}>
+            <span className="font-mono text-sm text-[rgb(var(--accent-1))]">
+              ↓ EXPLORE PROJECTS ↓
+            </span>
+          </GlowEffect>
         </motion.div>
       </motion.div>
-    </motion.section>
+    </section>
   );
 }
 
 function Footer() {
   return (
-    <footer className="min-h-[50vh] flex items-center justify-center brutalist-section">
-      <div className="text-center">
-        <h3 className="text-3xl font-mono mb-4">
-          <TextScramble text="END OF TRANSMISSION" />
-        </h3>
-        <div className="flex items-center justify-center gap-2">
-          {[8, 9, 10].map((i) => (
-            <BlockLoader key={i} mode={i} />
-          ))}
+    <footer className="h-[50vh] flex items-center justify-center">
+      <InView>
+        <div className="text-center space-y-6">
+          <h3 className="text-3xl font-mono">
+            <TextScramble text="END OF TRANSMISSION" />
+          </h3>
+          <AnimatedGroup preset="stagger" className="flex items-center justify-center gap-2">
+            {[8, 9, 10].map((i) => (
+              <BlockLoader key={i} mode={i} />
+            ))}
+          </AnimatedGroup>
+          <motion.a
+            href="/"
+            className="brutalist-button inline-block mt-8"
+            whileHover={{ scale: 1.05 }}
+            whileTap={{ scale: 0.95 }}
+          >
+            RETURN HOME →
+          </motion.a>
         </div>
-      </div>
+      </InView>
     </footer>
   );
 }
@@ -186,23 +261,40 @@ function Footer() {
 export default function ScrollPage() {
   return (
     <LenisProvider>
-      <div className="relative min-h-screen bg-gradient-custom">
-        {/* WebGL Fluid Background */}
-        <div className="fixed inset-0 z-0">
-          <FluidCanvas />
-        </div>
+      {/* Spotlight Effect */}
+      <Spotlight size={600} intensity={0.3} />
+      
+      {/* WebGL Fluid Background */}
+      <div className="fixed inset-0 z-0">
+        <FluidCanvas />
+      </div>
+      
+      {/* Content - removed relative wrapper to allow natural document flow */}
+      <div className="relative z-10">
+        <Hero />
         
-        {/* Content */}
-        <div className="relative z-10">
-          <Hero />
-          <ASCIISection />
-          
-          {SECTIONS.map((section, index) => (
-            <ScrollSection key={index} section={section} index={index} />
-          ))}
-          
-          <Footer />
-        </div>
+        {PROJECTS.map((project, index) => (
+          <React.Fragment key={project.id}>
+            {index > 0 && (
+              <ASCIIInterlude 
+                pattern={ASCII_PATTERNS[index % ASCII_PATTERNS.length]} 
+                index={index} 
+              />
+            )}
+            <div className="relative">
+              {index % 3 === 1 && <AnimatedBackground variant="grid" opacity={0.02} />}
+              {index % 3 === 2 && <AnimatedBackground variant="lines" opacity={0.03} />}
+              <ProjectSection project={project} index={index} />
+            </div>
+          </React.Fragment>
+        ))}
+        
+        <ASCIIInterlude 
+          pattern={ASCII_PATTERNS[0]} 
+          index={PROJECTS.length} 
+        />
+        
+        <Footer />
       </div>
     </LenisProvider>
   );

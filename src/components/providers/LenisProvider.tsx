@@ -1,6 +1,6 @@
 'use client';
 
-import React, { useEffect, useRef } from 'react';
+import React, { useEffect, useRef, useLayoutEffect } from 'react';
 import Lenis from '@studio-freight/lenis';
 
 interface LenisProviderProps {
@@ -10,11 +10,17 @@ interface LenisProviderProps {
 export function LenisProvider({ children }: LenisProviderProps) {
   const lenisRef = useRef<Lenis | null>(null);
 
-  useEffect(() => {
+  useLayoutEffect(() => {
     const lenis = new Lenis({
-      lerp: 0.1,
-      smooth: true,
-    } as any);
+      duration: 1.2,
+      easing: (t) => Math.min(1, 1.001 - Math.pow(2, -10 * t)),
+      orientation: 'vertical',
+      gestureOrientation: 'vertical',
+      smoothWheel: true,
+      wheelMultiplier: 1,
+      touchMultiplier: 2,
+      infinite: false,
+    });
 
     lenisRef.current = lenis;
 
