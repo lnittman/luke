@@ -29,66 +29,8 @@ export interface Project {
 
 export const PROJECTS: Project[] = [
   {
-    id: 'arbor',
-    name: 'arbor',
-    emoji: '🌳',
-    description: 'LLM chat app with workspaces and task-based coding agent',
-    appUrl: 'https://arbor-xyz.vercel.app/',
-    sourceUrl: 'https://github.com/lnittman/arbor',
-    content: {
-      overview: {
-        title: 'overview',
-        items: [
-          'production-ready chat framework with cross-platform deployment',
-          'multi-agent orchestration through Mastra framework',
-          'Model Context Protocol (MCP) tool integration',
-          'native iOS and desktop applications via Tauri'
-        ]
-      },
-      core: {
-        title: 'core',
-        items: [
-          'dynamic MCP tool injection for GitHub, Gmail, web scraping',
-          'project-based chat organization with PostgreSQL persistence',
-          'real-time streaming with tool call visualization',
-          'multi-model support (Claude, GPT-4, Gemini)',
-          'comprehensive auth with Clerk integration'
-        ]
-      },
-      architecture: {
-        title: 'architecture',
-        items: [
-          'turborepo monorepo with separate chat microservice',
-          'Next.js 15 App Router with React Server Components',
-          'Mastra framework for agent orchestration',
-          'shared design system and component library',
-          'production-ready logging and error handling'
-        ]
-      },
-      tech: {
-        title: 'stack',
-        items: [
-          { name: 'Next.js 15', documentationUrl: 'https://nextjs.org' },
-          { name: 'TypeScript', documentationUrl: 'https://www.typescriptlang.org' },
-          { name: 'Mastra', documentationUrl: 'https://mastra.ai' },
-          { name: 'MCP', documentationUrl: 'https://modelcontextprotocol.io' },
-          { name: 'Prisma', documentationUrl: 'https://www.prisma.io' },
-          { name: 'PostgreSQL', documentationUrl: 'https://www.postgresql.org' },
-          { name: 'Clerk Auth', documentationUrl: 'https://clerk.com' },
-          { name: 'Turborepo', documentationUrl: 'https://turbo.build/repo' },
-          { name: 'Swift', documentationUrl: 'https://www.swift.org' },
-          { name: 'SwiftUI', documentationUrl: 'https://developer.apple.com/xcode/swiftui' },
-          { name: 'Tauri', documentationUrl: 'https://tauri.app' },
-          { name: 'Vercel AI SDK', documentationUrl: 'https://sdk.vercel.ai/docs' },
-          { name: 'Tailwind CSS v4', documentationUrl: 'https://tailwindcss.com' },
-          { name: 'Radix UI', documentationUrl: 'https://www.radix-ui.com' }
-        ]
-      }
-    }
-  },
-  {
     id: 'react-llm',
-    name: 'react-llm',
+    name: 'react-lm',
     emoji: '💬',
     description: 'browser-native coding assistant for React developers',
     demoUrl: 'https://react-llm.vercel.app',
@@ -201,63 +143,59 @@ export const PROJECTS: Project[] = [
     }
   },
   {
-    id: 'squish',
-    name: 'squish',
-    emoji: '🐙',
-    description: 'multimodal content platform with semantic search and real-time collaboration',
-    demoUrl: 'https://squish-xyz.vercel.app/',
-    sourceUrl: 'https://github.com/orgs/squish-xyz/repositories',
+    id: 'arbor',
+    name: 'arbor',
+    emoji: '🌳',
+    description: 'LLM chat app with workspaces and task-based coding agent',
+    appUrl: 'https://arbor-xyz.vercel.app/',
+    sourceUrl: 'https://github.com/lnittman/arbor',
     content: {
       overview: {
         title: 'overview',
         items: [
-          'multimodal embeddings for intelligent content understanding',
-          'real-time collaborative boards with WebSocket synchronization',
-          'customizable column-based layouts with drag-and-drop',
-          'fluid animations and polished interaction design'
+          'production-ready chat framework with cross-platform deployment',
+          'multi-agent orchestration through Mastra framework',
+          'Model Context Protocol (MCP) tool integration',
+          'native iOS and desktop applications via Tauri'
         ]
       },
       core: {
         title: 'core',
         items: [
-          'multimodal embeddings for content understanding',
-          'vector similarity search with pgvector and custom indexing',
-          'real-time board collaboration via Liveblocks CRDT',
-          'distributed async job processing for embedding generation',
-          'scalable file processing pipeline with progress tracking'
+          'dynamic MCP tool injection for GitHub, Gmail, web scraping',
+          'project-based chat organization with PostgreSQL persistence',
+          'real-time streaming with tool call visualization',
+          'multi-model support (Claude, GPT-4, Gemini)',
+          'comprehensive auth with Clerk integration'
         ]
       },
       architecture: {
         title: 'architecture',
         items: [
-          'Turborepo monorepo with 15+ modular packages',
+          'turborepo monorepo with separate chat microservice',
           'Next.js 15 App Router with React Server Components',
-          'FastAPI microservices with SQLModel ORM',
-          'PostgreSQL with pgvector for semantic search',
-          'scalable deployment on Railway and Neon'
+          'Mastra framework for agent orchestration',
+          'shared design system and component library',
+          'production-ready logging and error handling'
         ]
       },
       tech: {
-        title: 'tech',
+        title: 'stack',
         items: [
           { name: 'Next.js 15', documentationUrl: 'https://nextjs.org' },
-          { name: 'Turborepo', documentationUrl: 'https://turbo.build/repo' },
           { name: 'TypeScript', documentationUrl: 'https://www.typescriptlang.org' },
-          { name: 'Tailwind CSS', documentationUrl: 'https://tailwindcss.com' },
-          { name: 'Framer Motion', documentationUrl: 'https://www.framer.com/motion/' },
-          { name: 'Liveblocks', documentationUrl: 'https://liveblocks.io/' },
-          { name: 'Python', documentationUrl: 'https://www.python.org' },
-          { name: 'FastAPI', documentationUrl: 'https://fastapi.tiangolo.com/' },
+          { name: 'Mastra', documentationUrl: 'https://mastra.ai' },
+          { name: 'MCP', documentationUrl: 'https://modelcontextprotocol.io' },
+          { name: 'Prisma', documentationUrl: 'https://www.prisma.io' },
           { name: 'PostgreSQL', documentationUrl: 'https://www.postgresql.org' },
-          { name: 'pgvector', documentationUrl: 'https://github.com/pgvector/pgvector' },
-          { name: 'SQLModel', documentationUrl: 'https://sqlmodel.tiangolo.com/' },
-          { name: 'Redis', documentationUrl: 'https://redis.io' },
-          { name: 'Vertex AI', documentationUrl: 'https://cloud.google.com/vertex-ai' },
-          { name: 'OpenAI', documentationUrl: 'https://platform.openai.com/docs' },
-          { name: 'Docker', documentationUrl: 'https://www.docker.com' },
-          { name: 'Railway', documentationUrl: 'https://railway.app' },
-          { name: 'Neon', documentationUrl: 'https://neon.tech' },
-          { name: 'pnpm workspaces', documentationUrl: 'https://pnpm.io/workspaces' }
+          { name: 'Clerk Auth', documentationUrl: 'https://clerk.com' },
+          { name: 'Turborepo', documentationUrl: 'https://turbo.build/repo' },
+          { name: 'Swift', documentationUrl: 'https://www.swift.org' },
+          { name: 'SwiftUI', documentationUrl: 'https://developer.apple.com/xcode/swiftui' },
+          { name: 'Tauri', documentationUrl: 'https://tauri.app' },
+          { name: 'Vercel AI SDK', documentationUrl: 'https://sdk.vercel.ai/docs' },
+          { name: 'Tailwind CSS v4', documentationUrl: 'https://tailwindcss.com' },
+          { name: 'Radix UI', documentationUrl: 'https://www.radix-ui.com' }
         ]
       }
     }
@@ -314,120 +252,6 @@ export const PROJECTS: Project[] = [
           { name: 'TypeScript', documentationUrl: 'https://www.typescriptlang.org' },
           { name: 'Zod', documentationUrl: 'https://zod.dev' },
           { name: 'Framer Motion', documentationUrl: 'https://www.framer.com/motion' }
-        ]
-      }
-    }
-  },
-  {
-    id: 'sine',
-    name: 'sine',
-    emoji: '🎵',
-    demoUrl: 'https://sine-labs.com',
-    description: 'MIDI-based music creation platform for iOS',
-    sourceUrl: 'https://github.com/lnittman/sine',
-    content: {
-      overview: {
-        title: 'overview',
-        items: [
-          'native iOS MIDI sequencer with multi-track pattern composition',
-          'advanced audio processing with VST3 plugin integration',
-          'web-based sound pack management and collaborative sharing',
-          'real-time audio manipulation through WebSocket streaming'
-        ]
-      },
-      core: {
-        title: 'core',
-        items: [
-          'custom MIDI engine with AVAudioUnitSampler for low-latency playback',
-          'Pedalboard-based audio effects processing with customizable presets',
-          'semantic search for sound discovery using embeddings',
-          'distributed job queue for scalable audio processing',
-          'cross-platform sync between iOS app and web utility'
-        ]
-      },
-      architecture: {
-        title: 'architecture',
-        items: [
-          'SwiftUI/SwiftData iOS app with MIDIKit integration',
-          'FastAPI service layer with WebSocket audio streaming',
-          'Next.js web platform with drag-and-drop pack management',
-          'Google Cloud Storage for processed audio distribution',
-          'PostgreSQL with Prisma ORM for metadata and user data'
-        ]
-      },
-      tech: {
-        title: 'tech',
-        items: [
-          { name: 'SwiftUI', documentationUrl: 'https://developer.apple.com/xcode/swiftui' },
-          { name: 'SwiftData', documentationUrl: 'https://developer.apple.com/documentation/swiftdata' },
-          { name: 'MIDIKit', documentationUrl: 'https://github.com/orchetect/MIDIKit' },
-          { name: 'AVFoundation', documentationUrl: 'https://developer.apple.com/av-foundation' },
-          { name: 'Next.js', documentationUrl: 'https://nextjs.org' },
-          { name: 'TypeScript', documentationUrl: 'https://www.typescriptlang.org' },
-          { name: 'Tone.js', documentationUrl: 'https://tonejs.github.io/' },
-          { name: 'FastAPI', documentationUrl: 'https://fastapi.tiangolo.com' },
-          { name: 'Pedalboard', documentationUrl: 'https://spotify.github.io/pedalboard/' },
-          { name: 'WebSockets', documentationUrl: 'https://developer.mozilla.org/en-US/docs/Web/API/WebSockets_API' },
-          { name: 'PostgreSQL', documentationUrl: 'https://www.postgresql.org' },
-          { name: 'Prisma', documentationUrl: 'https://www.prisma.io' },
-          { name: 'Google Cloud Storage', documentationUrl: 'https://cloud.google.com/storage' },
-          { name: 'OpenAI API', documentationUrl: 'https://platform.openai.com/docs' },
-          { name: 'Vertex AI', documentationUrl: 'https://cloud.google.com/vertex-ai' },
-          { name: 'Docker', documentationUrl: 'https://www.docker.com' },
-          { name: 'Vercel', documentationUrl: 'https://vercel.com' }
-        ]
-      }
-    }
-  },
-  {
-    id: 'helios',
-    name: 'helios',
-    emoji: '☀️',
-    description: 'native macOS menu bar app for display temperature control with fluid animations',
-    sourceUrl: 'https://github.com/orgs/helios-xyz/repositories',
-    content: {
-      overview: {
-        title: 'overview',
-        items: [
-          'native macOS menu bar app with instant access controls',
-          'global keyboard shortcuts for quick adjustments',
-          'smooth animated transitions with SwiftUI',
-          'minimal, focused interface design'
-        ]
-      },
-      core: {
-        title: 'core',
-        items: [
-          'CoreDisplay API integration for hardware control',
-          'real-time display temperature adjustments',
-          'global hotkey system with customizable shortcuts',
-          'persistent preferences with automatic restore',
-          'multi-monitor support with individual controls'
-        ]
-      },
-      architecture: {
-        title: 'architecture',
-        items: [
-          'pure SwiftUI architecture with AppKit integration',
-          'Metal shaders for real-time preview rendering',
-          'Combine framework for reactive state management',
-          'UserDefaults and SQLite for data persistence',
-          'background daemon for system-level integration'
-        ]
-      },
-      tech: {
-        title: 'tech',
-        items: [
-          { name: 'Swift', documentationUrl: 'https://www.swift.org' },
-          { name: 'SwiftUI', documentationUrl: 'https://developer.apple.com/xcode/swiftui' },
-          { name: 'Metal', documentationUrl: 'https://developer.apple.com/metal' },
-          { name: 'Combine', documentationUrl: 'https://developer.apple.com/documentation/combine' },
-          { name: 'AppKit', documentationUrl: 'https://developer.apple.com/documentation/appkit' },
-          { name: 'CoreDisplay', documentationUrl: 'https://developer.apple.com/documentation/coregraphics/quartz_display_services' },
-          { name: 'SQLite', documentationUrl: 'https://www.sqlite.org' },
-          { name: 'HotKey', documentationUrl: 'https://github.com/soffes/HotKey' },
-          { name: 'UserDefaults', documentationUrl: 'https://developer.apple.com/documentation/foundation/userdefaults' },
-          { name: 'XCTest', documentationUrl: 'https://developer.apple.com/documentation/xctest' }
         ]
       }
     }
@@ -607,6 +431,182 @@ export const PROJECTS: Project[] = [
           { name: 'Framer Motion', documentationUrl: 'https://www.framer.com/motion' },
           { name: 'Edge Functions', documentationUrl: 'https://vercel.com/docs/functions/edge-functions' },
           { name: 'pgvector', documentationUrl: 'https://github.com/pgvector/pgvector' }
+        ]
+      }
+    }
+  },
+  {
+    id: 'squish',
+    name: 'squish',
+    emoji: '🐙',
+    description: 'multimodal content platform with semantic search and real-time collaboration',
+    demoUrl: 'https://squish-xyz.vercel.app/',
+    sourceUrl: 'https://github.com/orgs/squish-xyz/repositories',
+    content: {
+      overview: {
+        title: 'overview',
+        items: [
+          'multimodal embeddings for intelligent content understanding',
+          'real-time collaborative boards with WebSocket synchronization',
+          'customizable column-based layouts with drag-and-drop',
+          'fluid animations and polished interaction design'
+        ]
+      },
+      core: {
+        title: 'core',
+        items: [
+          'multimodal embeddings for content understanding',
+          'vector similarity search with pgvector and custom indexing',
+          'real-time board collaboration via Liveblocks CRDT',
+          'distributed async job processing for embedding generation',
+          'scalable file processing pipeline with progress tracking'
+        ]
+      },
+      architecture: {
+        title: 'architecture',
+        items: [
+          'Turborepo monorepo with 15+ modular packages',
+          'Next.js 15 App Router with React Server Components',
+          'FastAPI microservices with SQLModel ORM',
+          'PostgreSQL with pgvector for semantic search',
+          'scalable deployment on Railway and Neon'
+        ]
+      },
+      tech: {
+        title: 'tech',
+        items: [
+          { name: 'Next.js 15', documentationUrl: 'https://nextjs.org' },
+          { name: 'Turborepo', documentationUrl: 'https://turbo.build/repo' },
+          { name: 'TypeScript', documentationUrl: 'https://www.typescriptlang.org' },
+          { name: 'Tailwind CSS', documentationUrl: 'https://tailwindcss.com' },
+          { name: 'Framer Motion', documentationUrl: 'https://www.framer.com/motion/' },
+          { name: 'Liveblocks', documentationUrl: 'https://liveblocks.io/' },
+          { name: 'Python', documentationUrl: 'https://www.python.org' },
+          { name: 'FastAPI', documentationUrl: 'https://fastapi.tiangolo.com/' },
+          { name: 'PostgreSQL', documentationUrl: 'https://www.postgresql.org' },
+          { name: 'pgvector', documentationUrl: 'https://github.com/pgvector/pgvector' },
+          { name: 'SQLModel', documentationUrl: 'https://sqlmodel.tiangolo.com/' },
+          { name: 'Redis', documentationUrl: 'https://redis.io' },
+          { name: 'Vertex AI', documentationUrl: 'https://cloud.google.com/vertex-ai' },
+          { name: 'OpenAI', documentationUrl: 'https://platform.openai.com/docs' },
+          { name: 'Docker', documentationUrl: 'https://www.docker.com' },
+          { name: 'Railway', documentationUrl: 'https://railway.app' },
+          { name: 'Neon', documentationUrl: 'https://neon.tech' },
+          { name: 'pnpm workspaces', documentationUrl: 'https://pnpm.io/workspaces' }
+        ]
+      }
+    }
+  },
+  {
+    id: 'helios',
+    name: 'helios',
+    emoji: '☀️',
+    description: 'native macOS menu bar app for display temperature control with fluid animations',
+    sourceUrl: 'https://github.com/orgs/helios-xyz/repositories',
+    content: {
+      overview: {
+        title: 'overview',
+        items: [
+          'native macOS menu bar app with instant access controls',
+          'global keyboard shortcuts for quick adjustments',
+          'smooth animated transitions with SwiftUI',
+          'minimal, focused interface design'
+        ]
+      },
+      core: {
+        title: 'core',
+        items: [
+          'CoreDisplay API integration for hardware control',
+          'real-time display temperature adjustments',
+          'global hotkey system with customizable shortcuts',
+          'persistent preferences with automatic restore',
+          'multi-monitor support with individual controls'
+        ]
+      },
+      architecture: {
+        title: 'architecture',
+        items: [
+          'pure SwiftUI architecture with AppKit integration',
+          'Metal shaders for real-time preview rendering',
+          'Combine framework for reactive state management',
+          'UserDefaults and SQLite for data persistence',
+          'background daemon for system-level integration'
+        ]
+      },
+      tech: {
+        title: 'tech',
+        items: [
+          { name: 'Swift', documentationUrl: 'https://www.swift.org' },
+          { name: 'SwiftUI', documentationUrl: 'https://developer.apple.com/xcode/swiftui' },
+          { name: 'Metal', documentationUrl: 'https://developer.apple.com/metal' },
+          { name: 'Combine', documentationUrl: 'https://developer.apple.com/documentation/combine' },
+          { name: 'AppKit', documentationUrl: 'https://developer.apple.com/documentation/appkit' },
+          { name: 'CoreDisplay', documentationUrl: 'https://developer.apple.com/documentation/coregraphics/quartz_display_services' },
+          { name: 'SQLite', documentationUrl: 'https://www.sqlite.org' },
+          { name: 'HotKey', documentationUrl: 'https://github.com/soffes/HotKey' },
+          { name: 'UserDefaults', documentationUrl: 'https://developer.apple.com/documentation/foundation/userdefaults' },
+          { name: 'XCTest', documentationUrl: 'https://developer.apple.com/documentation/xctest' }
+        ]
+      }
+    }
+  },
+  {
+    id: 'sine',
+    name: 'sine',
+    emoji: '🎵',
+    demoUrl: 'https://sine-labs.com',
+    description: 'MIDI-based music creation platform for iOS',
+    sourceUrl: 'https://github.com/lnittman/sine',
+    content: {
+      overview: {
+        title: 'overview',
+        items: [
+          'native iOS MIDI sequencer with multi-track pattern composition',
+          'advanced audio processing with VST3 plugin integration',
+          'web-based sound pack management and collaborative sharing',
+          'real-time audio manipulation through WebSocket streaming'
+        ]
+      },
+      core: {
+        title: 'core',
+        items: [
+          'custom MIDI engine with AVAudioUnitSampler for low-latency playback',
+          'Pedalboard-based audio effects processing with customizable presets',
+          'semantic search for sound discovery using embeddings',
+          'distributed job queue for scalable audio processing',
+          'cross-platform sync between iOS app and web utility'
+        ]
+      },
+      architecture: {
+        title: 'architecture',
+        items: [
+          'SwiftUI/SwiftData iOS app with MIDIKit integration',
+          'FastAPI service layer with WebSocket audio streaming',
+          'Next.js web platform with drag-and-drop pack management',
+          'Google Cloud Storage for processed audio distribution',
+          'PostgreSQL with Prisma ORM for metadata and user data'
+        ]
+      },
+      tech: {
+        title: 'tech',
+        items: [
+          { name: 'SwiftUI', documentationUrl: 'https://developer.apple.com/xcode/swiftui' },
+          { name: 'SwiftData', documentationUrl: 'https://developer.apple.com/documentation/swiftdata' },
+          { name: 'MIDIKit', documentationUrl: 'https://github.com/orchetect/MIDIKit' },
+          { name: 'AVFoundation', documentationUrl: 'https://developer.apple.com/av-foundation' },
+          { name: 'Next.js', documentationUrl: 'https://nextjs.org' },
+          { name: 'TypeScript', documentationUrl: 'https://www.typescriptlang.org' },
+          { name: 'Tone.js', documentationUrl: 'https://tonejs.github.io/' },
+          { name: 'FastAPI', documentationUrl: 'https://fastapi.tiangolo.com' },
+          { name: 'Pedalboard', documentationUrl: 'https://spotify.github.io/pedalboard/' },
+          { name: 'WebSockets', documentationUrl: 'https://developer.mozilla.org/en-US/docs/Web/API/WebSockets_API' },
+          { name: 'PostgreSQL', documentationUrl: 'https://www.postgresql.org' },
+          { name: 'Prisma', documentationUrl: 'https://www.prisma.io' },
+          { name: 'Google Cloud Storage', documentationUrl: 'https://cloud.google.com/storage' },
+          { name: 'OpenAI API', documentationUrl: 'https://platform.openai.com/docs' },
+          { name: 'Vertex AI', documentationUrl: 'https://cloud.google.com/vertex-ai' },
+          { name: 'Docker', documentationUrl: 'https://www.docker.com' },
+          { name: 'Vercel', documentationUrl: 'https://vercel.com' }
         ]
       }
     }
