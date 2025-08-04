@@ -150,10 +150,8 @@ export default function FluidCanvas() {
       uniform sampler2D uTexture;
       void main () {
         float density = texture2D(uTexture, vUv).r;
-        // Use theme colors for fluid
-        vec3 splatColor = vec3(0.7, 0.66, 0.63); // Stone accent color
-        vec3 backgroundColor = vec3(0.17, 0.16, 0.16); // Stone background
-        vec3 color = mix(backgroundColor, splatColor, density * 0.8);
+        // Darker fluid effect for better theme compatibility
+        vec3 color = vec3(density * 0.15);
         gl_FragColor = vec4(color, 1.0);
       }
     `);
@@ -321,9 +319,8 @@ export default function FluidCanvas() {
       ref={canvasRef}
       className="fixed inset-0 w-full h-full pointer-events-auto"
       style={{ 
-        background: 'rgb(var(--background-start))',
         mixBlendMode: 'multiply',
-        opacity: 0.8
+        opacity: 0.4
       }}
     />
   );

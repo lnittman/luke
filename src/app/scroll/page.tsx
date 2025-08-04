@@ -87,92 +87,49 @@ function ProjectSection({ project, index }: { project: typeof PROJECTS[0]; index
   });
 
   const y = useTransform(scrollYProgress, [0, 1], ['10%', '-10%']);
-  const rotate = useTransform(scrollYProgress, [0, 1], [-5, 5]);
-  const scale = useTransform(scrollYProgress, [0, 0.5, 1], [0.8, 1, 0.8]);
+  const iconOpacity = useTransform(scrollYProgress, [0, 0.3, 0.7, 1], [0, 1, 1, 0]);
+  const iconScale = useTransform(scrollYProgress, [0, 0.3, 0.7, 1], [0.5, 1, 1, 0.8]);
+  const nameY = useTransform(scrollYProgress, [0.2, 0.5], [50, 0]);
+  const nameOpacity = useTransform(scrollYProgress, [0.2, 0.4, 0.6, 0.8], [0, 1, 1, 0]);
 
   return (
     <motion.section
       ref={ref}
-      className="min-h-[80vh] flex items-center justify-center px-6 py-20"
+      className="min-h-[100vh] flex items-center justify-center px-6"
     >
       <motion.div
         style={{ y }}
-        className="w-full max-w-6xl"
+        className="relative w-full max-w-4xl"
       >
-        <InView
-          variants={{
-            hidden: { opacity: 0, y: 50 },
-            visible: { opacity: 1, y: 0 }
-          }}
-          transition={{ duration: 0.8, ease: 'easeOut' }}
+        {/* Project Icon - Centered */}
+        <motion.div
+          className="flex justify-center mb-12"
+          style={{ opacity: iconOpacity, scale: iconScale }}
         >
-          <div className="grid grid-cols-1 md:grid-cols-2 gap-8 items-center">
-            {/* Project Icon */}
+          <GlowEffect 
+            intensity={0.3} 
+            radius={60}
+            color={index % 2 === 0 ? 'rgb(var(--accent-1))' : 'rgb(var(--accent-2))'}
+          >
             <motion.div
-              className="flex justify-center"
-              style={{ rotate, scale }}
+              className="text-[200px] md:text-[300px] select-none"
+              whileHover={{ scale: 1.05 }}
+              transition={{ type: 'spring', stiffness: 300 }}
             >
-              <GlowEffect 
-                intensity={0.4} 
-                radius={40}
-                color={index % 2 === 0 ? 'rgb(var(--accent-1))' : 'rgb(var(--accent-2))'}
-              >
-                <motion.div
-                  className="text-[150px] md:text-[200px] select-none"
-                  whileHover={{ scale: 1.1 }}
-                  transition={{ type: 'spring', stiffness: 300 }}
-                >
-                  {project.emoji}
-                </motion.div>
-              </GlowEffect>
+              {project.emoji}
             </motion.div>
+          </GlowEffect>
+        </motion.div>
 
-            {/* Project Info */}
-            <div className="space-y-6">
-              <AnimatedGroup preset="slide">
-                <h2 className="text-4xl md:text-6xl font-mono">
-                  <TextScramble text={project.name} />
-                </h2>
-                
-                <p className="text-lg md:text-xl font-mono text-[rgb(var(--text-secondary))]">
-                  <TextEffect text={project.description} preset="fade" />
-                </p>
-
-                <div className="flex items-center gap-4 mt-6">
-                  {project.content.core.items.slice(0, 4).map((_, i) => (
-                    <BlockLoader key={i} mode={(index * 2 + i) % 11} />
-                  ))}
-                </div>
-
-                <motion.div 
-                  className="flex gap-4 mt-8"
-                  initial={{ opacity: 0 }}
-                  whileInView={{ opacity: 1 }}
-                  transition={{ delay: 1 }}
-                >
-                  {project.demoUrl && (
-                    <a
-                      href={project.demoUrl}
-                      target="_blank"
-                      rel="noopener noreferrer"
-                      className="brutalist-button text-sm"
-                    >
-                      VIEW DEMO →
-                    </a>
-                  )}
-                  <a
-                    href={project.sourceUrl}
-                    target="_blank"
-                    rel="noopener noreferrer"
-                    className="brutalist-button text-sm"
-                  >
-                    SOURCE CODE →
-                  </a>
-                </motion.div>
-              </AnimatedGroup>
-            </div>
-          </div>
-        </InView>
+        {/* Project Name - Below Icon */}
+        <motion.div
+          className="text-center"
+          style={{ y: nameY, opacity: nameOpacity }}
+        >
+          <h2 className="text-3xl md:text-5xl font-mono lowercase">
+            <TextScramble text={project.name} />
+          </h2>
+        </motion.div>
       </motion.div>
     </motion.section>
   );
@@ -188,43 +145,21 @@ function Hero() {
       <AnimatedBackground variant="dots" opacity={0.05} />
       
       <motion.div 
-        className="relative z-10 text-center px-6 max-w-4xl mx-auto"
+        className="relative z-10 text-center px-6"
         style={{ y, opacity }}
       >
-        <GlowEffect color="rgb(var(--accent-2))" radius={50} intensity={0.3}>
-          <h1 className="text-5xl md:text-7xl lg:text-8xl font-mono mb-8">
-            <TextScramble text="LUKE NITTMANN" />
-          </h1>
-        </GlowEffect>
-        
-        <AnimatedGroup preset="scale" className="flex items-center justify-center gap-4 mb-8">
+        <AnimatedGroup preset="scale" className="flex items-center justify-center gap-4">
           {[0, 1, 2, 3].map((i) => (
-            <BlockLoader key={i} mode={i} className="text-2xl" />
+            <BlockLoader key={i} mode={i} className="text-4xl" />
           ))}
         </AnimatedGroup>
         
-        <InView
-          variants={{
-            hidden: { opacity: 0, scale: 0.8 },
-            visible: { opacity: 1, scale: 1 }
-          }}
-          transition={{ delay: 0.5, duration: 0.8, type: 'spring' }}
-        >
-          <p className="text-xl md:text-2xl font-mono text-[rgb(var(--text-secondary))] mb-12">
-            <TextEffect text="Crafting digital experiences with AI-native thinking" preset="blur" />
-          </p>
-        </InView>
-        
         <motion.div
-          className="inline-block"
+          className="mt-20"
           animate={{ y: [0, 10, 0] }}
           transition={{ duration: 2, repeat: Infinity }}
         >
-          <GlowEffect intensity={0.6} radius={15}>
-            <span className="font-mono text-sm text-[rgb(var(--accent-1))]">
-              ↓ EXPLORE PROJECTS ↓
-            </span>
-          </GlowEffect>
+          <span className="font-mono text-sm text-[rgb(var(--accent-1))]">↓</span>
         </motion.div>
       </motion.div>
     </section>
@@ -235,66 +170,71 @@ function Footer() {
   return (
     <footer className="h-[50vh] flex items-center justify-center">
       <InView>
-        <div className="text-center space-y-6">
-          <h3 className="text-3xl font-mono">
-            <TextScramble text="END OF TRANSMISSION" />
-          </h3>
-          <AnimatedGroup preset="stagger" className="flex items-center justify-center gap-2">
-            {[8, 9, 10].map((i) => (
-              <BlockLoader key={i} mode={i} />
-            ))}
-          </AnimatedGroup>
-          <motion.a
-            href="/"
-            className="brutalist-button inline-block mt-8"
-            whileHover={{ scale: 1.05 }}
-            whileTap={{ scale: 0.95 }}
-          >
-            RETURN HOME →
-          </motion.a>
-        </div>
+        <AnimatedGroup preset="stagger" className="flex items-center justify-center gap-2">
+          {[8, 9, 10].map((i) => (
+            <BlockLoader key={i} mode={i} />
+          ))}
+        </AnimatedGroup>
       </InView>
     </footer>
   );
 }
 
 export default function ScrollPage() {
+  // Override body overflow for this page
+  React.useEffect(() => {
+    document.body.style.overflow = 'auto';
+    document.body.style.height = 'auto';
+    document.documentElement.style.overflow = 'auto';
+    document.documentElement.style.height = 'auto';
+    
+    return () => {
+      document.body.style.overflow = '';
+      document.body.style.height = '';
+      document.documentElement.style.overflow = '';
+      document.documentElement.style.height = '';
+    };
+  }, []);
+
   return (
     <LenisProvider>
-      {/* Spotlight Effect */}
-      <Spotlight size={600} intensity={0.3} />
-      
-      {/* WebGL Fluid Background */}
-      <div className="fixed inset-0 z-0">
-        <FluidCanvas />
-      </div>
-      
-      {/* Content - removed relative wrapper to allow natural document flow */}
-      <div className="relative z-10">
-        <Hero />
+      {/* Main container with proper height */}
+      <div className="min-h-screen overflow-x-hidden">
+        {/* Spotlight Effect */}
+        <Spotlight size={600} intensity={0.3} />
         
-        {PROJECTS.map((project, index) => (
-          <React.Fragment key={project.id}>
-            {index > 0 && (
-              <ASCIIInterlude 
-                pattern={ASCII_PATTERNS[index % ASCII_PATTERNS.length]} 
-                index={index} 
-              />
-            )}
-            <div className="relative">
-              {index % 3 === 1 && <AnimatedBackground variant="grid" opacity={0.02} />}
-              {index % 3 === 2 && <AnimatedBackground variant="lines" opacity={0.03} />}
-              <ProjectSection project={project} index={index} />
-            </div>
-          </React.Fragment>
-        ))}
+        {/* WebGL Fluid Background */}
+        <div className="fixed inset-0 z-0">
+          <FluidCanvas />
+        </div>
         
-        <ASCIIInterlude 
-          pattern={ASCII_PATTERNS[0]} 
-          index={PROJECTS.length} 
-        />
-        
-        <Footer />
+        {/* Content */}
+        <div className="relative z-10">
+          <Hero />
+          
+          {PROJECTS.map((project, index) => (
+            <React.Fragment key={project.id}>
+              {index > 0 && (
+                <ASCIIInterlude 
+                  pattern={ASCII_PATTERNS[index % ASCII_PATTERNS.length]} 
+                  index={index} 
+                />
+              )}
+              <div className="relative">
+                {index % 3 === 1 && <AnimatedBackground variant="grid" opacity={0.02} />}
+                {index % 3 === 2 && <AnimatedBackground variant="lines" opacity={0.03} />}
+                <ProjectSection project={project} index={index} />
+              </div>
+            </React.Fragment>
+          ))}
+          
+          <ASCIIInterlude 
+            pattern={ASCII_PATTERNS[0]} 
+            index={PROJECTS.length} 
+          />
+          
+          <Footer />
+        </div>
       </div>
     </LenisProvider>
   );
