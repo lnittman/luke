@@ -73,6 +73,7 @@
     "glsl-noise": "^0.0.0",
     "glslify-loader": "^2.0.0",
     "input-otp": "^1.4.2",
+    "jotai": "^2.13.0",
     "jszip": "^3.10.1",
     "linkedin-api-client": "^0.3.0",
     "lucide-react": "^0.488.0",

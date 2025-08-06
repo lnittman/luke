@@ -17,8 +17,15 @@ import {
 import { PROJECTS } from '@/constants/projects';
 import { FloatingScene, ParticleField } from '@/components/three/FloatingScene';
 import { projectIcons } from '@/components/three/ProjectIcons';
+import dynamic from 'next/dynamic';
 
-// 3D Interlude with floating icons
+// Dynamically import components with SSR disabled to prevent WebGL context issues
+const FluidCanvas = dynamic(() => import('@/components/interactive/FluidCanvas'), {
+  ssr: false,
+  loading: () => null
+});
+
+// 3D Interlude with floating icons - only renders when visible
 function ThreeInterlude({ icons, index }: { icons: React.ComponentType[]; index: number }) {
   const ref = useRef<HTMLDivElement>(null);
   const { scrollYProgress } = useScroll({
@@ -166,6 +173,13 @@ function Footer() {
 }
 
 export default function ScrollPage() {
+  // Check if mobile device
+  const [isMobile, setIsMobile] = React.useState(false);
+  
+  React.useEffect(() => {
+    setIsMobile(/iPhone|iPad|iPod|Android/i.test(navigator.userAgent));
+  }, []);
+  
   // Override body overflow for this page
   React.useEffect(() => {
     document.body.style.overflow = 'auto';
@@ -188,10 +202,12 @@ export default function ScrollPage() {
         {/* Spotlight Effect */}
         <Spotlight size={600} intensity={0.3} />
         
-        {/* WebGL Fluid Background */}
-        <div className="fixed inset-0 z-0">
-          <FluidCanvas />
-        </div>
+        {/* WebGL Fluid Background - disabled on mobile to prevent context overload */}
+        {!isMobile && (
+          <div className="fixed inset-0 z-0">
+            <FluidCanvas />
+          </div>
+        )}
         
         {/* Content */}
         <div className="relative z-10">

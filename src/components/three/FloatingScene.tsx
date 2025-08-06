@@ -13,7 +13,26 @@ interface FloatingSceneProps {
   fogColor?: string;
   fogNear?: number;
   fogFar?: number;
+  mousePosition?: { x: number; y: number };
+  audioReactivity?: {
+    bassLevel: number;
+    midLevel: number;
+    trebleLevel: number;
+    audioLevels: Float32Array;
+  };
 }
+
+interface SceneContextType {
+  mousePosition?: { x: number; y: number };
+  audioReactivity?: {
+    bassLevel: number;
+    midLevel: number;
+    trebleLevel: number;
+    audioLevels: Float32Array;
+  };
+}
+
+export const SceneContext = React.createContext<SceneContextType>({});
 
 export function FloatingScene({ 
   children, 
@@ -34,7 +53,7 @@ export function FloatingScene({
         }}
         dpr={[1, 2]}
       >
-        <color attach="background" args={[fogColor || 'transparent']} />
+        {fogColor && <color attach="background" args={[fogColor]} />}
         {fogColor && <fog attach="fog" args={[fogColor, fogNear, fogFar]} />}
         
         <PerspectiveCamera makeDefault position={cameraPosition} fov={50} />
@@ -53,15 +72,17 @@ export function FloatingScene({
         {/* Controls */}
         {enableControls && <OrbitControls enablePan={false} enableZoom={false} />}
         
-        {/* Post-processing */}
-        <EffectComposer>
-          <Bloom 
-            luminanceThreshold={0.5} 
-            luminanceSmoothing={0.9} 
-            intensity={0.5}
-          />
-          <ChromaticAberration offset={[0.0005, 0.0005]} />
-        </EffectComposer>
+        {/* Post-processing - conditionally rendered to prevent errors */}
+        <Suspense fallback={null}>
+          <EffectComposer>
+            <Bloom 
+              luminanceThreshold={0.5} 
+              luminanceSmoothing={0.9} 
+              intensity={0.5}
+            />
+            <ChromaticAberration offset={[0.0005, 0.0005]} />
+          </EffectComposer>
+        </Suspense>
       </Canvas>
     </div>
   );
