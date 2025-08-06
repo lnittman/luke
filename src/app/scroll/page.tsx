@@ -1,91 +1,30 @@
 'use client';
 
 import React, { useEffect, useRef, Suspense } from 'react';
-import { motion, useScroll, useTransform } from 'framer-motion';
+import { motion, useScroll, useTransform, useAnimationControls } from 'framer-motion';
 import { LenisProvider } from '@/components/providers/LenisProvider';
-import { 
-  TextScramble, 
-  BlockLoader,
-  AnimatedBackground,
-  GlowEffect,
-  TextEffect,
-  InView,
-  Spotlight,
-  AnimatedGroup
-} from '@/components/motion';
 import { PROJECTS } from '@/constants/projects';
-import { FloatingScene, ParticleField } from '@/components/three/FloatingScene';
+import { FloatingScene } from '@/components/three/FloatingScene';
 import { projectIcons } from '@/components/three/ProjectIcons';
 import dynamic from 'next/dynamic';
+import { BlockLoader } from '@/components/motion';
 
-// Dynamically import components with SSR disabled to prevent WebGL context issues
+// Dynamically import components with SSR disabled
 const FluidCanvas = dynamic(() => import('@/components/interactive/FluidCanvas'), {
   ssr: false,
   loading: () => null
 });
 
-// 3D Interlude with floating icons - only renders when visible
-function ThreeInterlude({ icons, index }: { icons: React.ComponentType[]; index: number }) {
+function ProjectIcon({ project, index }: { project: typeof PROJECTS[0]; index: number }) {
   const ref = useRef<HTMLDivElement>(null);
   const { scrollYProgress } = useScroll({
     target: ref,
-    offset: ['start end', 'end start'],
+    offset: ['start end', 'end start']
   });
 
+  const y = useTransform(scrollYProgress, [0, 1], ['20%', '-20%']);
   const opacity = useTransform(scrollYProgress, [0, 0.3, 0.7, 1], [0, 1, 1, 0]);
-  const scale = useTransform(scrollYProgress, [0, 0.5, 1], [0.9, 1, 0.9]);
-
-  return (
-    <motion.section
-      ref={ref}
-      className="h-[60vh] flex items-center justify-center"
-      style={{ opacity }}
-    >
-      <motion.div 
-        className="w-full h-full"
-        style={{ scale }}
-      >
-        {icons.length > 0 && (
-          <FloatingScene cameraPosition={[0, 0, 8]}>
-            <ParticleField count={200} />
-            <group>
-              {icons.map((Icon, i) => {
-                const angle = (i / icons.length) * Math.PI * 2;
-                const radius = 3;
-                return (
-                  <group
-                    key={i}
-                    position={[
-                      Math.cos(angle) * radius,
-                      Math.sin(angle) * radius * 0.5,
-                      Math.sin(angle + index) * 1
-                    ]}
-                    scale={0.8}
-                  >
-                    <Icon />
-                  </group>
-                );
-              })}
-            </group>
-          </FloatingScene>
-        )}
-      </motion.div>
-    </motion.section>
-  );
-}
-
-function ProjectSection({ project, index }: { project: typeof PROJECTS[0]; index: number }) {
-  const ref = useRef<HTMLDivElement>(null);
-  const { scrollYProgress } = useScroll({
-    target: ref,
-    offset: ['start end', 'end start'],
-  });
-
-  const y = useTransform(scrollYProgress, [0, 1], ['10%', '-10%']);
-  const iconOpacity = useTransform(scrollYProgress, [0, 0.3, 0.7, 1], [0, 1, 1, 0]);
-  const iconScale = useTransform(scrollYProgress, [0, 0.3, 0.7, 1], [0.5, 1, 1, 0.8]);
-  const nameY = useTransform(scrollYProgress, [0.2, 0.5], [50, 0]);
-  const nameOpacity = useTransform(scrollYProgress, [0.2, 0.4, 0.6, 0.8], [0, 1, 1, 0]);
+  const scale = useTransform(scrollYProgress, [0, 0.5, 1], [0.8, 1, 0.8]);
 
   const Icon3D = projectIcons[project.id as keyof typeof projectIcons];
 
@@ -95,100 +34,70 @@ function ProjectSection({ project, index }: { project: typeof PROJECTS[0]; index
       className="min-h-[100vh] flex items-center justify-center px-6"
     >
       <motion.div
-        style={{ y }}
-        className="relative w-full max-w-6xl"
+        style={{ y, opacity, scale }}
+        className="w-full max-w-4xl mx-auto"
       >
-        {/* 3D Project Icon */}
-        <motion.div
-          className="h-[400px] md:h-[500px] mb-12"
-          style={{ opacity: iconOpacity, scale: iconScale }}
-        >
-          <Suspense fallback={
-            <div className="flex items-center justify-center h-full">
-              <BlockLoader mode={index % 11} className="text-4xl" />
-            </div>
-          }>
-            {Icon3D && (
-              <FloatingScene cameraPosition={[0, 0, 5]} enableControls={false}>
-                <Icon3D />
-              </FloatingScene>
-            )}
-          </Suspense>
-        </motion.div>
+        <div className="flex flex-col items-center">
+          {/* 3D Project Icon */}
+          <div className="h-[300px] md:h-[400px] mb-12">
+            <Suspense fallback={
+              <div className="flex items-center justify-center h-full">
+                <BlockLoader mode={index % 11} className="text-4xl" />
+              </div>
+            }>
+              {Icon3D && (
+                <FloatingScene cameraPosition={[0, 0, 5]} enableControls={false}>
+                  <Icon3D />
+                </FloatingScene>
+              )}
+            </Suspense>
+          </div>
 
-        {/* Project Name - Below Icon */}
-        <motion.div
-          className="text-center"
-          style={{ y: nameY, opacity: nameOpacity }}
-        >
-          <h2 className="text-3xl md:text-5xl font-mono lowercase">
-            <TextScramble text={project.name} />
-          </h2>
-        </motion.div>
+          {/* Project Name */}
+          <motion.h2 
+            className="text-3xl md:text-5xl font-mono lowercase text-center"
+            animate={{ opacity: [0, 1] }}
+            transition={{ delay: 0.3, duration: 0.8 }}
+          >
+            {project.name}
+          </motion.h2>
+        </div>
       </motion.div>
     </motion.section>
   );
 }
 
-function Hero() {
-  const { scrollY } = useScroll();
-  const y = useTransform(scrollY, [0, 800], [0, -200]);
-  const opacity = useTransform(scrollY, [0, 400], [1, 0]);
+function ScrollIndicator() {
+  const { scrollYProgress } = useScroll();
+  const y = useTransform(scrollYProgress, [0, 1], [0, 100]);
 
   return (
-    <section className="h-screen flex items-center justify-center relative">
-      <AnimatedBackground variant="dots" opacity={0.05} />
-      
+    <motion.div 
+      className="fixed bottom-8 left-1/2 transform -translate-x-1/2 z-50"
+      initial={{ opacity: 0 }}
+      animate={{ opacity: 1 }}
+      transition={{ delay: 1 }}
+    >
       <motion.div 
-        className="relative z-10 text-center px-6"
-        style={{ y, opacity }}
+        className="flex flex-col items-center gap-2"
+        animate={{ y: [0, 10, 0] }}
+        transition={{ duration: 2, repeat: Infinity }}
       >
-        <AnimatedGroup preset="scale" className="flex items-center justify-center gap-4">
-          {[0, 1, 2, 3].map((i) => (
-            <BlockLoader key={i} mode={i} className="text-4xl" />
-          ))}
-        </AnimatedGroup>
-        
-        <motion.div
-          className="mt-20"
-          animate={{ y: [0, 10, 0] }}
-          transition={{ duration: 2, repeat: Infinity }}
+        <motion.div 
+          className="w-6 h-10 rounded-full border-2 border-[rgb(var(--accent-1))] p-1"
         >
-          <span className="font-mono text-sm text-[rgb(var(--accent-1))]">↓</span>
+          <motion.div
+            className="w-2 h-2 bg-[rgb(var(--accent-1))] rounded-full"
+            style={{ y }}
+          />
         </motion.div>
+        <span className="font-mono text-xs text-[rgb(var(--text-secondary))]">scroll</span>
       </motion.div>
-    </section>
-  );
-}
-
-function Footer() {
-  return (
-    <footer className="h-[50vh] flex items-center justify-center">
-      <InView>
-        <AnimatedGroup preset="stagger" className="flex items-center justify-center gap-2">
-          {[8, 9, 10].map((i) => (
-            <BlockLoader key={i} mode={i} />
-          ))}
-        </AnimatedGroup>
-      </InView>
-    </footer>
+    </motion.div>
   );
 }
 
 export default function ScrollPage() {
-  // Check if mobile device and WebGL support
-  const [isMobile, setIsMobile] = React.useState(false);
-  const [supportsWebGL, setSupportsWebGL] = React.useState(true);
-  
-  React.useEffect(() => {
-    setIsMobile(/iPhone|iPad|iPod|Android/i.test(navigator.userAgent));
-    
-    // Check WebGL support
-    const canvas = document.createElement('canvas');
-    const gl = canvas.getContext('webgl') || canvas.getContext('experimental-webgl');
-    setSupportsWebGL(!!gl);
-  }, []);
-  
   // Override body overflow for this page
   React.useEffect(() => {
     document.body.style.overflow = 'auto';
@@ -206,52 +115,17 @@ export default function ScrollPage() {
 
   return (
     <LenisProvider>
-      {/* Main container with proper height */}
       <div className="min-h-screen overflow-x-hidden">
-        {/* Spotlight Effect */}
-        <Spotlight size={600} intensity={0.3} />
-        
-        {/* WebGL Fluid Background - disabled on mobile or unsupported devices */}
-        {!isMobile && supportsWebGL && (
-          <div className="fixed inset-0 z-0">
-            <FluidCanvas />
-          </div>
-        )}
+        {/* Simple gradient background */}
+        <div className="fixed inset-0 bg-gradient-to-br from-[rgb(var(--background-start))] to-[rgb(var(--background-end))]" />
         
         {/* Content */}
         <div className="relative z-10">
-          <Hero />
+          <ScrollIndicator />
           
-          {PROJECTS.map((project, index) => {
-            const allIcons = Object.values(projectIcons);
-            const interludeIcons = [
-              ...allIcons.slice(index * 2, (index * 2) + 3),
-              ...allIcons.slice(0, Math.max(0, 3 - (allIcons.length - index * 2)))
-            ].slice(0, 3);
-
-            return (
-              <React.Fragment key={project.id}>
-                {index > 0 && (
-                  <ThreeInterlude 
-                    icons={interludeIcons}
-                    index={index} 
-                  />
-                )}
-                <div className="relative">
-                  {index % 3 === 1 && <AnimatedBackground variant="grid" opacity={0.02} />}
-                  {index % 3 === 2 && <AnimatedBackground variant="lines" opacity={0.03} />}
-                  <ProjectSection project={project} index={index} />
-                </div>
-              </React.Fragment>
-            );
-          })}
-          
-          <ThreeInterlude 
-            icons={Object.values(projectIcons).slice(-3)}
-            index={PROJECTS.length} 
-          />
-          
-          <Footer />
+          {PROJECTS.map((project, index) => (
+            <ProjectIcon key={project.id} project={project} index={index} />
+          ))}
         </div>
       </div>
     </LenisProvider>
