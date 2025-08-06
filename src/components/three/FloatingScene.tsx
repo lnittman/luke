@@ -72,17 +72,8 @@ export function FloatingScene({
         {/* Controls */}
         {enableControls && <OrbitControls enablePan={false} enableZoom={false} />}
         
-        {/* Post-processing - conditionally rendered to prevent errors */}
-        <Suspense fallback={null}>
-          <EffectComposer>
-            <Bloom 
-              luminanceThreshold={0.5} 
-              luminanceSmoothing={0.9} 
-              intensity={0.5}
-            />
-            <ChromaticAberration offset={[0.0005, 0.0005]} />
-          </EffectComposer>
-        </Suspense>
+        {/* Post-processing - disabled to prevent WebGL context issues */}
+        {/* EffectComposer is causing 'Cannot read properties of null (reading alpha')' errors */}
       </Canvas>
     </div>
   );

@@ -26,8 +26,13 @@ export function useAudioReactivity(options: AudioReactivityOptions = {}) {
   const dataArrayRef = useRef<Float32Array>(null as any);
 
   useEffect(() => {
-    // Initialize audio context
+    // Initialize audio context only in browser environment
     const initAudio = async () => {
+      // Check if we're in a browser environment
+      if (typeof window === 'undefined' || !window.AudioContext) {
+        return;
+      }
+
       try {
         const audioContext = new (window.AudioContext || (window as any).webkitAudioContext)();
         const analyser = audioContext.createAnalyser();
@@ -45,10 +50,12 @@ export function useAudioReactivity(options: AudioReactivityOptions = {}) {
         
         // Set up microphone input (audio reactive)
         try {
-          const stream = await navigator.mediaDevices.getUserMedia({ audio: true });
-          const source = audioContext.createMediaStreamSource(stream);
-          source.connect(analyser);
-          setIsActive(true);
+          if (navigator.mediaDevices) {
+            const stream = await navigator.mediaDevices.getUserMedia({ audio: true });
+            const source = audioContext.createMediaStreamSource(stream);
+            source.connect(analyser);
+            setIsActive(true);
+          }
         } catch (err) {
           console.log('Microphone access denied, using system audio simulation');
           setIsActive(false);
@@ -137,10 +144,14 @@ export function useAudioReactivity(options: AudioReactivityOptions = {}) {
     isActive,
     activate: () => {
       // Request microphone access when user interacts
-      if (!isActive && navigator.mediaDevices) {
-        if (audioContextRef.current && audioContextRef.current.state === 'suspended') {
-          audioContextRef.current.resume();
+      try {
+        if (!isActive && typeof navigator !== 'undefined' && navigator.mediaDevices) {
+          if (audioContextRef.current && audioContextRef.current.state === 'suspended') {
+            audioContextRef.current.resume();
+          }
         }
+      } catch (err) {
+        console.log('Audio activation failed:', err);
       }
     }
   };

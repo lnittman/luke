@@ -45,28 +45,30 @@ function ThreeInterlude({ icons, index }: { icons: React.ComponentType[]; index:
         className="w-full h-full"
         style={{ scale }}
       >
-        <FloatingScene cameraPosition={[0, 0, 8]}>
-          <ParticleField count={200} />
-          <group>
-            {icons.map((Icon, i) => {
-              const angle = (i / icons.length) * Math.PI * 2;
-              const radius = 3;
-              return (
-                <group
-                  key={i}
-                  position={[
-                    Math.cos(angle) * radius,
-                    Math.sin(angle) * radius * 0.5,
-                    Math.sin(angle + index) * 1
-                  ]}
-                  scale={0.8}
-                >
-                  <Icon />
-                </group>
-              );
-            })}
-          </group>
-        </FloatingScene>
+        {icons.length > 0 && (
+          <FloatingScene cameraPosition={[0, 0, 8]}>
+            <ParticleField count={200} />
+            <group>
+              {icons.map((Icon, i) => {
+                const angle = (i / icons.length) * Math.PI * 2;
+                const radius = 3;
+                return (
+                  <group
+                    key={i}
+                    position={[
+                      Math.cos(angle) * radius,
+                      Math.sin(angle) * radius * 0.5,
+                      Math.sin(angle + index) * 1
+                    ]}
+                    scale={0.8}
+                  >
+                    <Icon />
+                  </group>
+                );
+              })}
+            </group>
+          </FloatingScene>
+        )}
       </motion.div>
     </motion.section>
   );
@@ -106,9 +108,11 @@ function ProjectSection({ project, index }: { project: typeof PROJECTS[0]; index
               <BlockLoader mode={index % 11} className="text-4xl" />
             </div>
           }>
-            <FloatingScene cameraPosition={[0, 0, 5]} enableControls={false}>
-              {Icon3D && <Icon3D />}
-            </FloatingScene>
+            {Icon3D && (
+              <FloatingScene cameraPosition={[0, 0, 5]} enableControls={false}>
+                <Icon3D />
+              </FloatingScene>
+            )}
           </Suspense>
         </motion.div>
 
@@ -172,11 +176,17 @@ function Footer() {
 }
 
 export default function ScrollPage() {
-  // Check if mobile device
+  // Check if mobile device and WebGL support
   const [isMobile, setIsMobile] = React.useState(false);
+  const [supportsWebGL, setSupportsWebGL] = React.useState(true);
   
   React.useEffect(() => {
     setIsMobile(/iPhone|iPad|iPod|Android/i.test(navigator.userAgent));
+    
+    // Check WebGL support
+    const canvas = document.createElement('canvas');
+    const gl = canvas.getContext('webgl') || canvas.getContext('experimental-webgl');
+    setSupportsWebGL(!!gl);
   }, []);
   
   // Override body overflow for this page
@@ -201,8 +211,8 @@ export default function ScrollPage() {
         {/* Spotlight Effect */}
         <Spotlight size={600} intensity={0.3} />
         
-        {/* WebGL Fluid Background - disabled on mobile to prevent context overload */}
-        {!isMobile && (
+        {/* WebGL Fluid Background - disabled on mobile or unsupported devices */}
+        {!isMobile && supportsWebGL && (
           <div className="fixed inset-0 z-0">
             <FluidCanvas />
           </div>
