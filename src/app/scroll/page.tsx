@@ -3,7 +3,6 @@
 import React, { useEffect, useRef, Suspense } from 'react';
 import { motion, useScroll, useTransform } from 'framer-motion';
 import { LenisProvider } from '@/components/providers/LenisProvider';
-import FluidCanvas from '@/components/interactive/FluidCanvas';
 import { 
   TextScramble, 
   BlockLoader,
