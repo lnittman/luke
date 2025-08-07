@@ -11,6 +11,7 @@ const NAV_ITEMS = [
   { label: 'ABOUT', href: '/about', hotkey: 'a' },
   { label: 'WORK', href: '/work', hotkey: 'w' },
   { label: 'PROJECTS', href: '/projects', hotkey: 'p' },
+  { label: 'LOGS', href: '/logs', hotkey: 'l' },
 ];
 
 export function FooterNavigation() {
