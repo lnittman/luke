@@ -20,7 +20,7 @@ export default function Home() {
 
       <div className={styles.content}>
         <div className={styles.innerViewport}>
-          <Accordion title="ENGINEER" defaultOpen={true}>
+          <Accordion title="ABOUT" defaultOpen={true}>
             <p>
               i build production-grade software that makes AI feel more human.
             </p>
@@ -28,6 +28,16 @@ export default function Home() {
               currently focused on removing the friction between human intent
               and machine capability. each project is an experiment in translating
               complex interaction patterns to more delightful and instinctive-feeling ones.
+            </p>
+            <p>
+              started my career optimizing video transcoding engines at AWS Elemental,
+              then architected distributed systems for address intelligence at Amazon.
+              left big tech to try startups, where i could ship faster and own the full stack.
+            </p>
+            <p>
+              now i&apos;m enjoying building my own products. each one explores a simple question:
+              how do we make AI feel less like an infinite black box and more like
+              a useful friend? the answer is always in the implementation details.
             </p>
           </Accordion>
 
@@ -53,17 +63,6 @@ export default function Home() {
             <p>
               i enjoy applying these patterns in building LLM integrations into my products — making it feel less
               like black box technology and more like a natural extension of users&apos; creative thought processes.
-            </p>
-            
-            <p>
-              started my career optimizing video transcoding engines at AWS Elemental,
-              then architected distributed systems for address intelligence at Amazon.
-              left big tech to try startups, where i could ship faster and own the full stack.
-            </p>
-            <p>
-              now i&apos;m enjoying building my own products. each one explores a simple question:
-              how do we make AI feel less like an infinite black box and more like
-              a useful friend? the answer is always in the implementation details.
             </p>
           </Accordion>
 
@@ -91,13 +90,6 @@ export default function Home() {
               <li>cross-platform native experiences (iOS/macOS/Web)</li>
               <li>the intersection of taste and technology</li>
             </ul>
-          </Accordion>
-
-          <Accordion title="CONTACT">
-            <p>
-              Email: <a href="mailto:luke.nittmann@gmail.com">luke.nittmann@gmail.com</a><br />
-              GitHub: <a href="https://github.com/lnittman" target="_blank" rel="noopener noreferrer">@lnittman</a>
-            </p>
           </Accordion>
         </div>
       </div>

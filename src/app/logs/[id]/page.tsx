@@ -51,7 +51,7 @@ export default function LogDetailPage() {
           <div className={styles.column}>
             <div style={{ display: 'flex', alignItems: 'center', gap: '1rem' }}>
               <BlockLoader mode={2} />
-              <h1>ACTIVITY LOG</h1>
+              <h1>LOG</h1>
             </div>
             <ThemeSwitcher />
           </div>
@@ -79,28 +79,33 @@ export default function LogDetailPage() {
           <div className={styles.column}>
             <div style={{ display: 'flex', alignItems: 'center', gap: '1rem' }}>
               <BlockLoader mode={2} />
-              <h1>ACTIVITY LOG</h1>
+              <h1>LOG</h1>
             </div>
             <ThemeSwitcher />
           </div>
         </div>
         <div className={styles.content}>
           <div className={styles.innerViewport}>
-            <div style={{ textAlign: 'center', padding: '2rem' }}>
-              <p style={{ fontFamily: 'monospace', opacity: 0.7, marginBottom: '1rem' }}>
-                Log not found
-              </p>
-              <Link href="/logs" style={{
-                padding: '0.5rem 1rem',
+            <div style={{ marginBottom: '2rem' }}>
+              <Link href="/logs" className="back-button" style={{
                 fontFamily: 'monospace',
                 fontSize: '0.875rem',
-                border: '1px solid var(--border-color)',
                 textDecoration: 'none',
-                color: 'inherit',
-                display: 'inline-block'
+                padding: '0.5rem 1rem',
+                border: '1px solid rgb(var(--text-secondary))',
+                backgroundColor: 'transparent',
+                color: 'rgb(var(--text-primary))',
+                cursor: 'pointer',
+                transition: 'all 0.2s ease',
+                display: 'inline-block',
               }}>
-                ← back to logs
+                ← back
               </Link>
+            </div>
+            <div style={{ textAlign: 'center', padding: '2rem' }}>
+              <p style={{ fontFamily: 'monospace', opacity: 0.7 }}>
+                Log not found
+              </p>
             </div>
           </div>
         </div>
@@ -127,7 +132,7 @@ export default function LogDetailPage() {
         <div className={styles.column}>
           <div style={{ display: 'flex', alignItems: 'center', gap: '1rem' }}>
             <BlockLoader mode={2} />
-            <h1>ACTIVITY LOG</h1>
+            <h1>{format(new Date(log.date), 'MMMM d, yyyy').toUpperCase()}</h1>
           </div>
           <ThemeSwitcher />
         </div>
@@ -135,281 +140,200 @@ export default function LogDetailPage() {
 
       <div className={styles.content}>
         <div className={styles.innerViewport}>
-          {/* Back Link */}
-          <div style={{ marginBottom: '1.5rem' }}>
-            <Link 
-              href="/logs" 
-              style={{
-                fontFamily: 'monospace',
-                fontSize: '0.875rem',
-                color: 'var(--accent-color)',
-                textDecoration: 'none'
-              }}
-            >
-              ← back to logs
+          {/* Back button */}
+          <div style={{ marginBottom: '2rem' }}>
+            <Link href="/logs" className="back-button" style={{
+              fontFamily: 'monospace',
+              fontSize: '0.875rem',
+              textDecoration: 'none',
+              padding: '0.5rem 1rem',
+              border: '1px solid rgb(var(--text-secondary))',
+              backgroundColor: 'transparent',
+              color: 'rgb(var(--text-primary))',
+              cursor: 'pointer',
+              transition: 'all 0.2s ease',
+              display: 'inline-block',
+            }}>
+              ← back
             </Link>
           </div>
 
-          {/* Header */}
-          <div style={{ 
-            borderBottom: '1px solid var(--border-color)', 
-            paddingBottom: '1.5rem',
-            marginBottom: '1.5rem'
-          }}>
-            <h2 style={{ 
-              fontFamily: 'monospace',
-              fontSize: '1.5rem',
-              color: 'var(--accent-color)',
-              marginBottom: '0.5rem'
-            }}>
-              {format(new Date(log.date), 'EEEE, MMMM d, yyyy')}
-            </h2>
-            <p style={{ 
-              fontFamily: 'monospace',
-              fontSize: '0.875rem',
-              opacity: 0.8
-            }}>
-              {log.summary}
-            </p>
+          {/* Summary Section */}
+          <div className={styles.row}>
+            <div className={styles.column}>
+              <h2>SUMMARY</h2>
+              <p style={{
+                fontFamily: 'monospace',
+                fontSize: '0.875rem',
+                lineHeight: 1.6,
+                color: 'rgb(var(--text-secondary))'
+              }}>
+                {log.summary}
+              </p>
+            </div>
           </div>
 
           {/* Statistics */}
           {log.metadata && (
-            <div style={{ 
-              display: 'grid', 
-              gridTemplateColumns: 'repeat(auto-fit, minmax(150px, 1fr))',
-              gap: '1rem',
-              marginBottom: '1.5rem'
-            }}>
-              {[
-                { label: 'Commits', value: log.metadata.totalCommits || 0 },
-                { label: 'Pull Requests', value: log.metadata.totalPullRequests || 0 },
-                { label: 'Issues', value: log.metadata.totalIssues || 0 },
-                { label: 'Repositories', value: log.metadata.totalRepos || 0 },
-              ].map((stat) => (
-                <div key={stat.label} style={{
-                  padding: '1rem',
-                  border: '1px solid var(--border-color)',
-                  backgroundColor: 'var(--surface-color)'
+            <div className={styles.row}>
+              <div className={styles.column}>
+                <h2>METRICS</h2>
+                <div style={{ 
+                  display: 'flex',
+                  gap: '2rem',
+                  fontFamily: 'monospace',
+                  fontSize: '0.875rem'
                 }}>
-                  <div style={{
-                    fontSize: '1.5rem',
-                    fontFamily: 'monospace',
-                    color: 'var(--accent-color)'
-                  }}>
-                    {stat.value}
-                  </div>
-                  <div style={{
-                    fontSize: '0.75rem',
-                    fontFamily: 'monospace',
-                    opacity: 0.7,
-                    marginTop: '0.25rem'
-                  }}>
-                    {stat.label}
-                  </div>
+                  {log.metadata.totalCommits && log.metadata.totalCommits > 0 && (
+                    <div>
+                      <span style={{ fontSize: '1.5rem', display: 'block', marginBottom: '0.25rem' }}>
+                        {log.metadata.totalCommits}
+                      </span>
+                      <span style={{ opacity: 0.7 }}>commits</span>
+                    </div>
+                  )}
+                  {log.metadata.totalPullRequests && log.metadata.totalPullRequests > 0 && (
+                    <div>
+                      <span style={{ fontSize: '1.5rem', display: 'block', marginBottom: '0.25rem' }}>
+                        {log.metadata.totalPullRequests}
+                      </span>
+                      <span style={{ opacity: 0.7 }}>pull requests</span>
+                    </div>
+                  )}
+                  {log.metadata.totalIssues && log.metadata.totalIssues > 0 && (
+                    <div>
+                      <span style={{ fontSize: '1.5rem', display: 'block', marginBottom: '0.25rem' }}>
+                        {log.metadata.totalIssues}
+                      </span>
+                      <span style={{ opacity: 0.7 }}>issues</span>
+                    </div>
+                  )}
+                  {log.metadata.totalRepos && log.metadata.totalRepos > 0 && (
+                    <div>
+                      <span style={{ fontSize: '1.5rem', display: 'block', marginBottom: '0.25rem' }}>
+                        {log.metadata.totalRepos}
+                      </span>
+                      <span style={{ opacity: 0.7 }}>repositories</span>
+                    </div>
+                  )}
                 </div>
-              ))}
+              </div>
             </div>
           )}
 
           {/* Key Accomplishments */}
           {log.bullets && log.bullets.length > 0 && (
-            <div style={{
-              padding: '1rem',
-              border: '1px solid var(--border-color)',
-              backgroundColor: 'var(--surface-color)',
-              marginBottom: '1.5rem'
-            }}>
-              <h3 style={{
-                fontFamily: 'monospace',
-                fontSize: '1rem',
-                marginBottom: '1rem',
-                color: 'var(--accent-color)'
-              }}>
-                Key Accomplishments
-              </h3>
-              <ul style={{ listStyle: 'none', padding: 0, margin: 0 }}>
-                {log.bullets.map((bullet: string, i: number) => (
-                  <li
-                    key={i}
-                    style={{
-                      display: 'flex',
-                      alignItems: 'flex-start',
-                      gap: '0.75rem',
-                      marginBottom: '0.75rem',
-                      fontFamily: 'monospace',
-                      fontSize: '0.875rem'
-                    }}
-                  >
-                    <span style={{ color: 'var(--accent-color)' }}>
-                      {String(i + 1).padStart(2, '0')}
-                    </span>
-                    <span>{bullet}</span>
+            <div className={styles.row}>
+              <div className={styles.column}>
+                <h2>KEY ACCOMPLISHMENTS</h2>
+                <ul style={{ listStyle: 'none', padding: 0, margin: 0 }}>
+                  {log.bullets.map((bullet: string, i: number) => (
+                    <li
+                      key={i}
+                      style={{
+                        marginBottom: '0.5rem',
+                        fontFamily: 'monospace',
+                        fontSize: '0.875rem',
+                        color: 'rgb(var(--text-secondary))'
+                      }}
+                    >
+                      → {bullet}
                   </li>
                 ))}
               </ul>
             </div>
+          </div>
           )}
 
           {/* Activity Details */}
           {details.length > 0 && (
-            <div style={{
-              padding: '1rem',
-              border: '1px solid var(--border-color)',
-              backgroundColor: 'var(--surface-color)',
-              marginBottom: '1.5rem'
-            }}>
-              <h3 style={{
-                fontFamily: 'monospace',
-                fontSize: '1rem',
-                marginBottom: '1rem',
-                color: 'var(--accent-color)'
-              }}>
-                Activity Details ({details.length})
-              </h3>
+            <>
+              <div className={styles.row} style={{ paddingBottom: '0', borderBottom: '1px solid rgb(var(--border))' }}>
+                <div className={styles.column}>
+                  <h2 style={{ marginBottom: '0' }}>ACTIVITY DETAILS</h2>
+                </div>
+              </div>
               
-              {/* Group by type */}
+              {/* Commits */}
               {commits.length > 0 && (
-                <div style={{ marginBottom: '1.5rem' }}>
-                  <h4 style={{
-                    fontFamily: 'monospace',
-                    fontSize: '0.875rem',
-                    marginBottom: '0.75rem',
-                    opacity: 0.7
-                  }}>
-                    Commits ({commits.length})
-                  </h4>
-                  <div style={{ display: 'flex', flexDirection: 'column', gap: '0.75rem' }}>
-                    {commits.map((activity, i) => (
-                      <ActivityCard key={activity.id} activity={activity} index={i} />
-                    ))}
+                <div className={styles.row}>
+                  <div className={styles.column}>
+                    <h3>Commits ({commits.length})</h3>
+                    <div style={{ display: 'flex', flexDirection: 'column', gap: '1rem' }}>
+                      {commits.map((activity, i) => (
+                        <ActivityCard key={activity.id} activity={activity} index={i} />
+                      ))}
+                    </div>
                   </div>
                 </div>
               )}
 
+              {/* Pull Requests */}
               {pullRequests.length > 0 && (
-                <div style={{ marginBottom: '1.5rem' }}>
-                  <h4 style={{
-                    fontFamily: 'monospace',
-                    fontSize: '0.875rem',
-                    marginBottom: '0.75rem',
-                    opacity: 0.7
-                  }}>
-                    Pull Requests ({pullRequests.length})
-                  </h4>
-                  <div style={{ display: 'flex', flexDirection: 'column', gap: '0.75rem' }}>
-                    {pullRequests.map((activity, i) => (
-                      <ActivityCard key={activity.id} activity={activity} index={i} />
-                    ))}
+                <div className={styles.row}>
+                  <div className={styles.column}>
+                    <h3>Pull Requests ({pullRequests.length})</h3>
+                    <div style={{ display: 'flex', flexDirection: 'column', gap: '1rem' }}>
+                      {pullRequests.map((activity, i) => (
+                        <ActivityCard key={activity.id} activity={activity} index={i} />
+                      ))}
+                    </div>
                   </div>
                 </div>
               )}
 
+              {/* Issues */}
               {issues.length > 0 && (
-                <div style={{ marginBottom: '1.5rem' }}>
-                  <h4 style={{
-                    fontFamily: 'monospace',
-                    fontSize: '0.875rem',
-                    marginBottom: '0.75rem',
-                    opacity: 0.7
-                  }}>
-                    Issues ({issues.length})
-                  </h4>
-                  <div style={{ display: 'flex', flexDirection: 'column', gap: '0.75rem' }}>
-                    {issues.map((activity, i) => (
-                      <ActivityCard key={activity.id} activity={activity} index={i} />
-                    ))}
+                <div className={styles.row}>
+                  <div className={styles.column}>
+                    <h3>Issues ({issues.length})</h3>
+                    <div style={{ display: 'flex', flexDirection: 'column', gap: '1rem' }}>
+                      {issues.map((activity, i) => (
+                        <ActivityCard key={activity.id} activity={activity} index={i} />
+                      ))}
+                    </div>
                   </div>
                 </div>
               )}
 
+              {/* Reviews */}
               {reviews.length > 0 && (
-                <div style={{ marginBottom: '1.5rem' }}>
-                  <h4 style={{
-                    fontFamily: 'monospace',
-                    fontSize: '0.875rem',
-                    marginBottom: '0.75rem',
-                    opacity: 0.7
-                  }}>
-                    Reviews ({reviews.length})
-                  </h4>
-                  <div style={{ display: 'flex', flexDirection: 'column', gap: '0.75rem' }}>
-                    {reviews.map((activity, i) => (
-                      <ActivityCard key={activity.id} activity={activity} index={i} />
-                    ))}
+                <div className={styles.row}>
+                  <div className={styles.column}>
+                    <h3>Reviews ({reviews.length})</h3>
+                    <div style={{ display: 'flex', flexDirection: 'column', gap: '1rem' }}>
+                      {reviews.map((activity, i) => (
+                        <ActivityCard key={activity.id} activity={activity} index={i} />
+                      ))}
+                    </div>
                   </div>
                 </div>
               )}
-            </div>
+            </>
           )}
 
-          {/* Languages & Projects */}
-          {log.metadata && (
-            <div style={{ 
-              display: 'grid', 
-              gridTemplateColumns: 'repeat(auto-fit, minmax(250px, 1fr))',
-              gap: '1rem'
-            }}>
-              {log.metadata.languages && log.metadata.languages.length > 0 && (
-                <div style={{
-                  padding: '1rem',
-                  border: '1px solid var(--border-color)',
-                  backgroundColor: 'var(--surface-color)'
-                }}>
-                  <h4 style={{
-                    fontFamily: 'monospace',
-                    fontSize: '0.875rem',
-                    marginBottom: '0.75rem',
-                    color: 'var(--accent-color)'
-                  }}>
-                    Languages Used
-                  </h4>
-                  <div style={{ display: 'flex', flexWrap: 'wrap', gap: '0.5rem' }}>
-                    {log.metadata.languages.map((lang: string) => (
-                      <span
-                        key={lang}
-                        style={{
-                          padding: '0.25rem 0.75rem',
-                          backgroundColor: 'var(--surface-2-color)',
-                          fontFamily: 'monospace',
-                          fontSize: '0.75rem',
-                          borderRadius: '2px'
-                        }}
-                      >
-                        {lang}
-                      </span>
-                    ))}
-                  </div>
-                </div>
-              )}
-
-              {log.metadata.topProjects && log.metadata.topProjects.length > 0 && (
-                <div style={{
-                  padding: '1rem',
-                  border: '1px solid var(--border-color)',
-                  backgroundColor: 'var(--surface-color)'
-                }}>
-                  <h4 style={{
-                    fontFamily: 'monospace',
-                    fontSize: '0.875rem',
-                    marginBottom: '0.75rem',
-                    color: 'var(--accent-color)'
-                  }}>
-                    Top Projects
-                  </h4>
-                  <ul style={{ listStyle: 'none', padding: 0, margin: 0 }}>
-                    {log.metadata.topProjects.map((project: string) => (
-                      <li key={project} style={{
+          {/* Languages */}
+          {log.metadata && log.metadata.languages && log.metadata.languages.length > 0 && (
+            <div className={styles.row}>
+              <div className={styles.column}>
+                <h2>LANGUAGES</h2>
+                <div style={{ display: 'flex', flexWrap: 'wrap', gap: '0.5rem' }}>
+                  {log.metadata.languages.map((lang: string) => (
+                    <span
+                      key={lang}
+                      style={{
                         fontFamily: 'monospace',
-                        fontSize: '0.75rem',
-                        marginBottom: '0.5rem'
-                      }}>
-                        → {project}
-                      </li>
-                    ))}
-                  </ul>
+                        fontSize: '0.875rem',
+                        color: 'rgb(var(--text-secondary))'
+                      }}
+                    >
+                      {lang}
+                    </span>
+                  )).reduce((prev: any, curr: any, i: number) => 
+                    i === 0 ? [curr] : [...prev, ', ', curr], []
+                  )}
                 </div>
-              )}
+              </div>
             </div>
           )}
         </div>

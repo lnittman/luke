@@ -46,22 +46,27 @@ export default function LogsPage() {
     <DefaultLayout>
       <div className={styles.header}>
         <div className={styles.column}>
-          <div style={{ display: 'flex', alignItems: 'center', gap: '1rem' }}>
-            <BlockLoader mode={2} />
-            <h1>ACTIVITY LOGS</h1>
-          </div>
-          <div style={{ display: 'flex', alignItems: 'center', gap: '1rem' }}>
-            <Link href="/logs/settings" style={{
-              fontFamily: 'monospace',
-              fontSize: '0.875rem',
-              color: 'var(--accent-color)',
-              textDecoration: 'none',
-              padding: '0.25rem 0.5rem',
-              border: '1px solid var(--border-color)',
-            }}>
-              Settings
-            </Link>
-            <ThemeSwitcher />
+          <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', width: '100%' }}>
+            <div style={{ display: 'flex', alignItems: 'center', gap: '1rem' }}>
+              <BlockLoader mode={2} />
+              <h1>LOGS</h1>
+            </div>
+            <div style={{ display: 'flex', alignItems: 'center', gap: '1rem' }}>
+              <Link href="/logs/settings" className="settings-button" style={{
+                fontFamily: 'monospace',
+                fontSize: '0.875rem',
+                textDecoration: 'none',
+                padding: '0.5rem 1rem',
+                border: '1px solid rgb(var(--text-secondary))',
+                backgroundColor: 'transparent',
+                color: 'rgb(var(--text-primary))',
+                cursor: 'pointer',
+                transition: 'all 0.2s ease',
+              }}>
+                settings
+              </Link>
+              <ThemeSwitcher />
+            </div>
           </div>
         </div>
       </div>
@@ -77,38 +82,59 @@ export default function LogsPage() {
               No activity logs yet. Check back tomorrow!
             </div>
           ) : (
-            <>
+            <div className="space-y-0" style={{ marginTop: '0' }}>
               {logs.map((log) => (
-                <Link key={log.id} href={`/logs/${log.id}`} style={{ textDecoration: 'none', color: 'inherit' }}>
+                <Link key={log.id} href={`/logs/${log.id}`} style={{ textDecoration: 'none', color: 'inherit', display: 'block' }}>
                   <div style={{
-                    marginBottom: '1.5rem',
-                    padding: '1rem',
-                    border: '1px solid var(--border-color)',
-                    backgroundColor: 'var(--surface-color)',
+                    padding: '1.5rem 0',
+                    borderBottom: '1px solid rgb(var(--text-secondary) / 0.2)',
                     cursor: 'pointer',
-                    transition: 'transform 0.1s ease',
+                    transition: 'opacity 0.2s ease',
                   }}
                   onMouseEnter={(e) => {
-                    e.currentTarget.style.transform = 'translateX(2px) translateY(-2px)';
+                    (e.currentTarget as HTMLDivElement).style.opacity = '0.8';
                   }}
                   onMouseLeave={(e) => {
-                    e.currentTarget.style.transform = 'none';
+                    (e.currentTarget as HTMLDivElement).style.opacity = '1';
                   }}
                   >
-                    {/* Date and Stats */}
+                    {/* Date and Title Line */}
                     <div style={{ 
                       display: 'flex', 
                       justifyContent: 'space-between', 
-                      alignItems: 'center',
-                      marginBottom: '0.75rem',
-                      fontFamily: 'monospace',
-                      fontSize: '0.875rem'
+                      alignItems: 'flex-start',
+                      marginBottom: '0.5rem',
                     }}>
-                      <strong style={{ color: 'var(--accent-color)' }}>
-                        {format(new Date(log.date), 'EEEE, MMMM d, yyyy')}
-                      </strong>
+                      <div>
+                        <h3 style={{ 
+                          fontFamily: 'monospace',
+                          fontSize: '1rem',
+                          fontWeight: 'normal',
+                          marginBottom: '0.25rem',
+                          color: 'rgb(var(--text-primary))'
+                        }}>
+                          {format(new Date(log.date), 'EEEE, MMMM d, yyyy')}
+                        </h3>
+                        <p style={{ 
+                          fontFamily: 'monospace',
+                          fontSize: '0.875rem',
+                          color: 'rgb(var(--text-secondary))',
+                          lineHeight: 1.5,
+                        }}>
+                          {log.summary}
+                        </p>
+                      </div>
+                      
+                      {/* Stats */}
                       {log.metadata && (
-                        <div style={{ display: 'flex', gap: '1rem', opacity: 0.7 }}>
+                        <div style={{ 
+                          display: 'flex', 
+                          gap: '1rem', 
+                          fontFamily: 'monospace',
+                          fontSize: '0.75rem',
+                          color: 'rgb(var(--text-secondary))',
+                          flexShrink: 0,
+                        }}>
                           {log.metadata?.totalCommits && log.metadata.totalCommits > 0 && (
                             <span>{log.metadata.totalCommits} commits</span>
                           )}
@@ -121,64 +147,6 @@ export default function LogsPage() {
                         </div>
                       )}
                     </div>
-
-                    {/* Summary */}
-                    <p style={{ 
-                      fontFamily: 'monospace',
-                      fontSize: '0.875rem',
-                      lineHeight: 1.6,
-                      marginBottom: '0.75rem'
-                    }}>
-                      {log.summary}
-                    </p>
-
-                    {/* Bullets */}
-                    {log.bullets && log.bullets.length > 0 && (
-                      <ul style={{ 
-                        listStyle: 'none', 
-                        padding: 0,
-                        margin: 0,
-                        fontFamily: 'monospace',
-                        fontSize: '0.75rem',
-                        opacity: 0.8
-                      }}>
-                        {log.bullets.slice(0, 3).map((bullet: string, i: number) => (
-                          <li key={i} style={{ marginBottom: '0.25rem' }}>
-                            → {bullet}
-                          </li>
-                        ))}
-                        {log.bullets.length > 3 && (
-                          <li style={{ color: 'var(--accent-color)', marginTop: '0.25rem' }}>
-                            + {log.bullets.length - 3} more...
-                          </li>
-                        )}
-                      </ul>
-                    )}
-
-                    {/* Language Tags */}
-                    {log.metadata?.languages && log.metadata.languages.length > 0 && (
-                      <div style={{ 
-                        display: 'flex', 
-                        flexWrap: 'wrap', 
-                        gap: '0.5rem',
-                        marginTop: '0.75rem'
-                      }}>
-                        {log.metadata.languages.map((lang: string) => (
-                          <span
-                            key={lang}
-                            style={{
-                              padding: '0.125rem 0.5rem',
-                              backgroundColor: 'var(--surface-2-color)',
-                              fontFamily: 'monospace',
-                              fontSize: '0.625rem',
-                              borderRadius: '2px'
-                            }}
-                          >
-                            {lang}
-                          </span>
-                        ))}
-                      </div>
-                    )}
                   </div>
                 </Link>
               ))}
@@ -193,22 +161,22 @@ export default function LogsPage() {
                       fontFamily: 'monospace',
                       fontSize: '0.875rem',
                       backgroundColor: 'transparent',
-                      border: '1px solid var(--border-color)',
+                      border: '1px solid rgb(var(--text-secondary))',
                       cursor: 'pointer',
                       transition: 'transform 0.1s ease'
                     }}
                     onMouseEnter={(e) => {
-                      e.currentTarget.style.transform = 'translateX(2px) translateY(-2px)';
+                      (e.currentTarget as HTMLButtonElement).style.transform = 'translateX(2px) translateY(-2px)';
                     }}
                     onMouseLeave={(e) => {
-                      e.currentTarget.style.transform = 'none';
+                      (e.currentTarget as HTMLButtonElement).style.transform = 'none';
                     }}
                   >
                     load more →
                   </button>
                 </div>
               )}
-            </>
+            </div>
           )}
         </div>
       </div>
