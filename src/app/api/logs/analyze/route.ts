@@ -1,0 +1,64 @@
+import { NextRequest, NextResponse } from 'next/server';
+import { githubAnalysisWorkflow } from '@/mastra';
+import { format } from 'date-fns';
+
+export async function POST(request: NextRequest) {
+  try {
+    const { username, date } = await request.json();
+
+    if (!username || !date) {
+      return NextResponse.json(
+        { error: 'Username and date are required' },
+        { status: 400 }
+      );
+    }
+
+    // Run the workflow
+    const run = await githubAnalysisWorkflow.createRunAsync();
+    const result = await run.start({
+      inputData: {
+        username,
+        date,
+      },
+    });
+
+    return NextResponse.json({
+      success: true,
+      result: result.status === 'success' ? result.result : null,
+    });
+  } catch (error) {
+    console.error('Error analyzing GitHub activity:', error);
+    return NextResponse.json(
+      { error: 'Failed to analyze GitHub activity' },
+      { status: 500 }
+    );
+  }
+}
+
+// Manual trigger for testing
+export async function GET(request: NextRequest) {
+  const searchParams = request.nextUrl.searchParams;
+  const username = searchParams.get('username') || process.env.GITHUB_USERNAME || 'lnittman';
+  const date = searchParams.get('date') || format(new Date(), 'yyyy-MM-dd');
+
+  try {
+    const run = await githubAnalysisWorkflow.createRunAsync();
+    const result = await run.start({
+      inputData: {
+        username,
+        date,
+      },
+    });
+
+    return NextResponse.json({
+      success: true,
+      result: result.status === 'success' ? result.result : null,
+    });
+  } catch (error) {
+    console.error('Error analyzing GitHub activity:', error);
+    return NextResponse.json(
+      { error: 'Failed to analyze GitHub activity' },
+      { status: 500 }
+    );
+  }
+}
