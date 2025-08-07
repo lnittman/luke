@@ -1,5 +1,5 @@
 import { NextRequest, NextResponse } from 'next/server';
-import { githubAnalysisWorkflow } from '@/mastra';
+import { enhancedGitHubWorkflow } from '@/mastra';
 import { format, subDays } from 'date-fns';
 
 export const maxDuration = 60; // 60 seconds timeout for cron job
@@ -16,10 +16,9 @@ export async function GET(request: NextRequest) {
     const targetDate = format(new Date(), 'yyyy-MM-dd');
     const username = process.env.GITHUB_USERNAME || 'lnittman';
 
-    console.log(`Running daily GitHub analysis for ${username} on ${targetDate}`);
 
-    // Execute the workflow
-    const run = await githubAnalysisWorkflow.createRunAsync();
+    // Execute the enhanced workflow
+    const run = await enhancedGitHubWorkflow.createRunAsync();
     const result = await run.start({
       inputData: {
         username,

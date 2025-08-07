@@ -1,8 +1,12 @@
 import { NextRequest, NextResponse } from 'next/server';
-import { githubAnalysisWorkflow } from '@/mastra';
+import { enhancedGitHubWorkflow } from '@/mastra';
 import { format } from 'date-fns';
 
 export async function POST(request: NextRequest) {
+  if (process.env.NODE_ENV === 'production') {
+    return NextResponse.json({ success: true, result: null });
+  }
+
   try {
     const { username, date } = await request.json();
 
@@ -13,8 +17,8 @@ export async function POST(request: NextRequest) {
       );
     }
 
-    // Run the workflow
-    const run = await githubAnalysisWorkflow.createRunAsync();
+    // Run the enhanced workflow
+    const run = await enhancedGitHubWorkflow.createRunAsync();
     const result = await run.start({
       inputData: {
         username,
@@ -37,12 +41,16 @@ export async function POST(request: NextRequest) {
 
 // Manual trigger for testing
 export async function GET(request: NextRequest) {
+  if (process.env.NODE_ENV === 'production') {
+    return NextResponse.json({ success: true, result: null });
+  }
+
   const searchParams = request.nextUrl.searchParams;
   const username = searchParams.get('username') || process.env.GITHUB_USERNAME || 'lnittman';
   const date = searchParams.get('date') || format(new Date(), 'yyyy-MM-dd');
 
   try {
-    const run = await githubAnalysisWorkflow.createRunAsync();
+    const run = await enhancedGitHubWorkflow.createRunAsync();
     const result = await run.start({
       inputData: {
         username,

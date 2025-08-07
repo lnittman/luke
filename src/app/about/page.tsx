@@ -28,7 +28,7 @@ export default function About() {
                 left big tech to try startups, where i could ship faster and own the full stack.
               </p>
               <p>
-                now i'm enjoying building my own products. each one explores a simple question:
+                now i&apos;m enjoying building my own products. each one explores a simple question:
                 how do we make AI feel less like an infinite black box and more like
                 a useful friend? the answer is always in the implementation details.
               </p>
@@ -41,12 +41,12 @@ export default function About() {
               <p>
                 good constraints lead to better products. at Teenage Engineering,
                 designers use six colors and one typeface. at Braun, Dieter Rams outlined ten
-                fundamental principles of 'good design'. i look to apply a similar rigor to AI systems—
+                fundamental principles of &apos;good design&apos;. i look to apply a similar rigor to AI systems—
                 strict rules that paradoxically create more freedom for users.
               </p>
               <p>
                 every technical decision is a design decision. the best products
-                feel inevitable, like they couldn't exist any other way. this
+                feel inevitable, like they couldn&apos;t exist any other way. this
                 requires obsessing over details that most people never notice.
               </p>
             </div>

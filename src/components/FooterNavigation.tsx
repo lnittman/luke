@@ -8,7 +8,6 @@ import styles from './FooterNavigation.module.scss';
 
 const NAV_ITEMS = [
   { label: 'HOME', href: '/', hotkey: 'h' },
-  { label: 'ABOUT', href: '/about', hotkey: 'a' },
   { label: 'WORK', href: '/work', hotkey: 'w' },
   { label: 'PROJECTS', href: '/projects', hotkey: 'p' },
   { label: 'LOGS', href: '/logs', hotkey: 'l' },

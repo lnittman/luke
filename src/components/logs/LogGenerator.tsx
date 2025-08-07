@@ -76,7 +76,7 @@ export function LogGenerator({ onComplete }: LogGeneratorProps) {
     <div className="brutalist-card p-6">
       <div className="space-y-4">
         <div className="flex items-center justify-between">
-          <h3 className="font-mono text-lg">Generate Today's Log</h3>
+          <h3 className="font-mono text-lg">Generate Today&apos;s Log</h3>
           <button
             onClick={generateLog}
             disabled={isGenerating}

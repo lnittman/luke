@@ -4,8 +4,11 @@ import React, { useEffect, useState } from 'react';
 import { useParams } from 'next/navigation';
 import Link from 'next/link';
 import { format } from 'date-fns';
-import { motion } from 'framer-motion';
-import { Container, Section } from '@/components/layout';
+import { DefaultLayout } from '@/components/page/DefaultLayout';
+import { FooterNavigation } from '@/components/FooterNavigation';
+import { BlockLoader } from '@/components/BlockLoader';
+import { ThemeSwitcher } from '@/components/ThemeSwitcher';
+import styles from '@/components/page/root.module.scss';
 import { ActivityCard } from '@/components/logs/ActivityCard';
 import type { ActivityLog, ActivityDetail } from '@/lib/db';
 
@@ -43,32 +46,70 @@ export default function LogDetailPage() {
 
   if (loading) {
     return (
-      <Container>
-        <Section>
-          <div className="flex items-center justify-center min-h-[400px]">
-            <div className="animate-pulse font-mono text-[rgb(var(--text-secondary))]">
+      <DefaultLayout>
+        <div className={styles.header}>
+          <div className={styles.column}>
+            <div style={{ display: 'flex', alignItems: 'center', gap: '1rem' }}>
+              <BlockLoader mode={2} />
+              <h1>ACTIVITY LOG</h1>
+            </div>
+            <ThemeSwitcher />
+          </div>
+        </div>
+        <div className={styles.content}>
+          <div className={styles.innerViewport}>
+            <div style={{ textAlign: 'center', padding: '2rem 0', fontFamily: 'monospace', opacity: 0.5 }}>
               Loading log details...
             </div>
           </div>
-        </Section>
-      </Container>
+        </div>
+        <div className={styles.footer}>
+          <div className={styles.column}>
+            <FooterNavigation />
+          </div>
+        </div>
+      </DefaultLayout>
     );
   }
 
   if (!data) {
     return (
-      <Container>
-        <Section>
-          <div className="text-center py-12">
-            <p className="font-mono text-[rgb(var(--text-secondary))] mb-4">
-              Log not found
-            </p>
-            <Link href="/logs" className="brutalist-button px-4 py-2">
-              ← back to logs
-            </Link>
+      <DefaultLayout>
+        <div className={styles.header}>
+          <div className={styles.column}>
+            <div style={{ display: 'flex', alignItems: 'center', gap: '1rem' }}>
+              <BlockLoader mode={2} />
+              <h1>ACTIVITY LOG</h1>
+            </div>
+            <ThemeSwitcher />
           </div>
-        </Section>
-      </Container>
+        </div>
+        <div className={styles.content}>
+          <div className={styles.innerViewport}>
+            <div style={{ textAlign: 'center', padding: '2rem' }}>
+              <p style={{ fontFamily: 'monospace', opacity: 0.7, marginBottom: '1rem' }}>
+                Log not found
+              </p>
+              <Link href="/logs" style={{
+                padding: '0.5rem 1rem',
+                fontFamily: 'monospace',
+                fontSize: '0.875rem',
+                border: '1px solid var(--border-color)',
+                textDecoration: 'none',
+                color: 'inherit',
+                display: 'inline-block'
+              }}>
+                ← back to logs
+              </Link>
+            </div>
+          </div>
+        </div>
+        <div className={styles.footer}>
+          <div className={styles.column}>
+            <FooterNavigation />
+          </div>
+        </div>
+      </DefaultLayout>
     );
   }
 
@@ -81,41 +122,89 @@ export default function LogDetailPage() {
   const reviews = details.filter(d => d.type === 'review');
 
   return (
-    <Container>
-      <Section>
-        <div className="space-y-8">
+    <DefaultLayout>
+      <div className={styles.header}>
+        <div className={styles.column}>
+          <div style={{ display: 'flex', alignItems: 'center', gap: '1rem' }}>
+            <BlockLoader mode={2} />
+            <h1>ACTIVITY LOG</h1>
+          </div>
+          <ThemeSwitcher />
+        </div>
+      </div>
+
+      <div className={styles.content}>
+        <div className={styles.innerViewport}>
           {/* Back Link */}
-          <Link 
-            href="/logs" 
-            className="inline-flex items-center gap-2 font-mono text-sm text-[rgb(var(--accent-1))] hover:underline"
-          >
-            ← back to logs
-          </Link>
+          <div style={{ marginBottom: '1.5rem' }}>
+            <Link 
+              href="/logs" 
+              style={{
+                fontFamily: 'monospace',
+                fontSize: '0.875rem',
+                color: 'var(--accent-color)',
+                textDecoration: 'none'
+              }}
+            >
+              ← back to logs
+            </Link>
+          </div>
 
           {/* Header */}
-          <div className="border-b border-[rgb(var(--border))] pb-6">
-            <h1 className="text-3xl font-mono text-[rgb(var(--accent-1))] mb-2">
+          <div style={{ 
+            borderBottom: '1px solid var(--border-color)', 
+            paddingBottom: '1.5rem',
+            marginBottom: '1.5rem'
+          }}>
+            <h2 style={{ 
+              fontFamily: 'monospace',
+              fontSize: '1.5rem',
+              color: 'var(--accent-color)',
+              marginBottom: '0.5rem'
+            }}>
               {format(new Date(log.date), 'EEEE, MMMM d, yyyy')}
-            </h1>
-            <p className="font-mono text-sm text-[rgb(var(--text-secondary))]">
+            </h2>
+            <p style={{ 
+              fontFamily: 'monospace',
+              fontSize: '0.875rem',
+              opacity: 0.8
+            }}>
               {log.summary}
             </p>
           </div>
 
           {/* Statistics */}
           {log.metadata && (
-            <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
+            <div style={{ 
+              display: 'grid', 
+              gridTemplateColumns: 'repeat(auto-fit, minmax(150px, 1fr))',
+              gap: '1rem',
+              marginBottom: '1.5rem'
+            }}>
               {[
                 { label: 'Commits', value: log.metadata.totalCommits || 0 },
                 { label: 'Pull Requests', value: log.metadata.totalPullRequests || 0 },
                 { label: 'Issues', value: log.metadata.totalIssues || 0 },
                 { label: 'Repositories', value: log.metadata.totalRepos || 0 },
               ].map((stat) => (
-                <div key={stat.label} className="brutalist-card p-4">
-                  <div className="text-2xl font-mono text-[rgb(var(--accent-2))]">
+                <div key={stat.label} style={{
+                  padding: '1rem',
+                  border: '1px solid var(--border-color)',
+                  backgroundColor: 'var(--surface-color)'
+                }}>
+                  <div style={{
+                    fontSize: '1.5rem',
+                    fontFamily: 'monospace',
+                    color: 'var(--accent-color)'
+                  }}>
                     {stat.value}
                   </div>
-                  <div className="text-xs font-mono text-[rgb(var(--text-secondary))] mt-1">
+                  <div style={{
+                    fontSize: '0.75rem',
+                    fontFamily: 'monospace',
+                    opacity: 0.7,
+                    marginTop: '0.25rem'
+                  }}>
                     {stat.label}
                   </div>
                 </div>
@@ -125,43 +214,72 @@ export default function LogDetailPage() {
 
           {/* Key Accomplishments */}
           {log.bullets && log.bullets.length > 0 && (
-            <div className="brutalist-section">
-              <h2 className="text-xl font-mono mb-4 text-[rgb(var(--accent-1))]">
+            <div style={{
+              padding: '1rem',
+              border: '1px solid var(--border-color)',
+              backgroundColor: 'var(--surface-color)',
+              marginBottom: '1.5rem'
+            }}>
+              <h3 style={{
+                fontFamily: 'monospace',
+                fontSize: '1rem',
+                marginBottom: '1rem',
+                color: 'var(--accent-color)'
+              }}>
                 Key Accomplishments
-              </h2>
-              <ul className="space-y-3">
-                {log.bullets.map((bullet, i) => (
-                  <motion.li
+              </h3>
+              <ul style={{ listStyle: 'none', padding: 0, margin: 0 }}>
+                {log.bullets.map((bullet: string, i: number) => (
+                  <li
                     key={i}
-                    initial={{ opacity: 0, x: -20 }}
-                    animate={{ opacity: 1, x: 0 }}
-                    transition={{ delay: i * 0.05 }}
-                    className="flex items-start gap-3"
+                    style={{
+                      display: 'flex',
+                      alignItems: 'flex-start',
+                      gap: '0.75rem',
+                      marginBottom: '0.75rem',
+                      fontFamily: 'monospace',
+                      fontSize: '0.875rem'
+                    }}
                   >
-                    <span className="text-[rgb(var(--accent-2))] font-mono">
+                    <span style={{ color: 'var(--accent-color)' }}>
                       {String(i + 1).padStart(2, '0')}
                     </span>
-                    <span className="font-mono text-sm">{bullet}</span>
-                  </motion.li>
+                    <span>{bullet}</span>
+                  </li>
                 ))}
               </ul>
             </div>
           )}
 
-          {/* Activity Details with Generative UI */}
+          {/* Activity Details */}
           {details.length > 0 && (
-            <div className="brutalist-section">
-              <h2 className="text-xl font-mono mb-4 text-[rgb(var(--accent-1))]">
+            <div style={{
+              padding: '1rem',
+              border: '1px solid var(--border-color)',
+              backgroundColor: 'var(--surface-color)',
+              marginBottom: '1.5rem'
+            }}>
+              <h3 style={{
+                fontFamily: 'monospace',
+                fontSize: '1rem',
+                marginBottom: '1rem',
+                color: 'var(--accent-color)'
+              }}>
                 Activity Details ({details.length})
-              </h2>
+              </h3>
               
               {/* Group by type */}
               {commits.length > 0 && (
-                <div className="mb-6">
-                  <h3 className="font-mono text-sm mb-3 text-[rgb(var(--text-secondary))]">
+                <div style={{ marginBottom: '1.5rem' }}>
+                  <h4 style={{
+                    fontFamily: 'monospace',
+                    fontSize: '0.875rem',
+                    marginBottom: '0.75rem',
+                    opacity: 0.7
+                  }}>
                     Commits ({commits.length})
-                  </h3>
-                  <div className="grid gap-3">
+                  </h4>
+                  <div style={{ display: 'flex', flexDirection: 'column', gap: '0.75rem' }}>
                     {commits.map((activity, i) => (
                       <ActivityCard key={activity.id} activity={activity} index={i} />
                     ))}
@@ -170,11 +288,16 @@ export default function LogDetailPage() {
               )}
 
               {pullRequests.length > 0 && (
-                <div className="mb-6">
-                  <h3 className="font-mono text-sm mb-3 text-[rgb(var(--text-secondary))]">
+                <div style={{ marginBottom: '1.5rem' }}>
+                  <h4 style={{
+                    fontFamily: 'monospace',
+                    fontSize: '0.875rem',
+                    marginBottom: '0.75rem',
+                    opacity: 0.7
+                  }}>
                     Pull Requests ({pullRequests.length})
-                  </h3>
-                  <div className="grid gap-3">
+                  </h4>
+                  <div style={{ display: 'flex', flexDirection: 'column', gap: '0.75rem' }}>
                     {pullRequests.map((activity, i) => (
                       <ActivityCard key={activity.id} activity={activity} index={i} />
                     ))}
@@ -183,11 +306,16 @@ export default function LogDetailPage() {
               )}
 
               {issues.length > 0 && (
-                <div className="mb-6">
-                  <h3 className="font-mono text-sm mb-3 text-[rgb(var(--text-secondary))]">
+                <div style={{ marginBottom: '1.5rem' }}>
+                  <h4 style={{
+                    fontFamily: 'monospace',
+                    fontSize: '0.875rem',
+                    marginBottom: '0.75rem',
+                    opacity: 0.7
+                  }}>
                     Issues ({issues.length})
-                  </h3>
-                  <div className="grid gap-3">
+                  </h4>
+                  <div style={{ display: 'flex', flexDirection: 'column', gap: '0.75rem' }}>
                     {issues.map((activity, i) => (
                       <ActivityCard key={activity.id} activity={activity} index={i} />
                     ))}
@@ -196,11 +324,16 @@ export default function LogDetailPage() {
               )}
 
               {reviews.length > 0 && (
-                <div className="mb-6">
-                  <h3 className="font-mono text-sm mb-3 text-[rgb(var(--text-secondary))]">
+                <div style={{ marginBottom: '1.5rem' }}>
+                  <h4 style={{
+                    fontFamily: 'monospace',
+                    fontSize: '0.875rem',
+                    marginBottom: '0.75rem',
+                    opacity: 0.7
+                  }}>
                     Reviews ({reviews.length})
-                  </h3>
-                  <div className="grid gap-3">
+                  </h4>
+                  <div style={{ display: 'flex', flexDirection: 'column', gap: '0.75rem' }}>
                     {reviews.map((activity, i) => (
                       <ActivityCard key={activity.id} activity={activity} index={i} />
                     ))}
@@ -212,17 +345,36 @@ export default function LogDetailPage() {
 
           {/* Languages & Projects */}
           {log.metadata && (
-            <div className="grid md:grid-cols-2 gap-6">
+            <div style={{ 
+              display: 'grid', 
+              gridTemplateColumns: 'repeat(auto-fit, minmax(250px, 1fr))',
+              gap: '1rem'
+            }}>
               {log.metadata.languages && log.metadata.languages.length > 0 && (
-                <div className="brutalist-section">
-                  <h3 className="font-mono text-sm mb-3 text-[rgb(var(--accent-1))]">
+                <div style={{
+                  padding: '1rem',
+                  border: '1px solid var(--border-color)',
+                  backgroundColor: 'var(--surface-color)'
+                }}>
+                  <h4 style={{
+                    fontFamily: 'monospace',
+                    fontSize: '0.875rem',
+                    marginBottom: '0.75rem',
+                    color: 'var(--accent-color)'
+                  }}>
                     Languages Used
-                  </h3>
-                  <div className="flex flex-wrap gap-2">
+                  </h4>
+                  <div style={{ display: 'flex', flexWrap: 'wrap', gap: '0.5rem' }}>
                     {log.metadata.languages.map((lang: string) => (
                       <span
                         key={lang}
-                        className="px-3 py-1 bg-[rgb(var(--surface-2))] font-mono text-xs rounded"
+                        style={{
+                          padding: '0.25rem 0.75rem',
+                          backgroundColor: 'var(--surface-2-color)',
+                          fontFamily: 'monospace',
+                          fontSize: '0.75rem',
+                          borderRadius: '2px'
+                        }}
                       >
                         {lang}
                       </span>
@@ -232,13 +384,26 @@ export default function LogDetailPage() {
               )}
 
               {log.metadata.topProjects && log.metadata.topProjects.length > 0 && (
-                <div className="brutalist-section">
-                  <h3 className="font-mono text-sm mb-3 text-[rgb(var(--accent-1))]">
+                <div style={{
+                  padding: '1rem',
+                  border: '1px solid var(--border-color)',
+                  backgroundColor: 'var(--surface-color)'
+                }}>
+                  <h4 style={{
+                    fontFamily: 'monospace',
+                    fontSize: '0.875rem',
+                    marginBottom: '0.75rem',
+                    color: 'var(--accent-color)'
+                  }}>
                     Top Projects
-                  </h3>
-                  <ul className="space-y-2">
+                  </h4>
+                  <ul style={{ listStyle: 'none', padding: 0, margin: 0 }}>
                     {log.metadata.topProjects.map((project: string) => (
-                      <li key={project} className="font-mono text-xs">
+                      <li key={project} style={{
+                        fontFamily: 'monospace',
+                        fontSize: '0.75rem',
+                        marginBottom: '0.5rem'
+                      }}>
                         → {project}
                       </li>
                     ))}
@@ -248,7 +413,13 @@ export default function LogDetailPage() {
             </div>
           )}
         </div>
-      </Section>
-    </Container>
+      </div>
+
+      <div className={styles.footer}>
+        <div className={styles.column}>
+          <FooterNavigation />
+        </div>
+      </div>
+    </DefaultLayout>
   );
 }

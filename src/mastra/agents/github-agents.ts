@@ -1,7 +1,5 @@
 import { Agent } from '@mastra/core/agent';
 import { createOpenRouter } from '@openrouter/ai-sdk-provider';
-import { Memory } from '@mastra/memory';
-import { PostgresStore } from '@mastra/pg';
 import { 
   fetchUserActivityTool, 
   fetchCommitDetailsTool, 
@@ -13,15 +11,10 @@ const openrouter = createOpenRouter({
   apiKey: process.env.OPENROUTER_API_KEY,
 });
 
-// Initialize memory store (optional - can be removed if not needed immediately)
-const memory = process.env.DATABASE_URL 
-  ? new Memory({
-      storage: new PostgresStore({ connectionString: process.env.DATABASE_URL }),
-    })
-  : undefined;
-
 export const commitAnalyzerAgent = new Agent({
-  name: 'commit-analyzer',
+  id: 'commit-analyzer',
+  name: 'Commit Analyzer',
+  description: 'Analyzes GitHub commits and provides insights',
   instructions: `You are a commit analyzer that examines GitHub commits and provides insights.
   Your job is to:
   1. Analyze commit messages and code changes
@@ -32,12 +25,13 @@ export const commitAnalyzerAgent = new Agent({
   
   Focus on technical accuracy and provide meaningful insights about the development work.`,
   model: openrouter('anthropic/claude-3.5-sonnet'),
-  tools: { fetchCommitDetailsTool },
-  memory,
+  tools: {fetchCommitDetailsTool},
 });
 
 export const activitySummarizerAgent = new Agent({
-  name: 'activity-summarizer',
+  id: 'activity-summarizer',
+  name: 'Activity Summarizer',
+  description: 'Summarizes GitHub activity into actionable insights',
   instructions: `You are a GitHub activity summarizer that creates daily development logs.
   Your job is to:
   1. Analyze all GitHub activity for a given day
@@ -50,12 +44,13 @@ export const activitySummarizerAgent = new Agent({
   Focus on what was accomplished, not just what was done.
   Make it interesting and highlight the impact of the work.`,
   model: openrouter('anthropic/claude-3.5-sonnet'),
-  tools: { fetchUserActivityTool, fetchRepoInfoTool },
-  memory,
+  tools: {fetchUserActivityTool, fetchRepoInfoTool},
 });
 
 export const repoAnalyzerAgent = new Agent({
-  name: 'repo-analyzer',
+  id: 'repo-analyzer',
+  name: 'Repository Analyzer',
+  description: 'Analyzes repository structure and patterns',
   instructions: `You are a repository analyzer that understands codebases and projects.
   Your job is to:
   1. Analyze repository metadata and structure
@@ -66,6 +61,5 @@ export const repoAnalyzerAgent = new Agent({
   
   Be technical but accessible, providing insights that help understand the bigger picture.`,
   model: openrouter('anthropic/claude-3.5-sonnet'),
-  tools: { fetchRepoInfoTool },
-  memory,
+  tools: {fetchRepoInfoTool},
 });

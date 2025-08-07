@@ -2,6 +2,7 @@ import { DefaultLayout } from '@/components/page/DefaultLayout';
 import { FooterNavigation } from '@/components/FooterNavigation';
 import { BlockLoader } from '@/components/BlockLoader';
 import { ThemeSwitcher } from '@/components/ThemeSwitcher';
+import { Accordion } from '@/components/Accordion';
 import styles from '@/components/page/root.module.scss';
 
 export default function Home() {
@@ -19,60 +20,85 @@ export default function Home() {
 
       <div className={styles.content}>
         <div className={styles.innerViewport}>
-          <div className={styles.row}>
-            <div className={styles.column}>
-              <h2>AI ENGINEER</h2>
-              <p>
-                i build production-grade software that makes AI feel more human.
-              </p>
-              <p>
-                currently focused on removing the friction between human intent
-                and machine capability. each project is an experiment in translating
-                complex interaction patterns to more delightful and instinctive-feeling ones.
-              </p>
-            </div>
-          </div>
+          <Accordion title="ENGINEER" defaultOpen={true}>
+            <p>
+              i build production-grade software that makes AI feel more human.
+            </p>
+            <p>
+              currently focused on removing the friction between human intent
+              and machine capability. each project is an experiment in translating
+              complex interaction patterns to more delightful and instinctive-feeling ones.
+            </p>
+          </Accordion>
 
-          <div className={styles.row}>
-            <div className={styles.column}>
-              <h2>PATTERN RECOGNITION</h2>
-              <p>
-                after shipping code at Amazon and AWS, leading teams at startups,
-                and building my own products, i've noticed the same principles
-                appear across disciplines:
-              </p>
+          <Accordion title="PATTERNS" defaultOpen={true}>
+            <p>
+              after shipping code at Amazon and AWS, leading teams at startups,
+              and building my own products, i&apos;ve noticed the same principles
+              appear across disciplines:
+            </p>
 
-              <p>
-                good engineering is good design.
-              </p>
+            <p>
+              good engineering is good design.
+            </p>
 
-              <p>
-                constraints breed creativity.
-              </p>
+            <p>
+              constraints breed creativity.
+            </p>
 
-              <p>
-                the best interface is no interface.
-              </p>
+            <p>
+              the best interface is no interface.
+            </p>
 
-              <p>
-                i enjoy applying these patterns in building LLM integrations into my products — making it feel less
-                like black box technology and more like a natural extension of users' creative thought processes.
-              </p>
-            </div>
-          </div>
+            <p>
+              i enjoy applying these patterns in building LLM integrations into my products — making it feel less
+              like black box technology and more like a natural extension of users&apos; creative thought processes.
+            </p>
+            
+            <p>
+              started my career optimizing video transcoding engines at AWS Elemental,
+              then architected distributed systems for address intelligence at Amazon.
+              left big tech to try startups, where i could ship faster and own the full stack.
+            </p>
+            <p>
+              now i&apos;m enjoying building my own products. each one explores a simple question:
+              how do we make AI feel less like an infinite black box and more like
+              a useful friend? the answer is always in the implementation details.
+            </p>
+          </Accordion>
 
-          <div className={styles.row}>
-            <div className={styles.column}>
-              <h2>CURRENT FOCUS</h2>
-              <p>
-                how to make powerful technology accessible, without dumbing it down?
-              </p>
-              <p>
-                the goal isn't to build for AI's sake, but to create products
-                that disappear into the experience.
-              </p>
-            </div>
-          </div>
+          <Accordion title="PHILOSOPHY">
+            <p>
+              good constraints lead to better products. at Teenage Engineering,
+              designers use six colors and one typeface. at Braun, Dieter Rams outlined ten
+              fundamental principles of &apos;good design&apos;. i look to apply a similar rigor to AI systems—
+              strict rules that paradoxically create more freedom for users.
+            </p>
+            <p>
+              every technical decision is a design decision. the best products
+              feel inevitable, like they couldn&apos;t exist any other way. this
+              requires obsessing over details that most people never notice.
+            </p>
+          </Accordion>
+
+          <Accordion title="INTERESTS">
+            <ul>
+              <li>agentic UI/UX patterns</li>
+              <li>semantic interfaces for content and knowledge</li>
+              <li>vector databases and embedding systems</li>
+              <li>making LLMs feel less like chatbots</li>
+              <li>MIDI generation/manipulation, audio synthesis, and real-time processing</li>
+              <li>cross-platform native experiences (iOS/macOS/Web)</li>
+              <li>the intersection of taste and technology</li>
+            </ul>
+          </Accordion>
+
+          <Accordion title="CONTACT">
+            <p>
+              Email: <a href="mailto:luke.nittmann@gmail.com">luke.nittmann@gmail.com</a><br />
+              GitHub: <a href="https://github.com/lnittman" target="_blank" rel="noopener noreferrer">@lnittman</a>
+            </p>
+          </Accordion>
         </div>
       </div>
 

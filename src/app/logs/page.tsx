@@ -3,9 +3,11 @@
 import React, { useEffect, useState } from 'react';
 import Link from 'next/link';
 import { format } from 'date-fns';
-import { motion } from 'framer-motion';
-import { Container, Section } from '@/components/layout';
-import { LogGenerator } from '@/components/logs/LogGenerator';
+import { DefaultLayout } from '@/components/page/DefaultLayout';
+import { FooterNavigation } from '@/components/FooterNavigation';
+import { BlockLoader } from '@/components/BlockLoader';
+import { ThemeSwitcher } from '@/components/ThemeSwitcher';
+import styles from '@/components/page/root.module.scss';
 import type { ActivityLog } from '@/lib/db';
 
 export default function LogsPage() {
@@ -16,6 +18,7 @@ export default function LogsPage() {
 
   useEffect(() => {
     fetchLogs();
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
   const fetchLogs = async (loadMore = false) => {
@@ -39,140 +42,182 @@ export default function LogsPage() {
     }
   };
 
-  if (loading) {
-    return (
-      <Container>
-        <Section>
-          <div className="flex items-center justify-center min-h-[400px]">
-            <div className="animate-pulse font-mono text-[rgb(var(--text-secondary))]">
+  return (
+    <DefaultLayout>
+      <div className={styles.header}>
+        <div className={styles.column}>
+          <div style={{ display: 'flex', alignItems: 'center', gap: '1rem' }}>
+            <BlockLoader mode={2} />
+            <h1>ACTIVITY LOGS</h1>
+          </div>
+          <div style={{ display: 'flex', alignItems: 'center', gap: '1rem' }}>
+            <Link href="/logs/settings" style={{
+              fontFamily: 'monospace',
+              fontSize: '0.875rem',
+              color: 'var(--accent-color)',
+              textDecoration: 'none',
+              padding: '0.25rem 0.5rem',
+              border: '1px solid var(--border-color)',
+            }}>
+              Settings
+            </Link>
+            <ThemeSwitcher />
+          </div>
+        </div>
+      </div>
+
+      <div className={styles.content}>
+        <div className={styles.innerViewport}>
+          {loading ? (
+            <div style={{ textAlign: 'center', padding: '2rem 0', fontFamily: 'monospace', opacity: 0.5 }}>
               Loading logs...
             </div>
-          </div>
-        </Section>
-      </Container>
-    );
-  }
-
-  return (
-    <Container>
-      <Section>
-        <div className="space-y-8">
-          {/* Header */}
-          <div className="border-b border-[rgb(var(--border))] pb-6">
-            <h1 className="text-4xl font-mono lowercase mb-2">
-              activity logs
-            </h1>
-            <p className="text-[rgb(var(--text-secondary))] font-mono text-sm">
-              daily github activity summaries
-            </p>
-          </div>
-
-          {/* Log Generator */}
-          <LogGenerator 
-            onComplete={(logId) => {
-              // Refresh the logs list
-              fetchLogs();
-            }}
-          />
-
-          {/* Logs Feed */}
-          <div className="space-y-6">
-            {logs.length === 0 ? (
-              <div className="brutalist-card p-8 text-center">
-                <p className="font-mono text-[rgb(var(--text-secondary))]">
-                  No activity logs yet. Check back tomorrow!
-                </p>
-              </div>
-            ) : (
-              logs.map((log, index) => (
-                <motion.div
-                  key={log.id}
-                  initial={{ opacity: 0, y: 20 }}
-                  animate={{ opacity: 1, y: 0 }}
-                  transition={{ delay: index * 0.05 }}
-                >
-                  <Link href={`/logs/${log.id}`}>
-                    <div className="brutalist-card hover:translate-x-1 hover:-translate-y-1 transition-transform cursor-pointer">
-                      <div className="p-6 space-y-4">
-                        {/* Date Header */}
-                        <div className="flex items-center justify-between">
-                          <h2 className="text-xl font-mono text-[rgb(var(--accent-1))]">
-                            {format(new Date(log.date), 'EEEE, MMMM d, yyyy')}
-                          </h2>
-                          {log.metadata && (
-                            <div className="flex gap-4 text-xs font-mono text-[rgb(var(--text-secondary))]">
-                              {log.metadata.totalCommits > 0 && (
-                                <span>{log.metadata.totalCommits} commits</span>
-                              )}
-                              {log.metadata.totalPullRequests > 0 && (
-                                <span>{log.metadata.totalPullRequests} PRs</span>
-                              )}
-                              {log.metadata.totalIssues > 0 && (
-                                <span>{log.metadata.totalIssues} issues</span>
-                              )}
-                            </div>
+          ) : logs.length === 0 ? (
+            <div style={{ textAlign: 'center', padding: '2rem', fontFamily: 'monospace', opacity: 0.7 }}>
+              No activity logs yet. Check back tomorrow!
+            </div>
+          ) : (
+            <>
+              {logs.map((log) => (
+                <Link key={log.id} href={`/logs/${log.id}`} style={{ textDecoration: 'none', color: 'inherit' }}>
+                  <div style={{
+                    marginBottom: '1.5rem',
+                    padding: '1rem',
+                    border: '1px solid var(--border-color)',
+                    backgroundColor: 'var(--surface-color)',
+                    cursor: 'pointer',
+                    transition: 'transform 0.1s ease',
+                  }}
+                  onMouseEnter={(e) => {
+                    e.currentTarget.style.transform = 'translateX(2px) translateY(-2px)';
+                  }}
+                  onMouseLeave={(e) => {
+                    e.currentTarget.style.transform = 'none';
+                  }}
+                  >
+                    {/* Date and Stats */}
+                    <div style={{ 
+                      display: 'flex', 
+                      justifyContent: 'space-between', 
+                      alignItems: 'center',
+                      marginBottom: '0.75rem',
+                      fontFamily: 'monospace',
+                      fontSize: '0.875rem'
+                    }}>
+                      <strong style={{ color: 'var(--accent-color)' }}>
+                        {format(new Date(log.date), 'EEEE, MMMM d, yyyy')}
+                      </strong>
+                      {log.metadata && (
+                        <div style={{ display: 'flex', gap: '1rem', opacity: 0.7 }}>
+                          {log.metadata?.totalCommits && log.metadata.totalCommits > 0 && (
+                            <span>{log.metadata.totalCommits} commits</span>
+                          )}
+                          {log.metadata?.totalPullRequests && log.metadata.totalPullRequests > 0 && (
+                            <span>{log.metadata.totalPullRequests} PRs</span>
+                          )}
+                          {log.metadata?.totalIssues && log.metadata.totalIssues > 0 && (
+                            <span>{log.metadata.totalIssues} issues</span>
                           )}
                         </div>
-
-                        {/* Summary */}
-                        <p className="font-mono text-sm leading-relaxed">
-                          {log.summary}
-                        </p>
-
-                        {/* Bullet Points */}
-                        {log.bullets && log.bullets.length > 0 && (
-                          <ul className="space-y-2">
-                            {log.bullets.slice(0, 3).map((bullet, i) => (
-                              <li 
-                                key={i} 
-                                className="flex items-start gap-2 text-sm font-mono text-[rgb(var(--text-secondary))]"
-                              >
-                                <span className="text-[rgb(var(--accent-1))] mt-1">→</span>
-                                <span>{bullet}</span>
-                              </li>
-                            ))}
-                            {log.bullets.length > 3 && (
-                              <li className="text-sm font-mono text-[rgb(var(--accent-2))]">
-                                + {log.bullets.length - 3} more...
-                              </li>
-                            )}
-                          </ul>
-                        )}
-
-                        {/* Metadata Tags */}
-                        {log.metadata?.languages && log.metadata.languages.length > 0 && (
-                          <div className="flex flex-wrap gap-2 pt-2">
-                            {log.metadata.languages.map((lang: string) => (
-                              <span
-                                key={lang}
-                                className="px-2 py-1 bg-[rgb(var(--surface-2))] text-xs font-mono rounded"
-                              >
-                                {lang}
-                              </span>
-                            ))}
-                          </div>
-                        )}
-                      </div>
+                      )}
                     </div>
-                  </Link>
-                </motion.div>
-              ))
-            )}
-          </div>
 
-          {/* Load More */}
-          {hasMore && (
-            <div className="flex justify-center pt-8">
-              <button
-                onClick={() => fetchLogs(true)}
-                className="brutalist-button px-6 py-3"
-              >
-                <span className="font-mono">load more →</span>
-              </button>
-            </div>
+                    {/* Summary */}
+                    <p style={{ 
+                      fontFamily: 'monospace',
+                      fontSize: '0.875rem',
+                      lineHeight: 1.6,
+                      marginBottom: '0.75rem'
+                    }}>
+                      {log.summary}
+                    </p>
+
+                    {/* Bullets */}
+                    {log.bullets && log.bullets.length > 0 && (
+                      <ul style={{ 
+                        listStyle: 'none', 
+                        padding: 0,
+                        margin: 0,
+                        fontFamily: 'monospace',
+                        fontSize: '0.75rem',
+                        opacity: 0.8
+                      }}>
+                        {log.bullets.slice(0, 3).map((bullet: string, i: number) => (
+                          <li key={i} style={{ marginBottom: '0.25rem' }}>
+                            → {bullet}
+                          </li>
+                        ))}
+                        {log.bullets.length > 3 && (
+                          <li style={{ color: 'var(--accent-color)', marginTop: '0.25rem' }}>
+                            + {log.bullets.length - 3} more...
+                          </li>
+                        )}
+                      </ul>
+                    )}
+
+                    {/* Language Tags */}
+                    {log.metadata?.languages && log.metadata.languages.length > 0 && (
+                      <div style={{ 
+                        display: 'flex', 
+                        flexWrap: 'wrap', 
+                        gap: '0.5rem',
+                        marginTop: '0.75rem'
+                      }}>
+                        {log.metadata.languages.map((lang: string) => (
+                          <span
+                            key={lang}
+                            style={{
+                              padding: '0.125rem 0.5rem',
+                              backgroundColor: 'var(--surface-2-color)',
+                              fontFamily: 'monospace',
+                              fontSize: '0.625rem',
+                              borderRadius: '2px'
+                            }}
+                          >
+                            {lang}
+                          </span>
+                        ))}
+                      </div>
+                    )}
+                  </div>
+                </Link>
+              ))}
+
+              {/* Load More */}
+              {hasMore && (
+                <div style={{ textAlign: 'center', padding: '2rem 0' }}>
+                  <button
+                    onClick={() => fetchLogs(true)}
+                    style={{
+                      padding: '0.5rem 1.5rem',
+                      fontFamily: 'monospace',
+                      fontSize: '0.875rem',
+                      backgroundColor: 'transparent',
+                      border: '1px solid var(--border-color)',
+                      cursor: 'pointer',
+                      transition: 'transform 0.1s ease'
+                    }}
+                    onMouseEnter={(e) => {
+                      e.currentTarget.style.transform = 'translateX(2px) translateY(-2px)';
+                    }}
+                    onMouseLeave={(e) => {
+                      e.currentTarget.style.transform = 'none';
+                    }}
+                  >
+                    load more →
+                  </button>
+                </div>
+              )}
+            </>
           )}
         </div>
-      </Section>
-    </Container>
+      </div>
+
+      <div className={styles.footer}>
+        <div className={styles.column}>
+          <FooterNavigation />
+        </div>
+      </div>
+    </DefaultLayout>
   );
 }

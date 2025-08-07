@@ -1,7 +1,6 @@
 'use client';
 
 import React from 'react';
-import { motion } from 'framer-motion';
 import type { ActivityDetail } from '@/lib/db';
 
 interface ActivityCardProps {
@@ -14,20 +13,34 @@ function CommitCard({ activity }: { activity: ActivityDetail }) {
   const metadata = activity.metadata as any;
   
   return (
-    <div className="brutalist-card p-4 hover:translate-x-1 hover:-translate-y-1 transition-transform">
-      <div className="flex items-start gap-3">
-        <div className="text-2xl">💾</div>
-        <div className="flex-1">
-          <h3 className="font-mono text-sm mb-1">{activity.title}</h3>
+    <div style={{
+      padding: '1rem',
+      border: '1px solid var(--border-color)',
+      backgroundColor: 'var(--surface-color)',
+      transition: 'transform 0.1s ease'
+    }}
+    onMouseEnter={(e) => {
+      e.currentTarget.style.transform = 'translateX(2px) translateY(-2px)';
+    }}
+    onMouseLeave={(e) => {
+      e.currentTarget.style.transform = 'none';
+    }}
+    >
+      <div style={{ display: 'flex', alignItems: 'flex-start', gap: '0.75rem' }}>
+        <div style={{ fontSize: '1.5rem' }}>💾</div>
+        <div style={{ flex: 1 }}>
+          <h4 style={{ fontFamily: 'monospace', fontSize: '0.875rem', marginBottom: '0.25rem' }}>
+            {activity.title}
+          </h4>
           {metadata?.stats && (
-            <div className="flex gap-4 text-xs font-mono text-[rgb(var(--text-secondary))]">
-              <span className="text-green-500">+{metadata.stats.additions || 0}</span>
-              <span className="text-red-500">-{metadata.stats.deletions || 0}</span>
+            <div style={{ display: 'flex', gap: '1rem', fontSize: '0.75rem', fontFamily: 'monospace', opacity: 0.7 }}>
+              <span style={{ color: '#10b981' }}>+{metadata.stats.additions || 0}</span>
+              <span style={{ color: '#ef4444' }}>-{metadata.stats.deletions || 0}</span>
               <span>{metadata.stats.total || 0} changes</span>
             </div>
           )}
           {metadata?.files && metadata.files.length > 0 && (
-            <div className="mt-2 text-xs font-mono text-[rgb(var(--text-secondary))]">
+            <div style={{ marginTop: '0.5rem', fontSize: '0.75rem', fontFamily: 'monospace', opacity: 0.6 }}>
               {metadata.files.slice(0, 3).map((file: any, i: number) => (
                 <div key={i}>→ {file.filename}</div>
               ))}
@@ -49,34 +62,66 @@ function PullRequestCard({ activity }: { activity: ActivityDetail }) {
   const merged = metadata?.merged;
   
   return (
-    <div className="brutalist-card p-4 hover:translate-x-1 hover:-translate-y-1 transition-transform">
-      <div className="flex items-start gap-3">
-        <div className="text-2xl">
+    <div style={{
+      padding: '1rem',
+      border: '1px solid var(--border-color)',
+      backgroundColor: 'var(--surface-color)',
+      transition: 'transform 0.1s ease'
+    }}
+    onMouseEnter={(e) => {
+      e.currentTarget.style.transform = 'translateX(2px) translateY(-2px)';
+    }}
+    onMouseLeave={(e) => {
+      e.currentTarget.style.transform = 'none';
+    }}
+    >
+      <div style={{ display: 'flex', alignItems: 'flex-start', gap: '0.75rem' }}>
+        <div style={{ fontSize: '1.5rem' }}>
           {merged ? '🎯' : state === 'open' ? '🔄' : '✅'}
         </div>
-        <div className="flex-1">
-          <div className="flex items-center gap-2 mb-1">
-            <h3 className="font-mono text-sm">{activity.title}</h3>
-            <span className={`px-2 py-0.5 text-xs font-mono rounded ${
-              merged ? 'bg-purple-500/20 text-purple-400' :
-              state === 'open' ? 'bg-green-500/20 text-green-400' :
-              'bg-gray-500/20 text-gray-400'
-            }`}>
+        <div style={{ flex: 1 }}>
+          <div style={{ display: 'flex', alignItems: 'center', gap: '0.5rem', marginBottom: '0.25rem' }}>
+            <h4 style={{ fontFamily: 'monospace', fontSize: '0.875rem' }}>
+              {activity.title}
+            </h4>
+            <span style={{
+              padding: '0.125rem 0.5rem',
+              fontSize: '0.625rem',
+              fontFamily: 'monospace',
+              borderRadius: '2px',
+              backgroundColor: merged ? 'rgba(168, 85, 247, 0.2)' :
+                            state === 'open' ? 'rgba(34, 197, 94, 0.2)' :
+                            'rgba(107, 114, 128, 0.2)',
+              color: merged ? '#a855f7' :
+                     state === 'open' ? '#22c55e' :
+                     '#6b7280'
+            }}>
               {merged ? 'merged' : state}
             </span>
           </div>
           {activity.description && (
-            <p className="font-mono text-xs text-[rgb(var(--text-secondary))] line-clamp-2">
+            <p style={{
+              fontFamily: 'monospace',
+              fontSize: '0.75rem',
+              opacity: 0.7,
+              overflow: 'hidden',
+              display: '-webkit-box',
+              WebkitLineClamp: 2,
+              WebkitBoxOrient: 'vertical'
+            }}>
               {activity.description}
             </p>
           )}
           {metadata?.labels && metadata.labels.length > 0 && (
-            <div className="flex flex-wrap gap-1 mt-2">
+            <div style={{ display: 'flex', flexWrap: 'wrap', gap: '0.25rem', marginTop: '0.5rem' }}>
               {metadata.labels.map((label: any) => (
                 <span
                   key={label.id}
-                  className="px-2 py-0.5 text-xs font-mono rounded"
                   style={{
+                    padding: '0.125rem 0.5rem',
+                    fontSize: '0.625rem',
+                    fontFamily: 'monospace',
+                    borderRadius: '2px',
                     backgroundColor: `#${label.color}20`,
                     color: `#${label.color}`,
                   }}
@@ -98,33 +143,59 @@ function IssueCard({ activity }: { activity: ActivityDetail }) {
   const state = metadata?.state || 'open';
   
   return (
-    <div className="brutalist-card p-4 hover:translate-x-1 hover:-translate-y-1 transition-transform">
-      <div className="flex items-start gap-3">
-        <div className="text-2xl">
+    <div style={{
+      padding: '1rem',
+      border: '1px solid var(--border-color)',
+      backgroundColor: 'var(--surface-color)',
+      transition: 'transform 0.1s ease'
+    }}
+    onMouseEnter={(e) => {
+      e.currentTarget.style.transform = 'translateX(2px) translateY(-2px)';
+    }}
+    onMouseLeave={(e) => {
+      e.currentTarget.style.transform = 'none';
+    }}
+    >
+      <div style={{ display: 'flex', alignItems: 'flex-start', gap: '0.75rem' }}>
+        <div style={{ fontSize: '1.5rem' }}>
           {state === 'closed' ? '✓' : '⚠️'}
         </div>
-        <div className="flex-1">
-          <div className="flex items-center gap-2 mb-1">
-            <h3 className="font-mono text-sm">{activity.title}</h3>
-            <span className={`px-2 py-0.5 text-xs font-mono rounded ${
-              state === 'closed' ? 'bg-red-500/20 text-red-400' :
-              'bg-yellow-500/20 text-yellow-400'
-            }`}>
+        <div style={{ flex: 1 }}>
+          <div style={{ display: 'flex', alignItems: 'center', gap: '0.5rem', marginBottom: '0.25rem' }}>
+            <h4 style={{ fontFamily: 'monospace', fontSize: '0.875rem' }}>
+              {activity.title}
+            </h4>
+            <span style={{
+              padding: '0.125rem 0.5rem',
+              fontSize: '0.625rem',
+              fontFamily: 'monospace',
+              borderRadius: '2px',
+              backgroundColor: state === 'closed' ? 'rgba(239, 68, 68, 0.2)' : 'rgba(245, 158, 11, 0.2)',
+              color: state === 'closed' ? '#ef4444' : '#f59e0b'
+            }}>
               {state}
             </span>
           </div>
           {activity.description && (
-            <p className="font-mono text-xs text-[rgb(var(--text-secondary))] line-clamp-2">
+            <p style={{
+              fontFamily: 'monospace',
+              fontSize: '0.75rem',
+              opacity: 0.7,
+              overflow: 'hidden',
+              display: '-webkit-box',
+              WebkitLineClamp: 2,
+              WebkitBoxOrient: 'vertical'
+            }}>
               {activity.description}
             </p>
           )}
           {metadata?.assignees && metadata.assignees.length > 0 && (
-            <div className="flex items-center gap-2 mt-2">
-              <span className="text-xs font-mono text-[rgb(var(--text-secondary))]">
+            <div style={{ display: 'flex', alignItems: 'center', gap: '0.5rem', marginTop: '0.5rem' }}>
+              <span style={{ fontSize: '0.75rem', fontFamily: 'monospace', opacity: 0.6 }}>
                 Assigned to:
               </span>
               {metadata.assignees.map((assignee: any) => (
-                <span key={assignee.id} className="text-xs font-mono">
+                <span key={assignee.id} style={{ fontSize: '0.75rem', fontFamily: 'monospace' }}>
                   @{assignee.login}
                 </span>
               ))}
@@ -142,23 +213,49 @@ function ReviewCard({ activity }: { activity: ActivityDetail }) {
   const state = metadata?.state || 'PENDING';
   
   return (
-    <div className="brutalist-card p-4 hover:translate-x-1 hover:-translate-y-1 transition-transform">
-      <div className="flex items-start gap-3">
-        <div className="text-2xl">
+    <div style={{
+      padding: '1rem',
+      border: '1px solid var(--border-color)',
+      backgroundColor: 'var(--surface-color)',
+      transition: 'transform 0.1s ease'
+    }}
+    onMouseEnter={(e) => {
+      e.currentTarget.style.transform = 'translateX(2px) translateY(-2px)';
+    }}
+    onMouseLeave={(e) => {
+      e.currentTarget.style.transform = 'none';
+    }}
+    >
+      <div style={{ display: 'flex', alignItems: 'flex-start', gap: '0.75rem' }}>
+        <div style={{ fontSize: '1.5rem' }}>
           {state === 'APPROVED' ? '✅' : 
            state === 'CHANGES_REQUESTED' ? '🔧' : '👀'}
         </div>
-        <div className="flex-1">
-          <h3 className="font-mono text-sm mb-1">Code Review</h3>
-          <span className={`px-2 py-0.5 text-xs font-mono rounded ${
-            state === 'APPROVED' ? 'bg-green-500/20 text-green-400' :
-            state === 'CHANGES_REQUESTED' ? 'bg-yellow-500/20 text-yellow-400' :
-            'bg-gray-500/20 text-gray-400'
-          }`}>
+        <div style={{ flex: 1 }}>
+          <h4 style={{ fontFamily: 'monospace', fontSize: '0.875rem', marginBottom: '0.25rem' }}>
+            Code Review
+          </h4>
+          <span style={{
+            padding: '0.125rem 0.5rem',
+            fontSize: '0.625rem',
+            fontFamily: 'monospace',
+            borderRadius: '2px',
+            backgroundColor: state === 'APPROVED' ? 'rgba(34, 197, 94, 0.2)' :
+                            state === 'CHANGES_REQUESTED' ? 'rgba(245, 158, 11, 0.2)' :
+                            'rgba(107, 114, 128, 0.2)',
+            color: state === 'APPROVED' ? '#22c55e' :
+                   state === 'CHANGES_REQUESTED' ? '#f59e0b' :
+                   '#6b7280'
+          }}>
             {state.toLowerCase().replace('_', ' ')}
           </span>
           {activity.description && (
-            <p className="font-mono text-xs text-[rgb(var(--text-secondary))] mt-2">
+            <p style={{
+              fontFamily: 'monospace',
+              fontSize: '0.75rem',
+              opacity: 0.7,
+              marginTop: '0.5rem'
+            }}>
               {activity.description}
             </p>
           )}
@@ -170,18 +267,6 @@ function ReviewCard({ activity }: { activity: ActivityDetail }) {
 
 // Main Activity Card Component
 export function ActivityCard({ activity, index }: ActivityCardProps) {
-  const cardVariants = {
-    hidden: { opacity: 0, y: 20 },
-    visible: {
-      opacity: 1,
-      y: 0,
-      transition: {
-        delay: index * 0.05,
-        duration: 0.3,
-      },
-    },
-  };
-
   const renderCard = () => {
     switch (activity.type) {
       case 'commit':
@@ -194,10 +279,21 @@ export function ActivityCard({ activity, index }: ActivityCardProps) {
         return <ReviewCard activity={activity} />;
       default:
         return (
-          <div className="brutalist-card p-4">
-            <h3 className="font-mono text-sm">{activity.title}</h3>
+          <div style={{
+            padding: '1rem',
+            border: '1px solid var(--border-color)',
+            backgroundColor: 'var(--surface-color)'
+          }}>
+            <h4 style={{ fontFamily: 'monospace', fontSize: '0.875rem' }}>
+              {activity.title}
+            </h4>
             {activity.description && (
-              <p className="font-mono text-xs text-[rgb(var(--text-secondary))] mt-1">
+              <p style={{
+                fontFamily: 'monospace',
+                fontSize: '0.75rem',
+                opacity: 0.7,
+                marginTop: '0.25rem'
+              }}>
                 {activity.description}
               </p>
             )}
@@ -207,24 +303,19 @@ export function ActivityCard({ activity, index }: ActivityCardProps) {
   };
 
   return (
-    <motion.div
-      variants={cardVariants}
-      initial="hidden"
-      animate="visible"
-      className="relative"
-    >
+    <div>
       {activity.url ? (
         <a
           href={activity.url}
           target="_blank"
           rel="noopener noreferrer"
-          className="block"
+          style={{ textDecoration: 'none', color: 'inherit', display: 'block' }}
         >
           {renderCard()}
         </a>
       ) : (
         renderCard()
       )}
-    </motion.div>
+    </div>
   );
 }

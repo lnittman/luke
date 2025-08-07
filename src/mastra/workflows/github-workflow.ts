@@ -142,7 +142,14 @@ const storeActivityStep = createStep({
 
       // Extract and store activity details
       const rawData = rawActivity?.toolCalls?.[0]?.result || {};
-      const details = [];
+      const details: Array<{
+        logId: string;
+        type: 'commit' | 'pr' | 'issue' | 'review';
+        title: string;
+        description?: string;
+        url?: string;
+        metadata?: any;
+      }> = [];
 
       // Store commits
       if (rawData.commits?.length > 0) {
