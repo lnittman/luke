@@ -25,7 +25,7 @@ export default function Projects() {
           
           {/* Projects list with full-width items */}
           <div className="space-y-0" style={{ marginTop: '0' }}>
-            {PROJECTS.map((project) => (
+            {PROJECTS.filter(p => !['voet','helios','cards'].includes(p.id)).map((project) => (
               <ProjectAccordion key={project.id} project={project} />
             ))}
           </div>
