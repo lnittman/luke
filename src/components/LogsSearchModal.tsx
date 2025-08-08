@@ -158,14 +158,9 @@ export function LogsSearchModal({ logs = [] }: LogsSearchModalProps) {
             }}
             style={{ background: 'rgb(var(--background-start))' }}
           >
-            {/* water background */}
-            <div className="pointer-events-none absolute inset-0" style={{ opacity: 0.07 }}>
-              <WaterAscii mode="procedural" rows={80} columns={220} speed={0.5} style={{ fontSize: '8px', lineHeight: '8px', width: '100%', height: '100%' }} />
-            </div>
-
             {/* top-aligned search UI */}
             <div className="relative z-[101] flex h-full w-full flex-col" onClick={(e) => e.stopPropagation()}>
-              <div style={{ padding: '12px 24px 8px 24px', borderBottom: '1px solid rgb(var(--border))', display: 'flex', alignItems: 'center', gap: '0.5rem' }}>
+              <div id="logs-search-bar" style={{ padding: '12px 24px 8px 24px', borderBottom: '1px solid rgb(var(--border))', display: 'flex', alignItems: 'center', gap: '0.5rem' }}>
                 <input
                   type="search"
                   value={query}
@@ -183,10 +178,15 @@ export function LogsSearchModal({ logs = [] }: LogsSearchModalProps) {
                   }}
                 />
               </div>
-              <div style={{ padding: '8px 12px 12px 12px' }}>
-                <div style={{ position: 'relative' }}>
-                  <div style={{ position: 'absolute', inset: 0, pointerEvents: 'none', padding: '0 12px 12px 12px' }} />
-                  {resultsList}
+              <div style={{ padding: '8px 12px 12px 12px' }}>{resultsList}</div>
+            </div>
+
+            {/* water background: inset from page sides and bottom, starts below search bar bottom edge */}
+            <div className="pointer-events-none absolute inset-0" style={{ opacity: 0.07 }}>
+              <div style={{ position: 'absolute', left: 8, right: 8, bottom: 8, top: 0 }}>
+                <div style={{ position: 'absolute', left: 0, right: 0, bottom: 0, top: (12 + 12 + 16) }}>
+                  {/* 12 top padding + 12 bottom padding inside bar + ~16px bar content line height approximation; keeps ascii below search with small gap */}
+                  <WaterAscii mode="procedural" rows={80} columns={220} speed={0.5} style={{ fontSize: '8px', lineHeight: '8px', width: '100%', height: '100%' }} />
                 </div>
               </div>
             </div>

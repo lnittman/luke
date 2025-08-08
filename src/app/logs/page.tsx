@@ -94,7 +94,7 @@ export default function LogsPage() {
           {(loading || logs.length === 0) && (
             <div style={{ position: 'absolute', inset: 0, pointerEvents: 'none' }}>
               <div style={{ position: 'absolute', left: 0, right: 0, bottom: 0, top: headerHeight }}>
-                <div style={{ position: 'absolute', left: 12, right: 12, bottom: 12, top: 12, opacity: 0.08, display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
+                <div style={{ position: 'absolute', left: 8, right: 8, bottom: 8, top: 8, opacity: 0.08, display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
                   <WaterAscii
                     mode="procedural"
                     rows={56}
