@@ -1,7 +1,7 @@
 'use client';
 
 import { useRouter } from 'next/navigation';
-import { AnimatedAscii, ASCII_PRESETS } from '@/components/AnimatedAscii';
+import { FireAscii } from '@/components/FireAscii';
 
 export default function NotFound() {
   const router = useRouter();
@@ -22,38 +22,21 @@ export default function NotFound() {
         display: 'flex',
         flexDirection: 'column',
         alignItems: 'center',
-        gap: '3rem',
+        gap: '2rem',
         maxWidth: '400px',
         width: '100%',
       }}>
-        {/* Animated ASCII */}
-        <AnimatedAscii
-          frames={ASCII_PRESETS.error404}
-          interval={500}
-          style={{
-            fontSize: '1.5rem',
-            color: 'rgb(var(--text-secondary))',
-          }}
-        />
+        {/* Fire ASCII Animation */}
+        <FireAscii />
 
-        {/* 404 Text */}
-        <div style={{
-          textAlign: 'center',
+        {/* 404 Text - Already in ASCII */}
+        <p style={{
+          color: 'rgb(var(--text-secondary))',
+          fontSize: '0.875rem',
+          textTransform: 'uppercase',
         }}>
-          <h1 style={{
-            fontSize: '2rem',
-            marginBottom: '1rem',
-            fontWeight: 'normal',
-          }}>
-            404
-          </h1>
-          <p style={{
-            color: 'rgb(var(--text-secondary))',
-            fontSize: '0.875rem',
-          }}>
-            PAGE NOT FOUND
-          </p>
-        </div>
+          Page Not Found
+        </p>
 
         {/* Back Button */}
         <button
