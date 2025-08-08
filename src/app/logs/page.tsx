@@ -1,6 +1,6 @@
 'use client';
 
-import React, { useEffect, useMemo, useState } from 'react';
+import React, { useEffect, useMemo, useRef, useState } from 'react';
 import Link from 'next/link';
 import { format } from 'date-fns';
 import { useSetAtom } from 'jotai';
@@ -23,6 +23,19 @@ export default function LogsPage() {
   const setLogsSearchModalOpen = useSetAtom(logsSearchModalOpenAtom);
   const isMobile = useIsMobile();
   const searchPlaceholder = useMemo(() => 'search logs…', []);
+  const headerRef = useRef<HTMLDivElement>(null);
+  const [headerHeight, setHeaderHeight] = useState(0);
+
+  useEffect(() => {
+    const measure = () => {
+      if (headerRef.current) {
+        setHeaderHeight(headerRef.current.offsetHeight || 0);
+      }
+    };
+    measure();
+    window.addEventListener('resize', measure);
+    return () => window.removeEventListener('resize', measure);
+  }, []);
 
   useEffect(() => {
     fetchLogs();
@@ -79,7 +92,7 @@ export default function LogsPage() {
       <div className={styles.content}>
         <div className={styles.innerViewport} style={{ position: 'relative' }}>
           {(loading || logs.length === 0) && (
-            <div style={{ position: 'absolute', inset: 0, pointerEvents: 'none', opacity: 0.08, display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
+            <div style={{ position: 'absolute', left: 12, right: 12, bottom: 12, top: headerHeight + 12, pointerEvents: 'none', opacity: 0.08, display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
               <WaterAscii
                 mode="procedural"
                 rows={56}
@@ -90,13 +103,14 @@ export default function LogsPage() {
             </div>
           )}
           {/* Page header with search and settings */}
-          <div style={{ 
+          <div ref={headerRef} style={{ 
             display: 'flex', 
             justifyContent: 'space-between', 
             alignItems: 'center',
             marginBottom: '1.5rem',
-            padding: '0 24px 1rem 24px',
-            borderBottom: '1px solid rgb(var(--border))'
+            padding: '0.75rem 24px',
+            borderBottom: '1px solid rgb(var(--border))',
+            backgroundColor: 'rgb(var(--background-start))'
           }}>
             {isMobile ? (
               <button

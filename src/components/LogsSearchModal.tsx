@@ -165,12 +165,12 @@ export function LogsSearchModal({ logs = [] }: LogsSearchModalProps) {
 
             {/* top-aligned search UI */}
             <div className="relative z-[101] flex h-full w-full flex-col" onClick={(e) => e.stopPropagation()}>
-              <div style={{ padding: '1rem 24px', borderBottom: '1px solid rgb(var(--border))', display: 'flex', alignItems: 'center', gap: '0.5rem' }}>
+              <div style={{ padding: '12px 24px 8px 24px', borderBottom: '1px solid rgb(var(--border))', display: 'flex', alignItems: 'center', gap: '0.5rem' }}>
                 <input
                   type="search"
                   value={query}
                   onChange={(e) => setQuery(e.target.value)}
-                  placeholder="search logs..."
+                  placeholder="start typing to search"
                   autoFocus
                   style={{
                     width: '100%',
@@ -183,7 +183,12 @@ export function LogsSearchModal({ logs = [] }: LogsSearchModalProps) {
                   }}
                 />
               </div>
-              {resultsList}
+              <div style={{ padding: '8px 12px 12px 12px' }}>
+                <div style={{ position: 'relative' }}>
+                  <div style={{ position: 'absolute', inset: 0, pointerEvents: 'none', padding: '0 12px 12px 12px' }} />
+                  {resultsList}
+                </div>
+              </div>
             </div>
           </motion.div>
         </>
