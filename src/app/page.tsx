@@ -38,7 +38,7 @@ export default function Home() {
               <p>
                 now i&apos;m enjoying building my own products. each one explores a simple question:
                 how do we make AI feel less like an infinite black box and more like
-                a useful friend? the answer is always in the implementation details.
+                a useful friend?
               </p>
             </Accordion>
 
