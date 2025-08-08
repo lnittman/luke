@@ -4,7 +4,8 @@ import React, { useEffect, useState } from 'react';
 import Link from 'next/link';
 import { format } from 'date-fns';
 import { useSetAtom } from 'jotai';
-import { searchModalOpenAtom } from '@/atoms/search';
+import { logsSearchModalOpenAtom } from '@/atoms/logs-search';
+import { LogsSearchModal } from '@/components/LogsSearchModal';
 import { DefaultLayout } from '@/components/page/DefaultLayout';
 import { FooterNavigation } from '@/components/FooterNavigation';
 import { BlockLoader } from '@/components/BlockLoader';
@@ -17,7 +18,7 @@ export default function LogsPage() {
   const [loading, setLoading] = useState(true);
   const [hasMore, setHasMore] = useState(false);
   const [offset, setOffset] = useState(0);
-  const setSearchModalOpen = useSetAtom(searchModalOpenAtom);
+  const setLogsSearchModalOpen = useSetAtom(logsSearchModalOpenAtom);
 
   useEffect(() => {
     fetchLogs();
@@ -60,6 +61,7 @@ export default function LogsPage() {
 
   return (
     <DefaultLayout>
+      <LogsSearchModal />
       <div className={styles.header}>
         <div className={styles.column}>
           <div style={{ display: 'flex', alignItems: 'center', gap: '1rem' }}>
@@ -78,13 +80,13 @@ export default function LogsPage() {
             justifyContent: 'space-between', 
             alignItems: 'center',
             marginBottom: '1.5rem',
-            paddingBottom: '1rem',
+            padding: '0 24px 1rem 24px',
             borderBottom: '1px solid rgb(var(--border))'
           }}>
             <button
-              onClick={() => setSearchModalOpen(true)}
-              title="Search (⌘K)"
-              aria-label="Search (⌘K)"
+              onClick={() => setLogsSearchModalOpen(true)}
+              title="Search Logs"
+              aria-label="Search Logs"
               style={{
                 display: 'flex',
                 alignItems: 'center',
@@ -111,37 +113,39 @@ export default function LogsPage() {
             >
               ⌕
             </button>
-            <Link 
-              href="/logs/settings" 
-              title="Settings"
-              aria-label="Settings"
-              style={{
-                display: 'flex',
-                alignItems: 'center',
-                justifyContent: 'center',
-                width: '2rem',
-                height: '2rem',
-                background: 'none',
-                border: '1px solid rgb(var(--border))',
-                color: 'rgb(var(--text-primary))',
-                cursor: 'pointer',
-                transition: 'all 0.2s ease',
-                fontFamily: 'monospace',
-                padding: 0,
-                fontSize: '1rem',
-                textDecoration: 'none',
-              }}
-              onMouseEnter={(e) => {
-                e.currentTarget.style.background = 'rgb(var(--surface-1))';
-                e.currentTarget.style.borderColor = 'rgb(var(--accent-1))';
-              }}
-              onMouseLeave={(e) => {
-                e.currentTarget.style.background = 'none';
-                e.currentTarget.style.borderColor = 'rgb(var(--border))';
-              }}
-            >
-              ⚙
-            </Link>
+            {process.env.NODE_ENV === 'development' && (
+              <Link 
+                href="/logs/settings" 
+                title="Settings"
+                aria-label="Settings"
+                style={{
+                  display: 'flex',
+                  alignItems: 'center',
+                  justifyContent: 'center',
+                  width: '2rem',
+                  height: '2rem',
+                  background: 'none',
+                  border: '1px solid rgb(var(--border))',
+                  color: 'rgb(var(--text-primary))',
+                  cursor: 'pointer',
+                  transition: 'all 0.2s ease',
+                  fontFamily: 'monospace',
+                  padding: 0,
+                  fontSize: '1rem',
+                  textDecoration: 'none',
+                }}
+                onMouseEnter={(e) => {
+                  e.currentTarget.style.background = 'rgb(var(--surface-1))';
+                  e.currentTarget.style.borderColor = 'rgb(var(--accent-1))';
+                }}
+                onMouseLeave={(e) => {
+                  e.currentTarget.style.background = 'none';
+                  e.currentTarget.style.borderColor = 'rgb(var(--border))';
+                }}
+              >
+                ⚙
+              </Link>
+            )}
           </div>
 
           {loading ? (

@@ -1,4 +1,5 @@
 import Link from 'next/link';
+import { redirect } from 'next/navigation';
 import { DefaultLayout } from '@/components/page/DefaultLayout';
 import { FooterNavigation } from '@/components/FooterNavigation';
 import { BlockLoader } from '@/components/BlockLoader';
@@ -8,6 +9,11 @@ import { SettingsClient } from './settings-client';
 import { getSettings } from './actions';
 
 export default async function LogsSettingsPage() {
+  // Redirect to 404 in production
+  if (process.env.NODE_ENV === 'production') {
+    redirect('/404');
+  }
+
   const settings = await getSettings();
 
   return (

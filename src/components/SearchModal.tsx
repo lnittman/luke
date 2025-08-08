@@ -7,12 +7,12 @@ import { motion, AnimatePresence } from 'framer-motion';
 import { searchModalOpenAtom, searchQueryAtom, searchSelectedIndexAtom } from '@/atoms/search';
 
 const SEARCH_ITEMS = [
-  { id: 'home', title: 'Home', path: '/', category: 'pages' },
-  { id: 'work', title: 'Work', path: '/work', category: 'pages' },
-  { id: 'projects', title: 'Projects', path: '/projects', category: 'pages' },
-  { id: 'about', title: 'About', path: '/about', category: 'pages' },
-  { id: 'logs', title: 'Logs', path: '/logs', category: 'pages' },
-  { id: 'logs-settings', title: 'Logs Settings', path: '/logs/settings', category: 'settings' },
+  { id: 'home', title: 'HOME', path: '/', category: 'PAGES' },
+  { id: 'work', title: 'WORK', path: '/work', category: 'PAGES' },
+  { id: 'projects', title: 'PROJECTS', path: '/projects', category: 'PAGES' },
+  { id: 'about', title: 'ABOUT', path: '/about', category: 'PAGES' },
+  { id: 'logs', title: 'LOGS', path: '/logs', category: 'PAGES' },
+  { id: 'logs-settings', title: 'LOGS SETTINGS', path: '/logs/settings', category: 'SETTINGS' },
 ];
 
 export function SearchModal() {
