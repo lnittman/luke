@@ -1,9 +1,11 @@
-import { pgTable, text, uuid, timestamp, jsonb, boolean, integer, unique } from 'drizzle-orm/pg-core';
+import { pgTable, text, uuid, timestamp, jsonb, boolean, integer, unique, varchar } from 'drizzle-orm/pg-core';
 
 // Keep the basic schema tables for backward compatibility
 export const activityLogs = pgTable('activity_logs', {
   id: uuid('id').defaultRandom().primaryKey(),
-  date: timestamp('date').notNull().unique(),
+  date: timestamp('date').notNull(),
+  logType: varchar('log_type', { length: 20 }).notNull().default('global'), // 'global' or 'repository'
+  repositoryId: uuid('repository_id').references(() => repositories.id, { onDelete: 'cascade' }), // NULL for global logs
   summary: text('summary').notNull(),
   bullets: jsonb('bullets').$type<string[]>().notNull(),
   rawData: jsonb('raw_data').notNull(),
@@ -14,6 +16,10 @@ export const activityLogs = pgTable('activity_logs', {
     totalRepos?: number;
     languages?: string[];
     topProjects?: string[];
+    // Additional fields for cross-repo analysis
+    crossRepoPatterns?: string[];
+    architectureDecisions?: string[];
+    collaborationInsights?: string[];
   }>(),
   processed: boolean('processed').default(false).notNull(),
   createdAt: timestamp('created_at').defaultNow().notNull(),
@@ -34,11 +40,14 @@ export const activityDetails = pgTable('activity_details', {
 // Enhanced schema tables for advanced features
 export const repositories = pgTable('repositories', {
   id: uuid('id').defaultRandom().primaryKey(),
+  repoId: varchar('repo_id', { length: 255 }).unique(), // Stable ID from discovery
   owner: text('owner').notNull(),
   name: text('name').notNull(),
   fullName: text('full_name').notNull(),
   description: text('description'),
   language: text('language'),
+  path: text('path'), // Local path for discovered repos
+  scope: varchar('scope', { length: 20 }).default('github'), // 'local' or 'github'
   defaultBranch: text('default_branch').default('main'),
   isPrivate: boolean('is_private').default(false),
   analysisEnabled: boolean('analysis_enabled').default(true).notNull(),
@@ -46,6 +55,8 @@ export const repositories = pgTable('repositories', {
   stars: integer('stars').default(0),
   topics: jsonb('topics').$type<string[]>().default([]),
   metadata: jsonb('metadata'),
+  lastActivity: timestamp('last_activity'),
+  commitCount: integer('commit_count'),
   createdAt: timestamp('created_at').defaultNow().notNull(),
   updatedAt: timestamp('updated_at').defaultNow().notNull(),
 }, (table) => ({
@@ -92,6 +103,7 @@ export const userPreferences = pgTable('user_preferences', {
   ]),
   dailyDigestEnabled: boolean('daily_digest_enabled').default(true),
   weeklyReportEnabled: boolean('weekly_report_enabled').default(true),
+  globalLogsEnabled: boolean('global_logs_enabled').default(true), // Enable/disable global logs
   includePrivateRepos: boolean('include_private_repos').default(true),
   includeForkedRepos: boolean('include_forked_repos').default(false),
   minCommitSize: integer('min_commit_size').default(1),
@@ -110,3 +122,6 @@ export const activityDetailsExtended = activityDetails;
 // Type exports for UI components
 export type ActivityLog = typeof activityLogs.$inferSelect;
 export type ActivityDetail = typeof activityDetails.$inferSelect;
+export type Repository = typeof repositories.$inferSelect;
+export type UserPreferences = typeof userPreferences.$inferSelect;
+export type AnalysisRule = typeof analysisRules.$inferSelect;

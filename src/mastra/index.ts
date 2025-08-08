@@ -11,8 +11,7 @@ import {
   prReviewAgent,
   technicalDebtAgent,
 } from './agents/code-analysis-agents';
-import { githubAnalysisWorkflow } from './workflows/github-workflow';
-import { enhancedGitHubWorkflow } from './workflows/github-analysis-workflow';
+import generateDailyLog from './workflows/generate-daily-log';
 
 export const mastra = new Mastra({
   agents: {
@@ -28,10 +27,8 @@ export const mastra = new Mastra({
     technicalDebt: technicalDebtAgent,
   },
   workflows: {
-    githubAnalysis: githubAnalysisWorkflow,
-    enhancedGitHubAnalysis: enhancedGitHubWorkflow,
+    generateDailyLog,
   },
 });
 
-export { githubAnalysisWorkflow } from './workflows/github-workflow';
-export { enhancedGitHubWorkflow } from './workflows/github-analysis-workflow';
+export { default as generateDailyLog } from './workflows/generate-daily-log';

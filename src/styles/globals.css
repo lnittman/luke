@@ -554,3 +554,9 @@
 .prose a:hover {
   opacity: 0.8 !important;
 } 
+
+/* Back button hover */
+.back-button:hover {
+  background: rgb(var(--surface-1)) !important;
+  border-color: rgb(var(--accent-1)) !important;
+}
