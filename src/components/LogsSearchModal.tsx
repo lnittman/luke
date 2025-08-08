@@ -20,11 +20,9 @@ export function LogsSearchModal({ logs = [] }: LogsSearchModalProps) {
   const [selectedIndex, setSelectedIndex] = useAtom(logsSearchSelectedIndexAtom);
   const [isMobile, setIsMobile] = useState(false);
   
-  // Check if mobile
+  // Detect mobile (kept for potential styling tweaks)
   useEffect(() => {
-    const checkMobile = () => {
-      setIsMobile(window.innerWidth < 768);
-    };
+    const checkMobile = () => setIsMobile(window.innerWidth < 768);
     checkMobile();
     window.addEventListener('resize', checkMobile);
     return () => window.removeEventListener('resize', checkMobile);
@@ -91,163 +89,53 @@ export function LogsSearchModal({ logs = [] }: LogsSearchModalProps) {
     setSelectedIndex(0);
   }, [query, setSelectedIndex]);
 
-  const modalContent = (
-    <div style={{
-      backgroundColor: 'rgb(var(--background-start))',
-      border: '1px solid rgb(var(--border))',
-      borderRadius: '0',
-      overflow: 'hidden',
-      height: isMobile ? '100%' : 'auto',
-      display: 'flex',
-      flexDirection: 'column',
-    }}>
-      <div style={{
-        padding: '1rem',
-        borderBottom: '1px solid rgb(var(--border))',
-        display: 'flex',
-        alignItems: 'center',
-        gap: '0.5rem',
-      }}>
-        {isMobile && (
+  const resultsList = (
+    <div style={{ flex: 1, overflowY: 'auto' }}>
+      {filteredLogs.length > 0 ? (
+        filteredLogs.map((log, index) => (
           <button
-            onClick={() => {
-              setIsOpen(false);
-              setQuery('');
-              setSelectedIndex(0);
-            }}
+            key={log.id}
+            onClick={() => handleSelect(log.id)}
+            onMouseEnter={() => setSelectedIndex(index)}
             style={{
-              background: 'none',
+              width: '100%',
+              padding: '1rem 24px',
+              display: 'flex',
+              flexDirection: 'column',
+              alignItems: 'flex-start',
+              gap: '0.25rem',
+              background: index === selectedIndex ? 'rgb(var(--surface-1))' : 'transparent',
               border: 'none',
-              color: 'rgb(var(--text-secondary))',
+              borderBottom: '1px solid rgb(var(--border))',
               cursor: 'pointer',
-              padding: '0.25rem',
+              transition: 'background 0.1s ease',
               fontFamily: 'monospace',
-              fontSize: '1.25rem',
-              lineHeight: 1,
+              color: 'rgb(var(--text-primary))',
+              textAlign: 'left',
             }}
           >
-            ×
-          </button>
-        )}
-        <input
-          type="search"
-          value={query}
-          onChange={(e) => setQuery(e.target.value)}
-          placeholder="Search logs..."
-          autoFocus={!isMobile}
-          style={{
-            flex: 1,
-            background: 'transparent',
-            border: 'none',
-            outline: 'none',
-            fontFamily: 'monospace',
-            fontSize: '1rem',
-            color: 'rgb(var(--text-primary))',
-          }}
-        />
-      </div>
-      
-      <div style={{
-        flex: 1,
-        overflowY: 'auto',
-        maxHeight: isMobile ? 'calc(100vh - 8rem)' : '400px',
-      }}>
-        {filteredLogs.length > 0 ? (
-          filteredLogs.map((log, index) => (
-            <button
-              key={log.id}
-              onClick={() => handleSelect(log.id)}
-              onMouseEnter={() => setSelectedIndex(index)}
-              style={{
-                width: '100%',
-                padding: '1rem',
-                display: 'flex',
-                flexDirection: 'column',
-                alignItems: 'flex-start',
-                gap: '0.25rem',
-                background: index === selectedIndex ? 'rgb(var(--surface-1))' : 'transparent',
-                border: 'none',
-                borderBottom: '1px solid rgb(var(--border))',
-                cursor: 'pointer',
-                transition: 'background 0.1s ease',
-                fontFamily: 'monospace',
-                color: 'rgb(var(--text-primary))',
-                textAlign: 'left',
-              }}
-            >
-              <div style={{
-                display: 'flex',
-                justifyContent: 'space-between',
-                width: '100%',
-                alignItems: 'center',
-              }}>
-                <div style={{
-                  fontSize: '0.875rem',
-                  fontWeight: 'bold',
-                  overflow: 'hidden',
-                  textOverflow: 'ellipsis',
-                  whiteSpace: 'nowrap',
-                  maxWidth: '80%',
-                }}>
-                  {log.summary || 'untitled'}
-                </div>
-                <div style={{
-                  fontSize: '0.75rem',
-                  color: 'rgb(var(--text-secondary))',
-                }}>
-                  {format(log.date, 'LLL d').toLowerCase()}
-                </div>
+            <div style={{ display: 'flex', justifyContent: 'space-between', width: '100%', alignItems: 'center' }}>
+              <div style={{ fontSize: '0.875rem', fontWeight: 'bold', overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap', maxWidth: '80%' }}>
+                {log.summary || 'untitled'}
               </div>
-              {!!log.summary && (
-                <div style={{
-                  fontSize: '0.75rem',
-                  color: 'rgb(var(--text-secondary))',
-                  display: '-webkit-box',
-                  WebkitLineClamp: 2 as any,
-                  WebkitBoxOrient: 'vertical' as any,
-                  overflow: 'hidden',
-                }}>
-                  {log.summary}
-                </div>
-              )}
-            </button>
-          ))
-        ) : query ? (
-          <div style={{
-            padding: '2rem',
-            textAlign: 'center',
-            fontFamily: 'monospace',
-            fontSize: '0.875rem',
-            color: 'rgb(var(--text-secondary))',
-          }}>
-            no logs found
-          </div>
-        ) : (
-          <div style={{
-            padding: '2rem',
-            textAlign: 'center',
-            fontFamily: 'monospace',
-            fontSize: '0.875rem',
-            color: 'rgb(var(--text-secondary))',
-          }}>
-            start typing to search logs
-          </div>
-        )}
-      </div>
-      
-      {!isMobile && (
-        <div style={{
-          padding: '0.5rem 1rem',
-          borderTop: '1px solid rgb(var(--border))',
-          fontSize: '0.75rem',
-          fontFamily: 'monospace',
-          color: 'rgb(var(--text-secondary))',
-          display: 'flex',
-          gap: '1rem',
-        }}>
-          <span>↑↓ Navigate</span>
-          <span>↵ Select</span>
-          <span>esc Close</span>
+              <div style={{ fontSize: '0.75rem', color: 'rgb(var(--text-secondary))' }}>
+                {format(log.date, 'LLL d').toLowerCase()}
+              </div>
+            </div>
+            {!!log.summary && (
+              <div style={{ fontSize: '0.75rem', color: 'rgb(var(--text-secondary))', display: '-webkit-box', WebkitLineClamp: 2 as any, WebkitBoxOrient: 'vertical' as any, overflow: 'hidden' }}>
+                {log.summary}
+              </div>
+            )}
+          </button>
+        ))
+      ) : query ? (
+        <div style={{ padding: '2rem', textAlign: 'center', fontFamily: 'monospace', fontSize: '0.875rem', color: 'rgb(var(--text-secondary))' }}>
+          no logs found
+        </div>
+      ) : (
+        <div style={{ padding: '2rem', textAlign: 'center', fontFamily: 'monospace', fontSize: '0.875rem', color: 'rgb(var(--text-secondary))' }}>
+          start typing to search logs
         </div>
       )}
     </div>
@@ -268,41 +156,36 @@ export function LogsSearchModal({ logs = [] }: LogsSearchModalProps) {
               setQuery('');
               setSelectedIndex(0);
             }}
-            style={{
-              background: 'rgb(var(--background-start))'
-            }}
+            style={{ background: 'rgb(var(--background-start))' }}
           >
+            {/* water background */}
             <div className="pointer-events-none absolute inset-0" style={{ opacity: 0.07 }}>
-              {/* full-bleed water from page top to sheet top */}
               <WaterAscii mode="procedural" rows={80} columns={220} speed={0.5} style={{ fontSize: '8px', lineHeight: '8px', width: '100%', height: '100%' }} />
             </div>
+
+            {/* top-aligned search UI */}
+            <div className="relative z-[101] flex h-full w-full flex-col" onClick={(e) => e.stopPropagation()}>
+              <div style={{ padding: '1rem 24px', borderBottom: '1px solid rgb(var(--border))', display: 'flex', alignItems: 'center', gap: '0.5rem' }}>
+                <input
+                  type="search"
+                  value={query}
+                  onChange={(e) => setQuery(e.target.value)}
+                  placeholder="search logs..."
+                  autoFocus
+                  style={{
+                    width: '100%',
+                    background: 'transparent',
+                    border: 'none',
+                    outline: 'none',
+                    fontFamily: 'monospace',
+                    fontSize: '1rem',
+                    color: 'rgb(var(--text-primary))',
+                  }}
+                />
+              </div>
+              {resultsList}
+            </div>
           </motion.div>
-          {isMobile ? (
-            // Mobile sheet — blur/fade only (no vertical movement)
-            <motion.div
-              initial={{ opacity: 0 }}
-              animate={{ opacity: 1 }}
-              exit={{ opacity: 0 }}
-              transition={{ duration: 0.2 }}
-              className="fixed inset-x-3 bottom-3 z-[101]"
-              style={{
-                maxHeight: '80vh',
-              }}
-            >
-              {modalContent}
-            </motion.div>
-          ) : (
-            // Desktop modal centered
-            <motion.div
-              initial={{ opacity: 0, scale: 0.95 }}
-              animate={{ opacity: 1, scale: 1 }}
-              exit={{ opacity: 0, scale: 0.95 }}
-              transition={{ type: 'spring', bounce: 0.3, duration: 0.3 }}
-              className="fixed left-1/2 top-1/2 -translate-x-1/2 -translate-y-1/2 w-full max-w-2xl z-[101]"
-            >
-              {modalContent}
-            </motion.div>
-          )}
         </>
       )}
     </AnimatePresence>
