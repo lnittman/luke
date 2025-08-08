@@ -193,25 +193,14 @@ export default function LogsPage() {
               Loading logs...
             </div>
           ) : logs.length === 0 ? (
-            <div style={{
-              display: 'flex',
-              flexDirection: 'column',
-              alignItems: 'center',
-              justifyContent: 'center',
-              gap: '0.75rem',
-              padding: '3rem 1rem 4rem 1rem',
-            }}>
-              <div style={{ opacity: 0.7 }}>
-                <WaterAscii
-                  frameIntervalMs={180}
-                  lineStart={7}
-                  lineEnd={10}
-                  stripDigits
-                  style={{ opacity: 0.6 }}
-                />
+            <div style={{ position: 'relative', minHeight: '50vh', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
+              <div style={{ position: 'absolute', inset: 0, display: 'flex', alignItems: 'center', justifyContent: 'center', pointerEvents: 'none', opacity: 0.08 }}>
+                <WaterAscii mode="procedural" rows={40} columns={160} speed={0.6} style={{ fontSize: '8px', lineHeight: '8px' }} />
               </div>
-              <div style={{ fontFamily: 'monospace', fontSize: '0.875rem', color: 'rgb(var(--text-secondary))' }}>
-                no logs...
+              <div style={{ position: 'relative', zIndex: 1, textAlign: 'center', padding: '2rem 1rem' }}>
+                <div style={{ fontFamily: 'monospace', fontSize: '0.875rem', color: 'rgb(var(--text-secondary))' }}>
+                  no logs...
+                </div>
               </div>
             </div>
           ) : (

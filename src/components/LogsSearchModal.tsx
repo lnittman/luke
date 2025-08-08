@@ -7,6 +7,7 @@ import { motion, AnimatePresence } from 'framer-motion';
 import { logsSearchModalOpenAtom, logsSearchQueryAtom, logsSearchSelectedIndexAtom } from '@/atoms/logs-search';
 import { format } from 'date-fns';
 import type { ActivityLog } from '@/lib/db';
+import { WaterAscii } from '@/components/WaterAscii';
 
 interface LogsSearchModalProps {
   logs?: ActivityLog[];
@@ -194,7 +195,7 @@ export function LogsSearchModal({ logs = [] }: LogsSearchModalProps) {
                   fontSize: '0.75rem',
                   color: 'rgb(var(--text-secondary))',
                 }}>
-                  {format(log.date, 'MMM d')}
+                  {format(log.date, 'LLL d').toLowerCase()}
                 </div>
               </div>
               {!!log.summary && (
@@ -219,7 +220,7 @@ export function LogsSearchModal({ logs = [] }: LogsSearchModalProps) {
             fontSize: '0.875rem',
             color: 'rgb(var(--text-secondary))',
           }}>
-            No logs found
+            no logs found
           </div>
         ) : (
           <div style={{
@@ -229,7 +230,7 @@ export function LogsSearchModal({ logs = [] }: LogsSearchModalProps) {
             fontSize: '0.875rem',
             color: 'rgb(var(--text-secondary))',
           }}>
-            Start typing to search logs
+            start typing to search logs
           </div>
         )}
       </div>
@@ -268,9 +269,15 @@ export function LogsSearchModal({ logs = [] }: LogsSearchModalProps) {
               setSelectedIndex(0);
             }}
             style={{
-              background: 'transparent'
+              background: 'rgb(var(--background-start))'
             }}
-          />
+          >
+            <div className="pointer-events-none absolute inset-0 flex items-center justify-center">
+              <div style={{ maxWidth: 900, width: '100%', padding: '0 16px', opacity: 0.07 }}>
+                <WaterAscii mode="procedural" rows={28} columns={120} speed={0.5} style={{ fontSize: '8px', lineHeight: '8px' }} />
+              </div>
+            </div>
+          </motion.div>
           {isMobile ? (
             // Mobile sheet — blur/fade only (no vertical movement)
             <motion.div
