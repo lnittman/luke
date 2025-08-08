@@ -78,7 +78,7 @@ export default function LogsPage() {
 
       <div className={styles.content}>
         <div className={styles.innerViewport} style={{ position: 'relative' }}>
-          {(!loading && logs.length === 0) && (
+          {(loading || logs.length === 0) && (
             <div style={{ position: 'absolute', inset: 0, pointerEvents: 'none', opacity: 0.08, display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
               <WaterAscii
                 mode="procedural"
@@ -200,8 +200,12 @@ export default function LogsPage() {
           </div>
 
           {loading ? (
-            <div style={{ textAlign: 'center', padding: '2rem 0', fontFamily: 'monospace', opacity: 0.5 }}>
-              Loading logs...
+            <div style={{ position: 'relative', display: 'flex', alignItems: 'center', justifyContent: 'center', padding: '3rem 1rem 4rem 1rem' }}>
+              <div style={{ position: 'relative', zIndex: 1, textAlign: 'center' }}>
+                <div style={{ fontFamily: 'monospace', fontSize: '0.875rem', color: 'rgb(var(--text-secondary))' }}>
+                  loading logs...
+                </div>
+              </div>
             </div>
           ) : logs.length === 0 ? (
             <div style={{ position: 'relative', display: 'flex', alignItems: 'center', justifyContent: 'center', padding: '3rem 1rem 4rem 1rem' }}>
