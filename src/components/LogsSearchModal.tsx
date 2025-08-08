@@ -272,10 +272,9 @@ export function LogsSearchModal({ logs = [] }: LogsSearchModalProps) {
               background: 'rgb(var(--background-start))'
             }}
           >
-            <div className="pointer-events-none absolute inset-0 flex items-center justify-center">
-              <div style={{ maxWidth: 900, width: '100%', padding: '0 16px', opacity: 0.07 }}>
-                <WaterAscii mode="procedural" rows={28} columns={120} speed={0.5} style={{ fontSize: '8px', lineHeight: '8px' }} />
-              </div>
+            <div className="pointer-events-none absolute inset-0" style={{ opacity: 0.07 }}>
+              {/* full-bleed water from page top to sheet top */}
+              <WaterAscii mode="procedural" rows={80} columns={220} speed={0.5} style={{ fontSize: '8px', lineHeight: '8px', width: '100%', height: '100%' }} />
             </div>
           </motion.div>
           {isMobile ? (

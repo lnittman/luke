@@ -77,7 +77,18 @@ export default function LogsPage() {
       </div>
 
       <div className={styles.content}>
-        <div className={styles.innerViewport}>
+        <div className={styles.innerViewport} style={{ position: 'relative' }}>
+          {(!loading && logs.length === 0) && (
+            <div style={{ position: 'absolute', inset: 0, pointerEvents: 'none', opacity: 0.08, display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
+              <WaterAscii
+                mode="procedural"
+                rows={56}
+                columns={200}
+                speed={0.6}
+                style={{ fontSize: '8px', lineHeight: '8px', width: '100%', height: '100%' }}
+              />
+            </div>
+          )}
           {/* Page header with search and settings */}
           <div style={{ 
             display: 'flex', 
@@ -193,11 +204,8 @@ export default function LogsPage() {
               Loading logs...
             </div>
           ) : logs.length === 0 ? (
-            <div style={{ position: 'relative', minHeight: '50vh', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
-              <div style={{ position: 'absolute', inset: 0, display: 'flex', alignItems: 'center', justifyContent: 'center', pointerEvents: 'none', opacity: 0.08 }}>
-                <WaterAscii mode="procedural" rows={40} columns={160} speed={0.6} style={{ fontSize: '8px', lineHeight: '8px' }} />
-              </div>
-              <div style={{ position: 'relative', zIndex: 1, textAlign: 'center', padding: '2rem 1rem' }}>
+            <div style={{ position: 'relative', display: 'flex', alignItems: 'center', justifyContent: 'center', padding: '3rem 1rem 4rem 1rem' }}>
+              <div style={{ position: 'relative', zIndex: 1, textAlign: 'center' }}>
                 <div style={{ fontFamily: 'monospace', fontSize: '0.875rem', color: 'rgb(var(--text-secondary))' }}>
                   no logs...
                 </div>
