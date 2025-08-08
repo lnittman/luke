@@ -1,7 +1,7 @@
 'use client';
 
 import { useRouter } from 'next/navigation';
-import { FireAscii } from '@/components/FireAscii';
+import { WaterAscii } from '@/components/WaterAscii';
 
 export default function NotFound() {
   const router = useRouter();
@@ -26,8 +26,8 @@ export default function NotFound() {
         maxWidth: '400px',
         width: '100%',
       }}>
-        {/* Fire ASCII Animation */}
-        <FireAscii />
+        {/* Water ASCII Animation */}
+        <WaterAscii />
 
         {/* 404 Text - Already in ASCII */}
         <p style={{

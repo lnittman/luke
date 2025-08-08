@@ -1,20 +1,18 @@
 'use client';
 
-import { useEffect, useCallback, useState } from 'react';
+import { useEffect, useCallback, useState, useMemo } from 'react';
 import { useAtom } from 'jotai';
 import { useRouter } from 'next/navigation';
 import { motion, AnimatePresence } from 'framer-motion';
 import { logsSearchModalOpenAtom, logsSearchQueryAtom, logsSearchSelectedIndexAtom } from '@/atoms/logs-search';
 import { format } from 'date-fns';
+import type { ActivityLog } from '@/lib/db';
 
-// Mock log entries - in production, these would come from the API
-const MOCK_LOGS = [
-  { id: 'log-1', date: new Date('2024-01-07'), title: 'Fixed TypeScript Errors', preview: 'Resolved Mastra workflow compilation issues', keywords: ['typescript', 'mastra', 'workflow'] },
-  { id: 'log-2', date: new Date('2024-01-06'), title: 'Implemented GitHub Integration', preview: 'Added GitHub API connection for activity tracking', keywords: ['github', 'api', 'integration'] },
-  { id: 'log-3', date: new Date('2024-01-05'), title: 'Created Logs System', preview: 'Built comprehensive activity logging infrastructure', keywords: ['logs', 'database', 'postgresql'] },
-];
+interface LogsSearchModalProps {
+  logs?: ActivityLog[];
+}
 
-export function LogsSearchModal() {
+export function LogsSearchModal({ logs = [] }: LogsSearchModalProps) {
   const router = useRouter();
   const [isOpen, setIsOpen] = useAtom(logsSearchModalOpenAtom);
   const [query, setQuery] = useAtom(logsSearchQueryAtom);
@@ -31,11 +29,20 @@ export function LogsSearchModal() {
     return () => window.removeEventListener('resize', checkMobile);
   }, []);
 
-  const filteredLogs = MOCK_LOGS.filter(log =>
-    log.title.toLowerCase().includes(query.toLowerCase()) ||
-    log.preview.toLowerCase().includes(query.toLowerCase()) ||
-    log.keywords.some(k => k.toLowerCase().includes(query.toLowerCase()))
-  );
+  const normalizedLogs = useMemo(() => {
+    return (logs || []).map((log) => ({
+      id: String(log.id),
+      date: new Date(log.date as any),
+      summary: log.summary || '',
+    }));
+  }, [logs]);
+
+  const filteredLogs = useMemo(() => {
+    const q = query.toLowerCase();
+    return normalizedLogs.filter((log) =>
+      log.summary.toLowerCase().includes(q)
+    );
+  }, [normalizedLogs, query]);
 
   const handleSelect = useCallback((id: string) => {
     router.push(`/logs/${id}`);
@@ -176,8 +183,12 @@ export function LogsSearchModal() {
                 <div style={{
                   fontSize: '0.875rem',
                   fontWeight: 'bold',
+                  overflow: 'hidden',
+                  textOverflow: 'ellipsis',
+                  whiteSpace: 'nowrap',
+                  maxWidth: '80%',
                 }}>
-                  {log.title}
+                  {log.summary || 'untitled'}
                 </div>
                 <div style={{
                   fontSize: '0.75rem',
@@ -186,12 +197,18 @@ export function LogsSearchModal() {
                   {format(log.date, 'MMM d')}
                 </div>
               </div>
-              <div style={{
-                fontSize: '0.75rem',
-                color: 'rgb(var(--text-secondary))',
-              }}>
-                {log.preview}
-              </div>
+              {!!log.summary && (
+                <div style={{
+                  fontSize: '0.75rem',
+                  color: 'rgb(var(--text-secondary))',
+                  display: '-webkit-box',
+                  WebkitLineClamp: 2 as any,
+                  WebkitBoxOrient: 'vertical' as any,
+                  overflow: 'hidden',
+                }}>
+                  {log.summary}
+                </div>
+              )}
             </button>
           ))
         ) : query ? (
@@ -207,45 +224,12 @@ export function LogsSearchModal() {
         ) : (
           <div style={{
             padding: '2rem',
+            textAlign: 'center',
             fontFamily: 'monospace',
             fontSize: '0.875rem',
             color: 'rgb(var(--text-secondary))',
           }}>
-            <div style={{ marginBottom: '1rem', color: 'rgb(var(--text-primary))' }}>
-              Recent Searches
-            </div>
-            <div style={{ display: 'flex', flexDirection: 'column', gap: '0.5rem' }}>
-              <button
-                onClick={() => setQuery('typescript')}
-                style={{
-                  background: 'none',
-                  border: '1px solid rgb(var(--border))',
-                  padding: '0.5rem',
-                  fontFamily: 'monospace',
-                  fontSize: '0.75rem',
-                  color: 'rgb(var(--text-secondary))',
-                  cursor: 'pointer',
-                  textAlign: 'left',
-                }}
-              >
-                typescript
-              </button>
-              <button
-                onClick={() => setQuery('github')}
-                style={{
-                  background: 'none',
-                  border: '1px solid rgb(var(--border))',
-                  padding: '0.5rem',
-                  fontFamily: 'monospace',
-                  fontSize: '0.75rem',
-                  color: 'rgb(var(--text-secondary))',
-                  cursor: 'pointer',
-                  textAlign: 'left',
-                }}
-              >
-                github
-              </button>
-            </div>
+            Start typing to search logs
           </div>
         )}
       </div>
@@ -277,7 +261,7 @@ export function LogsSearchModal() {
             animate={{ opacity: 1 }}
             exit={{ opacity: 0 }}
             transition={{ duration: 0.2 }}
-            className="fixed inset-0 bg-black/50 z-[100]"
+            className="fixed inset-0 bg-black/50 backdrop-blur-sm z-[100]"
             onClick={() => {
               setIsOpen(false);
               setQuery('');
@@ -285,12 +269,12 @@ export function LogsSearchModal() {
             }}
           />
           {isMobile ? (
-            // Mobile sheet from bottom
+            // Mobile sheet — blur/fade only (no vertical movement)
             <motion.div
-              initial={{ y: '100%' }}
-              animate={{ y: 0 }}
-              exit={{ y: '100%' }}
-              transition={{ type: 'spring', damping: 25, stiffness: 300 }}
+              initial={{ opacity: 0 }}
+              animate={{ opacity: 1 }}
+              exit={{ opacity: 0 }}
+              transition={{ duration: 0.2 }}
               className="fixed inset-x-0 bottom-0 z-[101]"
               style={{
                 maxHeight: '80vh',

@@ -1,6 +1,6 @@
 'use client';
 
-import React, { useEffect, useState } from 'react';
+import React, { useEffect, useMemo, useState } from 'react';
 import Link from 'next/link';
 import { format } from 'date-fns';
 import { useSetAtom } from 'jotai';
@@ -12,6 +12,8 @@ import { BlockLoader } from '@/components/BlockLoader';
 import { ThemeSwitcher } from '@/components/ThemeSwitcher';
 import styles from '@/components/page/root.module.scss';
 import type { ActivityLog } from '@/lib/db';
+import { useIsMobile } from '@/hooks/useIsMobile';
+import { WaterAscii } from '@/components/WaterAscii';
 
 export default function LogsPage() {
   const [logs, setLogs] = useState<ActivityLog[]>([]);
@@ -19,6 +21,8 @@ export default function LogsPage() {
   const [hasMore, setHasMore] = useState(false);
   const [offset, setOffset] = useState(0);
   const setLogsSearchModalOpen = useSetAtom(logsSearchModalOpenAtom);
+  const isMobile = useIsMobile();
+  const searchPlaceholder = useMemo(() => 'search logs…', []);
 
   useEffect(() => {
     fetchLogs();
@@ -61,7 +65,7 @@ export default function LogsPage() {
 
   return (
     <DefaultLayout>
-      <LogsSearchModal />
+      <LogsSearchModal logs={logs} />
       <div className={styles.header}>
         <div className={styles.column}>
           <div style={{ display: 'flex', alignItems: 'center', gap: '1rem' }}>
@@ -83,36 +87,72 @@ export default function LogsPage() {
             padding: '0 24px 1rem 24px',
             borderBottom: '1px solid rgb(var(--border))'
           }}>
-            <button
-              onClick={() => setLogsSearchModalOpen(true)}
-              title="Search Logs"
-              aria-label="Search Logs"
-              style={{
-                display: 'flex',
-                alignItems: 'center',
-                justifyContent: 'center',
-                width: '2rem',
-                height: '2rem',
-                background: 'none',
-                border: '1px solid rgb(var(--border))',
-                color: 'rgb(var(--text-primary))',
-                cursor: 'pointer',
-                transition: 'all 0.2s ease',
-                fontFamily: 'monospace',
-                padding: 0,
-                fontSize: '1rem',
-              }}
-              onMouseEnter={(e) => {
-                e.currentTarget.style.background = 'rgb(var(--surface-1))';
-                e.currentTarget.style.borderColor = 'rgb(var(--accent-1))';
-              }}
-              onMouseLeave={(e) => {
-                e.currentTarget.style.background = 'none';
-                e.currentTarget.style.borderColor = 'rgb(var(--border))';
-              }}
-            >
-              ⌕
-            </button>
+            {isMobile ? (
+              <button
+                onClick={() => setLogsSearchModalOpen(true)}
+                title="Search Logs"
+                aria-label="Search Logs"
+                style={{
+                  display: 'flex',
+                  alignItems: 'center',
+                  justifyContent: 'center',
+                  width: '2rem',
+                  height: '2rem',
+                  background: 'none',
+                  border: '1px solid rgb(var(--border))',
+                  color: 'rgb(var(--text-primary))',
+                  cursor: 'pointer',
+                  transition: 'all 0.2s ease',
+                  fontFamily: 'monospace',
+                  padding: 0,
+                  fontSize: '1rem',
+                }}
+                onMouseEnter={(e) => {
+                  e.currentTarget.style.background = 'rgb(var(--surface-1))';
+                  e.currentTarget.style.borderColor = 'rgb(var(--accent-1))';
+                }}
+                onMouseLeave={(e) => {
+                  e.currentTarget.style.background = 'none';
+                  e.currentTarget.style.borderColor = 'rgb(var(--border))';
+                }}
+              >
+                ⌕
+              </button>
+            ) : (
+              <button
+                onClick={() => setLogsSearchModalOpen(true)}
+                title="Search Logs"
+                aria-label="Search Logs"
+                style={{
+                  display: 'flex',
+                  alignItems: 'center',
+                  gap: '0.5rem',
+                  width: '100%',
+                  maxWidth: '420px',
+                  height: '2.5rem',
+                  background: 'transparent',
+                  border: '1px solid rgb(var(--border))',
+                  color: 'rgb(var(--text-secondary))',
+                  cursor: 'text',
+                  transition: 'all 0.2s ease',
+                  fontFamily: 'monospace',
+                  padding: '0 0.75rem',
+                  fontSize: '0.875rem',
+                  textAlign: 'left',
+                }}
+                onMouseEnter={(e) => {
+                  e.currentTarget.style.background = 'rgb(var(--surface-1))';
+                  e.currentTarget.style.borderColor = 'rgb(var(--accent-1))';
+                }}
+                onMouseLeave={(e) => {
+                  e.currentTarget.style.background = 'transparent';
+                  e.currentTarget.style.borderColor = 'rgb(var(--border))';
+                }}
+              >
+                <span style={{ opacity: 0.7 }}>{searchPlaceholder}</span>
+                <span style={{ marginLeft: 'auto', opacity: 0.5, fontSize: '0.75rem' }}>⌘K</span>
+              </button>
+            )}
             {process.env.NODE_ENV === 'development' && (
               <Link 
                 href="/logs/settings" 
@@ -153,8 +193,26 @@ export default function LogsPage() {
               Loading logs...
             </div>
           ) : logs.length === 0 ? (
-            <div style={{ textAlign: 'center', padding: '2rem', fontFamily: 'monospace', opacity: 0.7 }}>
-              No activity logs yet. Check back tomorrow!
+            <div style={{
+              display: 'flex',
+              flexDirection: 'column',
+              alignItems: 'center',
+              justifyContent: 'center',
+              gap: '0.75rem',
+              padding: '3rem 1rem 4rem 1rem',
+            }}>
+              <div style={{ opacity: 0.7 }}>
+                <WaterAscii
+                  frameIntervalMs={180}
+                  lineStart={7}
+                  lineEnd={10}
+                  stripDigits
+                  style={{ opacity: 0.6 }}
+                />
+              </div>
+              <div style={{ fontFamily: 'monospace', fontSize: '0.875rem', color: 'rgb(var(--text-secondary))' }}>
+                no logs...
+              </div>
             </div>
           ) : (
             <div className="space-y-0" style={{ marginTop: '0' }}>
