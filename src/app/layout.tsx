@@ -2,6 +2,8 @@ import { Analytics } from '@vercel/analytics/next';
 import { ModalProvider } from '@/lib/modal-context';
 import { ThemeProvider } from '@/components/providers/ThemeProvider';
 import { ThemeColorProvider } from '@/components/providers/ThemeColorProvider';
+import { SearchModal } from '@/components/SearchModal';
+import { KeyboardShortcuts } from '@/components/KeyboardShortcuts';
 import { viewport, metadata } from './metadata';
 
 import '../styles/global.scss';
@@ -40,6 +42,8 @@ export default function RootLayout({
         >
           <ThemeColorProvider />
           <ModalProvider>
+            <SearchModal />
+            <KeyboardShortcuts />
             {children}
             <Analytics />
           </ModalProvider>

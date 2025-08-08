@@ -3,6 +3,8 @@
 import React, { useEffect, useState } from 'react';
 import Link from 'next/link';
 import { format } from 'date-fns';
+import { useSetAtom } from 'jotai';
+import { searchModalOpenAtom } from '@/atoms/search';
 import { DefaultLayout } from '@/components/page/DefaultLayout';
 import { FooterNavigation } from '@/components/FooterNavigation';
 import { BlockLoader } from '@/components/BlockLoader';
@@ -15,6 +17,7 @@ export default function LogsPage() {
   const [loading, setLoading] = useState(true);
   const [hasMore, setHasMore] = useState(false);
   const [offset, setOffset] = useState(0);
+  const setSearchModalOpen = useSetAtom(searchModalOpenAtom);
 
   useEffect(() => {
     fetchLogs();
@@ -46,13 +49,28 @@ export default function LogsPage() {
     <DefaultLayout>
       <div className={styles.header}>
         <div className={styles.column}>
-          <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', width: '100%' }}>
-            <div style={{ display: 'flex', alignItems: 'center', gap: '1rem' }}>
-              <BlockLoader mode={2} />
-              <h1>LOGS</h1>
-            </div>
-            <div style={{ display: 'flex', alignItems: 'center', gap: '1rem' }}>
-              <Link href="/logs/settings" className="settings-button" style={{
+          <div style={{ display: 'flex', alignItems: 'center', gap: '1rem' }}>
+            <BlockLoader mode={2} />
+            <h1>LOGS</h1>
+          </div>
+          <ThemeSwitcher />
+        </div>
+      </div>
+
+      <div className={styles.content}>
+        <div className={styles.innerViewport}>
+          {/* Page header with search and settings */}
+          <div style={{ 
+            display: 'flex', 
+            justifyContent: 'space-between', 
+            alignItems: 'center',
+            marginBottom: '1.5rem',
+            paddingBottom: '1rem',
+            borderBottom: '1px solid rgb(var(--border))'
+          }}>
+            <button
+              onClick={() => setSearchModalOpen(true)}
+              style={{
                 fontFamily: 'monospace',
                 fontSize: '0.875rem',
                 textDecoration: 'none',
@@ -62,17 +80,25 @@ export default function LogsPage() {
                 color: 'rgb(var(--text-primary))',
                 cursor: 'pointer',
                 transition: 'all 0.2s ease',
-              }}>
-                settings
-              </Link>
-              <ThemeSwitcher />
-            </div>
+              }}
+            >
+              search (⌘k)
+            </button>
+            <Link href="/logs/settings" style={{
+              fontFamily: 'monospace',
+              fontSize: '0.875rem',
+              textDecoration: 'none',
+              padding: '0.5rem 1rem',
+              border: '1px solid rgb(var(--text-secondary))',
+              backgroundColor: 'transparent',
+              color: 'rgb(var(--text-primary))',
+              cursor: 'pointer',
+              transition: 'all 0.2s ease',
+            }}>
+              settings
+            </Link>
           </div>
-        </div>
-      </div>
 
-      <div className={styles.content}>
-        <div className={styles.innerViewport}>
           {loading ? (
             <div style={{ textAlign: 'center', padding: '2rem 0', fontFamily: 'monospace', opacity: 0.5 }}>
               Loading logs...
@@ -86,8 +112,8 @@ export default function LogsPage() {
               {logs.map((log) => (
                 <Link key={log.id} href={`/logs/${log.id}`} style={{ textDecoration: 'none', color: 'inherit', display: 'block' }}>
                   <div style={{
-                    padding: '1.5rem 0',
-                    borderBottom: '1px solid rgb(var(--text-secondary) / 0.2)',
+                    padding: '1.5rem 24px',
+                    borderBottom: '1px solid rgb(var(--border))',
                     cursor: 'pointer',
                     transition: 'opacity 0.2s ease',
                   }}
