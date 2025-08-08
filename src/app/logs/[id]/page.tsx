@@ -86,20 +86,41 @@ export default function LogDetailPage() {
         </div>
         <div className={styles.content}>
           <div className={styles.innerViewport}>
-            <div style={{ marginBottom: '2rem' }}>
-              <Link href="/logs" className="back-button" style={{
-                fontFamily: 'monospace',
-                fontSize: '0.875rem',
-                textDecoration: 'none',
-                padding: '0.5rem 1rem',
-                border: '1px solid rgb(var(--text-secondary))',
-                backgroundColor: 'transparent',
-                color: 'rgb(var(--text-primary))',
-                cursor: 'pointer',
-                transition: 'all 0.2s ease',
-                display: 'inline-block',
-              }}>
-                ← back
+            <div style={{ 
+              marginBottom: '1.5rem',
+              paddingBottom: '1rem',
+              borderBottom: '1px solid rgb(var(--border))'
+            }}>
+              <Link 
+                href="/logs" 
+                title="Back to logs"
+                aria-label="Back to logs"
+                style={{
+                  display: 'inline-flex',
+                  alignItems: 'center',
+                  justifyContent: 'center',
+                  width: '2rem',
+                  height: '2rem',
+                  background: 'none',
+                  border: '1px solid rgb(var(--border))',
+                  color: 'rgb(var(--text-primary))',
+                  cursor: 'pointer',
+                  transition: 'all 0.2s ease',
+                  fontFamily: 'monospace',
+                  padding: 0,
+                  fontSize: '1rem',
+                  textDecoration: 'none',
+                }}
+                onMouseEnter={(e) => {
+                  e.currentTarget.style.background = 'rgb(var(--surface-1))';
+                  e.currentTarget.style.borderColor = 'rgb(var(--accent-1))';
+                }}
+                onMouseLeave={(e) => {
+                  e.currentTarget.style.background = 'none';
+                  e.currentTarget.style.borderColor = 'rgb(var(--border))';
+                }}
+              >
+                ←
               </Link>
             </div>
             <div style={{ textAlign: 'center', padding: '2rem' }}>
@@ -141,20 +162,41 @@ export default function LogDetailPage() {
       <div className={styles.content}>
         <div className={styles.innerViewport}>
           {/* Back button */}
-          <div style={{ marginBottom: '2rem' }}>
-            <Link href="/logs" className="back-button" style={{
-              fontFamily: 'monospace',
-              fontSize: '0.875rem',
-              textDecoration: 'none',
-              padding: '0.5rem 1rem',
-              border: '1px solid rgb(var(--text-secondary))',
-              backgroundColor: 'transparent',
-              color: 'rgb(var(--text-primary))',
-              cursor: 'pointer',
-              transition: 'all 0.2s ease',
-              display: 'inline-block',
-            }}>
-              ← back
+          <div style={{ 
+            marginBottom: '1.5rem',
+            paddingBottom: '1rem',
+            borderBottom: '1px solid rgb(var(--border))'
+          }}>
+            <Link 
+              href="/logs" 
+              title="Back to logs"
+              aria-label="Back to logs"
+              style={{
+                display: 'inline-flex',
+                alignItems: 'center',
+                justifyContent: 'center',
+                width: '2rem',
+                height: '2rem',
+                background: 'none',
+                border: '1px solid rgb(var(--border))',
+                color: 'rgb(var(--text-primary))',
+                cursor: 'pointer',
+                transition: 'all 0.2s ease',
+                fontFamily: 'monospace',
+                padding: 0,
+                fontSize: '1rem',
+                textDecoration: 'none',
+              }}
+              onMouseEnter={(e) => {
+                e.currentTarget.style.background = 'rgb(var(--surface-1))';
+                e.currentTarget.style.borderColor = 'rgb(var(--accent-1))';
+              }}
+              onMouseLeave={(e) => {
+                e.currentTarget.style.background = 'none';
+                e.currentTarget.style.borderColor = 'rgb(var(--border))';
+              }}
+            >
+              ←
             </Link>
           </div>
 

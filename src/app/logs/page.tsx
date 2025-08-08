@@ -70,32 +70,64 @@ export default function LogsPage() {
           }}>
             <button
               onClick={() => setSearchModalOpen(true)}
+              title="Search (⌘K)"
+              aria-label="Search (⌘K)"
               style={{
-                fontFamily: 'monospace',
-                fontSize: '0.875rem',
-                textDecoration: 'none',
-                padding: '0.5rem 1rem',
-                border: '1px solid rgb(var(--text-secondary))',
-                backgroundColor: 'transparent',
+                display: 'flex',
+                alignItems: 'center',
+                justifyContent: 'center',
+                width: '2rem',
+                height: '2rem',
+                background: 'none',
+                border: '1px solid rgb(var(--border))',
                 color: 'rgb(var(--text-primary))',
                 cursor: 'pointer',
                 transition: 'all 0.2s ease',
+                fontFamily: 'monospace',
+                padding: 0,
+                fontSize: '1rem',
+              }}
+              onMouseEnter={(e) => {
+                e.currentTarget.style.background = 'rgb(var(--surface-1))';
+                e.currentTarget.style.borderColor = 'rgb(var(--accent-1))';
+              }}
+              onMouseLeave={(e) => {
+                e.currentTarget.style.background = 'none';
+                e.currentTarget.style.borderColor = 'rgb(var(--border))';
               }}
             >
-              search (⌘k)
+              ⌕
             </button>
-            <Link href="/logs/settings" style={{
-              fontFamily: 'monospace',
-              fontSize: '0.875rem',
-              textDecoration: 'none',
-              padding: '0.5rem 1rem',
-              border: '1px solid rgb(var(--text-secondary))',
-              backgroundColor: 'transparent',
-              color: 'rgb(var(--text-primary))',
-              cursor: 'pointer',
-              transition: 'all 0.2s ease',
-            }}>
-              settings
+            <Link 
+              href="/logs/settings" 
+              title="Settings"
+              aria-label="Settings"
+              style={{
+                display: 'flex',
+                alignItems: 'center',
+                justifyContent: 'center',
+                width: '2rem',
+                height: '2rem',
+                background: 'none',
+                border: '1px solid rgb(var(--border))',
+                color: 'rgb(var(--text-primary))',
+                cursor: 'pointer',
+                transition: 'all 0.2s ease',
+                fontFamily: 'monospace',
+                padding: 0,
+                fontSize: '1rem',
+                textDecoration: 'none',
+              }}
+              onMouseEnter={(e) => {
+                e.currentTarget.style.background = 'rgb(var(--surface-1))';
+                e.currentTarget.style.borderColor = 'rgb(var(--accent-1))';
+              }}
+              onMouseLeave={(e) => {
+                e.currentTarget.style.background = 'none';
+                e.currentTarget.style.borderColor = 'rgb(var(--border))';
+              }}
+            >
+              ⚙
             </Link>
           </div>
 
