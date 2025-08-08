@@ -92,14 +92,18 @@ export default function LogsPage() {
       <div className={styles.content}>
         <div className={styles.innerViewport} style={{ position: 'relative' }}>
           {(loading || logs.length === 0) && (
-            <div style={{ position: 'absolute', left: 12, right: 12, bottom: 12, top: headerHeight + 12, pointerEvents: 'none', opacity: 0.08, display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
-              <WaterAscii
-                mode="procedural"
-                rows={56}
-                columns={200}
-                speed={0.6}
-                style={{ fontSize: '8px', lineHeight: '8px', width: '100%', height: '100%' }}
-              />
+            <div style={{ position: 'absolute', inset: 0, pointerEvents: 'none' }}>
+              <div style={{ position: 'absolute', left: 0, right: 0, bottom: 0, top: headerHeight }}>
+                <div style={{ position: 'absolute', left: 12, right: 12, bottom: 12, top: 12, opacity: 0.08, display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
+                  <WaterAscii
+                    mode="procedural"
+                    rows={56}
+                    columns={200}
+                    speed={0.6}
+                    style={{ fontSize: '8px', lineHeight: '8px', width: '100%', height: '100%' }}
+                  />
+                </div>
+              </div>
             </div>
           )}
           {/* Page header with search and settings */}
