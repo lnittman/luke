@@ -26,7 +26,8 @@ export default function RootLayout({
             __html: `
               try {
                 const theme = localStorage.getItem('theme') || 'light';
-                const colors = { light: '#f5f4f2', dark: '#121820', stone: '#282624' };
+                // Use the same top gradient start colors as CSS variables
+                const colors = { light: '#f5f4f2', dark: '#161c24', stone: '#2c2a28' };
                 document.querySelector('meta[name="theme-color"]')?.setAttribute('content', colors[theme] || colors.light);
               } catch {}
             `,

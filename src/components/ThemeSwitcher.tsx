@@ -13,19 +13,6 @@ export function ThemeSwitcher() {
     setMounted(true);
   }, []);
 
-  useEffect(() => {
-    // Update theme color meta tag when theme changes
-    if (mounted && theme) {
-      const metaThemeColor = document.querySelector('meta[name="theme-color"]');
-      if (metaThemeColor) {
-        const themeColors = {
-          light: '#f5f4f2', // rgb(245 244 242) - from --background-start
-          dark: '#161c24' // rgb(22 28 36) - from --background-start
-        };
-        metaThemeColor.setAttribute('content', themeColors[theme as 'light' | 'dark']);
-      }
-    }
-  }, [theme, mounted]);
 
   if (!mounted) {
     // Return placeholder with same dimensions to prevent layout shift
