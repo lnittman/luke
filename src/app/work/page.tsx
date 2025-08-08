@@ -24,8 +24,9 @@ export default function Work() {
         <div className={styles.row} style={{ paddingBottom: '0', borderBottom: '1px solid rgb(var(--border))' }}>
           <div className={styles.column}>
             <details>
-              <summary style={{ cursor: 'pointer', listStyle: 'none' }}>
-                <h2 style={{ marginBottom: '0', display: 'inline' }}>EXPERIENCE</h2>
+              <summary style={{ cursor: 'pointer', listStyle: 'none', display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}>
+                <h2 style={{ marginBottom: '0' }}>EXPERIENCE</h2>
+                <span aria-hidden="true">▸</span>
               </summary>
               <div>
                 <div className="space-y-0" style={{ marginTop: '0' }}>
@@ -41,8 +42,9 @@ export default function Work() {
         <div className={styles.row} style={{ paddingBottom: '0', borderBottom: '1px solid rgb(var(--border))' }}>
           <div className={styles.column}>
             <details>
-              <summary style={{ cursor: 'pointer', listStyle: 'none' }}>
-                <h2 style={{ marginBottom: '0', display: 'inline' }}>SKILLS</h2>
+              <summary style={{ cursor: 'pointer', listStyle: 'none', display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}>
+                <h2 style={{ marginBottom: '0' }}>SKILLS</h2>
+                <span aria-hidden="true">▸</span>
               </summary>
               <div>
                 
@@ -108,8 +110,9 @@ export default function Work() {
         <div className={styles.row} style={{ paddingBottom: '0', borderBottom: '1px solid rgb(var(--border))' }}>
           <div className={styles.column}>
             <details>
-              <summary style={{ cursor: 'pointer', listStyle: 'none' }}>
-                <h2 style={{ marginBottom: '0', display: 'inline' }}>EDUCATION</h2>
+              <summary style={{ cursor: 'pointer', listStyle: 'none', display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}>
+                <h2 style={{ marginBottom: '0' }}>EDUCATION</h2>
+                <span aria-hidden="true">▸</span>
               </summary>
               <div>
                 

@@ -105,19 +105,12 @@
   border-left: 1px solid rgb(var(--border));
   border-right: 1px solid rgb(var(--border));
   
-  // Ensure consistent top spacing from sticky header
-  padding-top: 1.5rem;
-  
   @media (max-width: 768px) {
     // On mobile, content is naturally flush with viewport edges
     border-left: none;
     border-right: none;
     // Add padding bottom for fixed footer
     padding-bottom: 80px;
-  }
-  
-  @media (min-width: 768px) {
-    padding-top: 2rem; // Match header column vertical padding on desktop
   }
 }
 
