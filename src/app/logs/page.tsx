@@ -30,16 +30,29 @@ export default function LogsPage() {
       const response = await fetch(`/api/logs?limit=30&offset=${currentOffset}`);
       const data = await response.json();
       
-      if (loadMore) {
-        setLogs(prev => [...prev, ...data.logs]);
-      } else {
-        setLogs(data.logs);
+      // Handle error response
+      if (!response.ok || data.error) {
+        console.error('Error from API:', data.error || 'Failed to fetch logs');
+        setLogs([]);
+        setHasMore(false);
+        return;
       }
       
-      setHasMore(data.hasMore);
+      // Handle successful response - ensure logs is an array
+      const logsData = data.logs || [];
+      
+      if (loadMore) {
+        setLogs(prev => [...prev, ...logsData]);
+      } else {
+        setLogs(logsData);
+      }
+      
+      setHasMore(data.hasMore || false);
       setOffset(currentOffset + 30);
     } catch (error) {
       console.error('Error fetching logs:', error);
+      setLogs([]);
+      setHasMore(false);
     } finally {
       setLoading(false);
     }

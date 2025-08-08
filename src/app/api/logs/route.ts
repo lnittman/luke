@@ -8,6 +8,15 @@ export async function GET(request: NextRequest) {
     const limit = parseInt(searchParams.get('limit') || '30');
     const offset = parseInt(searchParams.get('offset') || '0');
 
+    // Check if database is properly configured
+    if (!process.env.DATABASE_URL || process.env.DATABASE_URL === 'postgresql://user:password@host:port/db') {
+      console.warn('Database not configured, returning empty logs');
+      return NextResponse.json({
+        logs: [],
+        hasMore: false,
+      });
+    }
+
     // Fetch logs with pagination
     const logs = await db
       .select()
@@ -17,15 +26,17 @@ export async function GET(request: NextRequest) {
       .offset(offset);
 
     return NextResponse.json({
-      logs,
-      hasMore: logs.length === limit,
+      logs: logs || [],
+      hasMore: logs?.length === limit || false,
     });
   } catch (error) {
     console.error('Error fetching logs:', error);
-    return NextResponse.json(
-      { error: 'Failed to fetch logs' },
-      { status: 500 }
-    );
+    // Return empty array instead of error to prevent client crash
+    return NextResponse.json({
+      logs: [],
+      hasMore: false,
+      error: 'Database connection issue',
+    });
   }
 }
 
