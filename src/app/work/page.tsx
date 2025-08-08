@@ -23,22 +23,29 @@ export default function Work() {
         <div className={styles.innerViewport}>
         <div className={styles.row} style={{ paddingBottom: '0', borderBottom: '1px solid rgb(var(--border))' }}>
           <div className={styles.column}>
-            <h2 style={{ marginBottom: '0' }}>EXPERIENCE</h2>
+            <details>
+              <summary style={{ cursor: 'pointer', listStyle: 'none' }}>
+                <h2 style={{ marginBottom: '0', display: 'inline' }}>EXPERIENCE</h2>
+              </summary>
+              <div>
+                <div className="space-y-0" style={{ marginTop: '0' }}>
+                  {WORK_EXPERIENCES.map((experience) => (
+                    <WorkExperience key={experience.id} experience={experience} />
+                  ))}
+                </div>
+              </div>
+            </details>
           </div>
-        </div>
-        
-        <div className="space-y-0" style={{ marginTop: '0' }}>
-          {WORK_EXPERIENCES.map((experience) => (
-            <WorkExperience key={experience.id} experience={experience} />
-          ))}
         </div>
 
         <div className={styles.row} style={{ paddingBottom: '0', borderBottom: '1px solid rgb(var(--border))' }}>
           <div className={styles.column}>
-            <h2 style={{ marginBottom: '0' }}>SKILLS</h2>
-          </div>
-        </div>
-        
+            <details>
+              <summary style={{ cursor: 'pointer', listStyle: 'none' }}>
+                <h2 style={{ marginBottom: '0', display: 'inline' }}>SKILLS</h2>
+              </summary>
+              <div>
+                
         <div className={styles.row}>
           <div className={styles.column}>
             <h3>Languages</h3>
@@ -93,16 +100,27 @@ export default function Work() {
           </div>
         </div>
 
-        <div className={styles.row} style={{ paddingBottom: '0', borderBottom: '1px solid rgb(var(--border))' }}>
-          <div className={styles.column}>
-            <h2 style={{ marginBottom: '0' }}>EDUCATION</h2>
+              </div>
+            </details>
           </div>
         </div>
         
+        <div className={styles.row} style={{ paddingBottom: '0', borderBottom: '1px solid rgb(var(--border))' }}>
+          <div className={styles.column}>
+            <details>
+              <summary style={{ cursor: 'pointer', listStyle: 'none' }}>
+                <h2 style={{ marginBottom: '0', display: 'inline' }}>EDUCATION</h2>
+              </summary>
+              <div>
+                
         <div className={styles.row}>
           <div className={styles.column}>
             <h3>University of Michigan, Ann Arbor</h3>
             <p>BSc in Computer Science and German Studies (2017)</p>
+          </div>
+        </div>
+              </div>
+            </details>
           </div>
         </div>
         </div>

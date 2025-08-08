@@ -12,7 +12,7 @@ export default function Home() {
         <div className={styles.column}>
           <div style={{ display: 'flex', alignItems: 'center', gap: '1rem' }}>
             <BlockLoader mode={2} />
-            <h1>LUKE NITTMANN</h1>
+            <h1>LUKE</h1>
           </div>
           <ThemeSwitcher />
         </div>
@@ -21,7 +21,7 @@ export default function Home() {
       <div className={styles.content}>
         <div className={styles.innerViewport}>
           <div className="space-y-0" style={{ marginTop: '0' }}>
-            <Accordion title="ABOUT" defaultOpen={true}>
+            <Accordion title="ABOUT" defaultOpen={false}>
               <p>
                 i build production-grade software that makes AI feel more human.
               </p>
@@ -42,7 +42,7 @@ export default function Home() {
               </p>
             </Accordion>
 
-            <Accordion title="PATTERNS" defaultOpen={true}>
+            <Accordion title="PATTERNS" defaultOpen={false}>
               <p>
                 after shipping code at Amazon and AWS, leading teams at startups,
                 and building my own products, i&apos;ve noticed the same principles
@@ -67,7 +67,7 @@ export default function Home() {
               </p>
             </Accordion>
 
-            <Accordion title="PHILOSOPHY">
+            <Accordion title="PHILOSOPHY" defaultOpen={false}>
               <p>
                 good constraints lead to better products. at Teenage Engineering,
                 designers use six colors and one typeface. at Braun, Dieter Rams outlined ten
@@ -81,7 +81,7 @@ export default function Home() {
               </p>
             </Accordion>
 
-            <Accordion title="INTERESTS">
+            <Accordion title="INTERESTS" defaultOpen={false}>
               <ul>
                 <li>agentic UI/UX patterns</li>
                 <li>semantic interfaces for content and knowledge</li>

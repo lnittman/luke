@@ -21,14 +21,7 @@ export default function Projects() {
       
       <div className={styles.content}>
         <div className={styles.innerViewport}>
-          <div className={styles.row}>
-            <div className={styles.column}>
-              <p className="text-[rgb(var(--text-secondary))]">
-                a collection of software projects spanning AI/ML, web applications, 
-                mobile apps, and developer tools.
-              </p>
-            </div>
-          </div>
+          {/* intro removed per spec */}
           
           {/* Projects list with full-width items */}
           <div className="space-y-0" style={{ marginTop: '0' }}>
