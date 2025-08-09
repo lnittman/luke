@@ -24,9 +24,9 @@ export function ModalRenderer() {
       {modals.map((modal, index) => (
         <motion.div
           key={modal.id}
-          initial={{ opacity: 0 }}
+          initial={{ opacity: 1 }}
           animate={{ opacity: 1 }}
-          exit={{ opacity: 0 }}
+          exit={{ opacity: 1 }}
           className="fixed inset-0 z-50 flex items-center justify-center"
           style={{ zIndex: 1000 + index }}
         >
@@ -41,9 +41,9 @@ export function ModalRenderer() {
           
           {/* Modal Content */}
           <motion.div
-            initial={{ scale: 0.95, opacity: 0 }}
+            initial={{ scale: 1, opacity: 1 }}
             animate={{ scale: 1, opacity: 1 }}
-            exit={{ scale: 0.95, opacity: 0 }}
+            exit={{ scale: 1, opacity: 1 }}
             className="relative max-w-4xl w-full mx-4 max-h-[90vh] overflow-auto"
           >
             {modal.component}

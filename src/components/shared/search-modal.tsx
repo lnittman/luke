@@ -77,10 +77,10 @@ export function SearchModal() {
       {isOpen && (
         <>
           <motion.div
-            initial={{ opacity: 0 }}
+            initial={{ opacity: 1 }}
             animate={{ opacity: 1 }}
-            exit={{ opacity: 0 }}
-            transition={{ duration: 0.2 }}
+            exit={{ opacity: 1 }}
+            transition={{ duration: 0 }}
             className="fixed inset-0 bg-black/50 z-[100]"
             onClick={() => {
               setIsOpen(false);
@@ -89,10 +89,10 @@ export function SearchModal() {
             }}
           />
           <motion.div
-            initial={{ opacity: 0, scale: 0.95 }}
+            initial={{ opacity: 1, scale: 1 }}
             animate={{ opacity: 1, scale: 1 }}
-            exit={{ opacity: 0, scale: 0.95 }}
-            transition={{ type: 'spring', bounce: 0.3, duration: 0.3 }}
+            exit={{ opacity: 1, scale: 1 }}
+            transition={{ duration: 0 }}
             className="fixed left-1/2 top-1/2 -translate-x-1/2 -translate-y-1/2 w-full max-w-2xl z-[101]"
           >
             <div style={{

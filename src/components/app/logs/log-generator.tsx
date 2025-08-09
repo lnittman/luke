@@ -98,9 +98,9 @@ export function LogGenerator({ onComplete }: LogGeneratorProps) {
         <AnimatePresence>
           {isGenerating && (
             <motion.div
-              initial={{ opacity: 0, height: 0 }}
+              initial={{ opacity: 1, height: 'auto' }}
               animate={{ opacity: 1, height: 'auto' }}
-              exit={{ opacity: 0, height: 0 }}
+              exit={{ opacity: 1, height: 'auto' }}
               className="space-y-3"
             >
               {/* Progress Bar */}
@@ -109,7 +109,7 @@ export function LogGenerator({ onComplete }: LogGeneratorProps) {
                   className="absolute inset-y-0 left-0 bg-[rgb(var(--accent-1))]"
                   initial={{ width: '0%' }}
                   animate={{ width: `${progress}%` }}
-                  transition={{ duration: 0.3 }}
+                  transition={{ duration: 0 }}
                 />
               </div>
 
@@ -123,7 +123,7 @@ export function LogGenerator({ onComplete }: LogGeneratorProps) {
                 <div className="space-y-2">
                   {progress >= 25 && (
                     <motion.div
-                      initial={{ opacity: 0, x: -10 }}
+                      initial={{ opacity: 1, x: 0 }}
                       animate={{ opacity: 1, x: 0 }}
                       className="font-mono text-xs"
                     >
@@ -132,7 +132,7 @@ export function LogGenerator({ onComplete }: LogGeneratorProps) {
                   )}
                   {progress >= 50 && (
                     <motion.div
-                      initial={{ opacity: 0, x: -10 }}
+                      initial={{ opacity: 1, x: 0 }}
                       animate={{ opacity: 1, x: 0 }}
                       className="font-mono text-xs"
                     >
@@ -141,7 +141,7 @@ export function LogGenerator({ onComplete }: LogGeneratorProps) {
                   )}
                   {progress >= 75 && (
                     <motion.div
-                      initial={{ opacity: 0, x: -10 }}
+                      initial={{ opacity: 1, x: 0 }}
                       animate={{ opacity: 1, x: 0 }}
                       className="font-mono text-xs"
                     >
@@ -150,7 +150,7 @@ export function LogGenerator({ onComplete }: LogGeneratorProps) {
                   )}
                   {progress === 100 && (
                     <motion.div
-                      initial={{ opacity: 0, x: -10 }}
+                      initial={{ opacity: 1, x: 0 }}
                       animate={{ opacity: 1, x: 0 }}
                       className="font-mono text-xs text-green-400"
                     >
@@ -167,9 +167,9 @@ export function LogGenerator({ onComplete }: LogGeneratorProps) {
         <AnimatePresence>
           {error && (
             <motion.div
-              initial={{ opacity: 0 }}
+              initial={{ opacity: 1 }}
               animate={{ opacity: 1 }}
-              exit={{ opacity: 0 }}
+              exit={{ opacity: 1 }}
               className="p-3 bg-red-500/10 border border-red-500/20 rounded"
             >
               <p className="font-mono text-sm text-red-400">{error}</p>

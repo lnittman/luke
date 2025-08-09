@@ -107,10 +107,10 @@ export function RepoPicker({ selectedRepo, onRepoSelect, isMobile = false }: Rep
         <AnimatePresence>
           {isOpen && (
             <motion.div
-              initial={{ opacity: 0 }}
+              initial={{ opacity: 1 }}
               animate={{ opacity: 1 }}
-              exit={{ opacity: 0 }}
-              transition={{ duration: 0.2 }}
+              exit={{ opacity: 1 }}
+              transition={{ duration: 0 }}
               className="fixed inset-0 z-[100]"
               onClick={() => {
                 setIsOpen(false);
@@ -314,10 +314,10 @@ export function RepoPicker({ selectedRepo, onRepoSelect, isMobile = false }: Rep
       <AnimatePresence>
         {isOpen && (
           <motion.div
-            initial={{ opacity: 0, y: -10 }}
+            initial={{ opacity: 1, y: 0 }}
             animate={{ opacity: 1, y: 0 }}
-            exit={{ opacity: 0, y: -10 }}
-            transition={{ duration: 0.15 }}
+            exit={{ opacity: 1, y: 0 }}
+            transition={{ duration: 0 }}
             style={{
               position: 'absolute',
               top: '100%',
