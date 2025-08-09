@@ -32,9 +32,15 @@ function setMetaThemeColor(color: string) {
   if (!meta) {
     meta = document.createElement('meta');
     meta.name = 'theme-color';
+    meta.content = color;
     document.head.appendChild(meta);
+    return;
   }
-  meta.content = color;
+  // Some mobile browsers (iOS) do not repaint on content mutation.
+  // Replace the node to force UI to pick up the new color.
+  const replacement = meta.cloneNode() as HTMLMetaElement;
+  replacement.setAttribute('content', color);
+  meta.replaceWith(replacement);
 }
 
 function setAppleStatusBar(theme: string | undefined) {
