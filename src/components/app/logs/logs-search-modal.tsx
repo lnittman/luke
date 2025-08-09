@@ -8,6 +8,7 @@ import { logsSearchModalOpenAtom, logsSearchQueryAtom, logsSearchSelectedIndexAt
 import { format } from 'date-fns';
 import type { ActivityLog } from '@/lib/db';
 import { WaterAscii } from '@/components/shared/water-ascii';
+import { TextFade } from '@/components/shared/text-fade';
 
 interface LogsSearchModalProps {
   logs?: ActivityLog[];
@@ -115,17 +116,17 @@ export function LogsSearchModal({ logs = [] }: LogsSearchModalProps) {
             }}
           >
             <div style={{ display: 'flex', justifyContent: 'space-between', width: '100%', alignItems: 'center' }}>
-              <div style={{ fontSize: '0.875rem', fontWeight: 'bold', overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap', maxWidth: '80%' }}>
+              <TextFade style={{ fontSize: '0.875rem', fontWeight: 'bold', maxWidth: '80%' }}>
                 {log.summary || 'untitled'}
-              </div>
+              </TextFade>
               <div style={{ fontSize: '0.75rem', color: 'rgb(var(--text-secondary))' }}>
                 {format(log.date, 'LLL d').toLowerCase()}
               </div>
             </div>
             {!!log.summary && (
-              <div style={{ fontSize: '0.75rem', color: 'rgb(var(--text-secondary))', display: '-webkit-box', WebkitLineClamp: 2 as any, WebkitBoxOrient: 'vertical' as any, overflow: 'hidden' }}>
+              <TextFade style={{ fontSize: '0.75rem', color: 'rgb(var(--text-secondary))' }}>
                 {log.summary}
-              </div>
+              </TextFade>
             )}
           </button>
         ))

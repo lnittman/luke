@@ -2,6 +2,7 @@
 
 import React from 'react';
 import type { ActivityDetail } from '@/lib/db';
+import { TextFade } from '@/components/shared/text-fade';
 
 interface ActivityCardProps {
   activity: ActivityDetail;
@@ -41,9 +42,9 @@ function CommitCard({ activity }: { activity: ActivityDetail }) {
               {metadata.repository}
             </div>
           )}
-          <h4 style={{ fontFamily: 'monospace', fontSize: '0.875rem', marginBottom: '0.25rem' }}>
+          <TextFade style={{ fontFamily: 'monospace', fontSize: '0.875rem', marginBottom: '0.25rem' }}>
             {activity.title}
-          </h4>
+          </TextFade>
           {metadata?.stats && (
             <div style={{ display: 'flex', gap: '1rem', fontSize: '0.75rem', fontFamily: 'monospace', opacity: 0.7 }}>
               <span style={{ color: '#10b981' }}>+{metadata.stats.additions || 0}</span>
@@ -54,7 +55,7 @@ function CommitCard({ activity }: { activity: ActivityDetail }) {
           {metadata?.files && metadata.files.length > 0 && (
             <div style={{ marginTop: '0.5rem', fontSize: '0.75rem', fontFamily: 'monospace', opacity: 0.6 }}>
               {metadata.files.slice(0, 3).map((file: any, i: number) => (
-                <div key={i}>→ {file.filename}</div>
+                <TextFade key={i}>→ {file.filename}</TextFade>
               ))}
               {metadata.files.length > 3 && (
                 <div>+ {metadata.files.length - 3} more files</div>
@@ -105,9 +106,9 @@ function PullRequestCard({ activity }: { activity: ActivityDetail }) {
             </div>
           )}
           <div style={{ display: 'flex', alignItems: 'center', gap: '0.5rem', marginBottom: '0.25rem' }}>
-            <h4 style={{ fontFamily: 'monospace', fontSize: '0.875rem' }}>
+            <TextFade style={{ fontFamily: 'monospace', fontSize: '0.875rem', flex: 1 }}>
               {activity.title}
-            </h4>
+            </TextFade>
             <span style={{
               padding: '0.125rem 0.5rem',
               fontSize: '0.625rem',
@@ -124,17 +125,13 @@ function PullRequestCard({ activity }: { activity: ActivityDetail }) {
             </span>
           </div>
           {activity.description && (
-            <p style={{
+            <TextFade style={{
               fontFamily: 'monospace',
               fontSize: '0.75rem',
-              opacity: 0.7,
-              overflow: 'hidden',
-              display: '-webkit-box',
-              WebkitLineClamp: 2,
-              WebkitBoxOrient: 'vertical'
+              opacity: 0.7
             }}>
               {activity.description}
-            </p>
+            </TextFade>
           )}
           {metadata?.labels && metadata.labels.length > 0 && (
             <div style={{ display: 'flex', flexWrap: 'wrap', gap: '0.25rem', marginTop: '0.5rem' }}>
@@ -198,9 +195,9 @@ function IssueCard({ activity }: { activity: ActivityDetail }) {
             </div>
           )}
           <div style={{ display: 'flex', alignItems: 'center', gap: '0.5rem', marginBottom: '0.25rem' }}>
-            <h4 style={{ fontFamily: 'monospace', fontSize: '0.875rem' }}>
+            <TextFade style={{ fontFamily: 'monospace', fontSize: '0.875rem', flex: 1 }}>
               {activity.title}
-            </h4>
+            </TextFade>
             <span style={{
               padding: '0.125rem 0.5rem',
               fontSize: '0.625rem',
@@ -213,17 +210,13 @@ function IssueCard({ activity }: { activity: ActivityDetail }) {
             </span>
           </div>
           {activity.description && (
-            <p style={{
+            <TextFade style={{
               fontFamily: 'monospace',
               fontSize: '0.75rem',
-              opacity: 0.7,
-              overflow: 'hidden',
-              display: '-webkit-box',
-              WebkitLineClamp: 2,
-              WebkitBoxOrient: 'vertical'
+              opacity: 0.7
             }}>
               {activity.description}
-            </p>
+            </TextFade>
           )}
           {metadata?.assignees && metadata.assignees.length > 0 && (
             <div style={{ display: 'flex', alignItems: 'center', gap: '0.5rem', marginTop: '0.5rem' }}>
@@ -332,9 +325,9 @@ export function ActivityCard({ activity, index }: ActivityCardProps) {
             border: '1px solid var(--border-color)',
             backgroundColor: 'var(--surface-color)'
           }}>
-            <h4 style={{ fontFamily: 'monospace', fontSize: '0.875rem' }}>
+            <TextFade style={{ fontFamily: 'monospace', fontSize: '0.875rem', flex: 1 }}>
               {activity.title}
-            </h4>
+            </TextFade>
             {activity.description && (
               <p style={{
                 fontFamily: 'monospace',

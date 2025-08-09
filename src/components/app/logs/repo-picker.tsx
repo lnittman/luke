@@ -2,6 +2,7 @@
 
 import { useState, useEffect, useMemo } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
+import { TextFade } from '@/components/shared/text-fade';
 
 interface Repository {
   id: string;
@@ -80,8 +81,8 @@ export function RepoPicker({ selectedRepo, onRepoSelect, isMobile = false }: Rep
             display: 'flex',
             alignItems: 'center',
             justifyContent: 'center',
-            height: '2rem',
-            padding: '0 0.75rem',
+            width: '2.5rem',
+            height: '2.5rem',
             background: 'none',
             border: '1px solid rgb(var(--border))',
             color: 'rgb(var(--text-primary))',
@@ -264,9 +265,9 @@ export function RepoPicker({ selectedRepo, onRepoSelect, isMobile = false }: Rep
                         }}
                       >
                         <span style={{ fontSize: '1rem' }}>📁</span>
-                        <div style={{ flex: 1 }}>
-                          <div style={{ fontSize: '0.875rem' }}>{repo.name}</div>
-                          <div style={{ fontSize: '0.75rem', color: 'rgb(var(--text-secondary))' }}>{repo.owner}</div>
+                        <div style={{ flex: 1, minWidth: 0 }}>
+                          <TextFade style={{ fontSize: '0.875rem' }}>{repo.name}</TextFade>
+                          <TextFade style={{ fontSize: '0.75rem', color: 'rgb(var(--text-secondary))' }}>{repo.owner}</TextFade>
                         </div>
                       </button>
                     ))
@@ -433,8 +434,8 @@ export function RepoPicker({ selectedRepo, onRepoSelect, isMobile = false }: Rep
                       }
                     }}
                   >
-                    <div style={{ fontSize: '0.875rem' }}>{repo.name}</div>
-                    <div style={{ fontSize: '0.75rem', color: 'rgb(var(--text-secondary))' }}>{repo.owner}</div>
+                    <TextFade style={{ fontSize: '0.875rem' }}>{repo.name}</TextFade>
+                    <TextFade style={{ fontSize: '0.75rem', color: 'rgb(var(--text-secondary))' }}>{repo.owner}</TextFade>
                   </button>
                 ))
               ) : (

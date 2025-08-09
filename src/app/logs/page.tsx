@@ -15,6 +15,7 @@ import styles from '@/components/shared/root.module.scss';
 import type { ActivityLog } from '@/lib/db';
 import { useIsMobile } from '@/hooks/useIsMobile';
 import { WaterAscii } from '@/components/shared/water-ascii';
+import { TextFade } from '@/components/shared/text-fade';
 
 export default function LogsPage() {
   const [logs, setLogs] = useState<ActivityLog[]>([]);
@@ -131,8 +132,8 @@ export default function LogsPage() {
                     display: 'flex',
                     alignItems: 'center',
                     justifyContent: 'center',
-                    width: '2rem',
-                    height: '2rem',
+                    width: '2.5rem',
+                    height: '2.5rem',
                     background: 'none',
                     border: '1px solid rgb(var(--border))',
                     color: 'rgb(var(--text-primary))',
@@ -203,8 +204,8 @@ export default function LogsPage() {
                   display: 'flex',
                   alignItems: 'center',
                   justifyContent: 'center',
-                  width: '2rem',
-                  height: '2rem',
+                  width: '2.5rem',
+                  height: '2.5rem',
                   background: 'none',
                   border: '1px solid rgb(var(--border))',
                   color: 'rgb(var(--text-primary))',
@@ -279,14 +280,17 @@ export default function LogsPage() {
                         }}>
                           {format(new Date(log.date), 'EEEE, MMMM d, yyyy')}
                         </h3>
-                        <p style={{ 
-                          fontFamily: 'monospace',
-                          fontSize: '0.875rem',
-                          color: 'rgb(var(--text-secondary))',
-                          lineHeight: 1.5,
-                        }}>
+                        <TextFade
+                          style={{ 
+                            fontFamily: 'monospace',
+                            fontSize: '0.875rem',
+                            color: 'rgb(var(--text-secondary))',
+                            lineHeight: 1.5,
+                            maxWidth: '100%',
+                          }}
+                        >
                           {log.summary}
-                        </p>
+                        </TextFade>
                       </div>
                       
                       {/* Stats */}
