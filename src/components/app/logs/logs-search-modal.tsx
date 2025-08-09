@@ -7,8 +7,9 @@ import { motion, AnimatePresence } from 'framer-motion';
 import { logsSearchModalOpenAtom, logsSearchQueryAtom, logsSearchSelectedIndexAtom } from '@/atoms/logs-search';
 import { format } from 'date-fns';
 import type { ActivityLog } from '@/lib/db';
-import { WaterAscii } from '@/components/shared/water-ascii';
 import { TextFade } from '@/components/shared/text-fade';
+import { AsciiEngine } from '@/lib/ascii-engine';
+import searchBackgroundFrames from '@/lib/ascii-engine/data/search-background.json';
 
 interface LogsSearchModalProps {
   logs?: ActivityLog[];
@@ -263,14 +264,26 @@ export function LogsSearchModal({ logs = [] }: LogsSearchModalProps) {
               </div>
             </div>
 
-            {/* water background: inset from page sides and bottom, starts below search bar bottom edge */}
-            <div className="pointer-events-none absolute inset-0" style={{ opacity: 0.07 }}>
-              <div style={{ position: 'absolute', left: 8, right: 8, bottom: 8, top: 0 }}>
-                <div style={{ position: 'absolute', left: 0, right: 0, bottom: 0, top: 60 }}>
-                  {/* Adjust top to account for search bar height */}
-                  <WaterAscii style={{ fontSize: '8px', lineHeight: '8px', width: '100%', height: '100%' }} />
-                </div>
-              </div>
+            {/* ASCII background animation */}
+            <div className="pointer-events-none absolute inset-0" style={{ 
+              display: 'flex',
+              alignItems: 'center',
+              justifyContent: 'center',
+              padding: '4rem',
+            }}>
+              <AsciiEngine
+                frames={searchBackgroundFrames}
+                fps={8}
+                loop={true}
+                style={{
+                  fontSize: '12px',
+                  lineHeight: '14px',
+                  opacity: 0.03,
+                  color: 'rgb(var(--accent-1))',
+                  width: '100%',
+                  textAlign: 'center',
+                }}
+              />
             </div>
           </motion.div>
         </>
