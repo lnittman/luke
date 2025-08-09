@@ -4,12 +4,12 @@ import React, { useEffect, useState } from 'react';
 import { useParams } from 'next/navigation';
 import Link from 'next/link';
 import { format } from 'date-fns';
-import { DefaultLayout } from '@/components/page/DefaultLayout';
-import { FooterNavigation } from '@/components/FooterNavigation';
-import { BlockLoader } from '@/components/BlockLoader';
-import { ThemeSwitcher } from '@/components/ThemeSwitcher';
-import styles from '@/components/page/root.module.scss';
-import { ActivityCard } from '@/components/logs/ActivityCard';
+import { DefaultLayout } from '@/components/shared/default-layout';
+import { FooterNavigation } from '@/components/shared/footer-navigation';
+import { BlockLoader } from '@/components/shared/block-loader';
+import { ThemeSwitcher } from '@/components/shared/theme-switcher';
+import styles from '@/components/shared/root.module.scss';
+import { ActivityCard } from '@/components/app/logs/activity-card';
 import type { ActivityLog, ActivityDetail } from '@/lib/db';
 
 interface LogData {
@@ -151,11 +151,13 @@ export default function LogDetailPage() {
     <DefaultLayout>
       <div className={styles.header}>
         <div className={styles.column}>
-          <div style={{ display: 'flex', alignItems: 'center', gap: '1rem' }}>
-            <BlockLoader mode={2} />
-            <h1>{format(new Date(log.date), 'MMMM d, yyyy').toUpperCase()}</h1>
+          <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', width: '100%' }}>
+            <div style={{ display: 'flex', alignItems: 'center', gap: '1rem' }}>
+              <BlockLoader mode={2} />
+              <h1>{format(new Date(log.date), 'MMMM d, yyyy').toUpperCase()}</h1>
+            </div>
+            <ThemeSwitcher />
           </div>
-          <ThemeSwitcher />
         </div>
       </div>
 
@@ -215,47 +217,75 @@ export default function LogDetailPage() {
             </div>
           </div>
 
-          {/* Statistics */}
+          {/* Statistics - Bottom left aligned slate tiles */}
           {log.metadata && (
             <div className={styles.row}>
               <div className={styles.column}>
-                <h2>METRICS</h2>
                 <div style={{ 
                   display: 'flex',
-                  gap: '2rem',
+                  gap: '0.75rem',
+                  alignItems: 'flex-end',
                   fontFamily: 'monospace',
                   fontSize: '0.875rem'
                 }}>
-                  {log.metadata.totalCommits && log.metadata.totalCommits > 0 && (
-                    <div>
-                      <span style={{ fontSize: '1.5rem', display: 'block', marginBottom: '0.25rem' }}>
+                  {log.metadata.totalCommits !== undefined && (
+                    <div style={{
+                      padding: '0.75rem 1rem',
+                      backgroundColor: 'rgb(var(--surface-1))',
+                      border: '1px solid rgb(var(--border))',
+                      display: 'flex',
+                      alignItems: 'baseline',
+                      gap: '0.5rem'
+                    }}>
+                      <span style={{ fontSize: '1.25rem', fontWeight: 'bold', color: 'rgb(var(--accent-1))' }}>
                         {log.metadata.totalCommits}
                       </span>
-                      <span style={{ opacity: 0.7 }}>commits</span>
+                      <span style={{ opacity: 0.7, fontSize: '0.75rem' }}>commits</span>
                     </div>
                   )}
-                  {log.metadata.totalPullRequests && log.metadata.totalPullRequests > 0 && (
-                    <div>
-                      <span style={{ fontSize: '1.5rem', display: 'block', marginBottom: '0.25rem' }}>
+                  {log.metadata.totalPullRequests !== undefined && (
+                    <div style={{
+                      padding: '0.75rem 1rem',
+                      backgroundColor: 'rgb(var(--surface-1))',
+                      border: '1px solid rgb(var(--border))',
+                      display: 'flex',
+                      alignItems: 'baseline',
+                      gap: '0.5rem'
+                    }}>
+                      <span style={{ fontSize: '1.25rem', fontWeight: 'bold', color: 'rgb(var(--accent-1))' }}>
                         {log.metadata.totalPullRequests}
                       </span>
-                      <span style={{ opacity: 0.7 }}>pull requests</span>
+                      <span style={{ opacity: 0.7, fontSize: '0.75rem' }}>PRs</span>
                     </div>
                   )}
-                  {log.metadata.totalIssues && log.metadata.totalIssues > 0 && (
-                    <div>
-                      <span style={{ fontSize: '1.5rem', display: 'block', marginBottom: '0.25rem' }}>
+                  {log.metadata.totalIssues !== undefined && (
+                    <div style={{
+                      padding: '0.75rem 1rem',
+                      backgroundColor: 'rgb(var(--surface-1))',
+                      border: '1px solid rgb(var(--border))',
+                      display: 'flex',
+                      alignItems: 'baseline',
+                      gap: '0.5rem'
+                    }}>
+                      <span style={{ fontSize: '1.25rem', fontWeight: 'bold', color: 'rgb(var(--accent-1))' }}>
                         {log.metadata.totalIssues}
                       </span>
-                      <span style={{ opacity: 0.7 }}>issues</span>
+                      <span style={{ opacity: 0.7, fontSize: '0.75rem' }}>issues</span>
                     </div>
                   )}
-                  {log.metadata.totalRepos && log.metadata.totalRepos > 0 && (
-                    <div>
-                      <span style={{ fontSize: '1.5rem', display: 'block', marginBottom: '0.25rem' }}>
+                  {log.metadata.totalRepos !== undefined && (
+                    <div style={{
+                      padding: '0.75rem 1rem',
+                      backgroundColor: 'rgb(var(--surface-1))',
+                      border: '1px solid rgb(var(--border))',
+                      display: 'flex',
+                      alignItems: 'baseline',
+                      gap: '0.5rem'
+                    }}>
+                      <span style={{ fontSize: '1.25rem', fontWeight: 'bold', color: 'rgb(var(--accent-1))' }}>
                         {log.metadata.totalRepos}
                       </span>
-                      <span style={{ opacity: 0.7 }}>repositories</span>
+                      <span style={{ opacity: 0.7, fontSize: '0.75rem' }}>repos</span>
                     </div>
                   )}
                 </div>

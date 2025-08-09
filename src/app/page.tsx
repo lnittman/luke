@@ -1,9 +1,9 @@
-import { DefaultLayout } from '@/components/page/DefaultLayout';
-import { FooterNavigation } from '@/components/FooterNavigation';
-import { BlockLoader } from '@/components/BlockLoader';
-import { ThemeSwitcher } from '@/components/ThemeSwitcher';
-import { Accordion } from '@/components/Accordion';
-import styles from '@/components/page/root.module.scss';
+import { DefaultLayout } from '@/components/shared/default-layout';
+import { FooterNavigation } from '@/components/shared/footer-navigation';
+import { BlockLoader } from '@/components/shared/block-loader';
+import { ThemeSwitcher } from '@/components/shared/theme-switcher';
+import { Accordion } from '@/components/app/home/accordion';
+import styles from '@/components/shared/root.module.scss';
 
 export default function Home() {
   return (

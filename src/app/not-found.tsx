@@ -1,7 +1,7 @@
 'use client';
 
 import { useRouter } from 'next/navigation';
-import { WaterAscii } from '@/components/WaterAscii';
+import { WaterAscii } from '@/components/shared/water-ascii';
 
 export default function NotFound() {
   const router = useRouter();

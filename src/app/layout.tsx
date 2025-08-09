@@ -1,9 +1,9 @@
 import { Analytics } from '@vercel/analytics/next';
 import { ModalProvider } from '@/lib/modal-context';
-import { ThemeProvider } from '@/components/providers/ThemeProvider';
-import { ThemeColorProvider } from '@/components/providers/ThemeColorProvider';
-import { SearchModal } from '@/components/SearchModal';
-import { KeyboardShortcuts } from '@/components/KeyboardShortcuts';
+import { ThemeProvider } from '@/components/shared/theme-provider';
+import { ThemeColorProvider } from '@/components/shared/theme-color-provider';
+import { SearchModal } from '@/components/shared/search-modal';
+import { KeyboardShortcuts } from '@/components/shared/keyboard-shortcuts';
 import { viewport, metadata } from './metadata';
 
 import '../styles/global.scss';

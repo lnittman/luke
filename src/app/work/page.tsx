@@ -1,10 +1,10 @@
-import { DefaultLayout } from '@/components/page/DefaultLayout';
-import { FooterNavigation } from '@/components/FooterNavigation';
-import { BlockLoader } from '@/components/BlockLoader';
-import { ThemeSwitcher } from '@/components/ThemeSwitcher';
-import { WorkExperience } from '@/components/work/WorkExperience';
+import { DefaultLayout } from '@/components/shared/default-layout';
+import { FooterNavigation } from '@/components/shared/footer-navigation';
+import { BlockLoader } from '@/components/shared/block-loader';
+import { ThemeSwitcher } from '@/components/shared/theme-switcher';
+import { WorkExperience } from '@/components/app/work/work-experience';
 import { WORK_EXPERIENCES } from '@/constants/work';
-import styles from '@/components/page/root.module.scss';
+import styles from '@/components/shared/root.module.scss';
 
 export default function Work() {
   return (

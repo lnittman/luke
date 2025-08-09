@@ -2,7 +2,7 @@
 
 import { useState, useTransition } from 'react';
 import { connectGitHub, fetchGitHubRepos, toggleRepository, toggleGlobalLogs } from './actions';
-import styles from '@/components/page/root.module.scss';
+import styles from '@/components/shared/root.module.scss';
 
 interface Repository {
   id: string;

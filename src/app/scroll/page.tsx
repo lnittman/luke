@@ -2,15 +2,15 @@
 
 import React, { useEffect, useRef, Suspense } from 'react';
 import { motion, useScroll, useTransform, useAnimationControls } from 'framer-motion';
-import { LenisProvider } from '@/components/providers/LenisProvider';
+import { LenisProvider } from '@/components/shared/lenis-provider';
 import { PROJECTS } from '@/constants/projects';
-import { FloatingScene } from '@/components/three/FloatingScene';
-import { projectIcons } from '@/components/three/ProjectIcons';
+import { FloatingScene } from '@/components/app/scroll/floating-scene';
+import { projectIcons } from '@/components/app/scroll/project-icons';
 import dynamic from 'next/dynamic';
-import { BlockLoader } from '@/components/motion';
+import { BlockLoader } from '@/components/ui/motion';
 
 // Dynamically import components with SSR disabled
-const FluidCanvas = dynamic(() => import('@/components/interactive/FluidCanvas'), {
+const FluidCanvas = dynamic(() => import('@/components/app/scroll/fluid-canvas'), {
   ssr: false,
   loading: () => null
 });

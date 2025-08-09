@@ -1,7 +1,7 @@
 'use client';
 
 import React from 'react';
-import { FooterNavigation } from '@/components/FooterNavigation';
+import { FooterNavigation } from '@/components/shared/footer-navigation';
 
 export default function TestHotkeys() {
   const [keyPresses, setKeyPresses] = React.useState<string[]>([]);

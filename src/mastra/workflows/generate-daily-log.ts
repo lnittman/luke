@@ -223,6 +223,7 @@ const generateDailyLogStep = createStep({
             totalIssues: metrics.totalIssues,
             totalRepos: metrics.totalRepos,
             languages: metrics.languages,
+            topProjects: allActivities.filter(a => a.commits.length > 0 || a.pullRequests.length > 0 || a.issues.length > 0).map(a => a.repository).slice(0, 5),
             architectureDecisions: analysis.technicalHighlights || [],
           },
           processed: true,

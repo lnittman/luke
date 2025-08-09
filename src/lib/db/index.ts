@@ -1,6 +1,6 @@
 import { drizzle } from 'drizzle-orm/neon-http';
 import { neon } from '@neondatabase/serverless';
-import * as schema from './unified-schema';
+import * as schema from './schema';
 
 // Declare global cache
 declare global {
@@ -37,4 +37,4 @@ function createDb() {
 
 export const db = createDb();
 
-export * from './unified-schema';
+export * from './schema';

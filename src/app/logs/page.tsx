@@ -5,15 +5,15 @@ import Link from 'next/link';
 import { format } from 'date-fns';
 import { useSetAtom } from 'jotai';
 import { logsSearchModalOpenAtom } from '@/atoms/logs-search';
-import { LogsSearchModal } from '@/components/LogsSearchModal';
-import { DefaultLayout } from '@/components/page/DefaultLayout';
-import { FooterNavigation } from '@/components/FooterNavigation';
-import { BlockLoader } from '@/components/BlockLoader';
-import { ThemeSwitcher } from '@/components/ThemeSwitcher';
-import styles from '@/components/page/root.module.scss';
+import { LogsSearchModal } from '@/components/app/logs/logs-search-modal';
+import { DefaultLayout } from '@/components/shared/default-layout';
+import { FooterNavigation } from '@/components/shared/footer-navigation';
+import { BlockLoader } from '@/components/shared/block-loader';
+import { ThemeSwitcher } from '@/components/shared/theme-switcher';
+import styles from '@/components/shared/root.module.scss';
 import type { ActivityLog } from '@/lib/db';
 import { useIsMobile } from '@/hooks/useIsMobile';
-import { WaterAscii } from '@/components/WaterAscii';
+import { WaterAscii } from '@/components/shared/water-ascii';
 
 export default function LogsPage() {
   const [logs, setLogs] = useState<ActivityLog[]>([]);
