@@ -119,12 +119,18 @@ export function RepoPicker({ selectedRepo, onRepoSelect, isMobile = false }: Rep
               animate={{ opacity: 1 }}
               exit={{ opacity: 1 }}
               transition={{ duration: 0 }}
-              className="fixed inset-0 z-[100]"
+              className="fixed z-[100]"
               onClick={() => {
                 setIsOpen(false);
                 setSearchQuery('');
               }}
-              style={{ background: 'rgb(var(--background-start))' }}
+              style={{ 
+                background: 'rgb(var(--background-start))',
+                top: '5rem', // Below header (header height + border)
+                left: 0,
+                right: 0,
+                bottom: '5rem', // Above footer
+              }}
             >
               <div className="relative z-[101] flex h-full w-full flex-col" onClick={(e) => e.stopPropagation()}>
                 {/* Header with search */}
