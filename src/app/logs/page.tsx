@@ -6,6 +6,7 @@ import { format } from 'date-fns';
 import { useSetAtom } from 'jotai';
 import { logsSearchModalOpenAtom } from '@/atoms/logs-search';
 import { LogsSearchModal } from '@/components/app/logs/logs-search-modal';
+import { RepoPicker } from '@/components/app/logs/repo-picker';
 import { DefaultLayout } from '@/components/shared/default-layout';
 import { FooterNavigation } from '@/components/shared/footer-navigation';
 import { BlockLoader } from '@/components/shared/block-loader';
@@ -20,6 +21,7 @@ export default function LogsPage() {
   const [loading, setLoading] = useState(true);
   const [hasMore, setHasMore] = useState(false);
   const [offset, setOffset] = useState(0);
+  const [selectedRepo, setSelectedRepo] = useState<string | null>(null);
   const setLogsSearchModalOpen = useSetAtom(logsSearchModalOpenAtom);
   const isMobile = useIsMobile();
   const searchPlaceholder = useMemo(() => 'search logs…', []);
@@ -40,12 +42,16 @@ export default function LogsPage() {
   useEffect(() => {
     fetchLogs();
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, []);
+  }, [selectedRepo]);
 
   const fetchLogs = async (loadMore = false) => {
     try {
       const currentOffset = loadMore ? offset : 0;
-      const response = await fetch(`/api/logs?limit=10&offset=${currentOffset}`);
+      let url = `/api/logs?limit=10&offset=${currentOffset}`;
+      if (selectedRepo) {
+        url += `&repoId=${selectedRepo}`;
+      }
+      const response = await fetch(url);
       const data = await response.json();
       
       // Handle error response
@@ -115,48 +121,49 @@ export default function LogsPage() {
             borderBottom: '1px solid rgb(var(--border))',
             backgroundColor: 'rgb(var(--background-start))'
           }}>
-            {isMobile ? (
-              <button
-                onClick={() => setLogsSearchModalOpen(true)}
-                title="Search Logs"
-                aria-label="Search Logs"
-                style={{
-                  display: 'flex',
-                  alignItems: 'center',
-                  justifyContent: 'center',
-                  width: '2rem',
-                  height: '2rem',
-                  background: 'none',
-                  border: '1px solid rgb(var(--border))',
-                  color: 'rgb(var(--text-primary))',
-                  cursor: 'pointer',
-                  transition: 'all 0.2s ease',
-                  fontFamily: 'monospace',
-                  padding: 0,
-                  fontSize: '1rem',
-                }}
-                onMouseEnter={(e) => {
-                  e.currentTarget.style.background = 'rgb(var(--surface-1))';
-                  e.currentTarget.style.borderColor = 'rgb(var(--accent-1))';
-                }}
-                onMouseLeave={(e) => {
-                  e.currentTarget.style.background = 'none';
-                  e.currentTarget.style.borderColor = 'rgb(var(--border))';
-                }}
-              >
-                ⌕
-              </button>
-            ) : (
-              <button
-                onClick={() => setLogsSearchModalOpen(true)}
-                title="Search Logs"
-                aria-label="Search Logs"
-                style={{
-                  display: 'flex',
-                  alignItems: 'center',
-                  gap: '0.5rem',
-                  width: '100%',
-                  maxWidth: '420px',
+            <div style={{ display: 'flex', gap: '0.5rem', alignItems: 'center', flex: isMobile ? 0 : 1 }}>
+              {isMobile ? (
+                <button
+                  onClick={() => setLogsSearchModalOpen(true)}
+                  title="Search Logs"
+                  aria-label="Search Logs"
+                  style={{
+                    display: 'flex',
+                    alignItems: 'center',
+                    justifyContent: 'center',
+                    width: '2rem',
+                    height: '2rem',
+                    background: 'none',
+                    border: '1px solid rgb(var(--border))',
+                    color: 'rgb(var(--text-primary))',
+                    cursor: 'pointer',
+                    transition: 'all 0.2s ease',
+                    fontFamily: 'monospace',
+                    padding: 0,
+                    fontSize: '1rem',
+                  }}
+                  onMouseEnter={(e) => {
+                    e.currentTarget.style.background = 'rgb(var(--surface-1))';
+                    e.currentTarget.style.borderColor = 'rgb(var(--accent-1))';
+                  }}
+                  onMouseLeave={(e) => {
+                    e.currentTarget.style.background = 'none';
+                    e.currentTarget.style.borderColor = 'rgb(var(--border))';
+                  }}
+                >
+                  ⌕
+                </button>
+              ) : (
+                <button
+                  onClick={() => setLogsSearchModalOpen(true)}
+                  title="Search Logs"
+                  aria-label="Search Logs"
+                  style={{
+                    display: 'flex',
+                    alignItems: 'center',
+                    gap: '0.5rem',
+                    width: '100%',
+                    maxWidth: '420px',
                   height: '2.5rem',
                   background: 'transparent',
                   border: '1px solid rgb(var(--border))',
@@ -179,8 +186,14 @@ export default function LogsPage() {
               >
                 <span style={{ opacity: 0.7 }}>{searchPlaceholder}</span>
                 <span style={{ marginLeft: 'auto', opacity: 0.5, fontSize: '0.75rem' }}>⌘K</span>
-              </button>
-            )}
+                </button>
+              )}
+              <RepoPicker 
+                selectedRepo={selectedRepo}
+                onRepoSelect={setSelectedRepo}
+                isMobile={isMobile}
+              />
+            </div>
             {process.env.NODE_ENV === 'development' && (
               <Link 
                 href="/logs/settings" 
