@@ -1,4 +1,4 @@
-import { MetadataRoute } from 'next';
+import type { MetadataRoute } from 'next'
 
 export default function manifest(): MetadataRoute.Manifest {
   // For server-side generation, we'll use dark theme colors by default
@@ -21,14 +21,14 @@ export default function manifest(): MetadataRoute.Manifest {
         src: '/assets/logo-2.png',
         sizes: '192x192',
         type: 'image/png',
-        purpose: 'any'
+        purpose: 'any',
       },
       {
         src: '/assets/logo-2.png',
         sizes: '512x512',
         type: 'image/png',
-        purpose: 'any'
-      }
-    ]
-  };
-} 
+        purpose: 'any',
+      },
+    ],
+  }
+}

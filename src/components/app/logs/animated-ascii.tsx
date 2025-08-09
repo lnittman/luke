@@ -1,63 +1,63 @@
-'use client';
+'use client'
 
-import { useEffect, useRef, HTMLAttributes } from 'react';
+import { type HTMLAttributes, useEffect, useRef } from 'react'
 
 interface AnimatedAsciiProps extends HTMLAttributes<HTMLDivElement> {
-  frames: string[];
-  interval?: number;
-  delay?: number;
-  color?: string;
+  frames: string[]
+  interval?: number
+  delay?: number
+  color?: string
 }
 
-export function AnimatedAscii({ 
-  frames, 
-  interval = 100, 
+export function AnimatedAscii({
+  frames,
+  interval = 100,
   delay = 0,
   color = 'rgb(var(--text-secondary))',
   className,
-  ...props 
+  ...props
 }: AnimatedAsciiProps) {
-  const ref = useRef<HTMLDivElement>(null);
-  const frameIndex = useRef(0);
+  const ref = useRef<HTMLDivElement>(null)
+  const frameIndex = useRef(0)
 
   useEffect(() => {
-    if (!ref.current || frames.length === 0) return;
+    if (!ref.current || frames.length === 0) return
 
     // Set initial frame
-    ref.current.innerHTML = frames[0];
+    ref.current.innerHTML = frames[0]
 
     const startAnimation = () => {
       const intervalId = setInterval(() => {
-        if (!ref.current) return;
-        
-        frameIndex.current = (frameIndex.current + 1) % frames.length;
-        ref.current.innerHTML = frames[frameIndex.current];
-      }, interval);
+        if (!ref.current) return
 
-      return intervalId;
-    };
+        frameIndex.current = (frameIndex.current + 1) % frames.length
+        ref.current.innerHTML = frames[frameIndex.current]
+      }, interval)
+
+      return intervalId
+    }
 
     // Start after delay
     const timeoutId = setTimeout(() => {
-      const intervalId = startAnimation();
-      
+      const intervalId = startAnimation()
+
       // Store intervalId for cleanup
-      ref.current?.setAttribute('data-interval-id', String(intervalId));
-    }, delay);
+      ref.current?.setAttribute('data-interval-id', String(intervalId))
+    }, delay)
 
     return () => {
-      clearTimeout(timeoutId);
-      const intervalId = ref.current?.getAttribute('data-interval-id');
+      clearTimeout(timeoutId)
+      const intervalId = ref.current?.getAttribute('data-interval-id')
       if (intervalId) {
-        clearInterval(Number(intervalId));
+        clearInterval(Number(intervalId))
       }
-    };
-  }, [frames, interval, delay]);
+    }
+  }, [frames, interval, delay])
 
   return (
-    <div 
-      ref={ref}
+    <div
       className={className}
+      ref={ref}
       style={{
         fontFamily: 'monospace',
         whiteSpace: 'pre',
@@ -67,7 +67,7 @@ export function AnimatedAscii({
       }}
       {...props}
     />
-  );
+  )
 }
 
 // Preset ASCII animations
@@ -106,7 +106,7 @@ export const ASCII_PRESETS = {
 ║███║
 ╚═══╝`,
   ],
-  
+
   pulse: [
     `     
   •  
@@ -133,14 +133,9 @@ export const ASCII_PRESETS = {
  •·• 
      `,
   ],
-  
-  spinner: [
-    `╱`,
-    `─`,
-    `╲`,
-    `│`,
-  ],
-  
+
+  spinner: ['╱', '─', '╲', '│'],
+
   matrix: [
     `10110
 01001
@@ -185,13 +180,13 @@ export const ASCII_PRESETS = {
   ],
 
   loading: [
-    `[    ]`,
-    `[■   ]`,
-    `[■■  ]`,
-    `[■■■ ]`,
-    `[■■■■]`,
-    `[ ■■■]`,
-    `[  ■■]`,
-    `[   ■]`,
+    '[    ]',
+    '[■   ]',
+    '[■■  ]',
+    '[■■■ ]',
+    '[■■■■]',
+    '[ ■■■]',
+    '[  ■■]',
+    '[   ■]',
   ],
-};
+}

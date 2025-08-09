@@ -1,26 +1,27 @@
-import { Agent } from '@mastra/core/agent';
-import { createOpenRouter } from '@openrouter/ai-sdk-provider';
-import { 
+import { Agent } from '@mastra/core/agent'
+import { createOpenRouter } from '@openrouter/ai-sdk-provider'
+import {
   analyzeCommitDiffTool,
-  analyzeRepositoryContextTool,
   analyzePullRequestTool,
+  analyzeRepositoryContextTool,
   detectCodePatternsTool,
-} from '../tools/code-review-tools';
-import { 
-  fetchUserActivityTool,
+} from '../tools/code-review-tools'
+import {
   fetchCommitDetailsTool,
   fetchRepoInfoTool,
-} from '../tools/github-tools';
+  fetchUserActivityTool,
+} from '../tools/github-tools'
 
 const openrouter = createOpenRouter({
   apiKey: process.env.OPENROUTER_API_KEY,
-});
+})
 
 // Deep code analysis agent
 export const codeAnalysisAgent = new Agent({
   id: 'code-analysis-agent',
   name: 'Deep Code Analysis Agent',
-  description: 'Performs deep technical analysis of code changes, patterns, and quality',
+  description:
+    'Performs deep technical analysis of code changes, patterns, and quality',
   model: openrouter('anthropic/claude-3.5-sonnet'),
   tools: {
     analyzeCommitDiffTool,
@@ -82,13 +83,14 @@ When analyzing commits:
 - Use detectCodePatternsTool to identify patterns
 - Cross-reference with repository context
 - Consider the broader architectural impact`,
-});
+})
 
 // Repository context agent
 export const repoContextAgent = new Agent({
   id: 'repo-context-agent',
   name: 'Repository Context Agent',
-  description: 'Understands repository structure, dependencies, and architectural decisions',
+  description:
+    'Understands repository structure, dependencies, and architectural decisions',
   model: openrouter('anthropic/claude-3.5-sonnet'),
   tools: {
     analyzeRepositoryContextTool,
@@ -148,13 +150,14 @@ Provide structured analysis with:
 - Improvement recommendations
 
 Always reference specific files and provide GitHub permalinks.`,
-});
+})
 
 // Activity synthesis agent
 export const activitySynthesisAgent = new Agent({
   id: 'activity-synthesis-agent',
   name: 'Activity Synthesis Agent',
-  description: 'Synthesizes all GitHub activity into comprehensive, insightful reports',
+  description:
+    'Synthesizes all GitHub activity into comprehensive, insightful reports',
   model: openrouter('anthropic/claude-3.5-sonnet'),
   tools: {
     fetchUserActivityTool,
@@ -229,13 +232,14 @@ TONE AND STYLE:
 - Constructive about improvements
 
 Always include GitHub permalinks and make reports actionable.`,
-});
+})
 
 // PR review agent
 export const prReviewAgent = new Agent({
   id: 'pr-review-agent',
   name: 'Pull Request Review Agent',
-  description: 'Performs comprehensive PR analysis including code review insights',
+  description:
+    'Performs comprehensive PR analysis including code review insights',
   model: openrouter('anthropic/claude-3.5-sonnet'),
   tools: {
     analyzePullRequestTool,
@@ -311,13 +315,14 @@ POSITIVE REINFORCEMENT:
 - Acknowledge security best practices
 
 Always be constructive and educational in feedback.`,
-});
+})
 
 // Technical debt tracker agent
 export const technicalDebtAgent = new Agent({
   id: 'technical-debt-agent',
   name: 'Technical Debt Tracker',
-  description: 'Identifies, tracks, and prioritizes technical debt in the codebase',
+  description:
+    'Identifies, tracks, and prioritizes technical debt in the codebase',
   model: openrouter('anthropic/claude-3.5-sonnet'),
   tools: {
     analyzeCommitDiffTool,
@@ -412,7 +417,7 @@ Track debt velocity:
 - Trending direction
 
 Always provide actionable next steps and celebrate debt reduction.`,
-});
+})
 
 // Integration with custom rules
 export function createCustomAgent(rules: string[], focusAreas: string[]): any {
@@ -423,30 +428,38 @@ CUSTOM RULES:
 ${rules.map((rule, i) => `${i + 1}. ${rule}`).join('\n')}
 
 FOCUS AREAS:
-${focusAreas.map(area => `- ${area}`).join('\n')}
+${focusAreas.map((area) => `- ${area}`).join('\n')}
 
 Apply these rules and focus areas to all your analysis.
 Prioritize findings that relate to the specified focus areas.
 Flag any violations of the custom rules as high priority.
 
-${rules.length > 0 ? `
+${
+  rules.length > 0
+    ? `
 RULE ENFORCEMENT:
 - Check every change against the custom rules
 - Report rule violations with severity levels
 - Suggest fixes that comply with rules
 - Track rule compliance over time
-` : ''}
+`
+    : ''
+}
 
-${focusAreas.length > 0 ? `
+${
+  focusAreas.length > 0
+    ? `
 FOCUSED ANALYSIS:
 - Deep dive into ${focusAreas.join(', ')} aspects
 - Provide specialized metrics for focus areas
 - Compare against best practices in these areas
 - Suggest improvements specific to focus areas
-` : ''}
+`
+    : ''
+}
 
 Always reference the specific rule or focus area in your findings.
-`;
+`
 
   return new Agent({
     id: 'custom-rules-agent',
@@ -458,5 +471,5 @@ Always reference the specific rule or focus area in your findings.
       detectCodePatternsTool,
     },
     instructions: customInstructions,
-  });
+  })
 }

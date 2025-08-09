@@ -1,17 +1,17 @@
-import { Mastra } from '@mastra/core';
-import { 
-  commitAnalyzerAgent, 
-  activitySummarizerAgent, 
-  repoAnalyzerAgent 
-} from './agents/github-agents';
+import { Mastra } from '@mastra/core'
 import {
-  codeAnalysisAgent,
-  repoContextAgent,
   activitySynthesisAgent,
+  codeAnalysisAgent,
   prReviewAgent,
+  repoContextAgent,
   technicalDebtAgent,
-} from './agents/code-analysis-agents';
-import generateDailyLog from './workflows/generate-daily-log';
+} from './agents/code-analysis-agents'
+import {
+  activitySummarizerAgent,
+  commitAnalyzerAgent,
+  repoAnalyzerAgent,
+} from './agents/github-agents'
+import generateDailyLog from './workflows/generate-daily-log'
 
 export const mastra = new Mastra({
   agents: {
@@ -29,6 +29,6 @@ export const mastra = new Mastra({
   workflows: {
     generateDailyLog,
   },
-});
+})
 
-export { default as generateDailyLog } from './workflows/generate-daily-log';
+export { default as generateDailyLog } from './workflows/generate-daily-log'

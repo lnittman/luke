@@ -1,14 +1,14 @@
-'use client';
+'use client'
 
-import { useState, useRef, useCallback } from 'react';
-import { AsciiEngine } from './index';
+import { useCallback, useRef, useState } from 'react'
+import { AsciiEngine } from './index'
 
 interface AsciiEditorProps {
-  initialFrames?: string[];
-  width?: number;
-  height?: number;
-  onSave?: (frames: string[]) => void;
-  className?: string;
+  initialFrames?: string[]
+  width?: number
+  height?: number
+  onSave?: (frames: string[]) => void
+  className?: string
 }
 
 export function AsciiEditor({
@@ -18,271 +18,328 @@ export function AsciiEditor({
   onSave,
   className = '',
 }: AsciiEditorProps) {
-  const [frames, setFrames] = useState<string[]>(initialFrames);
-  const [currentFrameIndex, setCurrentFrameIndex] = useState(0);
-  const [isPlaying, setIsPlaying] = useState(false);
-  const textareaRef = useRef<HTMLTextAreaElement>(null);
-  const [clipboard, setClipboard] = useState<string>('');
-  
-  const currentFrame = frames[currentFrameIndex] || '';
+  const [frames, setFrames] = useState<string[]>(initialFrames)
+  const [currentFrameIndex, setCurrentFrameIndex] = useState(0)
+  const [isPlaying, setIsPlaying] = useState(false)
+  const textareaRef = useRef<HTMLTextAreaElement>(null)
+  const [clipboard, setClipboard] = useState<string>('')
 
-  const updateCurrentFrame = useCallback((value: string) => {
-    const newFrames = [...frames];
-    newFrames[currentFrameIndex] = value;
-    setFrames(newFrames);
-  }, [frames, currentFrameIndex]);
+  const currentFrame = frames[currentFrameIndex] || ''
+
+  const updateCurrentFrame = useCallback(
+    (value: string) => {
+      const newFrames = [...frames]
+      newFrames[currentFrameIndex] = value
+      setFrames(newFrames)
+    },
+    [frames, currentFrameIndex]
+  )
 
   const addFrame = useCallback(() => {
-    const newFrames = [...frames, currentFrame];
-    setFrames(newFrames);
-    setCurrentFrameIndex(newFrames.length - 1);
-  }, [frames, currentFrame]);
+    const newFrames = [...frames, currentFrame]
+    setFrames(newFrames)
+    setCurrentFrameIndex(newFrames.length - 1)
+  }, [frames, currentFrame])
 
   const duplicateFrame = useCallback(() => {
-    const newFrames = [...frames];
-    newFrames.splice(currentFrameIndex + 1, 0, currentFrame);
-    setFrames(newFrames);
-    setCurrentFrameIndex(currentFrameIndex + 1);
-  }, [frames, currentFrame, currentFrameIndex]);
+    const newFrames = [...frames]
+    newFrames.splice(currentFrameIndex + 1, 0, currentFrame)
+    setFrames(newFrames)
+    setCurrentFrameIndex(currentFrameIndex + 1)
+  }, [frames, currentFrame, currentFrameIndex])
 
   const deleteFrame = useCallback(() => {
-    if (frames.length <= 1) return;
-    const newFrames = frames.filter((_, i) => i !== currentFrameIndex);
-    setFrames(newFrames);
-    setCurrentFrameIndex(Math.max(0, currentFrameIndex - 1));
-  }, [frames, currentFrameIndex]);
+    if (frames.length <= 1) return
+    const newFrames = frames.filter((_, i) => i !== currentFrameIndex)
+    setFrames(newFrames)
+    setCurrentFrameIndex(Math.max(0, currentFrameIndex - 1))
+  }, [frames, currentFrameIndex])
 
   const copyFrame = useCallback(() => {
-    setClipboard(currentFrame);
-  }, [currentFrame]);
+    setClipboard(currentFrame)
+  }, [currentFrame])
 
   const pasteFrame = useCallback(() => {
-    if (!clipboard) return;
-    updateCurrentFrame(clipboard);
-  }, [clipboard, updateCurrentFrame]);
+    if (!clipboard) return
+    updateCurrentFrame(clipboard)
+  }, [clipboard, updateCurrentFrame])
 
   const clearFrame = useCallback(() => {
-    updateCurrentFrame(Array(height).fill(' '.repeat(width)).join('\n'));
-  }, [height, width, updateCurrentFrame]);
+    updateCurrentFrame(Array(height).fill(' '.repeat(width)).join('\n'))
+  }, [height, width, updateCurrentFrame])
 
-  const insertCharacter = useCallback((char: string) => {
-    if (!textareaRef.current) return;
-    const start = textareaRef.current.selectionStart;
-    const end = textareaRef.current.selectionEnd;
-    const newValue = 
-      currentFrame.substring(0, start) + 
-      char + 
-      currentFrame.substring(end);
-    updateCurrentFrame(newValue);
-    
-    // Restore cursor position
-    setTimeout(() => {
-      if (textareaRef.current) {
-        textareaRef.current.selectionStart = start + char.length;
-        textareaRef.current.selectionEnd = start + char.length;
-        textareaRef.current.focus();
-      }
-    }, 0);
-  }, [currentFrame, updateCurrentFrame]);
+  const insertCharacter = useCallback(
+    (char: string) => {
+      if (!textareaRef.current) return
+      const start = textareaRef.current.selectionStart
+      const end = textareaRef.current.selectionEnd
+      const newValue =
+        currentFrame.substring(0, start) + char + currentFrame.substring(end)
+      updateCurrentFrame(newValue)
+
+      // Restore cursor position
+      setTimeout(() => {
+        if (textareaRef.current) {
+          textareaRef.current.selectionStart = start + char.length
+          textareaRef.current.selectionEnd = start + char.length
+          textareaRef.current.focus()
+        }
+      }, 0)
+    },
+    [currentFrame, updateCurrentFrame]
+  )
 
   const exportFrames = useCallback(() => {
-    const json = JSON.stringify(frames, null, 2);
-    const blob = new Blob([json], { type: 'application/json' });
-    const url = URL.createObjectURL(blob);
-    const a = document.createElement('a');
-    a.href = url;
-    a.download = 'ascii-animation.json';
-    a.click();
-    URL.revokeObjectURL(url);
-  }, [frames]);
+    const json = JSON.stringify(frames, null, 2)
+    const blob = new Blob([json], { type: 'application/json' })
+    const url = URL.createObjectURL(blob)
+    const a = document.createElement('a')
+    a.href = url
+    a.download = 'ascii-animation.json'
+    a.click()
+    URL.revokeObjectURL(url)
+  }, [frames])
 
   const importFrames = useCallback((e: React.ChangeEvent<HTMLInputElement>) => {
-    const file = e.target.files?.[0];
-    if (!file) return;
-    
-    const reader = new FileReader();
+    const file = e.target.files?.[0]
+    if (!file) return
+
+    const reader = new FileReader()
     reader.onload = (event) => {
       try {
-        const imported = JSON.parse(event.target?.result as string);
+        const imported = JSON.parse(event.target?.result as string)
         if (Array.isArray(imported)) {
-          setFrames(imported);
-          setCurrentFrameIndex(0);
+          setFrames(imported)
+          setCurrentFrameIndex(0)
         }
       } catch (err) {
-        console.error('Failed to import frames:', err);
+        console.error('Failed to import frames:', err)
       }
-    };
-    reader.readAsText(file);
-  }, []);
+    }
+    reader.readAsText(file)
+  }, [])
 
   const asciiChars = [
-    '░', '▒', '▓', '█', '▀', '▄', '■', '□', '▪', '▫',
-    '●', '○', '◐', '◑', '◒', '◓', '◔', '◕', '◖', '◗',
-    '╔', '╗', '╚', '╝', '║', '═', '╠', '╣', '╦', '╩',
-    '┌', '┐', '└', '┘', '│', '─', '├', '┤', '┬', '┴',
-    '▲', '▼', '◄', '►', '◆', '◇', '★', '☆', '♦', '♠',
-    '·', ':', ';', '=', '+', '-', '*', '#', '@', '~',
-    '≈', '∿', '×', '÷', '±', '≠', '≤', '≥', '∞', 'Ω',
-  ];
+    '░',
+    '▒',
+    '▓',
+    '█',
+    '▀',
+    '▄',
+    '■',
+    '□',
+    '▪',
+    '▫',
+    '●',
+    '○',
+    '◐',
+    '◑',
+    '◒',
+    '◓',
+    '◔',
+    '◕',
+    '◖',
+    '◗',
+    '╔',
+    '╗',
+    '╚',
+    '╝',
+    '║',
+    '═',
+    '╠',
+    '╣',
+    '╦',
+    '╩',
+    '┌',
+    '┐',
+    '└',
+    '┘',
+    '│',
+    '─',
+    '├',
+    '┤',
+    '┬',
+    '┴',
+    '▲',
+    '▼',
+    '◄',
+    '►',
+    '◆',
+    '◇',
+    '★',
+    '☆',
+    '♦',
+    '♠',
+    '·',
+    ':',
+    ';',
+    '=',
+    '+',
+    '-',
+    '*',
+    '#',
+    '@',
+    '~',
+    '≈',
+    '∿',
+    '×',
+    '÷',
+    '±',
+    '≠',
+    '≤',
+    '≥',
+    '∞',
+    'Ω',
+  ]
 
   return (
-    <div className={className} style={{
-      display: 'flex',
-      gap: '1rem',
-      padding: '1rem',
-      backgroundColor: 'rgb(var(--background-start))',
-      border: '1px solid rgb(var(--border))',
-    }}>
-      {/* Editor Panel */}
-      <div style={{ flex: 1, display: 'flex', flexDirection: 'column', gap: '0.5rem' }}>
-        {/* Toolbar */}
-        <div style={{ display: 'flex', gap: '0.5rem', flexWrap: 'wrap' }}>
-          <button onClick={addFrame}>New Frame</button>
-          <button onClick={duplicateFrame}>Duplicate</button>
-          <button onClick={deleteFrame} disabled={frames.length <= 1}>Delete</button>
-          <button onClick={clearFrame}>Clear</button>
-          <button onClick={copyFrame}>Copy</button>
-          <button onClick={pasteFrame} disabled={!clipboard}>Paste</button>
-          <button onClick={exportFrames}>Export JSON</button>
-          <label style={{ cursor: 'pointer' }}>
-            Import JSON
-            <input 
-              type="file" 
-              accept=".json" 
-              onChange={importFrames}
-              style={{ display: 'none' }}
-            />
-          </label>
-          {onSave && (
-            <button onClick={() => onSave(frames)} style={{ marginLeft: 'auto' }}>
-              Save Animation
+    <div className={`brutalist-card ${className}`}>
+      <div className="flex flex-col gap-4 lg:flex-row">
+        {/* Editor Panel */}
+        <div className="flex flex-1 flex-col gap-3">
+          {/* Toolbar */}
+          <div className="flex flex-wrap gap-2">
+            <button className="brutalist-button text-xs" onClick={addFrame}>
+              New Frame
             </button>
-          )}
-        </div>
-
-        {/* Frame Navigator */}
-        <div style={{ display: 'flex', alignItems: 'center', gap: '0.5rem' }}>
-          <button 
-            onClick={() => setCurrentFrameIndex(Math.max(0, currentFrameIndex - 1))}
-            disabled={currentFrameIndex === 0}
-          >
-            ←
-          </button>
-          <span style={{ fontFamily: 'monospace' }}>
-            Frame {currentFrameIndex + 1} / {frames.length}
-          </span>
-          <button 
-            onClick={() => setCurrentFrameIndex(Math.min(frames.length - 1, currentFrameIndex + 1))}
-            disabled={currentFrameIndex === frames.length - 1}
-          >
-            →
-          </button>
-          <button onClick={() => setIsPlaying(!isPlaying)} style={{ marginLeft: 'auto' }}>
-            {isPlaying ? 'Stop Preview' : 'Preview'}
-          </button>
-        </div>
-
-        {/* Character Palette */}
-        <div style={{ 
-          display: 'flex', 
-          flexWrap: 'wrap', 
-          gap: '0.25rem',
-          padding: '0.5rem',
-          border: '1px solid rgb(var(--border))',
-          maxHeight: '100px',
-          overflowY: 'auto',
-        }}>
-          {asciiChars.map((char, i) => (
             <button
-              key={i}
-              onClick={() => insertCharacter(char)}
-              style={{
-                width: '1.5rem',
-                height: '1.5rem',
-                fontFamily: 'monospace',
-                fontSize: '1rem',
-                padding: 0,
-                display: 'flex',
-                alignItems: 'center',
-                justifyContent: 'center',
-              }}
-              title={`Insert ${char}`}
+              className="brutalist-button text-xs"
+              onClick={duplicateFrame}
             >
-              {char}
+              Duplicate
             </button>
-          ))}
+            <button
+              className="brutalist-button text-xs"
+              disabled={frames.length <= 1}
+              onClick={deleteFrame}
+            >
+              Delete
+            </button>
+            <button className="brutalist-button text-xs" onClick={clearFrame}>
+              Clear
+            </button>
+            <button className="brutalist-button text-xs" onClick={copyFrame}>
+              Copy
+            </button>
+            <button
+              className="brutalist-button text-xs"
+              disabled={!clipboard}
+              onClick={pasteFrame}
+            >
+              Paste
+            </button>
+            <button className="brutalist-button text-xs" onClick={exportFrames}>
+              Export JSON
+            </button>
+            <label className="brutalist-button cursor-pointer text-xs">
+              Import JSON
+              <input
+                accept=".json"
+                className="hidden"
+                onChange={importFrames}
+                type="file"
+              />
+            </label>
+            {onSave && (
+              <button
+                className="brutalist-button ml-auto bg-[rgb(var(--accent-1))] text-white text-xs"
+                onClick={() => onSave(frames)}
+              >
+                Save Animation
+              </button>
+            )}
+          </div>
+
+          {/* Frame Navigator */}
+          <div className="flex items-center gap-2">
+            <button
+              className="brutalist-button px-2 py-1 text-sm"
+              disabled={currentFrameIndex === 0}
+              onClick={() =>
+                setCurrentFrameIndex(Math.max(0, currentFrameIndex - 1))
+              }
+            >
+              ←
+            </button>
+            <span className="font-mono text-[rgb(var(--text-primary))] text-sm">
+              Frame {currentFrameIndex + 1} / {frames.length}
+            </span>
+            <button
+              className="brutalist-button px-2 py-1 text-sm"
+              disabled={currentFrameIndex === frames.length - 1}
+              onClick={() =>
+                setCurrentFrameIndex(
+                  Math.min(frames.length - 1, currentFrameIndex + 1)
+                )
+              }
+            >
+              →
+            </button>
+            <button
+              className="brutalist-button ml-auto text-sm"
+              onClick={() => setIsPlaying(!isPlaying)}
+            >
+              {isPlaying ? 'Stop Preview' : 'Preview'}
+            </button>
+          </div>
+
+          {/* Character Palette */}
+          <div className="flex max-h-24 flex-wrap gap-1 overflow-y-auto border border-[rgb(var(--border))] bg-[rgb(var(--surface-1))] p-2">
+            {asciiChars.map((char, i) => (
+              <button
+                className="flex h-6 w-6 items-center justify-center border border-[rgb(var(--border))] p-0 font-mono text-sm transition-colors hover:border-[rgb(var(--accent-1))] hover:bg-[rgb(var(--surface-2))]"
+                key={i}
+                onClick={() => insertCharacter(char)}
+                title={`Insert ${char}`}
+              >
+                {char}
+              </button>
+            ))}
+          </div>
+
+          {/* Text Editor */}
+          <textarea
+            className="min-h-[300px] flex-1 resize-none border border-[rgb(var(--border))] bg-[rgb(var(--surface-1))] p-2 font-mono text-[rgb(var(--text-primary))] text-xs leading-tight focus:border-[rgb(var(--accent-1))] focus:outline-none"
+            onChange={(e) => updateCurrentFrame(e.target.value)}
+            placeholder={`Enter ASCII art here (${width}×${height} characters)`}
+            ref={textareaRef}
+            spellCheck={false}
+            value={currentFrame}
+          />
+
+          {/* Size Info */}
+          <div className="font-mono text-[rgb(var(--text-secondary))] text-xs">
+            Size: {currentFrame.split('\n')[0]?.length || 0}×
+            {currentFrame.split('\n').length}
+            (target: {width}×{height})
+          </div>
         </div>
 
-        {/* Text Editor */}
-        <textarea
-          ref={textareaRef}
-          value={currentFrame}
-          onChange={(e) => updateCurrentFrame(e.target.value)}
-          style={{
-            flex: 1,
-            fontFamily: 'monospace',
-            fontSize: '12px',
-            lineHeight: '14px',
-            padding: '0.5rem',
-            backgroundColor: 'rgb(var(--surface-1))',
-            border: '1px solid rgb(var(--border))',
-            color: 'rgb(var(--text-primary))',
-            resize: 'none',
-            minHeight: '300px',
-          }}
-          spellCheck={false}
-          placeholder={`Enter ASCII art here (${width}×${height} characters)`}
-        />
-
-        {/* Size Info */}
-        <div style={{ 
-          fontSize: '0.75rem', 
-          color: 'rgb(var(--text-secondary))',
-          fontFamily: 'monospace',
-        }}>
-          Size: {currentFrame.split('\n')[0]?.length || 0}×{currentFrame.split('\n').length} 
-          (target: {width}×{height})
-        </div>
-      </div>
-
-      {/* Preview Panel */}
-      <div style={{ 
-        width: '400px',
-        display: 'flex',
-        flexDirection: 'column',
-        gap: '0.5rem',
-      }}>
-        <h3 style={{ margin: 0, fontSize: '0.875rem' }}>Preview</h3>
-        <div style={{
-          flex: 1,
-          border: '1px solid rgb(var(--border))',
-          padding: '1rem',
-          backgroundColor: 'rgb(var(--surface-1))',
-          overflow: 'auto',
-        }}>
-          {isPlaying ? (
-            <AsciiEngine
-              frames={frames}
-              fps={12}
-              loop={true}
-              style={{
-                fontSize: '10px',
-                lineHeight: '12px',
-                opacity: 1,
-              }}
-            />
-          ) : (
-            <pre style={{
-              fontFamily: 'monospace',
-              fontSize: '10px',
-              lineHeight: '12px',
-              margin: 0,
-            }}>
-              {currentFrame}
-            </pre>
-          )}
+        {/* Preview Panel */}
+        <div className="flex w-full flex-col gap-2 lg:w-96">
+          <h3 className="font-bold font-mono text-[rgb(var(--text-primary))] text-sm">
+            Preview
+          </h3>
+          <div className="min-h-[300px] flex-1 overflow-auto border border-[rgb(var(--border))] bg-[rgb(var(--surface-1))] p-4">
+            {isPlaying ? (
+              <AsciiEngine
+                fps={12}
+                frames={frames}
+                loop={true}
+                style={{
+                  fontSize: '10px',
+                  lineHeight: '12px',
+                  opacity: 1,
+                }}
+              />
+            ) : (
+              <pre className="m-0 font-mono text-[10px] leading-3">
+                {currentFrame}
+              </pre>
+            )}
+          </div>
         </div>
       </div>
     </div>
-  );
+  )
 }

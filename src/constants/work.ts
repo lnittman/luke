@@ -8,8 +8,8 @@ export const WORK_EXPERIENCES = [
       'developed 8+ production applications across web, mobile, and AI domains',
       'built semantic social networks and AI development companions',
       'created audio processing applications and developer productivity tools',
-      'implemented machine learning pipelines for content analysis and search'
-    ]
+      'implemented machine learning pipelines for content analysis and search',
+    ],
   },
   {
     id: 'titles',
@@ -21,8 +21,8 @@ export const WORK_EXPERIENCES = [
     highlights: [
       'led development of cross-platform notification system for web3 image generation platform',
       'built semantic image search system with Gemini multimodal embeddings and agentic asset organization',
-      'architected full-stack features across iOS, web, and backend systems'
-    ]
+      'architected full-stack features across iOS, web, and backend systems',
+    ],
   },
   {
     id: 'stems',
@@ -36,8 +36,8 @@ export const WORK_EXPERIENCES = [
       'architected full-stack system for professional audio processing with intelligent agents for effects recommendation',
       'integrated Python audio models and CoreML for on-device audio processing',
       'optimized processing costs through AI-powered effects generation',
-      'built integration layer supporting major streaming platforms (Spotify, Apple Music)'
-    ]
+      'built integration layer supporting major streaming platforms (Spotify, Apple Music)',
+    ],
   },
   {
     id: 'video-store',
@@ -51,8 +51,8 @@ export const WORK_EXPERIENCES = [
       'produced original compositions with artists',
       'delivered rough mixes for clients',
       'operated professional recording sessions',
-      'managed studio workflow and session documentation'
-    ]
+      'managed studio workflow and session documentation',
+    ],
   },
   {
     id: 'amazon',
@@ -67,8 +67,8 @@ export const WORK_EXPERIENCES = [
       'improved cross-region performance through stack regionalization',
       'built self-service permission system automating internal workflows',
       'maintained high service reliability across multiple regions',
-      'led migration from monolith to microservices architecture'
-    ]
+      'led migration from monolith to microservices architecture',
+    ],
   },
   {
     id: 'aws',
@@ -81,7 +81,7 @@ export const WORK_EXPERIENCES = [
       'optimized video transcoding engine for improved performance',
       'rewrote Quicktime decoder enhancing metadata parsing accuracy',
       'developed automated testing framework for validation components',
-      'resolved customer issues through direct support and code changes'
-    ]
-  }
-];
+      'resolved customer issues through direct support and code changes',
+    ],
+  },
+]

@@ -1,14 +1,14 @@
-'use client';
+'use client'
 
-import styles from './sine-mood-ring-icon.module.scss';
+import styles from './sine-mood-ring-icon.module.scss'
 
 export function SineMoodRingIcon() {
   return (
     <div className={styles.iconWrapper}>
       <svg
-        width="24"
         height="24"
         viewBox="0 0 838.79 829.35"
+        width="24"
         xmlns="http://www.w3.org/2000/svg"
       >
         <path
@@ -17,5 +17,5 @@ export function SineMoodRingIcon() {
         />
       </svg>
     </div>
-  );
+  )
 }

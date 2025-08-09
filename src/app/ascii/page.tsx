@@ -1,25 +1,34 @@
-'use client';
+'use client'
 
-import { useState } from 'react';
-import { AsciiEditor } from '@/lib/ascii-engine/editor';
-import { AsciiEngine } from '@/lib/ascii-engine';
-import { Presets } from '@/lib/ascii-engine/presets';
-import { TextFade } from '@/components/shared/text-fade';
+import { useState } from 'react'
+import { TextFade } from '@/components/shared/text-fade'
+import { AsciiEngine } from '@/lib/ascii-engine'
+import { AsciiEditor } from '@/lib/ascii-engine/editor'
+import { Presets } from '@/lib/ascii-engine/presets'
 
 export default function AsciiPage() {
-  const [savedAnimations, setSavedAnimations] = useState<{
-    name: string;
-    frames: string[];
-  }[]>([]);
-  const [selectedAnimation, setSelectedAnimation] = useState<string[]>([]);
-  const [showPresets, setShowPresets] = useState(false);
+  const [savedAnimations, setSavedAnimations] = useState<
+    {
+      name: string
+      frames: string[]
+    }[]
+  >([])
+  const [selectedAnimation, setSelectedAnimation] = useState<string[]>([])
+  const [showPresets, setShowPresets] = useState(false)
+  const [editorKey, setEditorKey] = useState(0)
 
   const handleSave = (frames: string[]) => {
-    const name = prompt('Enter a name for this animation:');
+    const name = prompt('Enter a name for this animation:')
     if (name) {
-      setSavedAnimations(prev => [...prev, { name, frames }]);
+      setSavedAnimations((prev) => [...prev, { name, frames }])
     }
-  };
+  }
+
+  const handlePresetSelect = (frames: string[]) => {
+    setSelectedAnimation(frames)
+    setEditorKey((prev) => prev + 1) // Force editor remount with new frames
+    setShowPresets(false)
+  }
 
   const presetList = [
     { name: 'Matrix Rain', generator: Presets.matrixRain },
@@ -29,69 +38,47 @@ export default function AsciiPage() {
     { name: 'Pulse', generator: Presets.pulse },
     { name: 'Water', generator: Presets.water },
     { name: 'Dots', generator: Presets.dots },
-  ];
+  ]
 
   return (
-    <div style={{
-      minHeight: '100vh',
-      backgroundColor: 'rgb(var(--background-start))',
-      fontFamily: 'monospace',
-    }}>
+    <div className="min-h-screen overflow-x-hidden bg-gradient-to-b from-[rgb(var(--background-start))] to-[rgb(var(--background-end))]">
       {/* Header */}
-      <div style={{
-        padding: '2rem',
-        borderBottom: '1px solid rgb(var(--border))',
-      }}>
-        <TextFade style={{ fontSize: '1.5rem', fontWeight: 'bold' }}>
+      <div className="border-[rgb(var(--border))] border-b px-6 py-8">
+        <TextFade className="font-bold font-mono text-2xl">
           ASCII Engine
         </TextFade>
-        <div style={{ 
-          fontSize: '0.875rem', 
-          color: 'rgb(var(--text-secondary))',
-          marginTop: '0.5rem',
-        }}>
+        <div className="mt-2 font-mono text-[rgb(var(--text-secondary))] text-sm">
           Create frame-based ASCII animations
         </div>
       </div>
 
       {/* Controls */}
-      <div style={{
-        padding: '1rem 2rem',
-        display: 'flex',
-        gap: '1rem',
-        borderBottom: '1px solid rgb(var(--border))',
-      }}>
-        <button 
+      <div className="flex flex-wrap items-center gap-4 border-[rgb(var(--border))] border-b px-6 py-4">
+        <button
+          className="brutalist-button"
           onClick={() => setShowPresets(!showPresets)}
-          style={{
-            padding: '0.5rem 1rem',
-            backgroundColor: 'rgb(var(--surface-1))',
-            border: '1px solid rgb(var(--border))',
-            color: 'rgb(var(--text-primary))',
-            cursor: 'pointer',
-            fontFamily: 'monospace',
-          }}
         >
           {showPresets ? 'Hide' : 'Show'} Presets
         </button>
-        
+
         {savedAnimations.length > 0 && (
           <select
+            className="brutalist-input"
             onChange={(e) => {
-              const animation = savedAnimations.find(a => a.name === e.target.value);
-              if (animation) setSelectedAnimation(animation.frames);
-            }}
-            style={{
-              padding: '0.5rem',
-              backgroundColor: 'rgb(var(--surface-1))',
-              border: '1px solid rgb(var(--border))',
-              color: 'rgb(var(--text-primary))',
-              fontFamily: 'monospace',
+              const animation = savedAnimations.find(
+                (a) => a.name === e.target.value
+              )
+              if (animation) {
+                setSelectedAnimation(animation.frames)
+                setEditorKey((prev) => prev + 1)
+              }
             }}
           >
             <option value="">Load saved animation...</option>
-            {savedAnimations.map(a => (
-              <option key={a.name} value={a.name}>{a.name}</option>
+            {savedAnimations.map((a) => (
+              <option key={a.name} value={a.name}>
+                {a.name}
+              </option>
             ))}
           </select>
         )}
@@ -99,48 +86,17 @@ export default function AsciiPage() {
 
       {/* Presets Grid */}
       {showPresets && (
-        <div style={{
-          padding: '2rem',
-          display: 'grid',
-          gridTemplateColumns: 'repeat(auto-fill, minmax(200px, 1fr))',
-          gap: '1rem',
-          borderBottom: '1px solid rgb(var(--border))',
-        }}>
-          {presetList.map(preset => (
+        <div className="grid grid-cols-2 gap-4 border-[rgb(var(--border))] border-b p-6 md:grid-cols-3 lg:grid-cols-4">
+          {presetList.map((preset) => (
             <button
+              className="brutalist-card flex flex-col items-center gap-3 p-4 transition-all duration-200 hover:border-[rgb(var(--accent-1))]"
               key={preset.name}
-              onClick={() => setSelectedAnimation(preset.generator())}
-              style={{
-                padding: '1rem',
-                backgroundColor: 'rgb(var(--surface-1))',
-                border: '1px solid rgb(var(--border))',
-                cursor: 'pointer',
-                transition: 'all 0.2s ease',
-                display: 'flex',
-                flexDirection: 'column',
-                alignItems: 'center',
-                gap: '0.5rem',
-              }}
-              onMouseEnter={(e) => {
-                e.currentTarget.style.borderColor = 'rgb(var(--accent-1))';
-                e.currentTarget.style.backgroundColor = 'rgb(var(--surface-2))';
-              }}
-              onMouseLeave={(e) => {
-                e.currentTarget.style.borderColor = 'rgb(var(--border))';
-                e.currentTarget.style.backgroundColor = 'rgb(var(--surface-1))';
-              }}
+              onClick={() => handlePresetSelect(preset.generator())}
             >
-              <div style={{
-                width: '100%',
-                height: '80px',
-                overflow: 'hidden',
-                backgroundColor: 'rgb(var(--background-start))',
-                border: '1px solid rgb(var(--border))',
-                padding: '0.25rem',
-              }}>
+              <div className="h-20 w-full overflow-hidden rounded border border-[rgb(var(--border))] bg-[rgb(var(--background-start))] p-1">
                 <AsciiEngine
-                  frames={preset.generator().slice(0, 5)}
                   fps={4}
+                  frames={preset.generator().slice(0, 5)}
                   loop={true}
                   style={{
                     fontSize: '6px',
@@ -150,11 +106,7 @@ export default function AsciiPage() {
                   }}
                 />
               </div>
-              <div style={{
-                fontSize: '0.875rem',
-                color: 'rgb(var(--text-primary))',
-                fontFamily: 'monospace',
-              }}>
+              <div className="font-mono text-[rgb(var(--text-primary))] text-sm">
                 {preset.name}
               </div>
             </button>
@@ -162,74 +114,49 @@ export default function AsciiPage() {
         </div>
       )}
 
-      {/* Editor */}
-      <div style={{ padding: '2rem' }}>
+      {/* Editor Container with Scroll */}
+      <div
+        className="overflow-auto p-6"
+        style={{ maxHeight: 'calc(100vh - 200px)' }}
+      >
         <AsciiEditor
-          initialFrames={selectedAnimation.length > 0 ? selectedAnimation : undefined}
+          height={24}
+          initialFrames={
+            selectedAnimation.length > 0 ? selectedAnimation : undefined
+          }
+          key={editorKey}
           onSave={handleSave}
           width={80}
-          height={24}
         />
       </div>
 
       {/* Saved Animations */}
       {savedAnimations.length > 0 && (
-        <div style={{
-          padding: '2rem',
-          borderTop: '1px solid rgb(var(--border))',
-        }}>
-          <h3 style={{ 
-            fontSize: '1rem', 
-            marginBottom: '1rem',
-            color: 'rgb(var(--text-primary))',
-          }}>
+        <div className="border-[rgb(var(--border))] border-t p-6">
+          <h3 className="mb-4 font-bold font-mono text-[rgb(var(--text-primary))] text-base">
             Saved Animations
           </h3>
-          <div style={{
-            display: 'grid',
-            gridTemplateColumns: 'repeat(auto-fill, minmax(300px, 1fr))',
-            gap: '1rem',
-          }}>
+          <div className="grid grid-cols-1 gap-4 md:grid-cols-2 lg:grid-cols-3">
             {savedAnimations.map((animation, i) => (
-              <div 
-                key={i}
-                style={{
-                  padding: '1rem',
-                  backgroundColor: 'rgb(var(--surface-1))',
-                  border: '1px solid rgb(var(--border))',
-                }}
-              >
-                <div style={{
-                  display: 'flex',
-                  justifyContent: 'space-between',
-                  alignItems: 'center',
-                  marginBottom: '0.5rem',
-                }}>
-                  <span style={{ fontWeight: 'bold' }}>{animation.name}</span>
+              <div className="brutalist-card" key={i}>
+                <div className="mb-3 flex items-center justify-between">
+                  <span className="font-bold font-mono text-sm">
+                    {animation.name}
+                  </span>
                   <button
-                    onClick={() => setSelectedAnimation(animation.frames)}
-                    style={{
-                      padding: '0.25rem 0.5rem',
-                      backgroundColor: 'rgb(var(--surface-2))',
-                      border: '1px solid rgb(var(--border))',
-                      color: 'rgb(var(--text-primary))',
-                      cursor: 'pointer',
-                      fontFamily: 'monospace',
-                      fontSize: '0.75rem',
+                    className="brutalist-button px-2 py-1 text-xs"
+                    onClick={() => {
+                      setSelectedAnimation(animation.frames)
+                      setEditorKey((prev) => prev + 1)
                     }}
                   >
                     Load
                   </button>
                 </div>
-                <div style={{
-                  height: '100px',
-                  overflow: 'hidden',
-                  backgroundColor: 'rgb(var(--background-start))',
-                  padding: '0.5rem',
-                }}>
+                <div className="h-24 overflow-hidden rounded border border-[rgb(var(--border))] bg-[rgb(var(--background-start))] p-2">
                   <AsciiEngine
-                    frames={animation.frames}
                     fps={8}
+                    frames={animation.frames}
                     loop={true}
                     style={{
                       fontSize: '8px',
@@ -244,5 +171,5 @@ export default function AsciiPage() {
         </div>
       )}
     </div>
-  );
+  )
 }

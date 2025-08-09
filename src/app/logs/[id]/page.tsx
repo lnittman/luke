@@ -1,32 +1,32 @@
-'use client';
+'use client'
 
-import React, { useEffect, useState } from 'react';
-import { useParams } from 'next/navigation';
-import Link from 'next/link';
-import { format } from 'date-fns';
-import { DefaultLayout } from '@/components/shared/default-layout';
-import { FooterNavigation } from '@/components/shared/footer-navigation';
-import { BlockLoader } from '@/components/shared/block-loader';
-import { ThemeSwitcher } from '@/components/shared/theme-switcher';
-import styles from '@/components/shared/root.module.scss';
-import { ActivityCard } from '@/components/app/logs/activity-card';
-import type { ActivityLog, ActivityDetail } from '@/lib/db';
+import { format } from 'date-fns'
+import Link from 'next/link'
+import { useParams } from 'next/navigation'
+import React, { useEffect, useState } from 'react'
+import { ActivityCard } from '@/components/app/logs/activity-card'
+import { BlockLoader } from '@/components/shared/block-loader'
+import { DefaultLayout } from '@/components/shared/default-layout'
+import { FooterNavigation } from '@/components/shared/footer-navigation'
+import styles from '@/components/shared/root.module.scss'
+import { ThemeSwitcher } from '@/components/shared/theme-switcher'
+import type { ActivityDetail, ActivityLog } from '@/lib/db'
 
 interface LogData {
-  log: ActivityLog;
-  details: ActivityDetail[];
+  log: ActivityLog
+  details: ActivityDetail[]
 }
 
 export default function LogDetailPage() {
-  const params = useParams();
-  const [data, setData] = useState<LogData | null>(null);
-  const [loading, setLoading] = useState(true);
+  const params = useParams()
+  const [data, setData] = useState<LogData | null>(null)
+  const [loading, setLoading] = useState(true)
 
   useEffect(() => {
     if (params.id) {
-      fetchLogDetails(params.id as string);
+      fetchLogDetails(params.id as string)
     }
-  }, [params.id]);
+  }, [params.id])
 
   const fetchLogDetails = async (id: string) => {
     try {
@@ -34,15 +34,15 @@ export default function LogDetailPage() {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({ id }),
-      });
-      const data = await response.json();
-      setData(data);
+      })
+      const data = await response.json()
+      setData(data)
     } catch (error) {
-      console.error('Error fetching log details:', error);
+      console.error('Error fetching log details:', error)
     } finally {
-      setLoading(false);
+      setLoading(false)
     }
-  };
+  }
 
   if (loading) {
     return (
@@ -58,7 +58,14 @@ export default function LogDetailPage() {
         </div>
         <div className={styles.content}>
           <div className={styles.innerViewport}>
-            <div style={{ textAlign: 'center', padding: '2rem 0', fontFamily: 'monospace', opacity: 0.5 }}>
+            <div
+              style={{
+                textAlign: 'center',
+                padding: '2rem 0',
+                fontFamily: 'monospace',
+                opacity: 0.5,
+              }}
+            >
               loading log details...
             </div>
           </div>
@@ -69,7 +76,7 @@ export default function LogDetailPage() {
           </div>
         </div>
       </DefaultLayout>
-    );
+    )
   }
 
   if (!data) {
@@ -85,20 +92,32 @@ export default function LogDetailPage() {
           </div>
         </div>
         <div className={styles.content}>
-          <div className={styles.innerViewport} style={{ position: 'relative' }}>
-            <div style={{ 
-              position: 'sticky',
-              top: 0,
-              zIndex: 80,
-              marginBottom: '1.5rem',
-              padding: '0.75rem 24px',
-              borderBottom: '1px solid rgb(var(--border))',
-              backgroundColor: 'rgb(var(--background-start))'
-            }}>
-              <Link 
-                href="/logs" 
-                title="Back to logs"
+          <div
+            className={styles.innerViewport}
+            style={{ position: 'relative' }}
+          >
+            <div
+              style={{
+                position: 'sticky',
+                top: 0,
+                zIndex: 80,
+                marginBottom: '1.5rem',
+                padding: '0.75rem 24px',
+                borderBottom: '1px solid rgb(var(--border))',
+                backgroundColor: 'rgb(var(--background-start))',
+              }}
+            >
+              <Link
                 aria-label="Back to logs"
+                href="/logs"
+                onMouseEnter={(e) => {
+                  e.currentTarget.style.background = 'rgb(var(--surface-1))'
+                  e.currentTarget.style.borderColor = 'rgb(var(--accent-1))'
+                }}
+                onMouseLeave={(e) => {
+                  e.currentTarget.style.background = 'none'
+                  e.currentTarget.style.borderColor = 'rgb(var(--border))'
+                }}
                 style={{
                   display: 'inline-flex',
                   alignItems: 'center',
@@ -115,14 +134,7 @@ export default function LogDetailPage() {
                   fontSize: '1rem',
                   textDecoration: 'none',
                 }}
-                onMouseEnter={(e) => {
-                  e.currentTarget.style.background = 'rgb(var(--surface-1))';
-                  e.currentTarget.style.borderColor = 'rgb(var(--accent-1))';
-                }}
-                onMouseLeave={(e) => {
-                  e.currentTarget.style.background = 'none';
-                  e.currentTarget.style.borderColor = 'rgb(var(--border))';
-                }}
+                title="Back to logs"
               >
                 ←
               </Link>
@@ -140,25 +152,34 @@ export default function LogDetailPage() {
           </div>
         </div>
       </DefaultLayout>
-    );
+    )
   }
 
-  const { log, details } = data;
+  const { log, details } = data
 
   // Group details by type
-  const commits = details.filter(d => d.type === 'commit');
-  const pullRequests = details.filter(d => d.type === 'pr');
-  const issues = details.filter(d => d.type === 'issue');
-  const reviews = details.filter(d => d.type === 'review');
+  const commits = details.filter((d) => d.type === 'commit')
+  const pullRequests = details.filter((d) => d.type === 'pr')
+  const issues = details.filter((d) => d.type === 'issue')
+  const reviews = details.filter((d) => d.type === 'review')
 
   return (
     <DefaultLayout>
       <div className={styles.header}>
         <div className={styles.column}>
-          <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', width: '100%' }}>
+          <div
+            style={{
+              display: 'flex',
+              alignItems: 'center',
+              justifyContent: 'space-between',
+              width: '100%',
+            }}
+          >
             <div style={{ display: 'flex', alignItems: 'center', gap: '1rem' }}>
               <BlockLoader mode={2} />
-              <h1>{format(new Date(log.date), 'MMMM d, yyyy').toUpperCase()}</h1>
+              <h1>
+                {format(new Date(log.date), 'MMMM d, yyyy').toUpperCase()}
+              </h1>
             </div>
             <ThemeSwitcher />
           </div>
@@ -168,19 +189,28 @@ export default function LogDetailPage() {
       <div className={styles.content}>
         <div className={styles.innerViewport} style={{ position: 'relative' }}>
           {/* Back button - sticky under main header */}
-          <div style={{ 
-            position: 'sticky',
-            top: 0,
-            zIndex: 80,
-            marginBottom: '1.5rem',
-            padding: '0.75rem 24px',
-            borderBottom: '1px solid rgb(var(--border))',
-            backgroundColor: 'rgb(var(--background-start))'
-          }}>
-            <Link 
-              href="/logs" 
-              title="Back to logs"
+          <div
+            style={{
+              position: 'sticky',
+              top: 0,
+              zIndex: 80,
+              marginBottom: '1.5rem',
+              padding: '0.75rem 24px',
+              borderBottom: '1px solid rgb(var(--border))',
+              backgroundColor: 'rgb(var(--background-start))',
+            }}
+          >
+            <Link
               aria-label="Back to logs"
+              href="/logs"
+              onMouseEnter={(e) => {
+                e.currentTarget.style.background = 'rgb(var(--surface-1))'
+                e.currentTarget.style.borderColor = 'rgb(var(--accent-1))'
+              }}
+              onMouseLeave={(e) => {
+                e.currentTarget.style.background = 'none'
+                e.currentTarget.style.borderColor = 'rgb(var(--border))'
+              }}
               style={{
                 display: 'inline-flex',
                 alignItems: 'center',
@@ -197,14 +227,7 @@ export default function LogDetailPage() {
                 fontSize: '1rem',
                 textDecoration: 'none',
               }}
-              onMouseEnter={(e) => {
-                e.currentTarget.style.background = 'rgb(var(--surface-1))';
-                e.currentTarget.style.borderColor = 'rgb(var(--accent-1))';
-              }}
-              onMouseLeave={(e) => {
-                e.currentTarget.style.background = 'none';
-                e.currentTarget.style.borderColor = 'rgb(var(--border))';
-              }}
+              title="Back to logs"
             >
               ←
             </Link>
@@ -214,12 +237,14 @@ export default function LogDetailPage() {
           <div className={styles.row}>
             <div className={styles.column}>
               <h2>SUMMARY</h2>
-              <p style={{
-                fontFamily: 'monospace',
-                fontSize: '0.875rem',
-                lineHeight: 1.6,
-                color: 'rgb(var(--text-secondary))'
-              }}>
+              <p
+                style={{
+                  fontFamily: 'monospace',
+                  fontSize: '0.875rem',
+                  lineHeight: 1.6,
+                  color: 'rgb(var(--text-secondary))',
+                }}
+              >
                 {log.summary}
               </p>
             </div>
@@ -229,71 +254,113 @@ export default function LogDetailPage() {
           {log.metadata && (
             <div className={styles.row}>
               <div className={styles.column}>
-                <div style={{ 
-                  display: 'flex',
-                  gap: '0.75rem',
-                  alignItems: 'flex-end',
-                  fontFamily: 'monospace',
-                  fontSize: '0.875rem'
-                }}>
+                <div
+                  style={{
+                    display: 'flex',
+                    gap: '0.75rem',
+                    alignItems: 'flex-end',
+                    fontFamily: 'monospace',
+                    fontSize: '0.875rem',
+                  }}
+                >
                   {log.metadata.totalCommits !== undefined && (
-                    <div style={{
-                      padding: '0.75rem 1rem',
-                      backgroundColor: 'rgb(var(--surface-1))',
-                      border: '1px solid rgb(var(--border))',
-                      display: 'flex',
-                      alignItems: 'baseline',
-                      gap: '0.5rem'
-                    }}>
-                      <span style={{ fontSize: '1.25rem', fontWeight: 'bold', color: 'rgb(var(--accent-1))' }}>
+                    <div
+                      style={{
+                        padding: '0.75rem 1rem',
+                        backgroundColor: 'rgb(var(--surface-1))',
+                        border: '1px solid rgb(var(--border))',
+                        display: 'flex',
+                        alignItems: 'baseline',
+                        gap: '0.5rem',
+                      }}
+                    >
+                      <span
+                        style={{
+                          fontSize: '1.25rem',
+                          fontWeight: 'bold',
+                          color: 'rgb(var(--accent-1))',
+                        }}
+                      >
                         {log.metadata.totalCommits}
                       </span>
-                      <span style={{ opacity: 0.7, fontSize: '0.75rem' }}>commits</span>
+                      <span style={{ opacity: 0.7, fontSize: '0.75rem' }}>
+                        commits
+                      </span>
                     </div>
                   )}
                   {log.metadata.totalPullRequests !== undefined && (
-                    <div style={{
-                      padding: '0.75rem 1rem',
-                      backgroundColor: 'rgb(var(--surface-1))',
-                      border: '1px solid rgb(var(--border))',
-                      display: 'flex',
-                      alignItems: 'baseline',
-                      gap: '0.5rem'
-                    }}>
-                      <span style={{ fontSize: '1.25rem', fontWeight: 'bold', color: 'rgb(var(--accent-1))' }}>
+                    <div
+                      style={{
+                        padding: '0.75rem 1rem',
+                        backgroundColor: 'rgb(var(--surface-1))',
+                        border: '1px solid rgb(var(--border))',
+                        display: 'flex',
+                        alignItems: 'baseline',
+                        gap: '0.5rem',
+                      }}
+                    >
+                      <span
+                        style={{
+                          fontSize: '1.25rem',
+                          fontWeight: 'bold',
+                          color: 'rgb(var(--accent-1))',
+                        }}
+                      >
                         {log.metadata.totalPullRequests}
                       </span>
-                      <span style={{ opacity: 0.7, fontSize: '0.75rem' }}>PRs</span>
+                      <span style={{ opacity: 0.7, fontSize: '0.75rem' }}>
+                        PRs
+                      </span>
                     </div>
                   )}
                   {log.metadata.totalIssues !== undefined && (
-                    <div style={{
-                      padding: '0.75rem 1rem',
-                      backgroundColor: 'rgb(var(--surface-1))',
-                      border: '1px solid rgb(var(--border))',
-                      display: 'flex',
-                      alignItems: 'baseline',
-                      gap: '0.5rem'
-                    }}>
-                      <span style={{ fontSize: '1.25rem', fontWeight: 'bold', color: 'rgb(var(--accent-1))' }}>
+                    <div
+                      style={{
+                        padding: '0.75rem 1rem',
+                        backgroundColor: 'rgb(var(--surface-1))',
+                        border: '1px solid rgb(var(--border))',
+                        display: 'flex',
+                        alignItems: 'baseline',
+                        gap: '0.5rem',
+                      }}
+                    >
+                      <span
+                        style={{
+                          fontSize: '1.25rem',
+                          fontWeight: 'bold',
+                          color: 'rgb(var(--accent-1))',
+                        }}
+                      >
                         {log.metadata.totalIssues}
                       </span>
-                      <span style={{ opacity: 0.7, fontSize: '0.75rem' }}>issues</span>
+                      <span style={{ opacity: 0.7, fontSize: '0.75rem' }}>
+                        issues
+                      </span>
                     </div>
                   )}
                   {log.metadata.totalRepos !== undefined && (
-                    <div style={{
-                      padding: '0.75rem 1rem',
-                      backgroundColor: 'rgb(var(--surface-1))',
-                      border: '1px solid rgb(var(--border))',
-                      display: 'flex',
-                      alignItems: 'baseline',
-                      gap: '0.5rem'
-                    }}>
-                      <span style={{ fontSize: '1.25rem', fontWeight: 'bold', color: 'rgb(var(--accent-1))' }}>
+                    <div
+                      style={{
+                        padding: '0.75rem 1rem',
+                        backgroundColor: 'rgb(var(--surface-1))',
+                        border: '1px solid rgb(var(--border))',
+                        display: 'flex',
+                        alignItems: 'baseline',
+                        gap: '0.5rem',
+                      }}
+                    >
+                      <span
+                        style={{
+                          fontSize: '1.25rem',
+                          fontWeight: 'bold',
+                          color: 'rgb(var(--accent-1))',
+                        }}
+                      >
                         {log.metadata.totalRepos}
                       </span>
-                      <span style={{ opacity: 0.7, fontSize: '0.75rem' }}>repos</span>
+                      <span style={{ opacity: 0.7, fontSize: '0.75rem' }}>
+                        repos
+                      </span>
                     </div>
                   )}
                 </div>
@@ -314,34 +381,50 @@ export default function LogDetailPage() {
                         marginBottom: '0.5rem',
                         fontFamily: 'monospace',
                         fontSize: '0.875rem',
-                        color: 'rgb(var(--text-secondary))'
+                        color: 'rgb(var(--text-secondary))',
                       }}
                     >
                       → {bullet}
-                  </li>
-                ))}
-              </ul>
+                    </li>
+                  ))}
+                </ul>
+              </div>
             </div>
-          </div>
           )}
 
           {/* Activity Details */}
           {details.length > 0 && (
             <>
-              <div className={styles.row} style={{ paddingBottom: '0', borderBottom: '1px solid rgb(var(--border))' }}>
+              <div
+                className={styles.row}
+                style={{
+                  paddingBottom: '0',
+                  borderBottom: '1px solid rgb(var(--border))',
+                }}
+              >
                 <div className={styles.column}>
                   <h2 style={{ marginBottom: '0' }}>ACTIVITY DETAILS</h2>
                 </div>
               </div>
-              
+
               {/* Commits */}
               {commits.length > 0 && (
                 <div className={styles.row}>
                   <div className={styles.column}>
                     <h3>Commits ({commits.length})</h3>
-                    <div style={{ display: 'flex', flexDirection: 'column', gap: '1rem' }}>
+                    <div
+                      style={{
+                        display: 'flex',
+                        flexDirection: 'column',
+                        gap: '1rem',
+                      }}
+                    >
                       {commits.map((activity, i) => (
-                        <ActivityCard key={activity.id} activity={activity} index={i} />
+                        <ActivityCard
+                          activity={activity}
+                          index={i}
+                          key={activity.id}
+                        />
                       ))}
                     </div>
                   </div>
@@ -353,9 +436,19 @@ export default function LogDetailPage() {
                 <div className={styles.row}>
                   <div className={styles.column}>
                     <h3>Pull Requests ({pullRequests.length})</h3>
-                    <div style={{ display: 'flex', flexDirection: 'column', gap: '1rem' }}>
+                    <div
+                      style={{
+                        display: 'flex',
+                        flexDirection: 'column',
+                        gap: '1rem',
+                      }}
+                    >
                       {pullRequests.map((activity, i) => (
-                        <ActivityCard key={activity.id} activity={activity} index={i} />
+                        <ActivityCard
+                          activity={activity}
+                          index={i}
+                          key={activity.id}
+                        />
                       ))}
                     </div>
                   </div>
@@ -367,9 +460,19 @@ export default function LogDetailPage() {
                 <div className={styles.row}>
                   <div className={styles.column}>
                     <h3>Issues ({issues.length})</h3>
-                    <div style={{ display: 'flex', flexDirection: 'column', gap: '1rem' }}>
+                    <div
+                      style={{
+                        display: 'flex',
+                        flexDirection: 'column',
+                        gap: '1rem',
+                      }}
+                    >
                       {issues.map((activity, i) => (
-                        <ActivityCard key={activity.id} activity={activity} index={i} />
+                        <ActivityCard
+                          activity={activity}
+                          index={i}
+                          key={activity.id}
+                        />
                       ))}
                     </div>
                   </div>
@@ -381,9 +484,19 @@ export default function LogDetailPage() {
                 <div className={styles.row}>
                   <div className={styles.column}>
                     <h3>Reviews ({reviews.length})</h3>
-                    <div style={{ display: 'flex', flexDirection: 'column', gap: '1rem' }}>
+                    <div
+                      style={{
+                        display: 'flex',
+                        flexDirection: 'column',
+                        gap: '1rem',
+                      }}
+                    >
                       {reviews.map((activity, i) => (
-                        <ActivityCard key={activity.id} activity={activity} index={i} />
+                        <ActivityCard
+                          activity={activity}
+                          index={i}
+                          key={activity.id}
+                        />
                       ))}
                     </div>
                   </div>
@@ -393,29 +506,37 @@ export default function LogDetailPage() {
           )}
 
           {/* Languages */}
-          {log.metadata && log.metadata.languages && log.metadata.languages.length > 0 && (
-            <div className={styles.row}>
-              <div className={styles.column}>
-                <h2>LANGUAGES</h2>
-                <div style={{ display: 'flex', flexWrap: 'wrap', gap: '0.5rem' }}>
-                  {log.metadata.languages.map((lang: string) => (
-                    <span
-                      key={lang}
-                      style={{
-                        fontFamily: 'monospace',
-                        fontSize: '0.875rem',
-                        color: 'rgb(var(--text-secondary))'
-                      }}
-                    >
-                      {lang}
-                    </span>
-                  )).reduce((prev: any, curr: any, i: number) => 
-                    i === 0 ? [curr] : [...prev, ', ', curr], []
-                  )}
+          {log.metadata &&
+            log.metadata.languages &&
+            log.metadata.languages.length > 0 && (
+              <div className={styles.row}>
+                <div className={styles.column}>
+                  <h2>LANGUAGES</h2>
+                  <div
+                    style={{ display: 'flex', flexWrap: 'wrap', gap: '0.5rem' }}
+                  >
+                    {log.metadata.languages
+                      .map((lang: string) => (
+                        <span
+                          key={lang}
+                          style={{
+                            fontFamily: 'monospace',
+                            fontSize: '0.875rem',
+                            color: 'rgb(var(--text-secondary))',
+                          }}
+                        >
+                          {lang}
+                        </span>
+                      ))
+                      .reduce(
+                        (prev: any, curr: any, i: number) =>
+                          i === 0 ? [curr] : [...prev, ', ', curr],
+                        []
+                      )}
+                  </div>
                 </div>
               </div>
-            </div>
-          )}
+            )}
         </div>
       </div>
 
@@ -425,5 +546,5 @@ export default function LogDetailPage() {
         </div>
       </div>
     </DefaultLayout>
-  );
+  )
 }

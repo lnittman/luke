@@ -1,8 +1,8 @@
-import { DefaultLayout } from '@/components/shared/default-layout';
-import { FooterNavigation } from '@/components/shared/footer-navigation';
-import { BlockLoader } from '@/components/shared/block-loader';
-import { ThemeSwitcher } from '@/components/shared/theme-switcher';
-import styles from '@/components/shared/root.module.scss';
+import { BlockLoader } from '@/components/shared/block-loader'
+import { DefaultLayout } from '@/components/shared/default-layout'
+import { FooterNavigation } from '@/components/shared/footer-navigation'
+import styles from '@/components/shared/root.module.scss'
+import { ThemeSwitcher } from '@/components/shared/theme-switcher'
 
 export default function About() {
   return (
@@ -23,14 +23,16 @@ export default function About() {
             <div className={styles.column}>
               <h2>BACKGROUND</h2>
               <p>
-                started my career optimizing video transcoding engines at AWS Elemental,
-                then architected distributed systems for address intelligence at Amazon.
-                left big tech to try startups, where i could ship faster and own the full stack.
+                started my career optimizing video transcoding engines at AWS
+                Elemental, then architected distributed systems for address
+                intelligence at Amazon. left big tech to try startups, where i
+                could ship faster and own the full stack.
               </p>
               <p>
-                now i&apos;m enjoying building my own products. each one explores a simple question:
-                how do we make AI feel less like an infinite black box and more like
-                a useful friend? the answer is always in the implementation details.
+                now i&apos;m enjoying building my own products. each one
+                explores a simple question: how do we make AI feel less like an
+                infinite black box and more like a useful friend? the answer is
+                always in the implementation details.
               </p>
             </div>
           </div>
@@ -39,15 +41,18 @@ export default function About() {
             <div className={styles.column}>
               <h2>ENGINEERING PHILOSOPHY</h2>
               <p>
-                good constraints lead to better products. at Teenage Engineering,
-                designers use six colors and one typeface. at Braun, Dieter Rams outlined ten
-                fundamental principles of &apos;good design&apos;. i look to apply a similar rigor to AI systems—
-                strict rules that paradoxically create more freedom for users.
+                good constraints lead to better products. at Teenage
+                Engineering, designers use six colors and one typeface. at
+                Braun, Dieter Rams outlined ten fundamental principles of
+                &apos;good design&apos;. i look to apply a similar rigor to AI
+                systems— strict rules that paradoxically create more freedom for
+                users.
               </p>
               <p>
                 every technical decision is a design decision. the best products
-                feel inevitable, like they couldn&apos;t exist any other way. this
-                requires obsessing over details that most people never notice.
+                feel inevitable, like they couldn&apos;t exist any other way.
+                this requires obsessing over details that most people never
+                notice.
               </p>
             </div>
           </div>
@@ -60,7 +65,10 @@ export default function About() {
                 <li>semantic interfaces for content and knowledge</li>
                 <li>vector databases and embedding systems</li>
                 <li>making LLMs feel less like chatbots</li>
-                <li>MIDI generation/manipulation, audio synthesis, and real-time processing</li>
+                <li>
+                  MIDI generation/manipulation, audio synthesis, and real-time
+                  processing
+                </li>
                 <li>cross-platform native experiences (iOS/macOS/Web)</li>
                 <li>the intersection of taste and technology</li>
               </ul>
@@ -71,8 +79,19 @@ export default function About() {
             <div className={styles.column}>
               <h2>CONTACT</h2>
               <p>
-                Email: <a href="mailto:luke.nittmann@gmail.com">luke.nittmann@gmail.com</a><br />
-                GitHub: <a href="https://github.com/lnittman" target="_blank" rel="noopener noreferrer">@lnittman</a>
+                Email:{' '}
+                <a href="mailto:luke.nittmann@gmail.com">
+                  luke.nittmann@gmail.com
+                </a>
+                <br />
+                GitHub:{' '}
+                <a
+                  href="https://github.com/lnittman"
+                  rel="noopener noreferrer"
+                  target="_blank"
+                >
+                  @lnittman
+                </a>
               </p>
             </div>
           </div>
@@ -85,5 +104,5 @@ export default function About() {
         </div>
       </div>
     </DefaultLayout>
-  );
+  )
 }

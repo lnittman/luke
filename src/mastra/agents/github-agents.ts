@@ -1,15 +1,15 @@
-import { Agent } from '@mastra/core/agent';
-import { createOpenRouter } from '@openrouter/ai-sdk-provider';
-import { 
-  fetchUserActivityTool, 
-  fetchCommitDetailsTool, 
-  fetchRepoInfoTool 
-} from '../tools/github-tools';
+import { Agent } from '@mastra/core/agent'
+import { createOpenRouter } from '@openrouter/ai-sdk-provider'
+import {
+  fetchCommitDetailsTool,
+  fetchRepoInfoTool,
+  fetchUserActivityTool,
+} from '../tools/github-tools'
 
 // Initialize OpenRouter with Claude
 const openrouter = createOpenRouter({
   apiKey: process.env.OPENROUTER_API_KEY,
-});
+})
 
 export const commitAnalyzerAgent = new Agent({
   id: 'commit-analyzer',
@@ -25,8 +25,8 @@ export const commitAnalyzerAgent = new Agent({
   
   Focus on technical accuracy and provide meaningful insights about the development work.`,
   model: openrouter('anthropic/claude-3.5-sonnet'),
-  tools: {fetchCommitDetailsTool},
-});
+  tools: { fetchCommitDetailsTool },
+})
 
 export const activitySummarizerAgent = new Agent({
   id: 'activity-summarizer',
@@ -44,8 +44,8 @@ export const activitySummarizerAgent = new Agent({
   Focus on what was accomplished, not just what was done.
   Make it interesting and highlight the impact of the work.`,
   model: openrouter('anthropic/claude-3.5-sonnet'),
-  tools: {fetchUserActivityTool, fetchRepoInfoTool},
-});
+  tools: { fetchUserActivityTool, fetchRepoInfoTool },
+})
 
 export const repoAnalyzerAgent = new Agent({
   id: 'repo-analyzer',
@@ -61,5 +61,5 @@ export const repoAnalyzerAgent = new Agent({
   
   Be technical but accessible, providing insights that help understand the bigger picture.`,
   model: openrouter('anthropic/claude-3.5-sonnet'),
-  tools: {fetchRepoInfoTool},
-});
+  tools: { fetchRepoInfoTool },
+})

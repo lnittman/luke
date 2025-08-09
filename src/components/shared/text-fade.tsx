@@ -1,38 +1,40 @@
-'use client';
+'use client'
 
-import { CSSProperties, ReactNode } from 'react';
+import type { CSSProperties, ReactNode } from 'react'
 
 interface TextFadeProps {
-  children: ReactNode;
-  className?: string;
-  style?: CSSProperties;
-  direction?: 'right' | 'left' | 'both';
-  fadeWidth?: string;
+  children: ReactNode
+  className?: string
+  style?: CSSProperties
+  direction?: 'right' | 'left' | 'both'
+  fadeWidth?: string
 }
 
-export function TextFade({ 
-  children, 
-  className = '', 
+export function TextFade({
+  children,
+  className = '',
   style = {},
   direction = 'right',
-  fadeWidth = '2rem'
+  fadeWidth = '2rem',
 }: TextFadeProps) {
   return (
-    <div 
+    <div
       className={className}
       style={{
         position: 'relative',
         overflow: 'hidden',
-        ...style
+        ...style,
       }}
     >
-      <div style={{ 
-        whiteSpace: 'nowrap',
-        overflow: 'hidden'
-      }}>
+      <div
+        style={{
+          whiteSpace: 'nowrap',
+          overflow: 'hidden',
+        }}
+      >
         {children}
       </div>
-      
+
       {/* Right fade */}
       {(direction === 'right' || direction === 'both') && (
         <div
@@ -42,12 +44,13 @@ export function TextFade({
             right: 0,
             bottom: 0,
             width: fadeWidth,
-            background: `linear-gradient(to right, transparent, rgb(var(--background-start)))`,
-            pointerEvents: 'none'
+            background:
+              'linear-gradient(to right, transparent, rgb(var(--background-start)))',
+            pointerEvents: 'none',
           }}
         />
       )}
-      
+
       {/* Left fade */}
       {(direction === 'left' || direction === 'both') && (
         <div
@@ -57,11 +60,12 @@ export function TextFade({
             left: 0,
             bottom: 0,
             width: fadeWidth,
-            background: `linear-gradient(to left, transparent, rgb(var(--background-start)))`,
-            pointerEvents: 'none'
+            background:
+              'linear-gradient(to left, transparent, rgb(var(--background-start)))',
+            pointerEvents: 'none',
           }}
         />
       )}
     </div>
-  );
+  )
 }

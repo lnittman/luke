@@ -1,13 +1,13 @@
-'use client';
+'use client'
 
-import React from 'react';
-import { motion, Variants } from 'framer-motion';
+import { motion, type Variants } from 'framer-motion'
+import React from 'react'
 
 interface TextEffectProps {
-  text: string;
-  preset?: 'slide' | 'fade' | 'blur' | 'scale';
-  delay?: number;
-  className?: string;
+  text: string
+  preset?: 'slide' | 'fade' | 'blur' | 'scale'
+  delay?: number
+  className?: string
 }
 
 const containerVariants: Variants = {
@@ -16,7 +16,7 @@ const containerVariants: Variants = {
     opacity: 1,
     transition: { staggerChildren: 0.03, delayChildren: i * 0.04 },
   }),
-};
+}
 
 const childVariants: { [key: string]: Variants } = {
   slide: {
@@ -50,35 +50,32 @@ const childVariants: { [key: string]: Variants } = {
       transition: { type: 'spring', damping: 15, stiffness: 300 },
     },
   },
-};
+}
 
-export function TextEffect({ 
-  text, 
+export function TextEffect({
+  text,
   preset = 'slide',
   delay = 0,
-  className = '' 
+  className = '',
 }: TextEffectProps) {
-  const words = text.split(' ');
-  const variants = childVariants[preset];
+  const words = text.split(' ')
+  const variants = childVariants[preset]
 
   return (
     <motion.span
       className={className}
-      variants={containerVariants}
-      initial="hidden"
-      whileInView="visible"
-      viewport={{ once: true, amount: 0.8 }}
       custom={delay}
+      initial="hidden"
+      variants={containerVariants}
+      viewport={{ once: true, amount: 0.8 }}
+      whileInView="visible"
     >
       {words.map((word, i) => (
-        <motion.span
-          key={i}
-          className="inline-block"
-          variants={variants}
-        >
-          {word}{i < words.length - 1 && '\u00A0'}
+        <motion.span className="inline-block" key={i} variants={variants}>
+          {word}
+          {i < words.length - 1 && '\u00A0'}
         </motion.span>
       ))}
     </motion.span>
-  );
+  )
 }

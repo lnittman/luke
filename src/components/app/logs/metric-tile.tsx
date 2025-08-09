@@ -1,16 +1,28 @@
-'use client';
+'use client'
 
-import React from 'react';
+import React from 'react'
 
 interface MetricTileProps {
-  value: number;
-  label: string;
-  color?: string;
+  value: number
+  label: string
+  color?: string
 }
 
-export function MetricTile({ value, label, color = 'var(--text-secondary)' }: MetricTileProps) {
+export function MetricTile({
+  value,
+  label,
+  color = 'var(--text-secondary)',
+}: MetricTileProps) {
   return (
     <div
+      onMouseEnter={(e) => {
+        e.currentTarget.style.transform = 'translateY(-2px)'
+        e.currentTarget.style.borderColor = `rgb(${color})`
+      }}
+      onMouseLeave={(e) => {
+        e.currentTarget.style.transform = 'translateY(0)'
+        e.currentTarget.style.borderColor = 'rgb(var(--border))'
+      }}
       style={{
         display: 'flex',
         flexDirection: 'column',
@@ -24,31 +36,27 @@ export function MetricTile({ value, label, color = 'var(--text-secondary)' }: Me
         transition: 'all 0.2s ease',
         cursor: 'default',
       }}
-      onMouseEnter={(e) => {
-        e.currentTarget.style.transform = 'translateY(-2px)';
-        e.currentTarget.style.borderColor = `rgb(${color})`;
-      }}
-      onMouseLeave={(e) => {
-        e.currentTarget.style.transform = 'translateY(0)';
-        e.currentTarget.style.borderColor = 'rgb(var(--border))';
-      }}
     >
-      <span style={{ 
-        fontSize: '2rem', 
-        fontWeight: 'bold',
-        color: `rgb(${color})`,
-        lineHeight: 1,
-      }}>
+      <span
+        style={{
+          fontSize: '2rem',
+          fontWeight: 'bold',
+          color: `rgb(${color})`,
+          lineHeight: 1,
+        }}
+      >
         {value}
       </span>
-      <span style={{ 
-        fontSize: '0.75rem',
-        color: 'rgb(var(--text-secondary))',
-        marginTop: '0.25rem',
-        textTransform: 'uppercase',
-      }}>
+      <span
+        style={{
+          fontSize: '0.75rem',
+          color: 'rgb(var(--text-secondary))',
+          marginTop: '0.25rem',
+          textTransform: 'uppercase',
+        }}
+      >
         {label}
       </span>
     </div>
-  );
+  )
 }

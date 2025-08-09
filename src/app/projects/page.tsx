@@ -1,10 +1,10 @@
-import { DefaultLayout } from '@/components/shared/default-layout';
-import { FooterNavigation } from '@/components/shared/footer-navigation';
-import { BlockLoader } from '@/components/shared/block-loader';
-import { ThemeSwitcher } from '@/components/shared/theme-switcher';
-import { ProjectAccordion } from '@/components/app/projects/project-accordion';
-import { PROJECTS } from '@/constants/projects';
-import styles from '@/components/shared/root.module.scss';
+import { ProjectAccordion } from '@/components/app/projects/project-accordion'
+import { BlockLoader } from '@/components/shared/block-loader'
+import { DefaultLayout } from '@/components/shared/default-layout'
+import { FooterNavigation } from '@/components/shared/footer-navigation'
+import styles from '@/components/shared/root.module.scss'
+import { ThemeSwitcher } from '@/components/shared/theme-switcher'
+import { PROJECTS } from '@/constants/projects'
 
 export default function Projects() {
   return (
@@ -18,14 +18,16 @@ export default function Projects() {
           <ThemeSwitcher />
         </div>
       </div>
-      
+
       <div className={styles.content}>
         <div className={styles.innerViewport}>
           {/* intro removed per spec */}
-          
+
           {/* Projects list with full-width items */}
           <div className="space-y-0" style={{ marginTop: '0' }}>
-            {PROJECTS.filter(p => !['voet','helios','cards'].includes(p.id)).map((project) => (
+            {PROJECTS.filter(
+              (p) => !['voet', 'helios', 'cards'].includes(p.id)
+            ).map((project) => (
               <ProjectAccordion key={project.id} project={project} />
             ))}
           </div>
@@ -38,5 +40,5 @@ export default function Projects() {
         </div>
       </div>
     </DefaultLayout>
-  );
+  )
 }

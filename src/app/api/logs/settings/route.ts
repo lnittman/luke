@@ -1,11 +1,6 @@
-import { NextRequest, NextResponse } from 'next/server';
-import { 
-  db, 
-  repositories, 
-  analysisRules, 
-  userPreferences 
-} from '@/lib/db';
-import { eq, and } from 'drizzle-orm';
+import { and, eq } from 'drizzle-orm'
+import { type NextRequest, NextResponse } from 'next/server'
+import { analysisRules, db, repositories, userPreferences } from '@/lib/db'
 
 // GET settings
 export async function GET(request: NextRequest) {
@@ -18,40 +13,40 @@ export async function GET(request: NextRequest) {
         focusAreas: ['architecture', 'performance', 'security', 'code-quality'],
         aiVerbosity: 'detailed',
       },
-    });
+    })
   }
 
   try {
-    const username = process.env.GITHUB_USERNAME || 'lnittman';
-    
+    const username = process.env.GITHUB_USERNAME || 'lnittman'
+
     // Get user preferences
     const [prefs] = await db
       .select()
       .from(userPreferences)
       .where(eq(userPreferences.userId, username))
-      .limit(1);
-    
+      .limit(1)
+
     // Get all repositories
     const repos = await db
       .select()
       .from(repositories)
-      .orderBy(repositories.fullName);
-    
+      .orderBy(repositories.fullName)
+
     // Get all rules grouped by repository
     const allRules = await db
       .select()
       .from(analysisRules)
-      .orderBy(analysisRules.priority);
-    
+      .orderBy(analysisRules.priority)
+
     // Group rules by repository
-    const rulesMap: Record<string, any[]> = {};
+    const rulesMap: Record<string, any[]> = {}
     for (const rule of allRules) {
       if (!rulesMap[rule.repositoryId]) {
-        rulesMap[rule.repositoryId] = [];
+        rulesMap[rule.repositoryId] = []
       }
-      rulesMap[rule.repositoryId].push(rule);
+      rulesMap[rule.repositoryId].push(rule)
     }
-    
+
     return NextResponse.json({
       repositories: repos,
       rules: rulesMap,
@@ -60,34 +55,34 @@ export async function GET(request: NextRequest) {
         focusAreas: ['architecture', 'performance', 'security', 'code-quality'],
         aiVerbosity: 'detailed',
       },
-    });
+    })
   } catch (error) {
-    console.error('Error loading settings:', error);
+    console.error('Error loading settings:', error)
     return NextResponse.json(
       { error: 'Failed to load settings' },
       { status: 500 }
-    );
+    )
   }
 }
 
 // POST save settings
 export async function POST(request: NextRequest) {
   if (process.env.NODE_ENV === 'production') {
-    return NextResponse.json({ success: true });
+    return NextResponse.json({ success: true })
   }
 
   try {
-    const { repositories: repos, rules, preferences } = await request.json();
-    const username = process.env.GITHUB_USERNAME || 'lnittman';
-    
+    const { repositories: repos, rules, preferences } = await request.json()
+    const username = process.env.GITHUB_USERNAME || 'lnittman'
+
     // Save user preferences
     if (preferences) {
       const existing = await db
         .select()
         .from(userPreferences)
         .where(eq(userPreferences.userId, username))
-        .limit(1);
-      
+        .limit(1)
+
       if (existing.length > 0) {
         await db
           .update(userPreferences)
@@ -95,25 +90,23 @@ export async function POST(request: NextRequest) {
             ...preferences,
             updatedAt: new Date(),
           })
-          .where(eq(userPreferences.userId, username));
+          .where(eq(userPreferences.userId, username))
       } else {
-        await db
-          .insert(userPreferences)
-          .values({
-            userId: username,
-            ...preferences,
-          });
+        await db.insert(userPreferences).values({
+          userId: username,
+          ...preferences,
+        })
       }
     }
-    
+
     // Update repositories
     if (repos) {
       for (const repo of repos) {
         if (repo.id.startsWith('temp-')) {
           // Skip temporary repos - they should be added via the repository endpoint
-          continue;
+          continue
         }
-        
+
         await db
           .update(repositories)
           .set({
@@ -121,26 +114,27 @@ export async function POST(request: NextRequest) {
             analysisDepth: repo.analysisDepth,
             updatedAt: new Date(),
           })
-          .where(eq(repositories.id, repo.id));
+          .where(eq(repositories.id, repo.id))
       }
     }
-    
+
     // Update rules
     if (rules) {
       for (const [repoId, repoRules] of Object.entries(rules)) {
         // Delete existing rules for this repo
         await db
           .delete(analysisRules)
-          .where(eq(analysisRules.repositoryId, repoId));
-        
+          .where(eq(analysisRules.repositoryId, repoId))
+
         // Insert new rules
         if (Array.isArray(repoRules) && repoRules.length > 0) {
-          const validRules = (repoRules as any[]).filter(r => r.ruleContent?.trim());
-          
+          const validRules = (repoRules as any[]).filter((r) =>
+            r.ruleContent?.trim()
+          )
+
           if (validRules.length > 0) {
-            await db
-              .insert(analysisRules)
-              .values(validRules.map(rule => ({
+            await db.insert(analysisRules).values(
+              validRules.map((rule) => ({
                 repositoryId: repoId,
                 name: rule.name,
                 description: rule.description,
@@ -150,18 +144,19 @@ export async function POST(request: NextRequest) {
                 ruleContent: rule.ruleContent,
                 applyTo: rule.applyTo,
                 metadata: rule.metadata,
-              })));
+              }))
+            )
           }
         }
       }
     }
-    
-    return NextResponse.json({ success: true });
+
+    return NextResponse.json({ success: true })
   } catch (error) {
-    console.error('Error saving settings:', error);
+    console.error('Error saving settings:', error)
     return NextResponse.json(
       { error: 'Failed to save settings' },
       { status: 500 }
-    );
+    )
   }
 }

@@ -1,4 +1,4 @@
-import type { Metadata, Viewport } from 'next';
+import type { Metadata, Viewport } from 'next'
 
 export const viewport: Viewport = {
   width: 'device-width',
@@ -7,7 +7,7 @@ export const viewport: Viewport = {
   minimumScale: 1,
   maximumScale: 1,
   userScalable: false,
-};
+}
 
 export const metadata: Metadata = {
   title: 'luke nittmann',
@@ -15,7 +15,7 @@ export const metadata: Metadata = {
   appleWebApp: {
     capable: true,
     statusBarStyle: 'default',
-    title: 'luke nittmann'
+    title: 'luke nittmann',
   },
   // Next.js will automatically link the manifest from src/app/manifest.ts
   icons: {
@@ -39,4 +39,4 @@ export const metadata: Metadata = {
       },
     ],
   },
-};
+}

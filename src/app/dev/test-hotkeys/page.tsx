@@ -1,26 +1,29 @@
-'use client';
+'use client'
 
-import React from 'react';
-import { FooterNavigation } from '@/components/shared/footer-navigation';
+import React from 'react'
+import { FooterNavigation } from '@/components/shared/footer-navigation'
 
 export default function TestHotkeys() {
-  const [keyPresses, setKeyPresses] = React.useState<string[]>([]);
+  const [keyPresses, setKeyPresses] = React.useState<string[]>([])
 
   React.useEffect(() => {
     const handleKeyPress = (event: KeyboardEvent) => {
-      setKeyPresses(prev => [...prev.slice(-9), `Key: ${event.key}, Code: ${event.code}`]);
-    };
+      setKeyPresses((prev) => [
+        ...prev.slice(-9),
+        `Key: ${event.key}, Code: ${event.code}`,
+      ])
+    }
 
-    window.addEventListener('keydown', handleKeyPress);
-    return () => window.removeEventListener('keydown', handleKeyPress);
-  }, []);
+    window.addEventListener('keydown', handleKeyPress)
+    return () => window.removeEventListener('keydown', handleKeyPress)
+  }, [])
 
   return (
     <div className="min-h-screen p-8">
-      <h1 className="text-2xl font-bold mb-4">Hotkey Test Page</h1>
-      
+      <h1 className="mb-4 font-bold text-2xl">Hotkey Test Page</h1>
+
       <div className="mb-8">
-        <h2 className="text-xl mb-2">Instructions:</h2>
+        <h2 className="mb-2 text-xl">Instructions:</h2>
         <ul className="list-disc pl-6">
           <li>Press h - should navigate to Home</li>
           <li>Press a - should navigate to About</li>
@@ -30,14 +33,12 @@ export default function TestHotkeys() {
       </div>
 
       <div className="mb-8">
-        <h2 className="text-xl mb-2">Last 10 Key Presses:</h2>
-        <div className="font-mono text-sm bg-black/10 p-4 rounded">
+        <h2 className="mb-2 text-xl">Last 10 Key Presses:</h2>
+        <div className="rounded bg-black/10 p-4 font-mono text-sm">
           {keyPresses.length === 0 ? (
             <p className="text-gray-500">No keys pressed yet...</p>
           ) : (
-            keyPresses.map((key, index) => (
-              <div key={index}>{key}</div>
-            ))
+            keyPresses.map((key, index) => <div key={index}>{key}</div>)
           )}
         </div>
       </div>
@@ -46,5 +47,5 @@ export default function TestHotkeys() {
         <FooterNavigation />
       </div>
     </div>
-  );
+  )
 }

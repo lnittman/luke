@@ -1,8 +1,8 @@
 'use client'
 
-import { useEffect, useState } from 'react'
 import { notFound } from 'next/navigation'
 import { Link } from 'next-view-transitions'
+import { useEffect, useState } from 'react'
 
 export default function InstructionsPage() {
   if (process.env.NODE_ENV !== 'development') {
@@ -28,14 +28,14 @@ export default function InstructionsPage() {
 
   return (
     <div className="flex flex-col gap-4">
-      <form onSubmit={handleSubmit} className="flex flex-col gap-2">
+      <form className="flex flex-col gap-2" onSubmit={handleSubmit}>
         <textarea
           className="border p-2 text-black"
-          value={value}
           onChange={(e) => setValue(e.target.value)}
           rows={5}
+          value={value}
         />
-        <button type="submit" className="bg-blue-500 text-white px-2 py-1">
+        <button className="bg-blue-500 px-2 py-1 text-white" type="submit">
           Save
         </button>
       </form>

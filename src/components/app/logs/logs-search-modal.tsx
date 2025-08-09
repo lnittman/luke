@@ -1,95 +1,110 @@
-'use client';
+'use client'
 
-import { useEffect, useCallback, useState, useMemo } from 'react';
-import { useAtom } from 'jotai';
-import { useRouter } from 'next/navigation';
-import { motion, AnimatePresence } from 'framer-motion';
-import { logsSearchModalOpenAtom, logsSearchQueryAtom, logsSearchSelectedIndexAtom } from '@/atoms/logs-search';
-import { format } from 'date-fns';
-import type { ActivityLog } from '@/lib/db';
-import { TextFade } from '@/components/shared/text-fade';
-import { AsciiEngine } from '@/lib/ascii-engine';
-import searchBackgroundFrames from '@/lib/ascii-engine/data/search-background.json';
+import { format } from 'date-fns'
+import { AnimatePresence, motion } from 'framer-motion'
+import { useAtom } from 'jotai'
+import { useRouter } from 'next/navigation'
+import { useCallback, useEffect, useMemo, useState } from 'react'
+import {
+  logsSearchModalOpenAtom,
+  logsSearchQueryAtom,
+  logsSearchSelectedIndexAtom,
+} from '@/atoms/logs-search'
+import { TextFade } from '@/components/shared/text-fade'
+import { AsciiEngine } from '@/lib/ascii-engine'
+import searchBackgroundFrames from '@/lib/ascii-engine/data/search-background.json' with {
+  type: 'json',
+}
+import type { ActivityLog } from '@/lib/db'
 
 interface LogsSearchModalProps {
-  logs?: ActivityLog[];
+  logs?: ActivityLog[]
 }
 
 export function LogsSearchModal({ logs = [] }: LogsSearchModalProps) {
-  const router = useRouter();
-  const [isOpen, setIsOpen] = useAtom(logsSearchModalOpenAtom);
-  const [query, setQuery] = useAtom(logsSearchQueryAtom);
-  const [selectedIndex, setSelectedIndex] = useAtom(logsSearchSelectedIndexAtom);
-  const [isMobile, setIsMobile] = useState(false);
-  
+  const router = useRouter()
+  const [isOpen, setIsOpen] = useAtom(logsSearchModalOpenAtom)
+  const [query, setQuery] = useAtom(logsSearchQueryAtom)
+  const [selectedIndex, setSelectedIndex] = useAtom(logsSearchSelectedIndexAtom)
+  const [isMobile, setIsMobile] = useState(false)
+
   // Detect mobile (kept for potential styling tweaks)
   useEffect(() => {
-    const checkMobile = () => setIsMobile(window.innerWidth < 768);
-    checkMobile();
-    window.addEventListener('resize', checkMobile);
-    return () => window.removeEventListener('resize', checkMobile);
-  }, []);
+    const checkMobile = () => setIsMobile(window.innerWidth < 768)
+    checkMobile()
+    window.addEventListener('resize', checkMobile)
+    return () => window.removeEventListener('resize', checkMobile)
+  }, [])
 
   const normalizedLogs = useMemo(() => {
     return (logs || []).map((log) => ({
       id: String(log.id),
       date: new Date(log.date as any),
       summary: log.summary || '',
-    }));
-  }, [logs]);
+    }))
+  }, [logs])
 
   const filteredLogs = useMemo(() => {
-    const q = query.toLowerCase();
-    return normalizedLogs.filter((log) =>
-      log.summary.toLowerCase().includes(q)
-    );
-  }, [normalizedLogs, query]);
+    const q = query.toLowerCase()
+    return normalizedLogs.filter((log) => log.summary.toLowerCase().includes(q))
+  }, [normalizedLogs, query])
 
-  const handleSelect = useCallback((id: string) => {
-    router.push(`/logs/${id}`);
-    setIsOpen(false);
-    setQuery('');
-    setSelectedIndex(0);
-  }, [router, setIsOpen, setQuery, setSelectedIndex]);
+  const handleSelect = useCallback(
+    (id: string) => {
+      router.push(`/logs/${id}`)
+      setIsOpen(false)
+      setQuery('')
+      setSelectedIndex(0)
+    },
+    [router, setIsOpen, setQuery, setSelectedIndex]
+  )
 
   useEffect(() => {
     const handleKeyDown = (e: KeyboardEvent) => {
-      if (!isOpen) return;
+      if (!isOpen) return
 
       switch (e.key) {
         case 'Escape':
-          setIsOpen(false);
-          setQuery('');
-          setSelectedIndex(0);
-          break;
+          setIsOpen(false)
+          setQuery('')
+          setSelectedIndex(0)
+          break
         case 'ArrowDown':
-          e.preventDefault();
-          setSelectedIndex(prev => 
+          e.preventDefault()
+          setSelectedIndex((prev) =>
             prev < filteredLogs.length - 1 ? prev + 1 : 0
-          );
-          break;
+          )
+          break
         case 'ArrowUp':
-          e.preventDefault();
-          setSelectedIndex(prev => 
+          e.preventDefault()
+          setSelectedIndex((prev) =>
             prev > 0 ? prev - 1 : filteredLogs.length - 1
-          );
-          break;
+          )
+          break
         case 'Enter':
-          e.preventDefault();
+          e.preventDefault()
           if (filteredLogs[selectedIndex]) {
-            handleSelect(filteredLogs[selectedIndex].id);
+            handleSelect(filteredLogs[selectedIndex].id)
           }
-          break;
+          break
       }
-    };
+    }
 
-    window.addEventListener('keydown', handleKeyDown);
-    return () => window.removeEventListener('keydown', handleKeyDown);
-  }, [isOpen, selectedIndex, filteredLogs, setIsOpen, setQuery, setSelectedIndex, handleSelect]);
+    window.addEventListener('keydown', handleKeyDown)
+    return () => window.removeEventListener('keydown', handleKeyDown)
+  }, [
+    isOpen,
+    selectedIndex,
+    filteredLogs,
+    setIsOpen,
+    setQuery,
+    setSelectedIndex,
+    handleSelect,
+  ])
 
   useEffect(() => {
-    setSelectedIndex(0);
-  }, [query, setSelectedIndex]);
+    setSelectedIndex(0)
+  }, [query, setSelectedIndex])
 
   const resultsList = (
     <>
@@ -106,7 +121,10 @@ export function LogsSearchModal({ logs = [] }: LogsSearchModalProps) {
               flexDirection: 'column',
               alignItems: 'flex-start',
               gap: '0.25rem',
-              background: index === selectedIndex ? 'rgb(var(--surface-1))' : 'transparent',
+              background:
+                index === selectedIndex
+                  ? 'rgb(var(--surface-1))'
+                  : 'transparent',
               border: 'none',
               borderBottom: '1px solid rgb(var(--border))',
               cursor: 'pointer',
@@ -116,60 +134,107 @@ export function LogsSearchModal({ logs = [] }: LogsSearchModalProps) {
               textAlign: 'left',
             }}
           >
-            <div style={{ display: 'flex', justifyContent: 'space-between', width: '100%', alignItems: 'center' }}>
+            <div
+              style={{
+                display: 'flex',
+                justifyContent: 'space-between',
+                width: '100%',
+                alignItems: 'center',
+              }}
+            >
               <TextFade style={{ fontSize: '0.875rem', maxWidth: '80%' }}>
                 {log.summary || 'untitled'}
               </TextFade>
-              <div style={{ fontSize: '0.75rem', color: 'rgb(var(--text-secondary))' }}>
+              <div
+                style={{
+                  fontSize: '0.75rem',
+                  color: 'rgb(var(--text-secondary))',
+                }}
+              >
                 {format(log.date, 'LLL d').toLowerCase()}
               </div>
             </div>
           </button>
         ))
       ) : query ? (
-        <div style={{ padding: '2rem', textAlign: 'center', fontFamily: 'monospace', fontSize: '0.875rem', color: 'rgb(var(--text-secondary))' }}>
+        <div
+          style={{
+            padding: '2rem',
+            textAlign: 'center',
+            fontFamily: 'monospace',
+            fontSize: '0.875rem',
+            color: 'rgb(var(--text-secondary))',
+          }}
+        >
           no logs found
         </div>
       ) : (
-        <div style={{ padding: '2rem', textAlign: 'center', fontFamily: 'monospace', fontSize: '0.875rem', color: 'rgb(var(--text-secondary))' }}>
+        <div
+          style={{
+            padding: '2rem',
+            textAlign: 'center',
+            fontFamily: 'monospace',
+            fontSize: '0.875rem',
+            color: 'rgb(var(--text-secondary))',
+          }}
+        >
           start typing to search logs
         </div>
       )}
     </>
-  );
+  )
 
   return (
     <AnimatePresence>
       {isOpen && (
         <>
           <motion.div
-            initial={{ opacity: 1 }}
             animate={{ opacity: 1 }}
-            exit={{ opacity: 1 }}
-            transition={{ duration: 0 }}
             className="fixed z-[100]"
+            exit={{ opacity: 1 }}
+            initial={{ opacity: 1 }}
             onClick={() => {
-              setIsOpen(false);
-              setQuery('');
-              setSelectedIndex(0);
+              setIsOpen(false)
+              setQuery('')
+              setSelectedIndex(0)
             }}
-            style={{ 
+            style={{
               background: 'rgb(var(--background-start))',
               top: '5rem', // Below header (header height + border)
               left: 0,
               right: 0,
               bottom: '5rem', // Above footer
             }}
+            transition={{ duration: 0 }}
           >
             {/* top-aligned search UI */}
-            <div className="relative z-[101] flex h-full w-full flex-col" onClick={(e) => e.stopPropagation()}>
-              <div id="logs-search-bar" style={{ padding: '1rem', display: 'flex', alignItems: 'center', gap: '0.75rem' }}>
+            <div
+              className="relative z-[101] flex h-full w-full flex-col"
+              onClick={(e) => e.stopPropagation()}
+            >
+              <div
+                id="logs-search-bar"
+                style={{
+                  padding: '1rem',
+                  display: 'flex',
+                  alignItems: 'center',
+                  gap: '0.75rem',
+                }}
+              >
                 {/* Back button */}
                 <button
                   onClick={() => {
-                    setIsOpen(false);
-                    setQuery('');
-                    setSelectedIndex(0);
+                    setIsOpen(false)
+                    setQuery('')
+                    setSelectedIndex(0)
+                  }}
+                  onMouseEnter={(e) => {
+                    e.currentTarget.style.background = 'rgb(var(--surface-1))'
+                    e.currentTarget.style.borderColor = 'rgb(var(--accent-1))'
+                  }}
+                  onMouseLeave={(e) => {
+                    e.currentTarget.style.background = 'none'
+                    e.currentTarget.style.borderColor = 'rgb(var(--border))'
                   }}
                   style={{
                     display: 'flex',
@@ -187,35 +252,27 @@ export function LogsSearchModal({ logs = [] }: LogsSearchModalProps) {
                     fontSize: '1rem',
                     flexShrink: 0,
                   }}
-                  onMouseEnter={(e) => {
-                    e.currentTarget.style.background = 'rgb(var(--surface-1))';
-                    e.currentTarget.style.borderColor = 'rgb(var(--accent-1))';
-                  }}
-                  onMouseLeave={(e) => {
-                    e.currentTarget.style.background = 'none';
-                    e.currentTarget.style.borderColor = 'rgb(var(--border))';
-                  }}
                 >
                   ←
                 </button>
-                
+
                 {/* Search input with clear button */}
-                <div style={{
-                  position: 'relative',
-                  flex: 1,
-                  display: 'flex',
-                  alignItems: 'center',
-                  border: '1px solid rgb(var(--border))',
-                  padding: '0 0.75rem',
-                  height: '2.5rem',
-                  backgroundColor: 'rgb(var(--surface-1))'
-                }}>
+                <div
+                  style={{
+                    position: 'relative',
+                    flex: 1,
+                    display: 'flex',
+                    alignItems: 'center',
+                    border: '1px solid rgb(var(--border))',
+                    padding: '0 0.75rem',
+                    height: '2.5rem',
+                    backgroundColor: 'rgb(var(--surface-1))',
+                  }}
+                >
                   <input
-                    type="text"
-                    value={query}
+                    autoFocus
                     onChange={(e) => setQuery(e.target.value)}
                     placeholder="start typing to search"
-                    autoFocus
                     style={{
                       width: '100%',
                       background: 'transparent',
@@ -226,10 +283,18 @@ export function LogsSearchModal({ logs = [] }: LogsSearchModalProps) {
                       color: 'rgb(var(--text-primary))',
                       paddingRight: query ? '2rem' : '0',
                     }}
+                    type="text"
+                    value={query}
                   />
                   {query && (
                     <button
                       onClick={() => setQuery('')}
+                      onMouseEnter={(e) => {
+                        e.currentTarget.style.opacity = '0.7'
+                      }}
+                      onMouseLeave={(e) => {
+                        e.currentTarget.style.opacity = '1'
+                      }}
                       style={{
                         position: 'absolute',
                         right: '0.5rem',
@@ -247,33 +312,36 @@ export function LogsSearchModal({ logs = [] }: LogsSearchModalProps) {
                         fontSize: '1rem',
                         padding: 0,
                       }}
-                      onMouseEnter={(e) => {
-                        e.currentTarget.style.opacity = '0.7';
-                      }}
-                      onMouseLeave={(e) => {
-                        e.currentTarget.style.opacity = '1';
-                      }}
                     >
                       ×
                     </button>
                   )}
                 </div>
               </div>
-              <div style={{ flex: 1, overflowY: 'auto', borderTop: '1px solid rgb(var(--border))' }}>
+              <div
+                style={{
+                  flex: 1,
+                  overflowY: 'auto',
+                  borderTop: '1px solid rgb(var(--border))',
+                }}
+              >
                 {resultsList}
               </div>
             </div>
 
             {/* ASCII background animation */}
-            <div className="pointer-events-none absolute inset-0" style={{ 
-              display: 'flex',
-              alignItems: 'center',
-              justifyContent: 'center',
-              padding: '4rem',
-            }}>
+            <div
+              className="pointer-events-none absolute inset-0"
+              style={{
+                display: 'flex',
+                alignItems: 'center',
+                justifyContent: 'center',
+                padding: '4rem',
+              }}
+            >
               <AsciiEngine
-                frames={searchBackgroundFrames}
                 fps={8}
+                frames={searchBackgroundFrames}
                 loop={true}
                 style={{
                   fontSize: '12px',
@@ -289,5 +357,5 @@ export function LogsSearchModal({ logs = [] }: LogsSearchModalProps) {
         </>
       )}
     </AnimatePresence>
-  );
+  )
 }

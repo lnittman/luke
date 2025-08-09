@@ -3,6 +3,6 @@ export function formatTime(date: Date): string {
     hour: 'numeric',
     minute: '2-digit',
     hour12: true,
-    timeZone: 'America/Los_Angeles'
-  });
+    timeZone: 'America/Los_Angeles',
+  })
 }

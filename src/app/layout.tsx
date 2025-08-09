@@ -1,26 +1,26 @@
-import { Analytics } from '@vercel/analytics/next';
-import { ModalProvider } from '@/lib/modal-context';
-import { ThemeProvider } from '@/components/shared/theme-provider';
-import { ThemeColorProvider } from '@/components/shared/theme-color-provider';
-import { SearchModal } from '@/components/shared/search-modal';
-import { KeyboardShortcuts } from '@/components/shared/keyboard-shortcuts';
-import { viewport, metadata } from './metadata';
+import { Analytics } from '@vercel/analytics/next'
+import { KeyboardShortcuts } from '@/components/shared/keyboard-shortcuts'
+import { SearchModal } from '@/components/shared/search-modal'
+import { ThemeColorProvider } from '@/components/shared/theme-color-provider'
+import { ThemeProvider } from '@/components/shared/theme-provider'
+import { ModalProvider } from '@/lib/modal-context'
+import { metadata, viewport } from './metadata'
 
-import '../styles/global.scss';
+import '../styles/global.scss'
 
 export default function RootLayout({
   children,
 }: {
-  children: React.ReactNode;
+  children: React.ReactNode
 }) {
   return (
     <html lang="en" suppressHydrationWarning>
       <head>
-        <meta name="apple-mobile-web-app-capable" content="yes" />
-        <meta name="apple-mobile-web-app-status-bar-style" content="default" />
-        <meta name="apple-mobile-web-app-title" content="luke nittmann" />
-        <meta name="mobile-web-app-capable" content="yes" />
-        <meta name="theme-color" content="#f5f4f2" />
+        <meta content="yes" name="apple-mobile-web-app-capable" />
+        <meta content="default" name="apple-mobile-web-app-status-bar-style" />
+        <meta content="luke nittmann" name="apple-mobile-web-app-title" />
+        <meta content="yes" name="mobile-web-app-capable" />
+        <meta content="#f5f4f2" name="theme-color" />
         <script
           dangerouslySetInnerHTML={{
             __html: `
@@ -38,8 +38,8 @@ export default function RootLayout({
         <ThemeProvider
           attribute="data-theme"
           defaultTheme="light"
-          enableSystem={false}
           disableTransitionOnChange
+          enableSystem={false}
         >
           <ThemeColorProvider />
           <ModalProvider>
@@ -51,7 +51,7 @@ export default function RootLayout({
         </ThemeProvider>
       </body>
     </html>
-  );
+  )
 }
 
-export { viewport, metadata };
+export { viewport, metadata }

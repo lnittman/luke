@@ -1,11 +1,11 @@
-'use client';
+'use client'
 
-import React, { useState, useEffect } from 'react';
-import classNames from 'classnames';
-import styles from './block-loader.module.scss';
+import classNames from 'classnames'
+import React, { useEffect, useState } from 'react'
+import styles from './block-loader.module.scss'
 
 interface BlockLoaderProps {
-  mode?: number;
+  mode?: number
 }
 
 const SEQUENCES = [
@@ -30,26 +30,24 @@ const SEQUENCES = [
   // Mode 9: Rotating circles
   ['◐', '◓', '◑', '◒'],
   // Mode 10: Half circles
-  ['◠', '◡', '◟', '◞']
-];
+  ['◠', '◡', '◟', '◞'],
+]
 
 export function BlockLoader({ mode = 0 }: BlockLoaderProps) {
-  const [index, setIndex] = useState(0);
-  const sequence = SEQUENCES[mode % SEQUENCES.length];
+  const [index, setIndex] = useState(0)
+  const sequence = SEQUENCES[mode % SEQUENCES.length]
 
   useEffect(() => {
     const interval = setInterval(() => {
-      setIndex((prev) => (prev + 1) % sequence.length);
-    }, 100);
+      setIndex((prev) => (prev + 1) % sequence.length)
+    }, 100)
 
-    return () => clearInterval(interval);
-  }, [sequence.length]);
+    return () => clearInterval(interval)
+  }, [sequence.length])
 
   return (
     <div className={styles.container}>
-      <span className={styles.character}>
-        {sequence[index]}
-      </span>
+      <span className={styles.character}>{sequence[index]}</span>
     </div>
-  );
+  )
 }

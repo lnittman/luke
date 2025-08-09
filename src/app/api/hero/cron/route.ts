@@ -7,5 +7,7 @@ import { generateHeroText } from '@/lib/utils/hero'
 export async function GET() {
   // Redirect to the main /api/hero endpoint
   // This avoids using updateHeroFile which requires Node.js modules
-  return NextResponse.redirect(new URL('/api/hero', process.env.VERCEL_URL || 'http://localhost:3000'))
+  return NextResponse.redirect(
+    new URL('/api/hero', process.env.VERCEL_URL || 'http://localhost:3000')
+  )
 }

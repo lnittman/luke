@@ -1,37 +1,37 @@
-'use client';
+'use client'
 
-import { useEffect, useRef } from 'react';
-import fireData from './fire-data.json';
+import { useEffect, useRef } from 'react'
+import fireData from './fire-data.json' with { type: 'json' }
 
 interface FireAsciiProps {
-  className?: string;
+  className?: string
 }
 
 export function FireAscii({ className = '' }: FireAsciiProps) {
-  const ref = useRef<HTMLPreElement>(null);
+  const ref = useRef<HTMLPreElement>(null)
 
   useEffect(() => {
-    let index = 0;
-    
+    let index = 0
+
     const interval = setInterval(() => {
-      if (!ref.current) return;
-      
-      ref.current.textContent = fireData[index];
-      index++;
-      
+      if (!ref.current) return
+
+      ref.current.textContent = fireData[index]
+      index++
+
       // Loop back to start after going through all frames
       if (index >= fireData.length) {
-        index = 0;
+        index = 0
       }
-    }, 100); // Faster animation for fire effect
-    
-    return () => clearInterval(interval);
-  }, []);
+    }, 100) // Faster animation for fire effect
+
+    return () => clearInterval(interval)
+  }, [])
 
   return (
     <pre
-      ref={ref}
       className={className}
+      ref={ref}
       style={{
         fontFamily: 'monospace',
         fontSize: '0.875rem',
@@ -43,5 +43,5 @@ export function FireAscii({ className = '' }: FireAsciiProps) {
     >
       {fireData[0]}
     </pre>
-  );
+  )
 }

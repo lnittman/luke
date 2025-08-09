@@ -1,20 +1,20 @@
-import Link from 'next/link';
-import { redirect } from 'next/navigation';
-import { DefaultLayout } from '@/components/shared/default-layout';
-import { FooterNavigation } from '@/components/shared/footer-navigation';
-import { BlockLoader } from '@/components/shared/block-loader';
-import { ThemeSwitcher } from '@/components/shared/theme-switcher';
-import styles from '@/components/shared/root.module.scss';
-import { SettingsClient } from './settings-client';
-import { getSettings } from './actions';
+import Link from 'next/link'
+import { redirect } from 'next/navigation'
+import { BlockLoader } from '@/components/shared/block-loader'
+import { DefaultLayout } from '@/components/shared/default-layout'
+import { FooterNavigation } from '@/components/shared/footer-navigation'
+import styles from '@/components/shared/root.module.scss'
+import { ThemeSwitcher } from '@/components/shared/theme-switcher'
+import { getSettings } from './actions'
+import { SettingsClient } from './settings-client'
 
 export default async function LogsSettingsPage() {
   // Redirect to 404 in production
   if (process.env.NODE_ENV === 'production') {
-    redirect('/404');
+    redirect('/404')
   }
 
-  const settings = await getSettings();
+  const settings = await getSettings()
 
   return (
     <DefaultLayout>
@@ -31,19 +31,20 @@ export default async function LogsSettingsPage() {
       <div className={styles.content}>
         <div className={styles.innerViewport}>
           {/* Page header with back button */}
-          <div style={{ 
-            display: 'flex', 
-            justifyContent: 'space-between', 
-            alignItems: 'center',
-            marginBottom: '1.5rem',
-            paddingBottom: '1rem',
-            borderBottom: '1px solid rgb(var(--border))'
-          }}>
-            <Link 
-              href="/logs" 
-              title="Back to logs"
+          <div
+            style={{
+              display: 'flex',
+              justifyContent: 'space-between',
+              alignItems: 'center',
+              marginBottom: '1.5rem',
+              paddingBottom: '1rem',
+              borderBottom: '1px solid rgb(var(--border))',
+            }}
+          >
+            <Link
               aria-label="Back to logs"
               className="back-button"
+              href="/logs"
               style={{
                 display: 'inline-flex',
                 alignItems: 'center',
@@ -60,6 +61,7 @@ export default async function LogsSettingsPage() {
                 fontSize: '1rem',
                 textDecoration: 'none',
               }}
+              title="Back to logs"
             >
               ←
             </Link>
@@ -75,5 +77,5 @@ export default async function LogsSettingsPage() {
         </div>
       </div>
     </DefaultLayout>
-  );
+  )
 }

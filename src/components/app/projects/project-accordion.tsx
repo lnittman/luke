@@ -1,117 +1,186 @@
-'use client';
+'use client'
 
-import React, { useState } from 'react';
-import classNames from 'classnames';
-import styles from './project-accordion.module.scss';
-import { Project } from '@/constants/projects';
-import { SineMoodRingIcon } from './sine-mood-ring-icon';
+import classNames from 'classnames'
+import React, { useState } from 'react'
+import type { Project } from '@/constants/projects'
+import styles from './project-accordion.module.scss'
+import { SineMoodRingIcon } from './sine-mood-ring-icon'
 
 interface ProjectAccordionProps {
-  project: Project;
-  defaultOpen?: boolean;
+  project: Project
+  defaultOpen?: boolean
 }
 
-export function ProjectAccordion({ project, defaultOpen = false }: ProjectAccordionProps) {
-  const [isOpen, setIsOpen] = useState(defaultOpen);
-  
-  // Determine the primary link
-  const primaryLink = project.appUrl || project.demoUrl || project.sourceUrl;
-  const linkText = 'VIEW';
+export function ProjectAccordion({
+  project,
+  defaultOpen = false,
+}: ProjectAccordionProps) {
+  const [isOpen, setIsOpen] = useState(defaultOpen)
 
-  const renderTechByCategory = (items: (string | { name: string; documentationUrl: string })[]) => {
+  // Determine the primary link
+  const primaryLink = project.appUrl || project.demoUrl || project.sourceUrl
+  const linkText = 'VIEW'
+
+  const renderTechByCategory = (
+    items: (string | { name: string; documentationUrl: string })[]
+  ) => {
     const categories = {
       frontend: [] as typeof items,
       backend: [] as typeof items,
       database: [] as typeof items,
       services: [] as typeof items,
-      tools: [] as typeof items
-    };
+      tools: [] as typeof items,
+    }
 
-    items.forEach(item => {
-      const name = typeof item === 'string' ? item : item.name;
-      const lowerName = name.toLowerCase();
-      
-      if (lowerName.includes('react') || lowerName.includes('next') || lowerName.includes('vue') || 
-          lowerName.includes('svelte') || lowerName.includes('angular') || lowerName.includes('tailwind') ||
-          lowerName.includes('css') || lowerName.includes('html') || lowerName.includes('sass') ||
-          lowerName.includes('framer') || lowerName.includes('motion') || lowerName.includes('ui') ||
-          lowerName.includes('preact') || lowerName.includes('swiftui') || lowerName.includes('tone.js') ||
-          lowerName.includes('web audio') || lowerName.includes('canvas') || lowerName.includes('webgl')) {
-        categories.frontend.push(item);
-      } else if (lowerName.includes('fastapi') || lowerName.includes('express') || lowerName.includes('node') ||
-                 lowerName.includes('python') || lowerName.includes('rust') || lowerName.includes('swift') ||
-                 lowerName.includes('go') || lowerName.includes('java') || lowerName.includes('api') ||
-                 lowerName.includes('server') || lowerName.includes('mastra') || lowerName.includes('websocket') ||
-                 lowerName.includes('sse') || lowerName.includes('avfoundation') || lowerName.includes('midikit')) {
-        categories.backend.push(item);
-      } else if (lowerName.includes('postgres') || lowerName.includes('mysql') || lowerName.includes('sqlite') ||
-                 lowerName.includes('redis') || lowerName.includes('prisma') || lowerName.includes('database') ||
-                 lowerName.includes('neon') || lowerName.includes('supabase') || lowerName.includes('firebase') ||
-                 lowerName.includes('pgvector') || lowerName.includes('sqlmodel') || lowerName.includes('swiftdata')) {
-        categories.database.push(item);
-      } else if (lowerName.includes('vercel') || lowerName.includes('railway') || lowerName.includes('docker') ||
-                 lowerName.includes('aws') || lowerName.includes('gcp') || lowerName.includes('azure') ||
-                 lowerName.includes('clerk') || lowerName.includes('auth') || lowerName.includes('stripe') ||
-                 lowerName.includes('openai') || lowerName.includes('anthropic') || lowerName.includes('gemini') ||
-                 lowerName.includes('vertex') || lowerName.includes('openrouter') || lowerName.includes('liveblocks') ||
-                 lowerName.includes('posthog') || lowerName.includes('sentry') || lowerName.includes('cloud')) {
-        categories.services.push(item);
+    items.forEach((item) => {
+      const name = typeof item === 'string' ? item : item.name
+      const lowerName = name.toLowerCase()
+
+      if (
+        lowerName.includes('react') ||
+        lowerName.includes('next') ||
+        lowerName.includes('vue') ||
+        lowerName.includes('svelte') ||
+        lowerName.includes('angular') ||
+        lowerName.includes('tailwind') ||
+        lowerName.includes('css') ||
+        lowerName.includes('html') ||
+        lowerName.includes('sass') ||
+        lowerName.includes('framer') ||
+        lowerName.includes('motion') ||
+        lowerName.includes('ui') ||
+        lowerName.includes('preact') ||
+        lowerName.includes('swiftui') ||
+        lowerName.includes('tone.js') ||
+        lowerName.includes('web audio') ||
+        lowerName.includes('canvas') ||
+        lowerName.includes('webgl')
+      ) {
+        categories.frontend.push(item)
+      } else if (
+        lowerName.includes('fastapi') ||
+        lowerName.includes('express') ||
+        lowerName.includes('node') ||
+        lowerName.includes('python') ||
+        lowerName.includes('rust') ||
+        lowerName.includes('swift') ||
+        lowerName.includes('go') ||
+        lowerName.includes('java') ||
+        lowerName.includes('api') ||
+        lowerName.includes('server') ||
+        lowerName.includes('mastra') ||
+        lowerName.includes('websocket') ||
+        lowerName.includes('sse') ||
+        lowerName.includes('avfoundation') ||
+        lowerName.includes('midikit')
+      ) {
+        categories.backend.push(item)
+      } else if (
+        lowerName.includes('postgres') ||
+        lowerName.includes('mysql') ||
+        lowerName.includes('sqlite') ||
+        lowerName.includes('redis') ||
+        lowerName.includes('prisma') ||
+        lowerName.includes('database') ||
+        lowerName.includes('neon') ||
+        lowerName.includes('supabase') ||
+        lowerName.includes('firebase') ||
+        lowerName.includes('pgvector') ||
+        lowerName.includes('sqlmodel') ||
+        lowerName.includes('swiftdata')
+      ) {
+        categories.database.push(item)
+      } else if (
+        lowerName.includes('vercel') ||
+        lowerName.includes('railway') ||
+        lowerName.includes('docker') ||
+        lowerName.includes('aws') ||
+        lowerName.includes('gcp') ||
+        lowerName.includes('azure') ||
+        lowerName.includes('clerk') ||
+        lowerName.includes('auth') ||
+        lowerName.includes('stripe') ||
+        lowerName.includes('openai') ||
+        lowerName.includes('anthropic') ||
+        lowerName.includes('gemini') ||
+        lowerName.includes('vertex') ||
+        lowerName.includes('openrouter') ||
+        lowerName.includes('liveblocks') ||
+        lowerName.includes('posthog') ||
+        lowerName.includes('sentry') ||
+        lowerName.includes('cloud')
+      ) {
+        categories.services.push(item)
       } else {
-        categories.tools.push(item);
+        categories.tools.push(item)
       }
-    });
+    })
 
     return (
       <>
-        {Object.entries(categories).map(([category, items]) => 
-          items.length > 0 && (
-            <div key={category} className={styles.techCategory}>
-              <em>{category}:</em> {items.map((item, idx) => (
-                <span key={idx}>
-                  {typeof item === 'string' ? item : (
-                    <a 
-                      href={item.documentationUrl} 
-                      target="_blank" 
-                      rel="noopener noreferrer"
-                    >
-                      {item.name}
-                    </a>
-                  )}
-                  {idx < items.length - 1 && ', '}
-                </span>
-              ))}
-            </div>
-          )
+        {Object.entries(categories).map(
+          ([category, items]) =>
+            items.length > 0 && (
+              <div className={styles.techCategory} key={category}>
+                <em>{category}:</em>{' '}
+                {items.map((item, idx) => (
+                  <span key={idx}>
+                    {typeof item === 'string' ? (
+                      item
+                    ) : (
+                      <a
+                        href={item.documentationUrl}
+                        rel="noopener noreferrer"
+                        target="_blank"
+                      >
+                        {item.name}
+                      </a>
+                    )}
+                    {idx < items.length - 1 && ', '}
+                  </span>
+                ))}
+              </div>
+            )
         )}
       </>
-    );
-  };
+    )
+  }
 
   return (
     <div className={styles.accordion}>
       <button
+        aria-expanded={isOpen}
         className={styles.header}
         onClick={() => setIsOpen(!isOpen)}
-        aria-expanded={isOpen}
       >
         <div className={styles.titleWrapper}>
           <div className={styles.titleLine}>
             <span className={styles.emoji}>
               {project.id === 'sine' ? (
                 <SineMoodRingIcon />
-              ) : ['loops', 'arbor', 'voet', 'ther', 'webs-xyz', 'react-llm'].includes(project.id) ? (
-                <img src={`/assets/${project.id === 'webs-xyz' ? 'webs' : project.id}.png`} alt={`${project.name} logo`} />
+              ) : [
+                  'loops',
+                  'arbor',
+                  'voet',
+                  'ther',
+                  'webs-xyz',
+                  'react-llm',
+                ].includes(project.id) ? (
+                <img
+                  alt={`${project.name} logo`}
+                  src={`/assets/${project.id === 'webs-xyz' ? 'webs' : project.id}.png`}
+                />
               ) : (
                 project.emoji
               )}
             </span>
             {primaryLink ? (
-              <a 
-                href={primaryLink} 
-                target="_blank" 
-                rel="noopener noreferrer"
+              <a
                 className={styles.name}
+                href={primaryLink}
                 onClick={(e) => e.stopPropagation()}
+                rel="noopener noreferrer"
+                target="_blank"
               >
                 {project.name}
               </a>
@@ -122,16 +191,14 @@ export function ProjectAccordion({ project, defaultOpen = false }: ProjectAccord
           <div className={styles.description}>{project.description}</div>
         </div>
         <div className={styles.actions}>
-          <span className={styles.arrow}>
-            {isOpen ? '▾' : '▸'}
-          </span>
+          <span className={styles.arrow}>{isOpen ? '▾' : '▸'}</span>
         </div>
       </button>
-      
+
       {isOpen && (
         <div className={styles.content}>
           {Object.entries(project.content).map(([key, section]) => (
-            <div key={key} className={styles.section}>
+            <div className={styles.section} key={key}>
               <h3>{section.title.toUpperCase()}</h3>
               {key === 'tech' ? (
                 <div className={styles.techGrid}>
@@ -141,11 +208,13 @@ export function ProjectAccordion({ project, defaultOpen = false }: ProjectAccord
                 <ul>
                   {section.items.map((item, idx) => (
                     <li key={idx}>
-                      {typeof item === 'string' ? item : (
-                        <a 
-                          href={item.documentationUrl} 
-                          target="_blank" 
+                      {typeof item === 'string' ? (
+                        item
+                      ) : (
+                        <a
+                          href={item.documentationUrl}
                           rel="noopener noreferrer"
+                          target="_blank"
                         >
                           {item.name}
                         </a>
@@ -159,5 +228,5 @@ export function ProjectAccordion({ project, defaultOpen = false }: ProjectAccord
         </div>
       )}
     </div>
-  );
+  )
 }

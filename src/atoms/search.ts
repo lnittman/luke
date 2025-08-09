@@ -1,5 +1,5 @@
-import { atom } from 'jotai';
+import { atom } from 'jotai'
 
-export const searchModalOpenAtom = atom(false);
-export const searchQueryAtom = atom('');
-export const searchSelectedIndexAtom = atom(0);
+export const searchModalOpenAtom = atom(false)
+export const searchQueryAtom = atom('')
+export const searchSelectedIndexAtom = atom(0)

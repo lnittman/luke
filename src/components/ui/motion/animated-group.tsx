@@ -1,13 +1,13 @@
-'use client';
+'use client'
 
-import React from 'react';
-import { motion, Variants } from 'framer-motion';
+import { motion, type Variants } from 'framer-motion'
+import React from 'react'
 
 interface AnimatedGroupProps {
-  children: React.ReactNode;
-  preset?: 'fade' | 'slide' | 'scale' | 'stagger';
-  className?: string;
-  staggerDelay?: number;
+  children: React.ReactNode
+  preset?: 'fade' | 'slide' | 'scale' | 'stagger'
+  className?: string
+  staggerDelay?: number
 }
 
 const presets: { [key: string]: { container: Variants; item: Variants } } = {
@@ -88,24 +88,24 @@ const presets: { [key: string]: { container: Variants; item: Variants } } = {
       },
     },
   },
-};
+}
 
-export function AnimatedGroup({ 
-  children, 
+export function AnimatedGroup({
+  children,
   preset = 'fade',
   className = '',
-  staggerDelay = 0.1
+  staggerDelay = 0.1,
 }: AnimatedGroupProps) {
-  const { container, item } = presets[preset];
-  const childrenArray = React.Children.toArray(children);
+  const { container, item } = presets[preset]
+  const childrenArray = React.Children.toArray(children)
 
   return (
     <motion.div
       className={className}
-      variants={container}
       initial="hidden"
-      whileInView="visible"
+      variants={container}
       viewport={{ once: true, amount: 0.3 }}
+      whileInView="visible"
     >
       {childrenArray.map((child, index) => (
         <motion.div key={index} variants={item}>
@@ -113,5 +113,5 @@ export function AnimatedGroup({
         </motion.div>
       ))}
     </motion.div>
-  );
+  )
 }

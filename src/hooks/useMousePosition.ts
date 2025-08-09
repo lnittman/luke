@@ -1,26 +1,26 @@
-'use client';
+'use client'
 
-import { useEffect } from 'react';
-import { useSetAtom, useAtomValue } from 'jotai';
-import { mousePositionAtom } from '@/store/atoms';
+import { useAtomValue, useSetAtom } from 'jotai'
+import { useEffect } from 'react'
+import { mousePositionAtom } from '@/store/atoms'
 
 export function useMousePosition() {
-  const setMousePosition = useSetAtom(mousePositionAtom);
+  const setMousePosition = useSetAtom(mousePositionAtom)
 
   useEffect(() => {
     const handleMouseMove = (e: MouseEvent) => {
-      setMousePosition({ x: e.clientX, y: e.clientY });
-    };
+      setMousePosition({ x: e.clientX, y: e.clientY })
+    }
 
-    window.addEventListener('mousemove', handleMouseMove);
+    window.addEventListener('mousemove', handleMouseMove)
 
     return () => {
-      window.removeEventListener('mousemove', handleMouseMove);
-    };
-  }, [setMousePosition]);
+      window.removeEventListener('mousemove', handleMouseMove)
+    }
+  }, [setMousePosition])
 }
 
 // Hook to get current mouse position
 export function useCurrentMousePosition() {
-  return useAtomValue(mousePositionAtom);
+  return useAtomValue(mousePositionAtom)
 }
