@@ -249,14 +249,18 @@ export default function LogsPage() {
               </div>
             </div>
           ) : (
-            <div className="space-y-0" style={{ marginTop: '0' }}>
+            <div style={{ marginTop: 0 }}>
               {logs.map((log) => (
                 <Link key={log.id} href={`/logs/${log.id}`} style={{ textDecoration: 'none', color: 'inherit', display: 'block' }}>
                   <div style={{
+                    minHeight: '7rem',
                     padding: '1rem 24px',
-                    borderBottom: '1px solid rgb(var(--border))',
+                    borderBottom: '0.5px solid rgb(var(--border))',
                     cursor: 'pointer',
                     transition: 'opacity 0.2s ease',
+                    display: 'flex',
+                    flexDirection: 'column',
+                    justifyContent: 'space-between',
                   }}
                   onMouseEnter={(e) => {
                     (e.currentTarget as HTMLDivElement).style.opacity = '0.8';
@@ -265,45 +269,120 @@ export default function LogsPage() {
                     (e.currentTarget as HTMLDivElement).style.opacity = '1';
                   }}
                   >
-                    <div style={{ 
-                      display: 'flex', 
-                      justifyContent: 'space-between', 
-                      alignItems: 'center',
-                      width: '100%',
-                    }}>
-                      <TextFade
-                        style={{ 
-                          fontFamily: 'monospace',
-                          fontSize: '0.875rem',
-                          color: 'rgb(var(--text-primary))',
-                          maxWidth: '70%',
-                        }}
-                      >
-                        {log.summary}
-                      </TextFade>
-                      
-                      {/* Date and Stats */}
+                    {/* Title and content snippet */}
+                    <div style={{ flex: 1 }}>
                       <div style={{ 
-                        display: 'flex', 
-                        gap: '1rem', 
-                        alignItems: 'center',
+                        fontFamily: 'monospace',
+                        fontSize: '0.875rem',
+                        fontWeight: '500',
+                        color: 'rgb(var(--text-primary))',
+                        marginBottom: '0.5rem',
+                      }}>
+                        {log.title || log.summary?.split('.')[0] || 'daily activity log'}
+                      </div>
+                      <div style={{ 
                         fontFamily: 'monospace',
                         fontSize: '0.75rem',
                         color: 'rgb(var(--text-secondary))',
-                        flexShrink: 0,
+                        opacity: 0.7,
+                        lineHeight: 1.4,
+                        overflow: 'hidden',
+                        display: '-webkit-box',
+                        WebkitLineClamp: 2,
+                        WebkitBoxOrient: 'vertical',
                       }}>
-                        <span>{format(new Date(log.date), 'MMM d').toLowerCase()}</span>
-                        {log.metadata && (
-                          <>
-                            {log.metadata?.totalCommits && log.metadata.totalCommits > 0 && (
-                              <span>{log.metadata.totalCommits}c</span>
-                            )}
-                            {log.metadata?.totalPullRequests && log.metadata.totalPullRequests > 0 && (
-                              <span>{log.metadata.totalPullRequests}pr</span>
-                            )}
-                          </>
-                        )}
+                        {log.summary || 'No summary available'}
                       </div>
+                    </div>
+                    
+                    {/* Bottom-aligned metadata tiles */}
+                    <div style={{ 
+                      display: 'flex', 
+                      gap: '0.5rem', 
+                      alignItems: 'center',
+                      marginTop: '0.75rem',
+                    }}>
+                      {/* Date tile */}
+                      <div style={{
+                        padding: '0.25rem 0.5rem',
+                        backgroundColor: 'rgb(var(--surface-1))',
+                        border: '0.5px solid rgb(var(--border))',
+                        fontFamily: 'monospace',
+                        fontSize: '0.625rem',
+                        color: 'rgb(var(--text-secondary))',
+                      }}>
+                        {format(new Date(log.date), 'MMM d').toLowerCase()}
+                      </div>
+                      
+                      {/* Stats tiles */}
+                      {log.metadata && (
+                        <>
+                          {log.metadata?.totalCommits !== undefined && log.metadata.totalCommits > 0 && (
+                            <div style={{
+                              padding: '0.25rem 0.5rem',
+                              backgroundColor: 'rgb(var(--surface-1))',
+                              border: '0.5px solid rgb(var(--border))',
+                              display: 'flex',
+                              alignItems: 'baseline',
+                              gap: '0.25rem',
+                              fontFamily: 'monospace',
+                              fontSize: '0.625rem',
+                            }}>
+                              <span style={{ fontWeight: 'bold', color: 'rgb(var(--accent-1))' }}>
+                                {log.metadata.totalCommits}
+                              </span>
+                              <span style={{ opacity: 0.7 }}>commits</span>
+                            </div>
+                          )}
+                          {log.metadata?.totalPullRequests !== undefined && log.metadata.totalPullRequests > 0 && (
+                            <div style={{
+                              padding: '0.25rem 0.5rem',
+                              backgroundColor: 'rgb(var(--surface-1))',
+                              border: '0.5px solid rgb(var(--border))',
+                              display: 'flex',
+                              alignItems: 'baseline',
+                              gap: '0.25rem',
+                              fontFamily: 'monospace',
+                              fontSize: '0.625rem',
+                            }}>
+                              <span style={{ fontWeight: 'bold', color: 'rgb(var(--accent-1))' }}>
+                                {log.metadata.totalPullRequests}
+                              </span>
+                              <span style={{ opacity: 0.7 }}>prs</span>
+                            </div>
+                          )}
+                          {log.metadata?.totalIssues !== undefined && log.metadata.totalIssues > 0 && (
+                            <div style={{
+                              padding: '0.25rem 0.5rem',
+                              backgroundColor: 'rgb(var(--surface-1))',
+                              border: '0.5px solid rgb(var(--border))',
+                              display: 'flex',
+                              alignItems: 'baseline',
+                              gap: '0.25rem',
+                              fontFamily: 'monospace',
+                              fontSize: '0.625rem',
+                            }}>
+                              <span style={{ fontWeight: 'bold', color: 'rgb(var(--accent-1))' }}>
+                                {log.metadata.totalIssues}
+                              </span>
+                              <span style={{ opacity: 0.7 }}>issues</span>
+                            </div>
+                          )}
+                          {log.repositoryId && (
+                            <div style={{
+                              padding: '0.25rem 0.5rem',
+                              backgroundColor: 'rgb(var(--surface-1))',
+                              border: '0.5px solid rgb(var(--border))',
+                              fontFamily: 'monospace',
+                              fontSize: '0.625rem',
+                              color: 'rgb(var(--text-secondary))',
+                              opacity: 0.7,
+                            }}>
+                              repo
+                            </div>
+                          )}
+                        </>
+                      )}
                     </div>
                   </div>
                 </Link>

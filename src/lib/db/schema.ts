@@ -32,6 +32,7 @@ export const activityLogs = pgTable('activity_logs', {
   date: timestamp('date').notNull(),
   logType: varchar('log_type', { length: 20 }).notNull().default('global'), // 'global' or 'repository'
   repositoryId: uuid('repository_id').references(() => repositories.id, { onDelete: 'cascade' }), // NULL for global logs
+  title: text('title'), // Short human-readable title for the log
   summary: text('summary').notNull(),
   bullets: jsonb('bullets').$type<string[]>().notNull(),
   rawData: jsonb('raw_data').notNull(),

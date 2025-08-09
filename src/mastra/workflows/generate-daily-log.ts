@@ -179,6 +179,7 @@ const generateDailyLogStep = createStep({
         
         Format the response as JSON with:
         {
+          "title": "string - a short, human-readable title (3-6 words) that captures the essence of the day's work",
           "summary": "string - narrative summary",
           "bullets": ["string - key accomplishments"],
           "technicalHighlights": ["string - technical decisions and patterns"],
@@ -214,6 +215,7 @@ const generateDailyLogStep = createStep({
           date: new Date(date),
           logType: 'global',
           repositoryId: null,
+          title: analysis.title || `Activity for ${date.toISOString().split('T')[0]}`,
           summary: analysis.summary || 'Daily development activity analyzed.',
           bullets: analysis.bullets || [],
           rawData: { activities: allActivities, analysis },
