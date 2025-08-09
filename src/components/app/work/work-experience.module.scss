@@ -16,7 +16,7 @@
   justify-content: space-between;
   background: none;
   border: none;
-  padding: 1rem 24px; // reduced top/bottom padding
+  padding: 1rem 0; // consistent with page padding
   font-family: inherit;
   font-size: inherit;
   text-align: left;
@@ -110,7 +110,7 @@
 }
 
 .content {
-  padding: 0 24px 2rem 24px;
+  padding: 0 0 2rem 0;
   color: rgb(var(--text-secondary));
 }
 

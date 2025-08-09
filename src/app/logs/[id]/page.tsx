@@ -59,7 +59,7 @@ export default function LogDetailPage() {
         <div className={styles.content}>
           <div className={styles.innerViewport}>
             <div style={{ textAlign: 'center', padding: '2rem 0', fontFamily: 'monospace', opacity: 0.5 }}>
-              Loading log details...
+              loading log details...
             </div>
           </div>
         </div>
@@ -129,7 +129,7 @@ export default function LogDetailPage() {
             </div>
             <div style={{ textAlign: 'center', padding: '2rem' }}>
               <p style={{ fontFamily: 'monospace', opacity: 0.7 }}>
-                Log not found
+                log not found
               </p>
             </div>
           </div>

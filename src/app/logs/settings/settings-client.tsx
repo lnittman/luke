@@ -325,7 +325,7 @@ export function SettingsClient({ initialSettings }: SettingsProps) {
                   fontSize: '0.875rem',
                   color: 'rgb(var(--text-secondary))',
                 }}>
-                  No repositories enabled. Enable repositories below to include them in logs.
+                  no repositories enabled. enable repositories below to include them in logs.
                 </p>
               ) : (
                 <div className="space-y-0" style={{ marginTop: '0' }}>

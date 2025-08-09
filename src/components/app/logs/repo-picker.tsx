@@ -101,8 +101,7 @@ export function RepoPicker({ selectedRepo, onRepoSelect, isMobile = false }: Rep
             e.currentTarget.style.borderColor = 'rgb(var(--border))';
           }}
         >
-          <span style={{ fontSize: '1rem' }}>📁</span>
-          <span style={{ display: 'none' }}>{selectedRepoName}</span>
+          <span style={{ fontSize: '0.875rem', fontFamily: 'monospace' }}>R</span>
         </button>
 
         <AnimatePresence>
@@ -121,7 +120,7 @@ export function RepoPicker({ selectedRepo, onRepoSelect, isMobile = false }: Rep
             >
               <div className="relative z-[101] flex h-full w-full flex-col" onClick={(e) => e.stopPropagation()}>
                 {/* Header with search */}
-                <div style={{ padding: '1rem', display: 'flex', alignItems: 'center', gap: '0.75rem' }}>
+                <div style={{ padding: '0.75rem 1rem', display: 'flex', alignItems: 'center', gap: '0.75rem' }}>
                   <button
                     onClick={() => {
                       setIsOpen(false);
@@ -221,7 +220,7 @@ export function RepoPicker({ selectedRepo, onRepoSelect, isMobile = false }: Rep
                     onClick={() => handleSelect(null)}
                     style={{
                       width: '100%',
-                      padding: '1rem',
+                      padding: '0.75rem 1rem',
                       display: 'flex',
                       alignItems: 'center',
                       gap: '0.75rem',
@@ -235,7 +234,6 @@ export function RepoPicker({ selectedRepo, onRepoSelect, isMobile = false }: Rep
                       textAlign: 'left',
                     }}
                   >
-                    <span style={{ fontSize: '1rem' }}>🌐</span>
                     <span style={{ fontSize: '0.875rem' }}>All Repositories</span>
                   </button>
 
@@ -250,7 +248,7 @@ export function RepoPicker({ selectedRepo, onRepoSelect, isMobile = false }: Rep
                         onClick={() => handleSelect(repo.id)}
                         style={{
                           width: '100%',
-                          padding: '1rem',
+                          padding: '0.75rem 1rem',
                           display: 'flex',
                           alignItems: 'center',
                           gap: '0.75rem',
@@ -264,7 +262,6 @@ export function RepoPicker({ selectedRepo, onRepoSelect, isMobile = false }: Rep
                           textAlign: 'left',
                         }}
                       >
-                        <span style={{ fontSize: '1rem' }}>📁</span>
                         <div style={{ flex: 1, minWidth: 0 }}>
                           <TextFade style={{ fontSize: '0.875rem' }}>{repo.name}</TextFade>
                           <TextFade style={{ fontSize: '0.75rem', color: 'rgb(var(--text-secondary))' }}>{repo.owner}</TextFade>
@@ -400,7 +397,7 @@ export function RepoPicker({ selectedRepo, onRepoSelect, isMobile = false }: Rep
 
               {loading ? (
                 <div style={{ padding: '1rem', textAlign: 'center', fontFamily: 'monospace', fontSize: '0.875rem', color: 'rgb(var(--text-secondary))' }}>
-                  loading...
+                  loading repositories...
                 </div>
               ) : filteredRepos.length > 0 ? (
                 filteredRepos.map((repo) => (

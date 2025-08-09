@@ -28,7 +28,7 @@ function CommitCard({ activity }: { activity: ActivityDetail }) {
     }}
     >
       <div style={{ display: 'flex', alignItems: 'flex-start', gap: '0.75rem' }}>
-        <div style={{ fontSize: '1.5rem' }}>💾</div>
+        <div style={{ fontFamily: 'monospace', fontSize: '0.875rem', color: 'rgb(var(--accent-1))' }}>COMMIT</div>
         <div style={{ flex: 1 }}>
           {metadata?.repository && (
             <div style={{ 
@@ -89,9 +89,7 @@ function PullRequestCard({ activity }: { activity: ActivityDetail }) {
     }}
     >
       <div style={{ display: 'flex', alignItems: 'flex-start', gap: '0.75rem' }}>
-        <div style={{ fontSize: '1.5rem' }}>
-          {merged ? '🎯' : state === 'open' ? '🔄' : '✅'}
-        </div>
+        <div style={{ fontFamily: 'monospace', fontSize: '0.875rem', color: 'rgb(var(--accent-1))' }}>PR</div>
         <div style={{ flex: 1 }}>
           {metadata?.repository && (
             <div style={{ 
@@ -178,9 +176,7 @@ function IssueCard({ activity }: { activity: ActivityDetail }) {
     }}
     >
       <div style={{ display: 'flex', alignItems: 'flex-start', gap: '0.75rem' }}>
-        <div style={{ fontSize: '1.5rem' }}>
-          {state === 'closed' ? '✓' : '⚠️'}
-        </div>
+        <div style={{ fontFamily: 'monospace', fontSize: '0.875rem', color: 'rgb(var(--accent-1))' }}>ISSUE</div>
         <div style={{ flex: 1 }}>
           {metadata?.repository && (
             <div style={{ 
@@ -256,10 +252,7 @@ function ReviewCard({ activity }: { activity: ActivityDetail }) {
     }}
     >
       <div style={{ display: 'flex', alignItems: 'flex-start', gap: '0.75rem' }}>
-        <div style={{ fontSize: '1.5rem' }}>
-          {state === 'APPROVED' ? '✅' : 
-           state === 'CHANGES_REQUESTED' ? '🔧' : '👀'}
-        </div>
+        <div style={{ fontFamily: 'monospace', fontSize: '0.875rem', color: 'rgb(var(--accent-1))' }}>REVIEW</div>
         <div style={{ flex: 1 }}>
           {metadata?.repository && (
             <div style={{ 

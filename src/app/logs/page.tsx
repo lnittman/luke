@@ -122,7 +122,7 @@ export default function LogsPage() {
             borderBottom: '1px solid rgb(var(--border))',
             backgroundColor: 'rgb(var(--background-start))'
           }}>
-            <div style={{ display: 'flex', gap: '0.5rem', alignItems: 'center', flex: isMobile ? 0 : 1 }}>
+            <div style={{ display: 'flex', gap: '0.5rem', alignItems: 'center', flex: 1 }}>
               {isMobile ? (
                 <button
                   onClick={() => setLogsSearchModalOpen(true)}
@@ -189,45 +189,47 @@ export default function LogsPage() {
                 <span style={{ marginLeft: 'auto', opacity: 0.5, fontSize: '0.75rem' }}>⌘K</span>
                 </button>
               )}
+            </div>
+            <div style={{ display: 'flex', gap: '0.5rem', alignItems: 'center' }}>
               <RepoPicker 
                 selectedRepo={selectedRepo}
                 onRepoSelect={setSelectedRepo}
                 isMobile={isMobile}
               />
+              {process.env.NODE_ENV === 'development' && (
+                <Link 
+                  href="/logs/settings" 
+                  title="Settings"
+                  aria-label="Settings"
+                  style={{
+                    display: 'flex',
+                    alignItems: 'center',
+                    justifyContent: 'center',
+                    width: '2.5rem',
+                    height: '2.5rem',
+                    background: 'none',
+                    border: '1px solid rgb(var(--border))',
+                    color: 'rgb(var(--text-primary))',
+                    cursor: 'pointer',
+                    transition: 'all 0.2s ease',
+                    fontFamily: 'monospace',
+                    padding: 0,
+                    fontSize: '1rem',
+                    textDecoration: 'none',
+                  }}
+                  onMouseEnter={(e) => {
+                    e.currentTarget.style.background = 'rgb(var(--surface-1))';
+                    e.currentTarget.style.borderColor = 'rgb(var(--accent-1))';
+                  }}
+                  onMouseLeave={(e) => {
+                    e.currentTarget.style.background = 'none';
+                    e.currentTarget.style.borderColor = 'rgb(var(--border))';
+                  }}
+                >
+                  ⚙
+                </Link>
+              )}
             </div>
-            {process.env.NODE_ENV === 'development' && (
-              <Link 
-                href="/logs/settings" 
-                title="Settings"
-                aria-label="Settings"
-                style={{
-                  display: 'flex',
-                  alignItems: 'center',
-                  justifyContent: 'center',
-                  width: '2.5rem',
-                  height: '2.5rem',
-                  background: 'none',
-                  border: '1px solid rgb(var(--border))',
-                  color: 'rgb(var(--text-primary))',
-                  cursor: 'pointer',
-                  transition: 'all 0.2s ease',
-                  fontFamily: 'monospace',
-                  padding: 0,
-                  fontSize: '1rem',
-                  textDecoration: 'none',
-                }}
-                onMouseEnter={(e) => {
-                  e.currentTarget.style.background = 'rgb(var(--surface-1))';
-                  e.currentTarget.style.borderColor = 'rgb(var(--accent-1))';
-                }}
-                onMouseLeave={(e) => {
-                  e.currentTarget.style.background = 'none';
-                  e.currentTarget.style.borderColor = 'rgb(var(--border))';
-                }}
-              >
-                ⚙
-              </Link>
-            )}
           </div>
 
           {loading ? (
