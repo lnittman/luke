@@ -17,7 +17,7 @@ export function ThemeSwitcher() {
   if (!mounted) {
     // Return placeholder with same dimensions to prevent layout shift
     return (
-      <div className={styles.themeSwitcher} style={{ width: '2rem', height: '2rem' }} />
+      <div className={styles.themeSwitcher} style={{ width: '2.5rem', height: '2.5rem' }} />
     );
   }
 
