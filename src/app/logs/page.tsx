@@ -102,8 +102,11 @@ export default function LogsPage() {
               </div>
             </div>
           )}
-          {/* Page header with search and settings */}
+          {/* Page header with search and settings - sticky under main header */}
           <div ref={headerRef} style={{ 
+            position: 'sticky',
+            top: 0,
+            zIndex: 80,
             display: 'flex', 
             justifyContent: 'space-between', 
             alignItems: 'center',

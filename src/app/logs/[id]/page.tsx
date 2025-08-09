@@ -85,11 +85,15 @@ export default function LogDetailPage() {
           </div>
         </div>
         <div className={styles.content}>
-          <div className={styles.innerViewport}>
+          <div className={styles.innerViewport} style={{ position: 'relative' }}>
             <div style={{ 
+              position: 'sticky',
+              top: 0,
+              zIndex: 80,
               marginBottom: '1.5rem',
-              paddingBottom: '1rem',
-              borderBottom: '1px solid rgb(var(--border))'
+              padding: '0.75rem 24px',
+              borderBottom: '1px solid rgb(var(--border))',
+              backgroundColor: 'rgb(var(--background-start))'
             }}>
               <Link 
                 href="/logs" 
@@ -162,12 +166,16 @@ export default function LogDetailPage() {
       </div>
 
       <div className={styles.content}>
-        <div className={styles.innerViewport}>
-          {/* Back button */}
+        <div className={styles.innerViewport} style={{ position: 'relative' }}>
+          {/* Back button - sticky under main header */}
           <div style={{ 
+            position: 'sticky',
+            top: 0,
+            zIndex: 80,
             marginBottom: '1.5rem',
-            paddingBottom: '1rem',
-            borderBottom: '1px solid rgb(var(--border))'
+            padding: '0.75rem 24px',
+            borderBottom: '1px solid rgb(var(--border))',
+            backgroundColor: 'rgb(var(--background-start))'
           }}>
             <Link 
               href="/logs" 
