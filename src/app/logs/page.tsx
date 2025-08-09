@@ -45,7 +45,7 @@ export default function LogsPage() {
   const fetchLogs = async (loadMore = false) => {
     try {
       const currentOffset = loadMore ? offset : 0;
-      const response = await fetch(`/api/logs?limit=30&offset=${currentOffset}`);
+      const response = await fetch(`/api/logs?limit=10&offset=${currentOffset}`);
       const data = await response.json();
       
       // Handle error response
@@ -66,7 +66,7 @@ export default function LogsPage() {
       }
       
       setHasMore(data.hasMore || false);
-      setOffset(currentOffset + 30);
+      setOffset(currentOffset + 10);
     } catch (error) {
       console.error('Error fetching logs:', error);
       setLogs([]);
@@ -96,10 +96,6 @@ export default function LogsPage() {
               <div style={{ position: 'absolute', left: 0, right: 0, bottom: 0, top: headerHeight }}>
                 <div style={{ position: 'absolute', left: 8, right: 8, bottom: 8, top: 8, opacity: 0.08, display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
                   <WaterAscii
-                    mode="procedural"
-                    rows={56}
-                    columns={200}
-                    speed={0.6}
                     style={{ fontSize: '8px', lineHeight: '8px', width: '100%', height: '100%' }}
                   />
                 </div>
