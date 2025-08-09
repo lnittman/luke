@@ -220,10 +220,9 @@ export function RepoPicker({ selectedRepo, onRepoSelect, isMobile = false }: Rep
                     onClick={() => handleSelect(null)}
                     style={{
                       width: '100%',
-                      padding: '0.75rem 1rem',
+                      padding: '1rem',
                       display: 'flex',
                       alignItems: 'center',
-                      gap: '0.75rem',
                       background: selectedRepo === null ? 'rgb(var(--surface-1))' : 'transparent',
                       border: 'none',
                       borderBottom: '1px solid rgb(var(--border))',
@@ -234,7 +233,7 @@ export function RepoPicker({ selectedRepo, onRepoSelect, isMobile = false }: Rep
                       textAlign: 'left',
                     }}
                   >
-                    <span style={{ fontSize: '0.875rem' }}>All Repositories</span>
+                    <TextFade style={{ fontSize: '0.875rem' }}>all repositories</TextFade>
                   </button>
 
                   {loading ? (
@@ -248,10 +247,9 @@ export function RepoPicker({ selectedRepo, onRepoSelect, isMobile = false }: Rep
                         onClick={() => handleSelect(repo.id)}
                         style={{
                           width: '100%',
-                          padding: '0.75rem 1rem',
+                          padding: '1rem',
                           display: 'flex',
                           alignItems: 'center',
-                          gap: '0.75rem',
                           background: selectedRepo === repo.id ? 'rgb(var(--surface-1))' : 'transparent',
                           border: 'none',
                           borderBottom: '1px solid rgb(var(--border))',
@@ -262,10 +260,7 @@ export function RepoPicker({ selectedRepo, onRepoSelect, isMobile = false }: Rep
                           textAlign: 'left',
                         }}
                       >
-                        <div style={{ flex: 1, minWidth: 0 }}>
-                          <TextFade style={{ fontSize: '0.875rem' }}>{repo.name}</TextFade>
-                          <TextFade style={{ fontSize: '0.75rem', color: 'rgb(var(--text-secondary))' }}>{repo.owner}</TextFade>
-                        </div>
+                        <TextFade style={{ fontSize: '0.875rem' }}>{repo.fullName}</TextFade>
                       </button>
                     ))
                   ) : (
@@ -392,7 +387,7 @@ export function RepoPicker({ selectedRepo, onRepoSelect, isMobile = false }: Rep
                   }
                 }}
               >
-                All Repositories
+                all repositories
               </button>
 
               {loading ? (
@@ -431,8 +426,7 @@ export function RepoPicker({ selectedRepo, onRepoSelect, isMobile = false }: Rep
                       }
                     }}
                   >
-                    <TextFade style={{ fontSize: '0.875rem' }}>{repo.name}</TextFade>
-                    <TextFade style={{ fontSize: '0.75rem', color: 'rgb(var(--text-secondary))' }}>{repo.owner}</TextFade>
+                    <TextFade style={{ fontSize: '0.875rem' }}>{repo.fullName}</TextFade>
                   </button>
                 ))
               ) : (

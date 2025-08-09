@@ -116,18 +116,13 @@ export function LogsSearchModal({ logs = [] }: LogsSearchModalProps) {
             }}
           >
             <div style={{ display: 'flex', justifyContent: 'space-between', width: '100%', alignItems: 'center' }}>
-              <TextFade style={{ fontSize: '0.875rem', fontWeight: 'bold', maxWidth: '80%' }}>
+              <TextFade style={{ fontSize: '0.875rem', maxWidth: '80%' }}>
                 {log.summary || 'untitled'}
               </TextFade>
               <div style={{ fontSize: '0.75rem', color: 'rgb(var(--text-secondary))' }}>
                 {format(log.date, 'LLL d').toLowerCase()}
               </div>
             </div>
-            {!!log.summary && (
-              <TextFade style={{ fontSize: '0.75rem', color: 'rgb(var(--text-secondary))' }}>
-                {log.summary}
-              </TextFade>
-            )}
           </button>
         ))
       ) : query ? (

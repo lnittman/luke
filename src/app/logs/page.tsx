@@ -253,7 +253,7 @@ export default function LogsPage() {
               {logs.map((log) => (
                 <Link key={log.id} href={`/logs/${log.id}`} style={{ textDecoration: 'none', color: 'inherit', display: 'block' }}>
                   <div style={{
-                    padding: '1.5rem 24px',
+                    padding: '1rem 24px',
                     borderBottom: '1px solid rgb(var(--border))',
                     cursor: 'pointer',
                     transition: 'opacity 0.2s ease',
@@ -265,57 +265,45 @@ export default function LogsPage() {
                     (e.currentTarget as HTMLDivElement).style.opacity = '1';
                   }}
                   >
-                    {/* Date and Title Line */}
                     <div style={{ 
                       display: 'flex', 
                       justifyContent: 'space-between', 
-                      alignItems: 'flex-start',
-                      marginBottom: '0.5rem',
+                      alignItems: 'center',
+                      width: '100%',
                     }}>
-                      <div>
-                        <h3 style={{ 
+                      <TextFade
+                        style={{ 
                           fontFamily: 'monospace',
-                          fontSize: '1rem',
-                          fontWeight: 'normal',
-                          marginBottom: '0.25rem',
-                          color: 'rgb(var(--text-primary))'
-                        }}>
-                          {format(new Date(log.date), 'EEEE, MMMM d, yyyy')}
-                        </h3>
-                        <TextFade
-                          style={{ 
-                            fontFamily: 'monospace',
-                            fontSize: '0.875rem',
-                            color: 'rgb(var(--text-secondary))',
-                            lineHeight: 1.5,
-                            maxWidth: '100%',
-                          }}
-                        >
-                          {log.summary}
-                        </TextFade>
-                      </div>
+                          fontSize: '0.875rem',
+                          color: 'rgb(var(--text-primary))',
+                          maxWidth: '70%',
+                        }}
+                      >
+                        {log.summary}
+                      </TextFade>
                       
-                      {/* Stats */}
-                      {log.metadata && (
-                        <div style={{ 
-                          display: 'flex', 
-                          gap: '1rem', 
-                          fontFamily: 'monospace',
-                          fontSize: '0.75rem',
-                          color: 'rgb(var(--text-secondary))',
-                          flexShrink: 0,
-                        }}>
-                          {log.metadata?.totalCommits && log.metadata.totalCommits > 0 && (
-                            <span>{log.metadata.totalCommits} commits</span>
-                          )}
-                          {log.metadata?.totalPullRequests && log.metadata.totalPullRequests > 0 && (
-                            <span>{log.metadata.totalPullRequests} PRs</span>
-                          )}
-                          {log.metadata?.totalIssues && log.metadata.totalIssues > 0 && (
-                            <span>{log.metadata.totalIssues} issues</span>
-                          )}
-                        </div>
-                      )}
+                      {/* Date and Stats */}
+                      <div style={{ 
+                        display: 'flex', 
+                        gap: '1rem', 
+                        alignItems: 'center',
+                        fontFamily: 'monospace',
+                        fontSize: '0.75rem',
+                        color: 'rgb(var(--text-secondary))',
+                        flexShrink: 0,
+                      }}>
+                        <span>{format(new Date(log.date), 'MMM d').toLowerCase()}</span>
+                        {log.metadata && (
+                          <>
+                            {log.metadata?.totalCommits && log.metadata.totalCommits > 0 && (
+                              <span>{log.metadata.totalCommits}c</span>
+                            )}
+                            {log.metadata?.totalPullRequests && log.metadata.totalPullRequests > 0 && (
+                              <span>{log.metadata.totalPullRequests}pr</span>
+                            )}
+                          </>
+                        )}
+                      </div>
                     </div>
                   </div>
                 </Link>
