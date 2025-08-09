@@ -90,7 +90,7 @@ export function LogsSearchModal({ logs = [] }: LogsSearchModalProps) {
   }, [query, setSelectedIndex]);
 
   const resultsList = (
-    <div style={{ flex: 1, overflowY: 'auto' }}>
+    <>
       {filteredLogs.length > 0 ? (
         filteredLogs.map((log, index) => (
           <button
@@ -99,7 +99,7 @@ export function LogsSearchModal({ logs = [] }: LogsSearchModalProps) {
             onMouseEnter={() => setSelectedIndex(index)}
             style={{
               width: '100%',
-              padding: '1rem 24px',
+              padding: '1rem 0',
               display: 'flex',
               flexDirection: 'column',
               alignItems: 'flex-start',
@@ -138,7 +138,7 @@ export function LogsSearchModal({ logs = [] }: LogsSearchModalProps) {
           start typing to search logs
         </div>
       )}
-    </div>
+    </>
   );
 
   return (
@@ -160,32 +160,112 @@ export function LogsSearchModal({ logs = [] }: LogsSearchModalProps) {
           >
             {/* top-aligned search UI */}
             <div className="relative z-[101] flex h-full w-full flex-col" onClick={(e) => e.stopPropagation()}>
-              <div id="logs-search-bar" style={{ padding: '12px 24px 8px 24px', borderBottom: '1px solid rgb(var(--border))', display: 'flex', alignItems: 'center', gap: '0.5rem' }}>
-                <input
-                  type="search"
-                  value={query}
-                  onChange={(e) => setQuery(e.target.value)}
-                  placeholder="start typing to search"
-                  autoFocus
-                  style={{
-                    width: '100%',
-                    background: 'transparent',
-                    border: 'none',
-                    outline: 'none',
-                    fontFamily: 'monospace',
-                    fontSize: '1rem',
-                    color: 'rgb(var(--text-primary))',
+              <div id="logs-search-bar" style={{ padding: '1rem', display: 'flex', alignItems: 'center', gap: '0.75rem' }}>
+                {/* Back button */}
+                <button
+                  onClick={() => {
+                    setIsOpen(false);
+                    setQuery('');
+                    setSelectedIndex(0);
                   }}
-                />
+                  style={{
+                    display: 'flex',
+                    alignItems: 'center',
+                    justifyContent: 'center',
+                    width: '2rem',
+                    height: '2rem',
+                    background: 'none',
+                    border: '1px solid rgb(var(--border))',
+                    color: 'rgb(var(--text-primary))',
+                    cursor: 'pointer',
+                    transition: 'all 0.2s ease',
+                    fontFamily: 'monospace',
+                    padding: 0,
+                    fontSize: '1rem',
+                    flexShrink: 0,
+                  }}
+                  onMouseEnter={(e) => {
+                    e.currentTarget.style.background = 'rgb(var(--surface-1))';
+                    e.currentTarget.style.borderColor = 'rgb(var(--accent-1))';
+                  }}
+                  onMouseLeave={(e) => {
+                    e.currentTarget.style.background = 'none';
+                    e.currentTarget.style.borderColor = 'rgb(var(--border))';
+                  }}
+                >
+                  ←
+                </button>
+                
+                {/* Search input with clear button */}
+                <div style={{
+                  position: 'relative',
+                  flex: 1,
+                  display: 'flex',
+                  alignItems: 'center',
+                  border: '1px solid rgb(var(--border))',
+                  padding: '0 0.75rem',
+                  height: '2.5rem',
+                  backgroundColor: 'rgb(var(--surface-1))'
+                }}>
+                  <input
+                    type="text"
+                    value={query}
+                    onChange={(e) => setQuery(e.target.value)}
+                    placeholder="start typing to search"
+                    autoFocus
+                    style={{
+                      width: '100%',
+                      background: 'transparent',
+                      border: 'none',
+                      outline: 'none',
+                      fontFamily: 'monospace',
+                      fontSize: '0.875rem',
+                      color: 'rgb(var(--text-primary))',
+                      paddingRight: query ? '2rem' : '0',
+                    }}
+                  />
+                  {query && (
+                    <button
+                      onClick={() => setQuery('')}
+                      style={{
+                        position: 'absolute',
+                        right: '0.5rem',
+                        display: 'flex',
+                        alignItems: 'center',
+                        justifyContent: 'center',
+                        width: '1.5rem',
+                        height: '1.5rem',
+                        background: 'none',
+                        border: 'none',
+                        color: 'rgb(var(--text-secondary))',
+                        cursor: 'pointer',
+                        transition: 'color 0.2s ease',
+                        fontFamily: 'monospace',
+                        fontSize: '1rem',
+                        padding: 0,
+                      }}
+                      onMouseEnter={(e) => {
+                        e.currentTarget.style.color = 'rgb(var(--text-primary))';
+                      }}
+                      onMouseLeave={(e) => {
+                        e.currentTarget.style.color = 'rgb(var(--text-secondary))';
+                      }}
+                    >
+                      ×
+                    </button>
+                  )}
+                </div>
               </div>
-              <div style={{ padding: '8px 12px 12px 12px' }}>{resultsList}</div>
+              <div style={{ flex: 1, overflowY: 'auto', borderTop: '1px solid rgb(var(--border))' }}>
+                {resultsList}
+              </div>
             </div>
 
             {/* water background: inset from page sides and bottom, starts below search bar bottom edge */}
             <div className="pointer-events-none absolute inset-0" style={{ opacity: 0.07 }}>
               <div style={{ position: 'absolute', left: 8, right: 8, bottom: 8, top: 0 }}>
-                <div style={{ position: 'absolute', left: 0, right: 0, bottom: 0, top: (12 + 12 + 16) }}>
-                  {/* 12 top padding + 12 bottom padding inside bar + ~16px bar content line height approximation; keeps ascii below search with small gap */}
+                <div style={{ position: 'absolute', left: 0, right: 0, bottom: 0, top: 60 }}>
+                  {/* Adjust top to account for search bar height */}
                   <WaterAscii style={{ fontSize: '8px', lineHeight: '8px', width: '100%', height: '100%' }} />
                 </div>
               </div>
