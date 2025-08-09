@@ -99,7 +99,7 @@ export function LogsSearchModal({ logs = [] }: LogsSearchModalProps) {
             onMouseEnter={() => setSelectedIndex(index)}
             style={{
               width: '100%',
-              padding: '1rem 0',
+              padding: '1rem',
               display: 'flex',
               flexDirection: 'column',
               alignItems: 'flex-start',
@@ -172,8 +172,8 @@ export function LogsSearchModal({ logs = [] }: LogsSearchModalProps) {
                     display: 'flex',
                     alignItems: 'center',
                     justifyContent: 'center',
-                    width: '2rem',
-                    height: '2rem',
+                    width: '2.5rem',
+                    height: '2.5rem',
                     background: 'none',
                     border: '1px solid rgb(var(--border))',
                     color: 'rgb(var(--text-primary))',
@@ -237,18 +237,18 @@ export function LogsSearchModal({ logs = [] }: LogsSearchModalProps) {
                         height: '1.5rem',
                         background: 'none',
                         border: 'none',
-                        color: 'rgb(var(--text-secondary))',
+                        color: 'rgb(var(--text-primary))',
                         cursor: 'pointer',
-                        transition: 'color 0.2s ease',
+                        transition: 'opacity 0.2s ease',
                         fontFamily: 'monospace',
                         fontSize: '1rem',
                         padding: 0,
                       }}
                       onMouseEnter={(e) => {
-                        e.currentTarget.style.color = 'rgb(var(--text-primary))';
+                        e.currentTarget.style.opacity = '0.7';
                       }}
                       onMouseLeave={(e) => {
-                        e.currentTarget.style.color = 'rgb(var(--text-secondary))';
+                        e.currentTarget.style.opacity = '1';
                       }}
                     >
                       ×
