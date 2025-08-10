@@ -3,8 +3,7 @@
 import { useState, useRef, useEffect } from 'react'
 import { AsciiEngine } from '@/lib/ascii-engine'
 import { generateAsciiArt } from './actions'
-import { Send, ImageIcon, Loader2, ChevronLeft, ChevronRight } from 'lucide-react'
-import { AnimatePresence, motion } from 'framer-motion'
+import { Send, ImageIcon, Loader2, Settings, Sparkles, Copy, Download } from 'lucide-react'
 import { BlockLoader } from '@/components/shared/block-loader'
 import { DefaultLayout } from '@/components/shared/default-layout'
 import { ThemeSwitcher } from '@/components/shared/theme-switcher'
@@ -22,9 +21,10 @@ export default function AsciiPage() {
   const [generations, setGenerations] = useState<AsciiGeneration[]>([])
   const [currentIndex, setCurrentIndex] = useState(0)
   const [isGenerating, setIsGenerating] = useState(false)
-  const [showMiniPreview, setShowMiniPreview] = useState(false)
+  const [showSettings, setShowSettings] = useState(false)
   const inputRef = useRef<HTMLInputElement>(null)
   const fileInputRef = useRef<HTMLInputElement>(null)
+  const viewportRef = useRef<HTMLDivElement>(null)
 
   const handleGenerate = async () => {
     if (!prompt.trim() || isGenerating) return
@@ -63,37 +63,79 @@ export default function AsciiPage() {
     reader.readAsDataURL(file)
   }
 
-  const navigatePrevious = () => {
-    if (generations.length === 0) return
-    setCurrentIndex((prev) => (prev > 0 ? prev - 1 : generations.length - 1))
+  const copyToClipboard = () => {
+    const current = generations[currentIndex]
+    if (current && current.frames.length > 0) {
+      navigator.clipboard.writeText(current.frames[0])
+    }
   }
 
-  const navigateNext = () => {
-    if (generations.length === 0) return
-    setCurrentIndex((prev) => (prev < generations.length - 1 ? prev + 1 : 0))
+  const downloadAscii = () => {
+    const current = generations[currentIndex]
+    if (current && current.frames.length > 0) {
+      const blob = new Blob([current.frames[0]], { type: 'text/plain' })
+      const url = URL.createObjectURL(blob)
+      const a = document.createElement('a')
+      a.href = url
+      a.download = `ascii-${current.id}.txt`
+      a.click()
+      URL.revokeObjectURL(url)
+    }
   }
 
   const currentGeneration = generations[currentIndex] || null
 
-  // Calculate container height
-  const [containerHeight, setContainerHeight] = useState('100vh')
-  useEffect(() => {
-    const updateHeight = () => {
-      // Account for header, prompt bar, and footer
-      const headerHeight = 80 // Approximate header height
-      const promptBarHeight = 60 // Prompt bar height
-      const footerHeight = 80 // Footer height
-      const availableHeight = window.innerHeight - headerHeight - promptBarHeight - footerHeight
-      setContainerHeight(`${availableHeight}px`)
-    }
-    
-    updateHeight()
-    window.addEventListener('resize', updateHeight)
-    return () => window.removeEventListener('resize', updateHeight)
-  }, [])
-
   return (
     <DefaultLayout>
+      <style jsx>{`
+        /* Custom scrollbar for viewport */
+        .ascii-viewport::-webkit-scrollbar {
+          width: 8px;
+          height: 8px;
+        }
+        
+        .ascii-viewport::-webkit-scrollbar-track {
+          background: rgb(var(--surface-1));
+          border-radius: 0;
+        }
+        
+        .ascii-viewport::-webkit-scrollbar-thumb {
+          background: rgb(var(--border));
+          border-radius: 0;
+        }
+        
+        .ascii-viewport::-webkit-scrollbar-thumb:hover {
+          background: rgb(var(--accent-1));
+        }
+        
+        .ascii-viewport {
+          scrollbar-width: thin;
+          scrollbar-color: rgb(var(--border)) rgb(var(--surface-1));
+        }
+
+        /* Preview carousel fade edges */
+        .carousel-container::before,
+        .carousel-container::after {
+          content: '';
+          position: absolute;
+          top: 0;
+          bottom: 0;
+          width: 40px;
+          z-index: 2;
+          pointer-events: none;
+        }
+        
+        .carousel-container::before {
+          left: 0;
+          background: linear-gradient(to right, rgb(var(--background-start)), transparent);
+        }
+        
+        .carousel-container::after {
+          right: 0;
+          background: linear-gradient(to left, rgb(var(--background-start)), transparent);
+        }
+      `}</style>
+
       {/* Header */}
       <div className={styles.header}>
         <div className={styles.column}>
@@ -105,419 +147,466 @@ export default function AsciiPage() {
         </div>
       </div>
 
-      {/* Content - No scroll */}
+      {/* Content */}
       <div className={styles.content} style={{ overflow: 'hidden' }}>
         <div className={styles.innerViewport} style={{ display: 'flex', flexDirection: 'column', height: '100%' }}>
-          {/* Fixed prompt bar under header */}
-          <div
-            style={{
-              borderBottom: '1px solid rgb(var(--border))',
-              backgroundColor: 'rgb(var(--background-start))',
-              padding: '0.75rem 24px',
-              flexShrink: 0,
+          
+          {/* Display Area with custom scrollbar */}
+          <div 
+            ref={viewportRef}
+            className="ascii-viewport"
+            style={{ 
+              flex: 1,
+              padding: '24px',
+              overflow: 'auto',
+              display: 'flex',
+              alignItems: 'center',
+              justifyContent: 'center',
+              position: 'relative',
             }}
           >
-            <div style={{ display: 'flex', gap: '0.5rem', alignItems: 'center' }}>
+            {isGenerating ? (
+              <div style={{ textAlign: 'center' }}>
+                <Loader2 className="w-8 h-8 animate-spin mx-auto mb-4" style={{ color: 'rgb(var(--accent-1))' }} />
+                <p style={{ fontSize: '0.875rem', color: 'rgb(var(--text-secondary))' }}>
+                  generating ascii art...
+                </p>
+              </div>
+            ) : currentGeneration ? (
               <div
                 style={{
-                  flex: 1,
-                  display: 'flex',
-                  alignItems: 'center',
                   border: '1px solid rgb(var(--border))',
-                  padding: '0 0.75rem',
-                  height: '2.5rem',
                   backgroundColor: 'rgb(var(--surface-1))',
-                  position: 'relative',
+                  padding: '1.5rem',
+                  maxWidth: '90%',
+                  maxHeight: '90%',
+                  display: 'flex',
+                  flexDirection: 'column',
                 }}
               >
-                <input
-                  ref={inputRef}
-                  value={prompt}
-                  onChange={(e) => setPrompt(e.target.value)}
-                  onKeyDown={(e) => {
-                    if (e.key === 'Enter' && !e.shiftKey) {
-                      e.preventDefault()
-                      handleGenerate()
-                    }
-                  }}
-                  placeholder="describe the ascii art you want to create..."
+                <div style={{ 
+                  display: 'flex', 
+                  justifyContent: 'space-between', 
+                  alignItems: 'center',
+                  marginBottom: '1rem' 
+                }}>
+                  <div>
+                    <p style={{ fontSize: '0.875rem', fontFamily: 'monospace', marginBottom: '0.25rem' }}>
+                      {currentGeneration.prompt}
+                    </p>
+                    <p style={{ fontSize: '0.75rem', color: 'rgb(var(--text-secondary))', fontFamily: 'monospace' }}>
+                      {currentIndex + 1} of {generations.length} • {currentGeneration.frames.length} frames
+                    </p>
+                  </div>
+                  <div style={{ display: 'flex', gap: '0.5rem' }}>
+                    <button
+                      onClick={copyToClipboard}
+                      style={{
+                        padding: '0.5rem',
+                        background: 'transparent',
+                        border: '1px solid rgb(var(--border))',
+                        color: 'rgb(var(--text-primary))',
+                        cursor: 'pointer',
+                        transition: 'all 0.2s ease',
+                      }}
+                      onMouseEnter={(e) => {
+                        e.currentTarget.style.background = 'rgb(var(--surface-1))'
+                        e.currentTarget.style.borderColor = 'rgb(var(--accent-1))'
+                      }}
+                      onMouseLeave={(e) => {
+                        e.currentTarget.style.background = 'transparent'
+                        e.currentTarget.style.borderColor = 'rgb(var(--border))'
+                      }}
+                      title="Copy ASCII"
+                    >
+                      <Copy className="w-4 h-4" />
+                    </button>
+                    <button
+                      onClick={downloadAscii}
+                      style={{
+                        padding: '0.5rem',
+                        background: 'transparent',
+                        border: '1px solid rgb(var(--border))',
+                        color: 'rgb(var(--text-primary))',
+                        cursor: 'pointer',
+                        transition: 'all 0.2s ease',
+                      }}
+                      onMouseEnter={(e) => {
+                        e.currentTarget.style.background = 'rgb(var(--surface-1))'
+                        e.currentTarget.style.borderColor = 'rgb(var(--accent-1))'
+                      }}
+                      onMouseLeave={(e) => {
+                        e.currentTarget.style.background = 'transparent'
+                        e.currentTarget.style.borderColor = 'rgb(var(--border))'
+                      }}
+                      title="Download ASCII"
+                    >
+                      <Download className="w-4 h-4" />
+                    </button>
+                  </div>
+                </div>
+                <div
                   style={{
-                    width: '100%',
-                    background: 'transparent',
-                    border: 'none',
-                    outline: 'none',
-                    fontFamily: 'monospace',
-                    fontSize: '0.875rem',
-                    color: 'rgb(var(--text-primary))',
+                    backgroundColor: 'rgb(var(--background-start))',
+                    border: '1px solid rgb(var(--border))',
+                    padding: '1.5rem',
+                    overflow: 'auto',
                   }}
-                  disabled={isGenerating}
-                />
-                <div style={{ display: 'flex', alignItems: 'center', gap: '0.25rem' }}>
-                  <input
-                    ref={fileInputRef}
-                    type="file"
-                    accept="image/*"
-                    onChange={handleImageUpload}
-                    style={{ display: 'none' }}
-                  />
+                >
+                  {currentGeneration.frames && currentGeneration.frames.length > 0 && (
+                    <AsciiEngine
+                      frames={currentGeneration.frames}
+                      fps={12}
+                      loop={true}
+                      autoPlay={true}
+                      style={{
+                        fontSize: '12px',
+                        lineHeight: '14px',
+                        color: 'rgb(var(--accent-1))',
+                        fontFamily: 'monospace',
+                      }}
+                    />
+                  )}
+                </div>
+              </div>
+            ) : (
+              <div style={{ textAlign: 'center', maxWidth: '28rem' }}>
+                <h2 style={{ fontSize: '1.25rem', fontFamily: 'monospace', marginBottom: '0.5rem' }}>
+                  create ascii art with ai
+                </h2>
+                <p style={{ fontSize: '0.875rem', color: 'rgb(var(--text-secondary))', marginBottom: '1.5rem', fontFamily: 'monospace' }}>
+                  describe what you want to create, and ai will generate unique ascii animations for you
+                </p>
+                <div style={{ display: 'flex', gap: '0.75rem', justifyContent: 'center' }}>
                   <button
-                    onClick={() => fileInputRef.current?.click()}
-                    disabled={isGenerating}
-                    onMouseEnter={(e) => {
-                      e.currentTarget.style.opacity = '0.7'
-                    }}
-                    onMouseLeave={(e) => {
-                      e.currentTarget.style.opacity = '1'
+                    onClick={() => {
+                      setPrompt('Create a matrix rain effect with falling green characters')
+                      inputRef.current?.focus()
                     }}
                     style={{
-                      display: 'flex',
-                      alignItems: 'center',
-                      justifyContent: 'center',
-                      width: '1.5rem',
-                      height: '1.5rem',
-                      background: 'none',
-                      border: 'none',
-                      color: 'rgb(var(--text-secondary))',
+                      padding: '0.5rem 1rem',
+                      fontSize: '0.75rem',
+                      border: '1px solid rgb(var(--border))',
+                      background: 'transparent',
                       cursor: 'pointer',
-                      transition: 'opacity 0.2s ease',
-                      padding: 0,
+                      transition: 'all 0.2s ease',
+                      fontFamily: 'monospace',
                     }}
-                    title="upload image"
+                    onMouseEnter={(e) => {
+                      e.currentTarget.style.background = 'rgb(var(--surface-1))'
+                      e.currentTarget.style.borderColor = 'rgb(var(--accent-1))'
+                    }}
+                    onMouseLeave={(e) => {
+                      e.currentTarget.style.background = 'transparent'
+                      e.currentTarget.style.borderColor = 'rgb(var(--border))'
+                    }}
                   >
-                    <ImageIcon className="w-4 h-4" />
+                    try "matrix rain"
                   </button>
                   <button
-                    onClick={handleGenerate}
-                    disabled={!prompt.trim() || isGenerating}
-                    onMouseEnter={(e) => {
-                      if (!isGenerating && prompt.trim()) {
-                        e.currentTarget.style.opacity = '0.7'
-                      }
-                    }}
-                    onMouseLeave={(e) => {
-                      e.currentTarget.style.opacity = '1'
+                    onClick={() => {
+                      setPrompt('Generate ocean waves with ASCII characters')
+                      inputRef.current?.focus()
                     }}
                     style={{
-                      display: 'flex',
-                      alignItems: 'center',
-                      justifyContent: 'center',
-                      width: '1.5rem',
-                      height: '1.5rem',
-                      background: 'none',
-                      border: 'none',
-                      color: isGenerating || !prompt.trim() ? 'rgb(var(--text-secondary))' : 'rgb(var(--accent-1))',
-                      cursor: isGenerating || !prompt.trim() ? 'not-allowed' : 'pointer',
-                      transition: 'opacity 0.2s ease',
-                      padding: 0,
-                      opacity: isGenerating || !prompt.trim() ? 0.5 : 1,
+                      padding: '0.5rem 1rem',
+                      fontSize: '0.75rem',
+                      border: '1px solid rgb(var(--border))',
+                      background: 'transparent',
+                      cursor: 'pointer',
+                      transition: 'all 0.2s ease',
+                      fontFamily: 'monospace',
+                    }}
+                    onMouseEnter={(e) => {
+                      e.currentTarget.style.background = 'rgb(var(--surface-1))'
+                      e.currentTarget.style.borderColor = 'rgb(var(--accent-1))'
+                    }}
+                    onMouseLeave={(e) => {
+                      e.currentTarget.style.background = 'transparent'
+                      e.currentTarget.style.borderColor = 'rgb(var(--border))'
                     }}
                   >
-                    {isGenerating ? (
-                      <Loader2 className="w-4 h-4 animate-spin" />
-                    ) : (
-                      <Send className="w-4 h-4" />
-                    )}
+                    try "ocean waves"
                   </button>
                 </div>
               </div>
-            </div>
+            )}
           </div>
 
-          {/* Display Area - Fixed height, no scroll */}
-          <div style={{ 
-            flex: 1, 
-            padding: '24px', 
-            overflow: 'hidden',
-            display: 'flex',
-            alignItems: 'center',
-            justifyContent: 'center',
-            position: 'relative',
-          }}>
-            <AnimatePresence mode="wait">
-              {isGenerating ? (
-                <motion.div
-                  key="loading"
-                  initial={{ opacity: 0 }}
-                  animate={{ opacity: 1 }}
-                  exit={{ opacity: 0 }}
-                  style={{
-                    display: 'flex',
-                    alignItems: 'center',
-                    justifyContent: 'center',
-                    width: '100%',
-                    height: '100%',
-                  }}
-                >
-                  <div style={{ textAlign: 'center' }}>
-                    <Loader2 className="w-8 h-8 animate-spin mx-auto mb-4" style={{ color: 'rgb(var(--accent-1))' }} />
-                    <p style={{ fontSize: '0.875rem', color: 'rgb(var(--text-secondary))' }}>
-                      generating ascii art...
-                    </p>
-                  </div>
-                </motion.div>
-              ) : currentGeneration ? (
-                <motion.div
-                  key={currentGeneration.id}
-                  initial={{ opacity: 0, x: 100 }}
-                  animate={{ opacity: 1, x: 0 }}
-                  exit={{ opacity: 0, x: -100 }}
-                  transition={{ type: 'spring', stiffness: 300, damping: 30 }}
-                  style={{ 
-                    width: '100%', 
-                    height: '100%',
-                    display: 'flex',
-                    alignItems: 'center',
-                    justifyContent: 'center',
-                  }}
-                >
-                  <div
-                    style={{
-                      border: '1px solid rgb(var(--border))',
-                      backgroundColor: 'rgb(var(--surface-1))',
-                      padding: '1.5rem',
-                      maxWidth: '90%',
-                      maxHeight: '90%',
-                      display: 'flex',
-                      flexDirection: 'column',
-                    }}
-                  >
-                    <div style={{ marginBottom: '1rem' }}>
-                      <p style={{ fontSize: '0.875rem', fontFamily: 'monospace', marginBottom: '0.25rem' }}>
-                        {currentGeneration.prompt}
-                      </p>
-                      <p style={{ fontSize: '0.75rem', color: 'rgb(var(--text-secondary))', fontFamily: 'monospace' }}>
-                        {currentIndex + 1} of {generations.length} • {currentGeneration.frames.length} frames
-                      </p>
-                    </div>
-                    <div
-                      style={{
-                        backgroundColor: 'rgb(var(--background-start))',
-                        border: '1px solid rgb(var(--border))',
-                        padding: '1.5rem',
-                        overflow: 'auto',
-                      }}
-                    >
-                      {currentGeneration.frames && currentGeneration.frames.length > 0 && (
-                        <AsciiEngine
-                          frames={currentGeneration.frames}
-                          fps={12}
-                          loop={true}
-                          autoPlay={true}
-                          style={{
-                            fontSize: '12px',
-                            lineHeight: '14px',
-                            color: 'rgb(var(--accent-1))',
-                            fontFamily: 'monospace',
-                          }}
-                        />
-                      )}
-                    </div>
-                  </div>
-                </motion.div>
-              ) : (
-                <motion.div
-                  key="empty"
-                  initial={{ opacity: 0 }}
-                  animate={{ opacity: 1 }}
-                  exit={{ opacity: 0 }}
-                  style={{
-                    display: 'flex',
-                    alignItems: 'center',
-                    justifyContent: 'center',
-                    width: '100%',
-                    height: '100%',
-                  }}
-                >
-                  <div style={{ textAlign: 'center', maxWidth: '28rem' }}>
-                    <h2 style={{ fontSize: '1.25rem', fontFamily: 'monospace', marginBottom: '0.5rem' }}>
-                      create ascii art with ai
-                    </h2>
-                    <p style={{ fontSize: '0.875rem', color: 'rgb(var(--text-secondary))', marginBottom: '1.5rem', fontFamily: 'monospace' }}>
-                      describe what you want to create, and ai will generate unique ascii animations for you
-                    </p>
-                    <div style={{ display: 'flex', gap: '0.75rem', justifyContent: 'center' }}>
-                      <button
-                        onClick={() => {
-                          setPrompt('Create a matrix rain effect with falling green characters')
-                          inputRef.current?.focus()
-                        }}
-                        onMouseEnter={(e) => {
-                          e.currentTarget.style.background = 'rgb(var(--surface-1))'
-                          e.currentTarget.style.borderColor = 'rgb(var(--accent-1))'
-                        }}
-                        onMouseLeave={(e) => {
-                          e.currentTarget.style.background = 'transparent'
-                          e.currentTarget.style.borderColor = 'rgb(var(--border))'
-                        }}
-                        style={{
-                          padding: '0.5rem 1rem',
-                          fontSize: '0.75rem',
-                          border: '1px solid rgb(var(--border))',
-                          background: 'transparent',
-                          cursor: 'pointer',
-                          transition: 'all 0.2s ease',
-                          fontFamily: 'monospace',
-                        }}
-                      >
-                        try "matrix rain"
-                      </button>
-                      <button
-                        onClick={() => {
-                          setPrompt('Generate ocean waves with ASCII characters')
-                          inputRef.current?.focus()
-                        }}
-                        onMouseEnter={(e) => {
-                          e.currentTarget.style.background = 'rgb(var(--surface-1))'
-                          e.currentTarget.style.borderColor = 'rgb(var(--accent-1))'
-                        }}
-                        onMouseLeave={(e) => {
-                          e.currentTarget.style.background = 'transparent'
-                          e.currentTarget.style.borderColor = 'rgb(var(--border))'
-                        }}
-                        style={{
-                          padding: '0.5rem 1rem',
-                          fontSize: '0.75rem',
-                          border: '1px solid rgb(var(--border))',
-                          background: 'transparent',
-                          cursor: 'pointer',
-                          transition: 'all 0.2s ease',
-                          fontFamily: 'monospace',
-                        }}
-                      >
-                        try "ocean waves"
-                      </button>
-                    </div>
-                  </div>
-                </motion.div>
-              )}
-            </AnimatePresence>
-          </div>
-        </div>
-      </div>
-
-      {/* Custom Footer for ASCII page */}
-      <div className={styles.footer}>
-        <div className={styles.column}>
-          <div style={{ 
-            display: 'flex', 
-            alignItems: 'center', 
-            justifyContent: 'space-between',
-            width: '100%',
-          }}>
-            {/* Left side - Navigation arrows */}
-            <div style={{ display: 'flex', gap: '0.5rem' }}>
-              <button
-                onClick={navigatePrevious}
-                disabled={generations.length === 0}
-                onMouseEnter={(e) => {
-                  if (generations.length > 0) {
-                    e.currentTarget.style.background = 'rgb(var(--surface-1))'
-                    e.currentTarget.style.borderColor = 'rgb(var(--accent-1))'
-                  }
-                }}
-                onMouseLeave={(e) => {
-                  e.currentTarget.style.background = 'none'
-                  e.currentTarget.style.borderColor = 'rgb(var(--border))'
-                }}
-                style={{
-                  display: 'flex',
-                  alignItems: 'center',
-                  justifyContent: 'center',
-                  width: '2.5rem',
-                  height: '2.5rem',
-                  background: 'none',
-                  border: '1px solid rgb(var(--border))',
-                  color: generations.length === 0 ? 'rgb(var(--text-secondary))' : 'rgb(var(--text-primary))',
-                  cursor: generations.length === 0 ? 'not-allowed' : 'pointer',
-                  transition: 'all 0.2s ease',
-                  opacity: generations.length === 0 ? 0.5 : 1,
-                  padding: 0,
-                }}
-                title="Previous"
-              >
-                <ChevronLeft className="w-4 h-4" />
-              </button>
-              <button
-                onClick={navigateNext}
-                disabled={generations.length === 0}
-                onMouseEnter={(e) => {
-                  if (generations.length > 0) {
-                    e.currentTarget.style.background = 'rgb(var(--surface-1))'
-                    e.currentTarget.style.borderColor = 'rgb(var(--accent-1))'
-                  }
-                }}
-                onMouseLeave={(e) => {
-                  e.currentTarget.style.background = 'none'
-                  e.currentTarget.style.borderColor = 'rgb(var(--border))'
-                }}
-                style={{
-                  display: 'flex',
-                  alignItems: 'center',
-                  justifyContent: 'center',
-                  width: '2.5rem',
-                  height: '2.5rem',
-                  background: 'none',
-                  border: '1px solid rgb(var(--border))',
-                  color: generations.length === 0 ? 'rgb(var(--text-secondary))' : 'rgb(var(--text-primary))',
-                  cursor: generations.length === 0 ? 'not-allowed' : 'pointer',
-                  transition: 'all 0.2s ease',
-                  opacity: generations.length === 0 ? 0.5 : 1,
-                  padding: 0,
-                }}
-                title="Next"
-              >
-                <ChevronRight className="w-4 h-4" />
-              </button>
-            </div>
-
-            {/* Right side - Mini ASCII preview */}
-            <button
-              onClick={() => setShowMiniPreview(!showMiniPreview)}
-              onMouseEnter={(e) => {
-                e.currentTarget.style.borderColor = 'rgb(var(--accent-1))'
-              }}
-              onMouseLeave={(e) => {
-                e.currentTarget.style.borderColor = 'rgb(var(--border))'
-              }}
+          {/* Fixed bottom prompt bar and controls */}
+          <div
+            style={{
+              borderTop: '1px solid rgb(var(--border))',
+              backgroundColor: 'rgb(var(--background-start))',
+              padding: '1rem 24px',
+              flexShrink: 0,
+            }}
+          >
+            {/* Full width prompt input */}
+            <div
               style={{
-                position: 'relative',
-                width: '120px',
-                height: '2.5rem',
-                border: '1px solid rgb(var(--border))',
-                background: 'rgb(var(--surface-1))',
-                cursor: 'pointer',
-                transition: 'all 0.2s ease',
-                overflow: 'hidden',
-                padding: '0.25rem',
                 display: 'flex',
                 alignItems: 'center',
-                justifyContent: 'center',
+                border: '1px solid rgb(var(--border))',
+                backgroundColor: 'rgb(var(--surface-1))',
+                marginBottom: '0.75rem',
               }}
-              title="ASCII Preview"
             >
-              {currentGeneration && currentGeneration.frames.length > 0 ? (
-                <div style={{
-                  fontSize: '4px',
-                  lineHeight: '4px',
-                  color: 'rgb(var(--accent-1))',
+              <input
+                ref={inputRef}
+                value={prompt}
+                onChange={(e) => setPrompt(e.target.value)}
+                onKeyDown={(e) => {
+                  if (e.key === 'Enter' && !e.shiftKey) {
+                    e.preventDefault()
+                    handleGenerate()
+                  }
+                }}
+                placeholder="describe the ascii art you want to create..."
+                style={{
+                  flex: 1,
+                  padding: '0.75rem',
+                  background: 'transparent',
+                  border: 'none',
+                  outline: 'none',
                   fontFamily: 'monospace',
-                  opacity: 0.8,
-                  whiteSpace: 'pre',
-                  overflow: 'hidden',
-                  textOverflow: 'clip',
-                }}>
-                  {currentGeneration.frames[0].substring(0, 200)}
-                </div>
-              ) : (
-                <span style={{
-                  fontFamily: 'monospace',
-                  fontSize: '0.625rem',
-                  color: 'rgb(var(--text-secondary))',
-                }}>
-                  ascii
-                </span>
-              )}
-            </button>
+                  fontSize: '0.875rem',
+                  color: 'rgb(var(--text-primary))',
+                }}
+                disabled={isGenerating}
+              />
+            </div>
+
+            {/* Control row with buttons */}
+            <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', gap: '0.75rem' }}>
+              {/* Left side controls */}
+              <div style={{ display: 'flex', gap: '0.5rem' }}>
+                <input
+                  ref={fileInputRef}
+                  type="file"
+                  accept="image/*"
+                  onChange={handleImageUpload}
+                  style={{ display: 'none' }}
+                />
+                <button
+                  onClick={() => fileInputRef.current?.click()}
+                  disabled={isGenerating}
+                  style={{
+                    display: 'flex',
+                    alignItems: 'center',
+                    gap: '0.5rem',
+                    padding: '0.5rem 0.75rem',
+                    background: 'transparent',
+                    border: '1px solid rgb(var(--border))',
+                    color: 'rgb(var(--text-primary))',
+                    cursor: isGenerating ? 'not-allowed' : 'pointer',
+                    transition: 'all 0.2s ease',
+                    fontFamily: 'monospace',
+                    fontSize: '0.875rem',
+                    opacity: isGenerating ? 0.5 : 1,
+                  }}
+                  onMouseEnter={(e) => {
+                    if (!isGenerating) {
+                      e.currentTarget.style.background = 'rgb(var(--surface-1))'
+                      e.currentTarget.style.borderColor = 'rgb(var(--accent-1))'
+                    }
+                  }}
+                  onMouseLeave={(e) => {
+                    e.currentTarget.style.background = 'transparent'
+                    e.currentTarget.style.borderColor = 'rgb(var(--border))'
+                  }}
+                  title="Upload image"
+                >
+                  <ImageIcon className="w-4 h-4" />
+                  <span>Image</span>
+                </button>
+                
+                <button
+                  onClick={() => setShowSettings(!showSettings)}
+                  style={{
+                    display: 'flex',
+                    alignItems: 'center',
+                    gap: '0.5rem',
+                    padding: '0.5rem 0.75rem',
+                    background: showSettings ? 'rgb(var(--surface-1))' : 'transparent',
+                    border: '1px solid',
+                    borderColor: showSettings ? 'rgb(var(--accent-1))' : 'rgb(var(--border))',
+                    color: 'rgb(var(--text-primary))',
+                    cursor: 'pointer',
+                    transition: 'all 0.2s ease',
+                    fontFamily: 'monospace',
+                    fontSize: '0.875rem',
+                  }}
+                  onMouseEnter={(e) => {
+                    e.currentTarget.style.background = 'rgb(var(--surface-1))'
+                    e.currentTarget.style.borderColor = 'rgb(var(--accent-1))'
+                  }}
+                  onMouseLeave={(e) => {
+                    if (!showSettings) {
+                      e.currentTarget.style.background = 'transparent'
+                      e.currentTarget.style.borderColor = 'rgb(var(--border))'
+                    }
+                  }}
+                  title="Settings"
+                >
+                  <Settings className="w-4 h-4" />
+                  <span>Settings</span>
+                </button>
+
+                <button
+                  style={{
+                    display: 'flex',
+                    alignItems: 'center',
+                    gap: '0.5rem',
+                    padding: '0.5rem 0.75rem',
+                    background: 'transparent',
+                    border: '1px solid rgb(var(--border))',
+                    color: 'rgb(var(--text-primary))',
+                    cursor: 'pointer',
+                    transition: 'all 0.2s ease',
+                    fontFamily: 'monospace',
+                    fontSize: '0.875rem',
+                  }}
+                  onMouseEnter={(e) => {
+                    e.currentTarget.style.background = 'rgb(var(--surface-1))'
+                    e.currentTarget.style.borderColor = 'rgb(var(--accent-1))'
+                  }}
+                  onMouseLeave={(e) => {
+                    e.currentTarget.style.background = 'transparent'
+                    e.currentTarget.style.borderColor = 'rgb(var(--border))'
+                  }}
+                  title="AI Model"
+                >
+                  <Sparkles className="w-4 h-4" />
+                  <span>GPT-4</span>
+                </button>
+              </div>
+
+              {/* Right side - submit button and preview carousel */}
+              <div style={{ display: 'flex', gap: '0.75rem', alignItems: 'center' }}>
+                {/* Preview carousel */}
+                {generations.length > 0 && (
+                  <div 
+                    className="carousel-container"
+                    style={{
+                      position: 'relative',
+                      display: 'flex',
+                      gap: '0.5rem',
+                      maxWidth: '300px',
+                      overflow: 'hidden',
+                      padding: '0 40px',
+                    }}
+                  >
+                    <div style={{
+                      display: 'flex',
+                      gap: '0.5rem',
+                      transition: 'transform 0.3s ease',
+                      transform: `translateX(-${currentIndex * 56}px)`,
+                    }}>
+                      {generations.map((gen, idx) => (
+                        <button
+                          key={gen.id}
+                          onClick={() => setCurrentIndex(idx)}
+                          style={{
+                            flexShrink: 0,
+                            width: '48px',
+                            height: '48px',
+                            border: '1px solid',
+                            borderColor: idx === currentIndex ? 'rgb(var(--accent-1))' : 'rgb(var(--border))',
+                            background: idx === currentIndex ? 'rgb(var(--surface-1))' : 'rgb(var(--background-start))',
+                            cursor: 'pointer',
+                            transition: 'all 0.2s ease',
+                            overflow: 'hidden',
+                            padding: '2px',
+                            position: 'relative',
+                          }}
+                          onMouseEnter={(e) => {
+                            if (idx !== currentIndex) {
+                              e.currentTarget.style.borderColor = 'rgb(var(--accent-1))'
+                              e.currentTarget.style.opacity = '0.8'
+                            }
+                          }}
+                          onMouseLeave={(e) => {
+                            if (idx !== currentIndex) {
+                              e.currentTarget.style.borderColor = 'rgb(var(--border))'
+                              e.currentTarget.style.opacity = '1'
+                            }
+                          }}
+                          title={gen.prompt}
+                        >
+                          <div style={{
+                            fontSize: '2px',
+                            lineHeight: '2px',
+                            color: 'rgb(var(--accent-1))',
+                            fontFamily: 'monospace',
+                            opacity: 0.6,
+                            whiteSpace: 'pre',
+                            overflow: 'hidden',
+                            textOverflow: 'clip',
+                          }}>
+                            {gen.frames[0]?.substring(0, 100) || ''}
+                          </div>
+                          {idx === currentIndex && (
+                            <div style={{
+                              position: 'absolute',
+                              bottom: '2px',
+                              right: '2px',
+                              width: '4px',
+                              height: '4px',
+                              background: 'rgb(var(--accent-1))',
+                              borderRadius: '50%',
+                            }} />
+                          )}
+                        </button>
+                      ))}
+                    </div>
+                  </div>
+                )}
+
+                {/* Submit button */}
+                <button
+                  onClick={handleGenerate}
+                  disabled={!prompt.trim() || isGenerating}
+                  style={{
+                    display: 'flex',
+                    alignItems: 'center',
+                    gap: '0.5rem',
+                    padding: '0.5rem 1rem',
+                    background: !prompt.trim() || isGenerating ? 'transparent' : 'rgb(var(--accent-1))',
+                    border: '1px solid',
+                    borderColor: !prompt.trim() || isGenerating ? 'rgb(var(--border))' : 'rgb(var(--accent-1))',
+                    color: !prompt.trim() || isGenerating ? 'rgb(var(--text-secondary))' : 'rgb(var(--background-start))',
+                    cursor: !prompt.trim() || isGenerating ? 'not-allowed' : 'pointer',
+                    transition: 'all 0.2s ease',
+                    fontFamily: 'monospace',
+                    fontSize: '0.875rem',
+                    opacity: !prompt.trim() || isGenerating ? 0.5 : 1,
+                  }}
+                  onMouseEnter={(e) => {
+                    if (prompt.trim() && !isGenerating) {
+                      e.currentTarget.style.opacity = '0.9'
+                    }
+                  }}
+                  onMouseLeave={(e) => {
+                    if (prompt.trim() && !isGenerating) {
+                      e.currentTarget.style.opacity = '1'
+                    }
+                  }}
+                >
+                  {isGenerating ? (
+                    <>
+                      <Loader2 className="w-4 h-4 animate-spin" />
+                      <span>Generating...</span>
+                    </>
+                  ) : (
+                    <>
+                      <Send className="w-4 h-4" />
+                      <span>Generate</span>
+                    </>
+                  )}
+                </button>
+              </div>
+            </div>
           </div>
         </div>
       </div>
