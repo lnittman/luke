@@ -380,20 +380,18 @@ export function LogsSearchModal({ logs = [] }: LogsSearchModalProps) {
               }}
             >
               <WaterAscii
-                type="water"
-                width={150}
-                height={50}
+                type="matrix"
+                fillContainer={true}
                 fps={12}
                 style={{
                   fontSize: '12px',
                   lineHeight: '14px',
-                  opacity: 0.04,
+                  opacity: 0.03,
                   color: 'rgb(var(--accent-1))',
                   width: '100%',
                   height: '100%',
                   position: 'absolute',
                   inset: 0,
-                  padding: '2rem',
                 }}
               />
             </div>

@@ -16,7 +16,7 @@
   justify-content: space-between;
   background: none;
   border: none;
-  padding: 1rem 0; // consistent with page padding
+  padding: 1rem 0; // tighter to match parent accordion header
   font-family: inherit;
   font-size: inherit;
   text-align: left;
@@ -26,6 +26,10 @@
   
   &:hover {
     background-color: rgb(var(--surface-1) / 0.5);
+  }
+
+  @media (min-width: 768px) {
+    padding: 1.5rem 0; // tighter on desktop as well
   }
 }
 
@@ -110,8 +114,12 @@
 }
 
 .content {
-  padding: 0 0 2rem 0;
+  padding: 0 0 1rem 0;
   color: rgb(var(--text-secondary));
+
+  @media (min-width: 768px) {
+    padding-bottom: 1.5rem;
+  }
 }
 
 .description {

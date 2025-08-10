@@ -1,10 +1,18 @@
 'use client'
 
-import { useRouter } from 'next/navigation'
+import { useEffect } from 'react'
 import { ErrorAscii } from '@/components/shared/error-ascii'
 
-export default function NotFound() {
-  const router = useRouter()
+export default function Error({
+  error,
+  reset,
+}: {
+  error: Error & { digest?: string }
+  reset: () => void
+}) {
+  useEffect(() => {
+    console.error(error)
+  }, [error])
 
   return (
     <div
@@ -21,7 +29,7 @@ export default function NotFound() {
         overflow: 'hidden',
       }}
     >
-      {/* Centered ASCII with 404 inside */}
+      {/* Centered ASCII with ERROR inside */}
       <div
         style={{
           position: 'absolute',
@@ -40,7 +48,8 @@ export default function NotFound() {
           }}
         >
           <ErrorAscii 
-            type="404"
+            type="error"
+            errorCode="ERROR"
             width={80}
             height={25}
             fps={10}
@@ -48,17 +57,31 @@ export default function NotFound() {
         </div>
       </div>
 
-      {/* Back Button - positioned below the ASCII */}
+      {/* Error message and reset button */}
       <div
         style={{
           position: 'relative',
           zIndex: 10,
           marginTop: 'auto',
           paddingBottom: '3rem',
+          display: 'flex',
+          flexDirection: 'column',
+          alignItems: 'center',
+          gap: '1rem',
         }}
       >
+        <p
+          style={{
+            fontSize: '0.875rem',
+            color: 'rgb(var(--text-secondary))',
+            maxWidth: '400px',
+            textAlign: 'center',
+          }}
+        >
+          {error.message || 'Something went wrong'}
+        </p>
         <button
-          onClick={() => router.push('/')}
+          onClick={reset}
           onMouseEnter={(e) => {
             e.currentTarget.style.backgroundColor = 'rgb(var(--surface-1))'
             e.currentTarget.style.borderColor = 'rgb(var(--accent-1))'
@@ -79,7 +102,7 @@ export default function NotFound() {
             textTransform: 'uppercase',
           }}
         >
-          ← HOME
+          ↻ TRY AGAIN
         </button>
       </div>
     </div>

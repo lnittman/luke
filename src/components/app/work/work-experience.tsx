@@ -59,7 +59,17 @@ export function WorkExperience({ experience }: WorkExperienceProps) {
             )}
           </div>
         </div>
-        <span className={styles.arrow}>{isOpen ? '▾' : '▸'}</span>
+        <span
+          aria-hidden
+          className={styles.arrow}
+          style={{
+            transform: isOpen ? 'rotate(90deg)' : 'rotate(0deg)',
+            transition: 'transform 0.2s ease',
+            display: 'inline-block',
+          }}
+        >
+          ▸
+        </span>
       </button>
 
       {isOpen && (

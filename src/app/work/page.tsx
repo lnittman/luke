@@ -12,6 +12,7 @@ import { WORK_EXPERIENCES } from '@/constants/work'
 export default function Work() {
   const [experienceOpen, setExperienceOpen] = useState(false)
   const [skillsOpen, setSkillsOpen] = useState(false)
+  const [educationOpen, setEducationOpen] = useState(false)
 
   return (
     <DefaultLayout>
@@ -41,13 +42,15 @@ export default function Work() {
                 }
                 open={experienceOpen}
               >
-                <summary
+              <summary
                   style={{
                     cursor: 'pointer',
                     listStyle: 'none',
                     display: 'flex',
                     alignItems: 'center',
                     justifyContent: 'space-between',
+                    borderBottom: '1px solid rgb(var(--border))',
+                    padding: '0.5rem 0',
                   }}
                 >
                   <h2 style={{ marginBottom: '0' }}>EXPERIENCE</h2>
@@ -64,7 +67,7 @@ export default function Work() {
                     ▸
                   </span>
                 </summary>
-                <div style={{ marginTop: '1rem' }}>
+                <div style={{ marginTop: '0.5rem' }}>
                   <div className="space-y-0">
                     {WORK_EXPERIENCES.map((experience) => (
                       <WorkExperience
@@ -99,6 +102,8 @@ export default function Work() {
                     display: 'flex',
                     alignItems: 'center',
                     justifyContent: 'space-between',
+                    borderBottom: '1px solid rgb(var(--border))',
+                    padding: '0.5rem 0',
                   }}
                 >
                   <h2 style={{ marginBottom: '0' }}>SKILLS</h2>
@@ -113,12 +118,7 @@ export default function Work() {
                     ▸
                   </span>
                 </summary>
-                <div style={{ marginTop: '1rem' }}>
-                  <div className={styles.row} style={{ borderBottom: 'none' }}>
-                    <div
-                      className={styles.column}
-                      style={{ paddingTop: '1rem', paddingBottom: '1rem' }}
-                    >
+                <div style={{ marginTop: '0.5rem' }}>
                       <h3>Languages</h3>
                       <p>
                         <a
@@ -614,100 +614,57 @@ export default function Work() {
                           Biome
                         </a>
                       </p>
-                    </div>
-                  </div>
                 </div>
               </details>
             </div>
           </div>
 
-          <div
-            className={styles.row}
-            style={{
-              paddingBottom: '0',
-              borderBottom: '1px solid rgb(var(--border))',
-            }}
-          >
-            <div
-              className={styles.column}
-              style={{ paddingTop: '1rem', paddingBottom: '1rem' }}
+        <div
+          className={styles.row}
+          style={{
+            paddingBottom: '0',
+            borderBottom: '1px solid rgb(var(--border))',
+          }}
+        >
+          <div className={styles.column}>
+            <details
+              onToggle={(e) =>
+                setEducationOpen((e.target as HTMLDetailsElement).open)
+              }
+              open={educationOpen}
             >
-              <details>
-                <summary
+              <summary
+                style={{
+                  cursor: 'pointer',
+                  listStyle: 'none',
+                  display: 'flex',
+                  alignItems: 'center',
+                  justifyContent: 'space-between',
+                  borderBottom: '1px solid rgb(var(--border))',
+                  padding: '0.5rem 0',
+                }}
+              >
+                <h2 style={{ marginBottom: '0' }}>EDUCATION</h2>
+                <span
+                  aria-hidden="true"
                   style={{
-                    cursor: 'pointer',
-                    listStyle: 'none',
-                    display: 'flex',
-                    alignItems: 'center',
-                    justifyContent: 'space-between',
+                    transform: educationOpen ? 'rotate(90deg)' : 'rotate(0deg)',
+                    transition: 'transform 0.2s ease',
+                    display: 'inline-block',
                   }}
                 >
-                  <h2 style={{ marginBottom: '0' }}>RESUME</h2>
-                  <span aria-hidden="true">▸</span>
-                </summary>
-                <div style={{ marginTop: '1rem' }}>
-                  <p style={{ marginBottom: '1rem' }}>
-                    Traditional PDF resume available for download or viewing.
-                  </p>
-                  <div style={{ display: 'flex', gap: '1rem' }}>
-                    <a
-                      download
-                      href="/luke-nittmann-resume.pdf"
-                      onMouseEnter={(e) => {
-                        e.currentTarget.style.background =
-                          'rgb(var(--accent-1))'
-                        e.currentTarget.style.color =
-                          'rgb(var(--background-start))'
-                      }}
-                      onMouseLeave={(e) => {
-                        e.currentTarget.style.background = 'transparent'
-                        e.currentTarget.style.color = 'rgb(var(--accent-1))'
-                      }}
-                      style={{
-                        fontSize: '0.75rem',
-                        letterSpacing: '0.05em',
-                        color: 'rgb(var(--accent-1))',
-                        textDecoration: 'none',
-                        padding: '0.5rem 1.25rem',
-                        border: '1px solid rgb(var(--accent-1))',
-                        transition: 'all 0.2s ease',
-                        display: 'inline-block',
-                      }}
-                    >
-                      DOWNLOAD PDF
-                    </a>
-                    <a
-                      href="/luke-nittmann-resume.pdf"
-                      onMouseEnter={(e) => {
-                        e.currentTarget.style.borderColor =
-                          'rgb(var(--accent-1))'
-                        e.currentTarget.style.color = 'rgb(var(--accent-1))'
-                      }}
-                      onMouseLeave={(e) => {
-                        e.currentTarget.style.borderColor = 'rgb(var(--border))'
-                        e.currentTarget.style.color =
-                          'rgb(var(--text-secondary))'
-                      }}
-                      rel="noopener noreferrer"
-                      style={{
-                        fontSize: '0.75rem',
-                        letterSpacing: '0.05em',
-                        color: 'rgb(var(--text-secondary))',
-                        textDecoration: 'none',
-                        padding: '0.5rem 1.25rem',
-                        border: '1px solid rgb(var(--border))',
-                        transition: 'all 0.2s ease',
-                        display: 'inline-block',
-                      }}
-                      target="_blank"
-                    >
-                      VIEW IN BROWSER
-                    </a>
-                  </div>
-                </div>
-              </details>
-            </div>
+                  ▸
+                </span>
+              </summary>
+              <div style={{ marginTop: '0.5rem' }}>
+                <h3>University of Michigan, Ann Arbor</h3>
+                <p>BSc in Computer Science and German Studies (2017)</p>
+              </div>
+            </details>
           </div>
+        </div>
+
+          
         </div>
       </div>
 

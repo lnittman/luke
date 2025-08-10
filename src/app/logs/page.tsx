@@ -114,20 +114,18 @@ export default function LogsPage() {
                   right: 0,
                   bottom: 0,
                   top: headerHeight,
-                  padding: '2rem',
                 }}
               >
                 <WaterAscii
-                  type={loading ? 'rain' : 'ocean'}
-                  width={120}
-                  height={40}
-                  fps={10}
+                  type="matrix"
+                  fillContainer={true}
+                  fps={12}
                   style={{
                     fontSize: '10px',
                     lineHeight: '12px',
                     width: '100%',
                     height: '100%',
-                    opacity: 0.06,
+                    opacity: 0.04,
                     color: 'rgb(var(--accent-1))',
                   }}
                 />
