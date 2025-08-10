@@ -10,7 +10,7 @@ import { FooterNavigation } from '@/components/shared/footer-navigation'
 import styles from '@/components/shared/root.module.scss'
 import { TextFade } from '@/components/shared/text-fade'
 import { ThemeSwitcher } from '@/components/shared/theme-switcher'
-import { WaterAscii } from '@/components/shared/water-ascii'
+import { ArtsyAscii } from '@/components/shared/artsy-ascii'
 import { useIsMobile } from '@/hooks/useIsMobile'
 import type { ActivityLog } from '@/lib/db'
 
@@ -127,16 +127,16 @@ export default function LogsPage() {
                   top: headerHeight,
                 }}
               >
-                <WaterAscii
-                  type="ocean"
+                <ArtsyAscii
+                  type="random"
                   fillContainer={true}
-                  fps={8}
+                  fps={12}
                   style={{
                     fontSize: '10px',
                     lineHeight: '12px',
                     width: '100%',
                     height: '100%',
-                    opacity: 0.12,
+                    opacity: 0.15,
                     color: 'rgb(var(--accent-1))',
                   }}
                 />
