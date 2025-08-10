@@ -57,16 +57,33 @@ export const activityLogs = pgTable('activity_logs', {
   metadata: jsonb('metadata').$type<{
     totalCommits: number
     totalRepos: number
-    totalPullRequests: number
-    totalIssues: number
+    totalPullRequests?: number
+    totalIssues?: number
     languages: string[]
     topProjects: string[]
     // Additional fields for cross-repo analysis
     crossRepoPatterns?: string[]
     architectureDecisions?: string[]
     collaborationInsights?: string[]
+    technicalThemes?: string[]
+    // Enriched analysis fields
+    codeQualityTrend?: 'improving' | 'stable' | 'declining'
+    productivityScore?: number
+    repoSummaries?: Array<{
+      repository: string
+      commitCount: number
+      mainFocus: string
+      progress: string
+    }>
+    suggestions?: Array<{
+      id: string
+      title: string
+      category: string
+      priority: string
+    }>
   }>(),
   processed: boolean('processed').default(false).notNull(),
+  analysisDepth: varchar('analysis_depth', { length: 20 }).default('standard'),
   createdAt: timestamp('created_at').defaultNow().notNull(),
   updatedAt: timestamp('updated_at').defaultNow().notNull(),
 })

@@ -162,6 +162,7 @@ export default function LogDetailPage() {
   const pullRequests = details.filter((d) => d.type === 'pr')
   const issues = details.filter((d) => d.type === 'issue')
   const reviews = details.filter((d) => d.type === 'review')
+  const suggestions = details.filter((d) => d.type === 'suggestion')
 
   return (
     <DefaultLayout>
@@ -498,6 +499,110 @@ export default function LogDetailPage() {
                           key={activity.id}
                         />
                       ))}
+                    </div>
+                  </div>
+                </div>
+              )}
+
+              {/* Suggestions */}
+              {suggestions.length > 0 && (
+                <div className={styles.row}>
+                  <div className={styles.column}>
+                    <h3>AI Suggestions ({suggestions.length})</h3>
+                    <div
+                      style={{
+                        display: 'grid',
+                        gridTemplateColumns: 'repeat(auto-fill, minmax(300px, 1fr))',
+                        gap: '1rem',
+                      }}
+                    >
+                      {suggestions.map((suggestion) => {
+                        const meta = suggestion.metadata as any
+                        const getPriorityColor = (priority: string) => {
+                          switch (priority) {
+                            case 'critical': return 'rgb(var(--accent-2))'
+                            case 'high': return 'rgb(var(--accent-1))'
+                            case 'medium': return 'rgb(var(--text-primary))'
+                            case 'low': return 'rgb(var(--text-secondary))'
+                            default: return 'rgb(var(--text-secondary))'
+                          }
+                        }
+                        
+                        return (
+                          <Link
+                            key={suggestion.id}
+                            href={`/logs/suggestions/${suggestion.id}`}
+                            style={{
+                              display: 'block',
+                              padding: '1rem',
+                              border: '1px solid rgb(var(--border))',
+                              background: 'rgb(var(--surface-1))',
+                              textDecoration: 'none',
+                              color: 'inherit',
+                              transition: 'all 0.2s ease',
+                              cursor: 'pointer',
+                            }}
+                            onMouseEnter={(e) => {
+                              e.currentTarget.style.borderColor = 'rgb(var(--accent-1))'
+                              e.currentTarget.style.transform = 'translateY(-2px)'
+                            }}
+                            onMouseLeave={(e) => {
+                              e.currentTarget.style.borderColor = 'rgb(var(--border))'
+                              e.currentTarget.style.transform = 'translateY(0)'
+                            }}
+                          >
+                            <h4 style={{
+                              fontSize: '0.875rem',
+                              fontWeight: 'bold',
+                              marginBottom: '0.5rem',
+                              fontFamily: 'monospace',
+                              color: 'rgb(var(--text-primary))',
+                            }}>
+                              {suggestion.title}
+                            </h4>
+                            
+                            <div style={{
+                              display: 'flex',
+                              gap: '0.5rem',
+                              marginBottom: '0.5rem',
+                            }}>
+                              <span style={{
+                                padding: '0.125rem 0.375rem',
+                                border: '1px solid',
+                                borderColor: getPriorityColor(meta?.priority || 'medium'),
+                                color: getPriorityColor(meta?.priority || 'medium'),
+                                fontSize: '0.625rem',
+                                fontFamily: 'monospace',
+                                textTransform: 'uppercase',
+                              }}>
+                                {meta?.priority || 'medium'}
+                              </span>
+                              <span style={{
+                                padding: '0.125rem 0.375rem',
+                                border: '1px solid rgb(var(--border))',
+                                fontSize: '0.625rem',
+                                fontFamily: 'monospace',
+                                textTransform: 'uppercase',
+                              }}>
+                                {meta?.category || 'general'}
+                              </span>
+                            </div>
+                            
+                            <p style={{
+                              fontSize: '0.75rem',
+                              fontFamily: 'monospace',
+                              color: 'rgb(var(--text-secondary))',
+                              lineHeight: '1.4',
+                              overflow: 'hidden',
+                              display: '-webkit-box',
+                              WebkitLineClamp: 2,
+                              WebkitBoxOrient: 'vertical',
+                            }}>
+                              {suggestion.description}
+                            </p>
+                          </Link>
+                        )
+                      })}
                     </div>
                   </div>
                 </div>

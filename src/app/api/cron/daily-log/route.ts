@@ -1,5 +1,5 @@
 import { type NextRequest, NextResponse } from 'next/server'
-import generateDailyLog from '@/mastra/workflows/generate-daily-log'
+import dailyGithubAnalysisWorkflow from '@/mastra/workflows/daily-github-analysis'
 
 export const maxDuration = 60 // 60 seconds timeout for cron job
 
@@ -23,7 +23,7 @@ export async function GET(request: NextRequest) {
       yesterday.toISOString().split('T')[0]
     )
 
-    const run = await generateDailyLog.createRunAsync()
+    const run = await dailyGithubAnalysisWorkflow.createRunAsync()
     const result = await run.start({
       inputData: {
         date: yesterday,
@@ -69,7 +69,7 @@ export async function POST(request: NextRequest) {
       date.toISOString().split('T')[0]
     )
 
-    const run = await generateDailyLog.createRunAsync()
+    const run = await dailyGithubAnalysisWorkflow.createRunAsync()
     const result = await run.start({
       inputData: {
         date,
