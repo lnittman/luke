@@ -88,7 +88,11 @@ export default function SuggestionPage() {
             </div>
           </div>
         </div>
-        <FooterNavigation />
+        <div className={styles.footer}>
+          <div className={styles.column}>
+            <FooterNavigation />
+          </div>
+        </div>
       </DefaultLayout>
     )
   }
@@ -116,7 +120,11 @@ export default function SuggestionPage() {
             </Link>
           </div>
         </div>
-        <FooterNavigation />
+        <div className={styles.footer}>
+          <div className={styles.column}>
+            <FooterNavigation />
+          </div>
+        </div>
       </DefaultLayout>
     )
   }
@@ -136,241 +144,241 @@ export default function SuggestionPage() {
       </div>
 
       <div className={styles.content}>
-        <div className={styles.innerViewport}>
-          {/* Back navigation */}
-          <Link 
-            href="/logs"
+        <div className={styles.innerViewport} style={{ position: 'relative' }}>
+          {/* Back button - sticky under main header */}
+          <div
             style={{
-              display: 'inline-block',
-              marginBottom: '2rem',
-              color: 'rgb(var(--text-secondary))',
-              textDecoration: 'none',
-              fontFamily: 'monospace',
-              fontSize: '0.875rem',
-            }}
-            onMouseEnter={(e) => {
-              e.currentTarget.style.color = 'rgb(var(--text-primary))'
-            }}
-            onMouseLeave={(e) => {
-              e.currentTarget.style.color = 'rgb(var(--text-secondary))'
+              position: 'sticky',
+              top: 0,
+              zIndex: 80,
+              marginBottom: '1.5rem',
+              padding: '0.75rem 24px',
+              borderBottom: '1px solid rgb(var(--border))',
+              backgroundColor: 'rgb(var(--background-start))',
             }}
           >
-            ← Back to Logs
-          </Link>
+            <Link
+              aria-label="Back to logs"
+              href="/logs"
+              onMouseEnter={(e) => {
+                e.currentTarget.style.background = 'rgb(var(--surface-1))'
+                e.currentTarget.style.borderColor = 'rgb(var(--accent-1))'
+              }}
+              onMouseLeave={(e) => {
+                e.currentTarget.style.background = 'none'
+                e.currentTarget.style.borderColor = 'rgb(var(--border))'
+              }}
+              style={{
+                display: 'inline-flex',
+                alignItems: 'center',
+                justifyContent: 'center',
+                width: '2.5rem',
+                height: '2.5rem',
+                background: 'none',
+                border: '1px solid rgb(var(--border))',
+                color: 'rgb(var(--text-primary))',
+                cursor: 'pointer',
+                transition: 'all 0.2s ease',
+                fontFamily: 'monospace',
+                padding: 0,
+                fontSize: '1rem',
+                textDecoration: 'none',
+              }}
+              title="Back to logs"
+            >
+              ←
+            </Link>
+          </div>
 
           {/* Suggestion header */}
-          <div style={{
-            marginBottom: '2rem',
-            paddingBottom: '1.5rem',
-            borderBottom: '1px solid rgb(var(--border))',
-          }}>
-            <h2 style={{
-              fontSize: '1.5rem',
-              fontWeight: 'bold',
-              marginBottom: '1rem',
-              fontFamily: 'monospace',
-            }}>
-              {suggestion.title}
-            </h2>
+          <div className={styles.row}>
+            <div className={styles.column}>
+              <h2>{suggestion.title}</h2>
 
-            {/* Metadata badges */}
-            <div style={{
-              display: 'flex',
-              gap: '1rem',
-              flexWrap: 'wrap',
-              marginBottom: '1rem',
-            }}>
-              <span style={{
-                padding: '0.25rem 0.75rem',
-                border: '1px solid rgb(var(--border))',
-                fontSize: '0.75rem',
-                fontFamily: 'monospace',
-                textTransform: 'uppercase',
+              {/* Metadata badges */}
+              <div style={{
+                display: 'flex',
+                gap: '1rem',
+                flexWrap: 'wrap',
+                marginBottom: '1rem',
               }}>
-                {meta.category || 'general'}
-              </span>
-              <span style={{
-                padding: '0.25rem 0.75rem',
-                border: '1px solid',
-                borderColor: getPriorityColor(meta.priority || 'medium'),
-                color: getPriorityColor(meta.priority || 'medium'),
-                fontSize: '0.75rem',
+                <span style={{
+                  padding: '0.25rem 0.75rem',
+                  border: '1px solid rgb(var(--border))',
+                  fontSize: '0.75rem',
+                  fontFamily: 'monospace',
+                  textTransform: 'uppercase',
+                }}>
+                  {meta.category || 'general'}
+                </span>
+                <span style={{
+                  padding: '0.25rem 0.75rem',
+                  border: '1px solid',
+                  borderColor: getPriorityColor(meta.priority || 'medium'),
+                  color: getPriorityColor(meta.priority || 'medium'),
+                  fontSize: '0.75rem',
+                  fontFamily: 'monospace',
+                  textTransform: 'uppercase',
+                }}>
+                  {meta.priority || 'medium'} priority
+                </span>
+                <span style={{
+                  padding: '0.25rem 0.75rem',
+                  border: '1px solid rgb(var(--border))',
+                  fontSize: '0.75rem',
+                  fontFamily: 'monospace',
+                }}>
+                  Est: {getEffortLabel(meta.estimatedEffort || 'hours')}
+                </span>
+              </div>
+
+              {/* Rationale */}
+              <p style={{
                 fontFamily: 'monospace',
-                textTransform: 'uppercase',
+                fontSize: '0.875rem',
+                lineHeight: '1.6',
+                color: 'rgb(var(--text-secondary))',
               }}>
-                {meta.priority || 'medium'} priority
-              </span>
-              <span style={{
-                padding: '0.25rem 0.75rem',
-                border: '1px solid rgb(var(--border))',
-                fontSize: '0.75rem',
-                fontFamily: 'monospace',
-              }}>
-                Est: {getEffortLabel(meta.estimatedEffort || 'hours')}
-              </span>
+                {suggestion.description || meta.rationale}
+              </p>
             </div>
-
-            {/* Rationale */}
-            <p style={{
-              fontFamily: 'monospace',
-              fontSize: '0.875rem',
-              lineHeight: '1.6',
-              color: 'rgb(var(--text-secondary))',
-            }}>
-              {suggestion.description || meta.rationale}
-            </p>
           </div>
 
           {/* Dependencies */}
           {meta.dependencies && meta.dependencies.length > 0 && (
-            <div style={{ marginBottom: '2rem' }}>
-              <h3 style={{
-                fontSize: '1rem',
-                fontWeight: 'bold',
-                marginBottom: '0.5rem',
-                fontFamily: 'monospace',
-              }}>
-                Dependencies
-              </h3>
-              <ul style={{
-                listStyle: 'none',
-                padding: 0,
-              }}>
-                {meta.dependencies.map((dep: string, i: number) => (
-                  <li key={i} style={{
-                    fontFamily: 'monospace',
-                    fontSize: '0.875rem',
-                    color: 'rgb(var(--text-secondary))',
-                    marginBottom: '0.25rem',
-                  }}>
-                    • {dep}
-                  </li>
-                ))}
-              </ul>
+            <div className={styles.row}>
+              <div className={styles.column}>
+                <h3>Dependencies</h3>
+                <ul style={{
+                  listStyle: 'none',
+                  padding: 0,
+                }}>
+                  {meta.dependencies.map((dep: string, i: number) => (
+                    <li key={i} style={{
+                      fontFamily: 'monospace',
+                      fontSize: '0.875rem',
+                      color: 'rgb(var(--text-secondary))',
+                      marginBottom: '0.25rem',
+                    }}>
+                      • {dep}
+                    </li>
+                  ))}
+                </ul>
+              </div>
             </div>
           )}
 
           {/* Context files */}
           {meta.contextFiles && meta.contextFiles.length > 0 && (
-            <div style={{ marginBottom: '2rem' }}>
-              <h3 style={{
-                fontSize: '1rem',
-                fontWeight: 'bold',
-                marginBottom: '0.5rem',
-                fontFamily: 'monospace',
-              }}>
-                Relevant Files
-              </h3>
-              <div style={{
-                display: 'flex',
-                flexWrap: 'wrap',
-                gap: '0.5rem',
-              }}>
-                {meta.contextFiles.map((file: string, i: number) => (
-                  <code key={i} style={{
-                    padding: '0.25rem 0.5rem',
-                    background: 'rgb(var(--surface-1))',
-                    border: '1px solid rgb(var(--border))',
-                    fontSize: '0.75rem',
-                    fontFamily: 'monospace',
-                  }}>
-                    {file}
-                  </code>
-                ))}
+            <div className={styles.row}>
+              <div className={styles.column}>
+                <h3>Relevant Files</h3>
+                <div style={{
+                  display: 'flex',
+                  flexWrap: 'wrap',
+                  gap: '0.5rem',
+                }}>
+                  {meta.contextFiles.map((file: string, i: number) => (
+                    <code key={i} style={{
+                      padding: '0.25rem 0.5rem',
+                      background: 'rgb(var(--surface-1))',
+                      border: '1px solid rgb(var(--border))',
+                      fontSize: '0.75rem',
+                      fontFamily: 'monospace',
+                    }}>
+                      {file}
+                    </code>
+                  ))}
+                </div>
               </div>
             </div>
           )}
 
           {/* AI Prompt */}
-          <div style={{ marginBottom: '2rem' }}>
-            <div style={{
-              display: 'flex',
-              justifyContent: 'space-between',
-              alignItems: 'center',
-              marginBottom: '1rem',
-            }}>
-              <h3 style={{
-                fontSize: '1rem',
-                fontWeight: 'bold',
-                fontFamily: 'monospace',
+          <div className={styles.row}>
+            <div className={styles.column}>
+              <div style={{
+                display: 'flex',
+                justifyContent: 'space-between',
+                alignItems: 'center',
+                marginBottom: '1rem',
               }}>
-                AI Assistant Prompt
-              </h3>
-              <button
-                onClick={copyPrompt}
-                style={{
-                  padding: '0.5rem 1rem',
-                  background: copied ? 'rgb(var(--accent-1))' : 'transparent',
-                  border: '1px solid rgb(var(--border))',
-                  color: copied ? 'rgb(var(--background-start))' : 'rgb(var(--text-primary))',
-                  fontFamily: 'monospace',
-                  fontSize: '0.875rem',
-                  cursor: 'pointer',
-                  transition: 'all 0.2s ease',
-                }}
-                onMouseEnter={(e) => {
-                  if (!copied) {
-                    e.currentTarget.style.background = 'rgb(var(--surface-1))'
-                  }
-                }}
-                onMouseLeave={(e) => {
-                  if (!copied) {
-                    e.currentTarget.style.background = 'transparent'
-                  }
-                }}
-              >
-                {copied ? '✓ Copied!' : 'Copy Prompt'}
-              </button>
+                <h3>AI Assistant Prompt</h3>
+                <button
+                  onClick={copyPrompt}
+                  style={{
+                    padding: '0.5rem 1rem',
+                    background: copied ? 'rgb(var(--accent-1))' : 'transparent',
+                    border: '1px solid rgb(var(--border))',
+                    color: copied ? 'rgb(var(--background-start))' : 'rgb(var(--text-primary))',
+                    fontFamily: 'monospace',
+                    fontSize: '0.875rem',
+                    cursor: 'pointer',
+                    transition: 'all 0.2s ease',
+                  }}
+                  onMouseEnter={(e) => {
+                    if (!copied) {
+                      e.currentTarget.style.background = 'rgb(var(--surface-1))'
+                    }
+                  }}
+                  onMouseLeave={(e) => {
+                    if (!copied) {
+                      e.currentTarget.style.background = 'transparent'
+                    }
+                  }}
+                >
+                  {copied ? '✓ Copied!' : 'Copy Prompt'}
+                </button>
+              </div>
+              <pre style={{
+                padding: '1.5rem',
+                background: 'rgb(var(--surface-1))',
+                border: '1px solid rgb(var(--border))',
+                fontFamily: 'monospace',
+                fontSize: '0.875rem',
+                lineHeight: '1.6',
+                overflowX: 'auto',
+                whiteSpace: 'pre-wrap',
+                wordWrap: 'break-word',
+              }}>
+                {meta.prompt || 'No prompt available'}
+              </pre>
             </div>
-            <pre style={{
-              padding: '1.5rem',
-              background: 'rgb(var(--surface-1))',
-              border: '1px solid rgb(var(--border))',
-              fontFamily: 'monospace',
-              fontSize: '0.875rem',
-              lineHeight: '1.6',
-              overflowX: 'auto',
-              whiteSpace: 'pre-wrap',
-              wordWrap: 'break-word',
-            }}>
-              {meta.prompt || 'No prompt available'}
-            </pre>
           </div>
 
           {/* Related commits */}
           {meta.relatedCommits && meta.relatedCommits.length > 0 && (
-            <div style={{ marginBottom: '2rem' }}>
-              <h3 style={{
-                fontSize: '1rem',
-                fontWeight: 'bold',
-                marginBottom: '0.5rem',
-                fontFamily: 'monospace',
-              }}>
-                Related Commits
-              </h3>
-              <div style={{
-                display: 'flex',
-                flexWrap: 'wrap',
-                gap: '0.5rem',
-              }}>
-                {meta.relatedCommits.map((sha: string, i: number) => (
-                  <code key={i} style={{
-                    padding: '0.25rem 0.5rem',
-                    background: 'rgb(var(--surface-1))',
-                    border: '1px solid rgb(var(--border))',
-                    fontSize: '0.75rem',
-                    fontFamily: 'monospace',
-                  }}>
-                    {sha}
-                  </code>
-                ))}
+            <div className={styles.row}>
+              <div className={styles.column}>
+                <h3>Related Commits</h3>
+                <div style={{
+                  display: 'flex',
+                  flexWrap: 'wrap',
+                  gap: '0.5rem',
+                }}>
+                  {meta.relatedCommits.map((sha: string, i: number) => (
+                    <code key={i} style={{
+                      padding: '0.25rem 0.5rem',
+                      background: 'rgb(var(--surface-1))',
+                      border: '1px solid rgb(var(--border))',
+                      fontSize: '0.75rem',
+                      fontFamily: 'monospace',
+                    }}>
+                      {sha}
+                    </code>
+                  ))}
+                </div>
               </div>
             </div>
           )}
         </div>
       </div>
 
-      <FooterNavigation />
+      <div className={styles.footer}>
+        <div className={styles.column}>
+          <FooterNavigation />
+        </div>
+      </div>
     </DefaultLayout>
   )
 }
