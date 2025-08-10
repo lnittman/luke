@@ -377,7 +377,11 @@ export default function LogsPage() {
         </div>
       </div>
 
-      <FooterNavigation />
+      <div className={styles.footer}>
+        <div className={styles.column}>
+          <FooterNavigation />
+        </div>
+      </div>
     </DefaultLayout>
   )
 }

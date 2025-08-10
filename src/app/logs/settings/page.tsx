@@ -29,22 +29,30 @@ export default async function LogsSettingsPage() {
       </div>
 
       <div className={styles.content}>
-        <div className={styles.innerViewport}>
-          {/* Page header with back button */}
+        <div className={styles.innerViewport} style={{ position: 'relative' }}>
+          {/* Back button - sticky under main header */}
           <div
             style={{
-              display: 'flex',
-              justifyContent: 'space-between',
-              alignItems: 'center',
+              position: 'sticky',
+              top: 0,
+              zIndex: 80,
               marginBottom: '1.5rem',
-              paddingBottom: '1rem',
+              padding: '0.75rem 24px',
               borderBottom: '1px solid rgb(var(--border))',
+              backgroundColor: 'rgb(var(--background-start))',
             }}
           >
             <Link
               aria-label="Back to logs"
-              className="back-button"
               href="/logs"
+              onMouseEnter={(e) => {
+                e.currentTarget.style.background = 'rgb(var(--surface-1))'
+                e.currentTarget.style.borderColor = 'rgb(var(--accent-1))'
+              }}
+              onMouseLeave={(e) => {
+                e.currentTarget.style.background = 'none'
+                e.currentTarget.style.borderColor = 'rgb(var(--border))'
+              }}
               style={{
                 display: 'inline-flex',
                 alignItems: 'center',
@@ -67,7 +75,11 @@ export default async function LogsSettingsPage() {
             </Link>
           </div>
 
-          <SettingsClient initialSettings={settings} />
+          <div className={styles.row}>
+            <div className={styles.column}>
+              <SettingsClient initialSettings={settings} />
+            </div>
+          </div>
         </div>
       </div>
 

@@ -1,20 +1,13 @@
 'use client'
 
-import { useState, useRef } from 'react'
+import { useState, useRef, useEffect } from 'react'
 import { AsciiEngine } from '@/lib/ascii-engine'
 import { generateAsciiArt } from './actions'
-import { Send, Download, Sparkles, ImageIcon, Loader2 } from 'lucide-react'
+import { Send, ImageIcon, Loader2, ChevronLeft, ChevronRight } from 'lucide-react'
 import { AnimatePresence, motion } from 'framer-motion'
 import { BlockLoader } from '@/components/shared/block-loader'
 import { DefaultLayout } from '@/components/shared/default-layout'
 import { ThemeSwitcher } from '@/components/shared/theme-switcher'
-import {
-  Sheet,
-  SheetContent,
-  SheetHeader,
-  SheetTitle,
-  SheetTrigger,
-} from '@/components/ui/shadcn/sheet'
 import styles from '@/components/shared/root.module.scss'
 
 interface AsciiGeneration {
@@ -27,9 +20,9 @@ interface AsciiGeneration {
 export default function AsciiPage() {
   const [prompt, setPrompt] = useState('')
   const [generations, setGenerations] = useState<AsciiGeneration[]>([])
-  const [currentGeneration, setCurrentGeneration] = useState<AsciiGeneration | null>(null)
+  const [currentIndex, setCurrentIndex] = useState(0)
   const [isGenerating, setIsGenerating] = useState(false)
-  const [historyOpen, setHistoryOpen] = useState(false)
+  const [showMiniPreview, setShowMiniPreview] = useState(false)
   const inputRef = useRef<HTMLInputElement>(null)
   const fileInputRef = useRef<HTMLInputElement>(null)
 
@@ -47,8 +40,8 @@ export default function AsciiPage() {
         timestamp: new Date()
       }
       
-      setGenerations(prev => [generation, ...prev])
-      setCurrentGeneration(generation)
+      setGenerations(prev => [...prev, generation])
+      setCurrentIndex(generations.length) // Set to new generation
       setPrompt('')
     } catch (error) {
       console.error('Failed to generate ASCII art:', error)
@@ -65,24 +58,39 @@ export default function AsciiPage() {
     const reader = new FileReader()
     reader.onload = async () => {
       setPrompt(`Convert this image to ASCII art: ${file.name}`)
-      // In production, you'd send the base64 to the API
       handleGenerate()
     }
     reader.readAsDataURL(file)
   }
 
-  const exportAnimation = () => {
-    if (!currentGeneration) return
-    
-    const json = JSON.stringify(currentGeneration.frames, null, 2)
-    const blob = new Blob([json], { type: 'application/json' })
-    const url = URL.createObjectURL(blob)
-    const a = document.createElement('a')
-    a.href = url
-    a.download = `ascii-art-${currentGeneration.id.slice(0, 8)}.json`
-    a.click()
-    URL.revokeObjectURL(url)
+  const navigatePrevious = () => {
+    if (generations.length === 0) return
+    setCurrentIndex((prev) => (prev > 0 ? prev - 1 : generations.length - 1))
   }
+
+  const navigateNext = () => {
+    if (generations.length === 0) return
+    setCurrentIndex((prev) => (prev < generations.length - 1 ? prev + 1 : 0))
+  }
+
+  const currentGeneration = generations[currentIndex] || null
+
+  // Calculate container height
+  const [containerHeight, setContainerHeight] = useState('100vh')
+  useEffect(() => {
+    const updateHeight = () => {
+      // Account for header, prompt bar, and footer
+      const headerHeight = 80 // Approximate header height
+      const promptBarHeight = 60 // Prompt bar height
+      const footerHeight = 80 // Footer height
+      const availableHeight = window.innerHeight - headerHeight - promptBarHeight - footerHeight
+      setContainerHeight(`${availableHeight}px`)
+    }
+    
+    updateHeight()
+    window.addEventListener('resize', updateHeight)
+    return () => window.removeEventListener('resize', updateHeight)
+  }, [])
 
   return (
     <DefaultLayout>
@@ -97,18 +105,16 @@ export default function AsciiPage() {
         </div>
       </div>
 
-      {/* Content */}
-      <div className={styles.content}>
-        <div className={styles.innerViewport} style={{ position: 'relative' }}>
+      {/* Content - No scroll */}
+      <div className={styles.content} style={{ overflow: 'hidden' }}>
+        <div className={styles.innerViewport} style={{ display: 'flex', flexDirection: 'column', height: '100%' }}>
           {/* Fixed prompt bar under header */}
           <div
             style={{
-              position: 'sticky',
-              top: 0,
-              zIndex: 80,
               borderBottom: '1px solid rgb(var(--border))',
               backgroundColor: 'rgb(var(--background-start))',
               padding: '0.75rem 24px',
+              flexShrink: 0,
             }}
           >
             <div style={{ display: 'flex', gap: '0.5rem', alignItems: 'center' }}>
@@ -214,140 +220,19 @@ export default function AsciiPage() {
                   </button>
                 </div>
               </div>
-              <Sheet open={historyOpen} onOpenChange={setHistoryOpen}>
-                <SheetTrigger asChild>
-                  <button
-                    onMouseEnter={(e) => {
-                      e.currentTarget.style.background = 'rgb(var(--surface-1))'
-                      e.currentTarget.style.borderColor = 'rgb(var(--accent-1))'
-                    }}
-                    onMouseLeave={(e) => {
-                      e.currentTarget.style.background = 'none'
-                      e.currentTarget.style.borderColor = 'rgb(var(--border))'
-                    }}
-                    style={{
-                      display: 'flex',
-                      alignItems: 'center',
-                      justifyContent: 'center',
-                      width: '2.5rem',
-                      height: '2.5rem',
-                      background: 'none',
-                      border: '1px solid rgb(var(--border))',
-                      color: 'rgb(var(--text-primary))',
-                      cursor: 'pointer',
-                      transition: 'all 0.2s ease',
-                      fontFamily: 'monospace',
-                      padding: 0,
-                      fontSize: '1rem',
-                    }}
-                    title="history"
-                  >
-                    ⟲
-                  </button>
-                </SheetTrigger>
-                <SheetContent side="right" className="w-[400px] sm:w-[540px]">
-                  <SheetHeader>
-                    <SheetTitle>generation history</SheetTitle>
-                  </SheetHeader>
-                  <div style={{ marginTop: '1.5rem', overflowY: 'auto', maxHeight: 'calc(100vh - 200px)' }}>
-                    {generations.length === 0 ? (
-                      <div
-                        style={{
-                          textAlign: 'center',
-                          padding: '3rem 1rem',
-                          fontFamily: 'monospace',
-                          fontSize: '0.875rem',
-                          color: 'rgb(var(--text-secondary))',
-                        }}
-                      >
-                        no generations yet
-                      </div>
-                    ) : (
-                      <div style={{ display: 'flex', flexDirection: 'column', gap: '0.5rem' }}>
-                        {generations.map((gen) => (
-                          <button
-                            key={gen.id}
-                            onClick={() => {
-                              setCurrentGeneration(gen)
-                              setHistoryOpen(false)
-                            }}
-                            onMouseEnter={(e) => {
-                              e.currentTarget.style.background = 'rgb(var(--surface-1))'
-                              e.currentTarget.style.borderColor = 'rgb(var(--accent-1))'
-                            }}
-                            onMouseLeave={(e) => {
-                              e.currentTarget.style.background = currentGeneration?.id === gen.id ? 'rgb(var(--surface-1))' : 'transparent'
-                              e.currentTarget.style.borderColor = currentGeneration?.id === gen.id ? 'rgb(var(--accent-1))' : 'rgb(var(--border))'
-                            }}
-                            style={{
-                              width: '100%',
-                              padding: '1rem',
-                              textAlign: 'left',
-                              border: `1px solid ${
-                                currentGeneration?.id === gen.id
-                                  ? 'rgb(var(--accent-1))'
-                                  : 'rgb(var(--border))'
-                              }`,
-                              background: currentGeneration?.id === gen.id ? 'rgb(var(--surface-1))' : 'transparent',
-                              cursor: 'pointer',
-                              transition: 'all 0.2s ease',
-                              fontFamily: 'monospace',
-                            }}
-                          >
-                            <div style={{ fontSize: '0.875rem', marginBottom: '0.25rem' }}>
-                              {gen.prompt}
-                            </div>
-                            <div
-                              style={{
-                                fontSize: '0.75rem',
-                                color: 'rgb(var(--text-secondary))',
-                              }}
-                            >
-                              {new Date(gen.timestamp).toLocaleTimeString()} • {gen.frames.length} frames
-                            </div>
-                          </button>
-                        ))}
-                      </div>
-                    )}
-                  </div>
-                </SheetContent>
-              </Sheet>
-              {currentGeneration && (
-                <button
-                  onClick={exportAnimation}
-                  onMouseEnter={(e) => {
-                    e.currentTarget.style.background = 'rgb(var(--surface-1))'
-                    e.currentTarget.style.borderColor = 'rgb(var(--accent-1))'
-                  }}
-                  onMouseLeave={(e) => {
-                    e.currentTarget.style.background = 'none'
-                    e.currentTarget.style.borderColor = 'rgb(var(--border))'
-                  }}
-                  style={{
-                    display: 'flex',
-                    alignItems: 'center',
-                    justifyContent: 'center',
-                    width: '2.5rem',
-                    height: '2.5rem',
-                    background: 'none',
-                    border: '1px solid rgb(var(--border))',
-                    color: 'rgb(var(--text-primary))',
-                    cursor: 'pointer',
-                    transition: 'all 0.2s ease',
-                    fontFamily: 'monospace',
-                    padding: 0,
-                    fontSize: '1rem',
-                  }}
-                  title="export"
-                >
-                  <Download className="w-4 h-4" />
-                </button>
-              )}
             </div>
           </div>
 
-          {/* Display Area */}
-          <div style={{ flex: 1, padding: '24px', overflow: 'auto' }}>
+          {/* Display Area - Fixed height, no scroll */}
+          <div style={{ 
+            flex: 1, 
+            padding: '24px', 
+            overflow: 'hidden',
+            display: 'flex',
+            alignItems: 'center',
+            justifyContent: 'center',
+            position: 'relative',
+          }}>
             <AnimatePresence mode="wait">
               {isGenerating ? (
                 <motion.div
@@ -359,6 +244,7 @@ export default function AsciiPage() {
                     display: 'flex',
                     alignItems: 'center',
                     justifyContent: 'center',
+                    width: '100%',
                     height: '100%',
                   }}
                 >
@@ -372,17 +258,25 @@ export default function AsciiPage() {
               ) : currentGeneration ? (
                 <motion.div
                   key={currentGeneration.id}
-                  initial={{ opacity: 0, y: 20 }}
-                  animate={{ opacity: 1, y: 0 }}
-                  exit={{ opacity: 0, y: -20 }}
-                  style={{ height: '100%', display: 'flex', flexDirection: 'column' }}
+                  initial={{ opacity: 0, x: 100 }}
+                  animate={{ opacity: 1, x: 0 }}
+                  exit={{ opacity: 0, x: -100 }}
+                  transition={{ type: 'spring', stiffness: 300, damping: 30 }}
+                  style={{ 
+                    width: '100%', 
+                    height: '100%',
+                    display: 'flex',
+                    alignItems: 'center',
+                    justifyContent: 'center',
+                  }}
                 >
                   <div
                     style={{
                       border: '1px solid rgb(var(--border))',
                       backgroundColor: 'rgb(var(--surface-1))',
                       padding: '1.5rem',
-                      flex: 1,
+                      maxWidth: '90%',
+                      maxHeight: '90%',
                       display: 'flex',
                       flexDirection: 'column',
                     }}
@@ -392,12 +286,11 @@ export default function AsciiPage() {
                         {currentGeneration.prompt}
                       </p>
                       <p style={{ fontSize: '0.75rem', color: 'rgb(var(--text-secondary))', fontFamily: 'monospace' }}>
-                        {currentGeneration.frames.length} frames • {new Date(currentGeneration.timestamp).toLocaleTimeString()}
+                        {currentIndex + 1} of {generations.length} • {currentGeneration.frames.length} frames
                       </p>
                     </div>
                     <div
                       style={{
-                        flex: 1,
                         backgroundColor: 'rgb(var(--background-start))',
                         border: '1px solid rgb(var(--border))',
                         padding: '1.5rem',
@@ -431,24 +324,11 @@ export default function AsciiPage() {
                     display: 'flex',
                     alignItems: 'center',
                     justifyContent: 'center',
+                    width: '100%',
                     height: '100%',
                   }}
                 >
                   <div style={{ textAlign: 'center', maxWidth: '28rem' }}>
-                    <div
-                      style={{
-                        width: '4rem',
-                        height: '4rem',
-                        border: '1px solid rgb(var(--border))',
-                        backgroundColor: 'rgb(var(--surface-1))',
-                        display: 'flex',
-                        alignItems: 'center',
-                        justifyContent: 'center',
-                        margin: '0 auto 1.5rem',
-                      }}
-                    >
-                      <Sparkles className="w-8 h-8" style={{ color: 'rgb(var(--accent-1))' }} />
-                    </div>
                     <h2 style={{ fontSize: '1.25rem', fontFamily: 'monospace', marginBottom: '0.5rem' }}>
                       create ascii art with ai
                     </h2>
@@ -457,7 +337,10 @@ export default function AsciiPage() {
                     </p>
                     <div style={{ display: 'flex', gap: '0.75rem', justifyContent: 'center' }}>
                       <button
-                        onClick={() => setPrompt('Create a matrix rain effect with falling green characters')}
+                        onClick={() => {
+                          setPrompt('Create a matrix rain effect with falling green characters')
+                          inputRef.current?.focus()
+                        }}
                         onMouseEnter={(e) => {
                           e.currentTarget.style.background = 'rgb(var(--surface-1))'
                           e.currentTarget.style.borderColor = 'rgb(var(--accent-1))'
@@ -479,7 +362,10 @@ export default function AsciiPage() {
                         try "matrix rain"
                       </button>
                       <button
-                        onClick={() => setPrompt('Generate ocean waves with ASCII characters')}
+                        onClick={() => {
+                          setPrompt('Generate ocean waves with ASCII characters')
+                          inputRef.current?.focus()
+                        }}
                         onMouseEnter={(e) => {
                           e.currentTarget.style.background = 'rgb(var(--surface-1))'
                           e.currentTarget.style.borderColor = 'rgb(var(--accent-1))'
@@ -509,7 +395,132 @@ export default function AsciiPage() {
         </div>
       </div>
 
-      {/* No footer for ASCII page */}
+      {/* Custom Footer for ASCII page */}
+      <div className={styles.footer}>
+        <div className={styles.column}>
+          <div style={{ 
+            display: 'flex', 
+            alignItems: 'center', 
+            justifyContent: 'space-between',
+            width: '100%',
+          }}>
+            {/* Left side - Navigation arrows */}
+            <div style={{ display: 'flex', gap: '0.5rem' }}>
+              <button
+                onClick={navigatePrevious}
+                disabled={generations.length === 0}
+                onMouseEnter={(e) => {
+                  if (generations.length > 0) {
+                    e.currentTarget.style.background = 'rgb(var(--surface-1))'
+                    e.currentTarget.style.borderColor = 'rgb(var(--accent-1))'
+                  }
+                }}
+                onMouseLeave={(e) => {
+                  e.currentTarget.style.background = 'none'
+                  e.currentTarget.style.borderColor = 'rgb(var(--border))'
+                }}
+                style={{
+                  display: 'flex',
+                  alignItems: 'center',
+                  justifyContent: 'center',
+                  width: '2.5rem',
+                  height: '2.5rem',
+                  background: 'none',
+                  border: '1px solid rgb(var(--border))',
+                  color: generations.length === 0 ? 'rgb(var(--text-secondary))' : 'rgb(var(--text-primary))',
+                  cursor: generations.length === 0 ? 'not-allowed' : 'pointer',
+                  transition: 'all 0.2s ease',
+                  opacity: generations.length === 0 ? 0.5 : 1,
+                  padding: 0,
+                }}
+                title="Previous"
+              >
+                <ChevronLeft className="w-4 h-4" />
+              </button>
+              <button
+                onClick={navigateNext}
+                disabled={generations.length === 0}
+                onMouseEnter={(e) => {
+                  if (generations.length > 0) {
+                    e.currentTarget.style.background = 'rgb(var(--surface-1))'
+                    e.currentTarget.style.borderColor = 'rgb(var(--accent-1))'
+                  }
+                }}
+                onMouseLeave={(e) => {
+                  e.currentTarget.style.background = 'none'
+                  e.currentTarget.style.borderColor = 'rgb(var(--border))'
+                }}
+                style={{
+                  display: 'flex',
+                  alignItems: 'center',
+                  justifyContent: 'center',
+                  width: '2.5rem',
+                  height: '2.5rem',
+                  background: 'none',
+                  border: '1px solid rgb(var(--border))',
+                  color: generations.length === 0 ? 'rgb(var(--text-secondary))' : 'rgb(var(--text-primary))',
+                  cursor: generations.length === 0 ? 'not-allowed' : 'pointer',
+                  transition: 'all 0.2s ease',
+                  opacity: generations.length === 0 ? 0.5 : 1,
+                  padding: 0,
+                }}
+                title="Next"
+              >
+                <ChevronRight className="w-4 h-4" />
+              </button>
+            </div>
+
+            {/* Right side - Mini ASCII preview */}
+            <button
+              onClick={() => setShowMiniPreview(!showMiniPreview)}
+              onMouseEnter={(e) => {
+                e.currentTarget.style.borderColor = 'rgb(var(--accent-1))'
+              }}
+              onMouseLeave={(e) => {
+                e.currentTarget.style.borderColor = 'rgb(var(--border))'
+              }}
+              style={{
+                position: 'relative',
+                width: '120px',
+                height: '2.5rem',
+                border: '1px solid rgb(var(--border))',
+                background: 'rgb(var(--surface-1))',
+                cursor: 'pointer',
+                transition: 'all 0.2s ease',
+                overflow: 'hidden',
+                padding: '0.25rem',
+                display: 'flex',
+                alignItems: 'center',
+                justifyContent: 'center',
+              }}
+              title="ASCII Preview"
+            >
+              {currentGeneration && currentGeneration.frames.length > 0 ? (
+                <div style={{
+                  fontSize: '4px',
+                  lineHeight: '4px',
+                  color: 'rgb(var(--accent-1))',
+                  fontFamily: 'monospace',
+                  opacity: 0.8,
+                  whiteSpace: 'pre',
+                  overflow: 'hidden',
+                  textOverflow: 'clip',
+                }}>
+                  {currentGeneration.frames[0].substring(0, 200)}
+                </div>
+              ) : (
+                <span style={{
+                  fontFamily: 'monospace',
+                  fontSize: '0.625rem',
+                  color: 'rgb(var(--text-secondary))',
+                }}>
+                  ascii
+                </span>
+              )}
+            </button>
+          </div>
+        </div>
+      </div>
     </DefaultLayout>
   )
 }
