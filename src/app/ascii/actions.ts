@@ -9,7 +9,7 @@ export async function generateAsciiArt(prompt: string) {
   try {
     // Generate ASCII art description using AI
     const { text } = await generateText({
-      model: openRouter('anthropic/claude-3.5-sonnet'),
+      model: openRouter('anthropic/claude-sonnet-4'),
       prompt: `You are an ASCII art expert. Based on this prompt, describe what ASCII animation to create. Be specific about:
 1. Animation type (matrix, wave, data flow, pulse, dots, custom pattern)
 2. Frame count (10-60 frames)
@@ -54,7 +54,7 @@ Respond in JSON format:
       default:
         // For custom, generate using AI
         const { text: customFrames } = await generateText({
-          model: openRouter('anthropic/claude-3.5-sonnet'),
+          model: openRouter('anthropic/claude-sonnet-4'),
           prompt: `Create ${config.frameCount} ASCII art animation frames.
 Each frame should be ${config.width} characters wide and ${config.height} lines tall.
 Use these characters: ${config.characters.join(', ')}

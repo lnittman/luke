@@ -101,15 +101,32 @@ export const analyzeCommitsStep = createStep({
 
             if (!commitDetails) return
 
-            // Prepare diff context for analysis (limit to 15 files for token management)
+            // Prepare diff context for analysis (include all files but limit huge diffs)
+            const MAX_DIFF_SIZE = 3000 // Characters per file diff
+            const MAX_TOTAL_DIFF = 50000 // Total diff size to avoid context overflow
+            
+            let totalDiffSize = 0
             const diffContext = commitDetails.files
-              .slice(0, 15)
-              .map((file) => `
+              .map((file) => {
+                // Skip if we've already hit our total limit
+                if (totalDiffSize >= MAX_TOTAL_DIFF) return null
+                
+                const patch = file.patch || ''
+                const truncatedPatch = patch.length > MAX_DIFF_SIZE 
+                  ? patch.slice(0, MAX_DIFF_SIZE) + '\n... [diff truncated]'
+                  : patch
+                
+                const fileDiff = `
 File: ${file.filename}
 Status: ${file.status}
 Changes: +${file.additions} -${file.deletions}
-${file.patch ? `\nDiff:\n${file.patch.slice(0, 2000)}` : 'No diff available'}
-              `.trim())
+${truncatedPatch ? `\nDiff:\n${truncatedPatch}` : 'No diff available'}
+                `.trim()
+                
+                totalDiffSize += fileDiff.length
+                return fileDiff
+              })
+              .filter(Boolean)
               .join('\n\n---\n\n')
 
             const analysisPrompt = `

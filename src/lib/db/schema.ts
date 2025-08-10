@@ -123,7 +123,7 @@ export const userPreferences = pgTable('user_preferences', {
   includePrivateRepos: boolean('include_private_repos').default(true),
   includeForkedRepos: boolean('include_forked_repos').default(false),
   minCommitSize: integer('min_commit_size').default(1),
-  aiModel: text('ai_model').default('anthropic/claude-3.5-sonnet'),
+  aiModel: text('ai_model').default('anthropic/claude-sonnet-4'),
   aiTemperature: integer('ai_temperature').default(7),
   aiVerbosity: text('ai_verbosity')
     .$type<'concise' | 'standard' | 'detailed'>()

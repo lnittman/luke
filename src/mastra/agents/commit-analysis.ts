@@ -19,7 +19,7 @@ export const commitAnalysisAgent = new Agent({
   id: 'commit-analysis',
   name: 'Commit Analysis Agent',
   description: 'Analyzes individual git commits with deep code understanding',
-  model: openrouter('anthropic/claude-3.5-sonnet'),
+  model: openrouter('anthropic/claude-sonnet-4'),
   instructions,
   defaultGenerateOptions: {
     output: commitAnalysisSchema,

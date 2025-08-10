@@ -18,7 +18,7 @@ export const repositoryAnalysisAgent = new Agent({
   id: 'repository-analysis',
   name: 'Repository Analysis Agent',
   description: 'Synthesizes commit analyses into repository-level insights',
-  model: openrouter('anthropic/claude-3.5-sonnet'),
+  model: openrouter('anthropic/claude-sonnet-4'),
   instructions,
   defaultGenerateOptions: {
     output: repoAnalysisSchema,

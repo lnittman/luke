@@ -22,7 +22,7 @@ export const codeAnalysisAgent = new Agent({
   name: 'Deep Code Analysis Agent',
   description:
     'Performs deep technical analysis of code changes, patterns, and quality',
-  model: openrouter('anthropic/claude-3.5-sonnet'),
+  model: openrouter('anthropic/claude-sonnet-4'),
   tools: {
     analyzeCommitDiffTool,
     detectCodePatternsTool,
@@ -91,7 +91,7 @@ export const repoContextAgent = new Agent({
   name: 'Repository Context Agent',
   description:
     'Understands repository structure, dependencies, and architectural decisions',
-  model: openrouter('anthropic/claude-3.5-sonnet'),
+  model: openrouter('anthropic/claude-sonnet-4'),
   tools: {
     analyzeRepositoryContextTool,
     fetchRepoInfoTool,
@@ -158,7 +158,7 @@ export const activitySynthesisAgent = new Agent({
   name: 'Activity Synthesis Agent',
   description:
     'Synthesizes all GitHub activity into comprehensive, insightful reports',
-  model: openrouter('anthropic/claude-3.5-sonnet'),
+  model: openrouter('anthropic/claude-sonnet-4'),
   tools: {
     fetchUserActivityTool,
     analyzePullRequestTool,
@@ -240,7 +240,7 @@ export const prReviewAgent = new Agent({
   name: 'Pull Request Review Agent',
   description:
     'Performs comprehensive PR analysis including code review insights',
-  model: openrouter('anthropic/claude-3.5-sonnet'),
+  model: openrouter('anthropic/claude-sonnet-4'),
   tools: {
     analyzePullRequestTool,
     analyzeCommitDiffTool,
@@ -323,7 +323,7 @@ export const technicalDebtAgent = new Agent({
   name: 'Technical Debt Tracker',
   description:
     'Identifies, tracks, and prioritizes technical debt in the codebase',
-  model: openrouter('anthropic/claude-3.5-sonnet'),
+  model: openrouter('anthropic/claude-sonnet-4'),
   tools: {
     analyzeCommitDiffTool,
     detectCodePatternsTool,
@@ -465,7 +465,7 @@ Always reference the specific rule or focus area in your findings.
     id: 'custom-rules-agent',
     name: 'Custom Rules Agent',
     description: 'Applies user-defined rules and focus areas to analysis',
-    model: openrouter('anthropic/claude-3.5-sonnet'),
+    model: openrouter('anthropic/claude-sonnet-4'),
     tools: {
       analyzeCommitDiffTool,
       detectCodePatternsTool,

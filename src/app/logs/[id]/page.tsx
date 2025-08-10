@@ -508,7 +508,7 @@ export default function LogDetailPage() {
               {suggestions.length > 0 && (
                 <div className={styles.row}>
                   <div className={styles.column}>
-                    <h3>AI Suggestions ({suggestions.length})</h3>
+                    <h3>Suggestions ({suggestions.length})</h3>
                     <div
                       style={{
                         display: 'grid',

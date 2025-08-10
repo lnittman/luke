@@ -18,7 +18,7 @@ export const globalAnalysisAgent = new Agent({
   id: 'global-analysis',
   name: 'Global Analysis Agent',
   description: 'Creates comprehensive daily summaries with contextual suggestions',
-  model: openrouter('anthropic/claude-3.5-sonnet'),
+  model: openrouter('anthropic/claude-sonnet-4'),
   instructions,
   defaultGenerateOptions: {
     output: globalAnalysisSchema,

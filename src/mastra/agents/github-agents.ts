@@ -24,7 +24,7 @@ export const commitAnalyzerAgent = new Agent({
   5. Summarize the work in a clear, concise manner
   
   Focus on technical accuracy and provide meaningful insights about the development work.`,
-  model: openrouter('anthropic/claude-3.5-sonnet'),
+  model: openrouter('anthropic/claude-sonnet-4'),
   tools: { fetchCommitDetailsTool },
 })
 
@@ -43,7 +43,7 @@ export const activitySummarizerAgent = new Agent({
   Write in a professional but conversational tone, as if you're giving a standup update.
   Focus on what was accomplished, not just what was done.
   Make it interesting and highlight the impact of the work.`,
-  model: openrouter('anthropic/claude-3.5-sonnet'),
+  model: openrouter('anthropic/claude-sonnet-4'),
   tools: { fetchUserActivityTool, fetchRepoInfoTool },
 })
 
@@ -60,6 +60,6 @@ export const repoAnalyzerAgent = new Agent({
   5. Provide context for development work
   
   Be technical but accessible, providing insights that help understand the bigger picture.`,
-  model: openrouter('anthropic/claude-3.5-sonnet'),
+  model: openrouter('anthropic/claude-sonnet-4'),
   tools: { fetchRepoInfoTool },
 })
