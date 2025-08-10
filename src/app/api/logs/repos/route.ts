@@ -63,7 +63,7 @@ export async function GET() {
               watchers_count: repo.watchers_count,
               forks_count: repo.forks_count,
             },
-            lastActivityAt: repo.pushed_at ? new Date(repo.pushed_at) : null,
+            lastActivity: repo.pushed_at ? new Date(repo.pushed_at) : null,
             updatedAt: new Date(),
           })
           .where(eq(repositories.id, existing.id))
@@ -85,7 +85,7 @@ export async function GET() {
             watchers_count: repo.watchers_count,
             forks_count: repo.forks_count,
           },
-          lastActivityAt: repo.pushed_at ? new Date(repo.pushed_at) : null,
+          lastActivity: repo.pushed_at ? new Date(repo.pushed_at) : null,
         })
       }
     }
