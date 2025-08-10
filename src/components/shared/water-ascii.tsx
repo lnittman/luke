@@ -1,66 +1,53 @@
 'use client'
 
-import { type CSSProperties, useEffect, useRef } from 'react'
-import waterData from '../app/logs/water-data.json' with { type: 'json' }
+import { type CSSProperties } from 'react'
+import { AsciiEngine } from '@/lib/ascii-engine'
+import { generateWaterFrames, generateOceanWavesFrames, generateRainFrames } from '@/lib/ascii-engine/generators/water'
 
 interface WaterAsciiProps {
   className?: string
   style?: CSSProperties
-  frameIntervalMs?: number
-  lineStart?: number // inclusive
-  lineEnd?: number // exclusive
-  stripDigits?: boolean // remove 0-9 and dots
+  type?: 'water' | 'ocean' | 'rain'
+  width?: number
+  height?: number
+  fps?: number
 }
 
 export function WaterAscii({
   className = '',
   style,
-  frameIntervalMs = 150,
-  lineStart,
-  lineEnd,
-  stripDigits = false,
+  type = 'water',
+  width = 80,
+  height = 30,
+  fps = 8,
 }: WaterAsciiProps) {
-  const ref = useRef<HTMLPreElement>(null)
-
-  useEffect(() => {
-    let index = 0
-
-    const renderFrame = () => {
-      if (!ref.current) return
-      let frame = waterData[index] as string
-
-      if (typeof lineStart === 'number' || typeof lineEnd === 'number') {
-        const lines = frame.split('\n')
-        const sliced = lines.slice(lineStart ?? 0, lineEnd ?? lines.length)
-        frame = sliced.join('\n')
-      }
-
-      if (stripDigits) {
-        frame = frame.replace(/[0-9.]/g, ' ')
-      }
-
-      ref.current.textContent = frame
-      index = (index + 1) % waterData.length
+  // Generate frames based on type
+  const frames = (() => {
+    switch (type) {
+      case 'ocean':
+        return generateOceanWavesFrames(width, height, 40)
+      case 'rain':
+        return generateRainFrames(width, height, 30)
+      default:
+        return generateWaterFrames(width, height, 30)
     }
-
-    const interval = setInterval(renderFrame, frameIntervalMs)
-    renderFrame()
-
-    return () => clearInterval(interval)
-  }, [frameIntervalMs, lineStart, lineEnd, stripDigits])
+  })()
 
   return (
-    <pre
+    <AsciiEngine
+      frames={frames}
+      fps={fps}
+      loop={true}
+      autoPlay={true}
       className={className}
-      ref={ref}
       style={{
         fontFamily: 'monospace',
         fontSize: '0.875rem',
         lineHeight: '1.2',
-        margin: 0,
-        whiteSpace: 'pre',
         color: 'rgb(var(--accent-2))',
         opacity: 0.8,
+        width: '100%',
+        height: '100%',
         ...style,
       }}
     />

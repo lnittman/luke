@@ -11,10 +11,7 @@ import {
   logsSearchSelectedIndexAtom,
 } from '@/atoms/logs-search'
 import { TextFade } from '@/components/shared/text-fade'
-import { AsciiEngine } from '@/lib/ascii-engine'
-import searchBackgroundFrames from '@/lib/ascii-engine/data/search-background.json' with {
-  type: 'json',
-}
+import { WaterAscii } from '@/components/shared/water-ascii'
 import type { ActivityLog } from '@/lib/db'
 
 interface LogsSearchModalProps {
@@ -329,27 +326,28 @@ export function LogsSearchModal({ logs = [] }: LogsSearchModalProps) {
               </div>
             </div>
 
-            {/* ASCII background animation */}
+            {/* ASCII background animation - full container water effect */}
             <div
               className="pointer-events-none absolute inset-0"
               style={{
-                display: 'flex',
-                alignItems: 'center',
-                justifyContent: 'center',
-                padding: '4rem',
+                overflow: 'hidden',
               }}
             >
-              <AsciiEngine
-                fps={8}
-                frames={searchBackgroundFrames}
-                loop={true}
+              <WaterAscii
+                type="water"
+                width={150}
+                height={50}
+                fps={12}
                 style={{
                   fontSize: '12px',
                   lineHeight: '14px',
-                  opacity: 0.03,
+                  opacity: 0.04,
                   color: 'rgb(var(--accent-1))',
                   width: '100%',
-                  textAlign: 'center',
+                  height: '100%',
+                  position: 'absolute',
+                  inset: 0,
+                  padding: '2rem',
                 }}
               />
             </div>

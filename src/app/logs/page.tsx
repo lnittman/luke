@@ -100,7 +100,12 @@ export default function LogsPage() {
         <div className={styles.innerViewport} style={{ position: 'relative' }}>
           {(loading || logs.length === 0) && (
             <div
-              style={{ position: 'absolute', inset: 0, pointerEvents: 'none' }}
+              style={{ 
+                position: 'absolute', 
+                inset: 0, 
+                pointerEvents: 'none',
+                overflow: 'hidden',
+              }}
             >
               <div
                 style={{
@@ -109,30 +114,23 @@ export default function LogsPage() {
                   right: 0,
                   bottom: 0,
                   top: headerHeight,
+                  padding: '2rem',
                 }}
               >
-                <div
+                <WaterAscii
+                  type={loading ? 'rain' : 'ocean'}
+                  width={120}
+                  height={40}
+                  fps={10}
                   style={{
-                    position: 'absolute',
-                    left: 8,
-                    right: 8,
-                    bottom: 8,
-                    top: 8,
-                    opacity: 0.08,
-                    display: 'flex',
-                    alignItems: 'center',
-                    justifyContent: 'center',
+                    fontSize: '10px',
+                    lineHeight: '12px',
+                    width: '100%',
+                    height: '100%',
+                    opacity: 0.06,
+                    color: 'rgb(var(--accent-1))',
                   }}
-                >
-                  <WaterAscii
-                    style={{
-                      fontSize: '8px',
-                      lineHeight: '8px',
-                      width: '100%',
-                      height: '100%',
-                    }}
-                  />
-                </div>
+                />
               </div>
             </div>
           )}
