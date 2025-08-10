@@ -235,9 +235,12 @@ export default function LogsPage() {
                 display: 'flex',
                 gap: '0.5rem',
                 alignItems: 'center',
+                paddingLeft: '1rem',
               }}
             >
-              <RepoPicker selectedRepo={selectedRepo} onRepoSelect={setSelectedRepo} isMobile={isMobile} />
+              {process.env.NODE_ENV !== 'production' && (
+                <RepoPicker selectedRepo={selectedRepo} onRepoSelect={setSelectedRepo} isMobile={isMobile} />
+              )}
               {process.env.NODE_ENV !== 'production' && (
                 <Link
                   href="/logs/settings"

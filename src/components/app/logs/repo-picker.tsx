@@ -35,15 +35,15 @@ export function RepoPicker({
   const fetchRepositories = async () => {
     try {
       setLoading(true)
-      const response = await fetch('/api/logs/settings')
+      const response = await fetch('/api/logs/repos')
       const data = await response.json()
 
-      if (data.repositories) {
-        const repos = data.repositories.map((repo: any) => ({
+      if (data.repos) {
+        const repos = data.repos.map((repo: any) => ({
           id: repo.id,
           name: repo.name,
           owner: repo.owner,
-          fullName: `${repo.owner}/${repo.name}`,
+          fullName: repo.fullName,
         }))
         setRepositories(repos)
       }
@@ -130,10 +130,12 @@ export function RepoPicker({
               }}
               style={{
                 background: 'rgb(var(--background-start))',
-                top: '5rem', // Below header (header height + border)
+                top: 0,
                 left: 0,
                 right: 0,
-                bottom: '5rem', // Above footer
+                bottom: 0,
+                position: 'fixed',
+                zIndex: 100,
               }}
               transition={{ duration: 0 }}
             >
@@ -141,13 +143,15 @@ export function RepoPicker({
                 className="relative z-[101] flex h-full w-full flex-col"
                 onClick={(e) => e.stopPropagation()}
               >
-                {/* Header with search */}
+                {/* Header with search - match logs page exactly */}
                 <div
                   style={{
-                    padding: '0.75rem 1rem',
+                    padding: '0.75rem 24px',
                     display: 'flex',
                     alignItems: 'center',
-                    gap: '0.75rem',
+                    gap: '0.5rem',
+                    borderBottom: '1px solid rgb(var(--border))',
+                    backgroundColor: 'rgb(var(--background-start))',
                   }}
                 >
                   <button

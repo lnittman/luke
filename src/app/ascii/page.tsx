@@ -258,7 +258,7 @@ export default function AsciiPage() {
                   }}
                   title="Upload image"
                 >
-                  {isMobile ? '📷' : <span style={{ fontSize: '0.75rem' }}>IMG</span>}
+                  <span style={{ fontSize: isMobile ? '1rem' : '0.75rem' }}>□</span>
                 </button>
 
                 {currentGeneration && (
@@ -289,7 +289,7 @@ export default function AsciiPage() {
                       }}
                       title="Copy to clipboard"
                     >
-                      {isMobile ? '📋' : <span style={{ fontSize: '0.75rem' }}>CPY</span>}
+                      <span style={{ fontSize: isMobile ? '1rem' : '0.75rem' }}>{isMobile ? '⊡' : 'CPY'}</span>
                     </button>
 
                     <button
@@ -318,7 +318,7 @@ export default function AsciiPage() {
                       }}
                       title="Download ASCII"
                     >
-                      {isMobile ? '💾' : <span style={{ fontSize: '0.75rem' }}>DL</span>}
+                      <span style={{ fontSize: isMobile ? '1rem' : '0.75rem' }}>{isMobile ? '↓' : 'DL'}</span>
                     </button>
                   </>
                 )}
@@ -414,7 +414,7 @@ export default function AsciiPage() {
                     }}
                     title="Clear history"
                   >
-                    {isMobile ? '🗑' : <span style={{ fontSize: '0.75rem' }}>CLR</span>}
+                    <span style={{ fontSize: isMobile ? '1rem' : '0.75rem' }}>{isMobile ? '○' : 'CLR'}</span>
                   </button>
                 )}
               </div>
