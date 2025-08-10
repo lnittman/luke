@@ -4,13 +4,14 @@ import { type CSSProperties, useEffect, useState } from 'react'
 import { AsciiEngine } from '@/lib/ascii-engine'
 import { generateMatrixRainFrames } from '@/lib/ascii-engine/generators/matrix'
 import { generateDataFlowFrames, generatePulseFrames, generateWaveFrames } from '@/lib/ascii-engine/generators/wave'
+import { generateSparseWaveFrames, generateMinimalWaveFrames } from '@/lib/ascii-engine/generators/sparse-wave'
 import { generateIntenseFlameFrames } from '@/lib/ascii-engine/generators/flame'
 import { generateErrorFrames } from '@/lib/ascii-engine/generators/404'
 
 interface ArtsyAsciiProps {
   className?: string
   style?: CSSProperties
-  type?: 'matrix' | 'dataflow' | 'pulse' | 'wave' | 'flame' | 'glitch' | 'random'
+  type?: 'matrix' | 'dataflow' | 'pulse' | 'wave' | 'flame' | 'glitch' | 'sparse' | 'minimal' | 'random'
   width?: number
   height?: number
   fps?: number
@@ -55,7 +56,7 @@ export function ArtsyAscii({
   // Randomly pick a pattern if type is 'random'
   useEffect(() => {
     if (type === 'random') {
-      const patterns: Array<typeof currentType> = ['matrix', 'dataflow', 'pulse', 'wave', 'flame', 'glitch']
+      const patterns: Array<typeof currentType> = ['matrix', 'dataflow', 'pulse', 'wave', 'flame', 'glitch', 'sparse', 'minimal']
       const randomPattern = patterns[Math.floor(Math.random() * patterns.length)]
       setCurrentType(randomPattern)
     } else {
@@ -81,8 +82,12 @@ export function ArtsyAscii({
         return generateIntenseFlameFrames(finalWidth, finalHeight, 40)
       case 'glitch':
         return generateErrorFrames(finalWidth, finalHeight, 40, '▓▒░ LUKE ░▒▓')
+      case 'sparse':
+        return generateSparseWaveFrames(finalWidth, finalHeight, 60)
+      case 'minimal':
+        return generateMinimalWaveFrames(finalWidth, finalHeight, 40)
       default:
-        return generatePulseFrames(finalWidth, finalHeight, 30)
+        return generateSparseWaveFrames(finalWidth, finalHeight, 60)
     }
   })()
 

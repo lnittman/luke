@@ -128,15 +128,15 @@ export default function LogsPage() {
                 }}
               >
                 <ArtsyAscii
-                  type="random"
+                  type="sparse"
                   fillContainer={true}
-                  fps={12}
+                  fps={10}
                   style={{
                     fontSize: '10px',
                     lineHeight: '12px',
                     width: '100%',
                     height: '100%',
-                    opacity: 0.15,
+                    opacity: 0.2,
                     color: 'rgb(var(--accent-1))',
                   }}
                 />
@@ -237,31 +237,33 @@ export default function LogsPage() {
                 alignItems: 'center',
               }}
             >
-              {!isMobile && <RepoPicker selectedRepo={selectedRepo} onRepoSelect={setSelectedRepo} />}
-              <Link
-                href="/logs/settings"
-                onMouseEnter={(e) => {
-                  e.currentTarget.style.opacity = '1'
-                }}
-                onMouseLeave={(e) => {
-                  e.currentTarget.style.opacity = '0.7'
-                }}
-                style={{
-                  display: 'flex',
-                  alignItems: 'center',
-                  justifyContent: 'center',
-                  width: '2.5rem',
-                  height: '2.5rem',
-                  color: 'rgb(var(--text-primary))',
-                  textDecoration: 'none',
-                  fontSize: '1.25rem',
-                  opacity: 0.7,
-                  transition: 'opacity 0.2s ease',
-                }}
-                title="Settings"
-              >
-                ⚙
-              </Link>
+              <RepoPicker selectedRepo={selectedRepo} onRepoSelect={setSelectedRepo} isMobile={isMobile} />
+              {process.env.NODE_ENV !== 'production' && (
+                <Link
+                  href="/logs/settings"
+                  onMouseEnter={(e) => {
+                    e.currentTarget.style.opacity = '1'
+                  }}
+                  onMouseLeave={(e) => {
+                    e.currentTarget.style.opacity = '0.7'
+                  }}
+                  style={{
+                    display: 'flex',
+                    alignItems: 'center',
+                    justifyContent: 'center',
+                    width: '2.5rem',
+                    height: '2.5rem',
+                    color: 'rgb(var(--text-primary))',
+                    textDecoration: 'none',
+                    fontSize: '1.25rem',
+                    opacity: 0.7,
+                    transition: 'opacity 0.2s ease',
+                  }}
+                  title="Settings"
+                >
+                  ⚙
+                </Link>
+              )}
             </div>
           </div>
 
