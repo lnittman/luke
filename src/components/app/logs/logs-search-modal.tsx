@@ -197,10 +197,10 @@ export function LogsSearchModal({ logs = [] }: LogsSearchModalProps) {
             }}
             style={{
               background: 'rgb(var(--background-start))',
-              top: '5rem', // Below header (header height + border)
+              top: 0,
               left: 0,
               right: 0,
-              bottom: '5rem', // Above footer
+              bottom: 0,
             }}
             transition={{ duration: 0 }}
           >
@@ -208,129 +208,175 @@ export function LogsSearchModal({ logs = [] }: LogsSearchModalProps) {
             <div
               className="relative z-[101] flex h-full w-full flex-col"
               onClick={(e) => e.stopPropagation()}
+              style={{
+                maxWidth: '768px',
+                margin: '0 auto',
+                borderLeft: '1px solid rgb(var(--border))',
+                borderRight: '1px solid rgb(var(--border))',
+              }}
             >
+              {/* Mock header to maintain spacing */}
+              <div
+                style={{
+                  borderBottom: '1px solid rgb(var(--border))',
+                  padding: '1.5rem 24px',
+                  display: 'flex',
+                  alignItems: 'center',
+                  justifyContent: 'space-between',
+                  gap: '2rem',
+                  minHeight: '5rem',
+                }}
+              >
+                <div style={{ display: 'flex', alignItems: 'center', gap: '1rem' }}>
+                  <div style={{ width: '2.5rem', height: '2.5rem' }} />
+                  <h1 style={{ fontSize: '1.125rem', fontWeight: 'bold' }}>LOGS</h1>
+                </div>
+                <div style={{ width: '2.5rem', height: '2.5rem' }} />
+              </div>
+              
+              {/* Search bar section - matches logs page sticky header */}
               <div
                 id="logs-search-bar"
                 style={{
-                  padding: '1rem',
+                  padding: '0.75rem 24px',
                   display: 'flex',
                   alignItems: 'center',
-                  gap: '0.75rem',
+                  gap: '0.5rem',
+                  borderBottom: '1px solid rgb(var(--border))',
+                  backgroundColor: 'rgb(var(--background-start))',
                 }}
               >
-                {/* Back button */}
-                <button
-                  onClick={() => {
-                    setIsOpen(false)
-                    setQuery('')
-                    setSelectedIndex(0)
-                  }}
-                  onMouseEnter={(e) => {
-                    e.currentTarget.style.background = 'rgb(var(--surface-1))'
-                    e.currentTarget.style.borderColor = 'rgb(var(--accent-1))'
-                  }}
-                  onMouseLeave={(e) => {
-                    e.currentTarget.style.background = 'none'
-                    e.currentTarget.style.borderColor = 'rgb(var(--border))'
-                  }}
-                  style={{
-                    display: 'flex',
-                    alignItems: 'center',
-                    justifyContent: 'center',
-                    width: '2.5rem',
-                    height: '2.5rem',
-                    background: 'none',
-                    border: '1px solid rgb(var(--border))',
-                    color: 'rgb(var(--text-primary))',
-                    cursor: 'pointer',
-                    transition: 'all 0.2s ease',
-                    fontFamily: 'monospace',
-                    padding: 0,
-                    fontSize: '1rem',
-                    flexShrink: 0,
-                  }}
-                >
-                  ←
-                </button>
-
-                {/* Search input with clear button */}
+                {/* Search input container that matches the desktop search button */}
                 <div
                   style={{
-                    position: 'relative',
-                    flex: 1,
                     display: 'flex',
                     alignItems: 'center',
-                    border: '1px solid rgb(var(--border))',
-                    padding: '0 0.75rem',
-                    height: '2.5rem',
-                    backgroundColor: 'rgb(var(--surface-1))',
+                    gap: '0.5rem',
+                    width: '100%',
+                    maxWidth: '420px',
                   }}
                 >
-                  <input
-                    autoFocus
-                    onChange={(e) => setQuery(e.target.value)}
-                    placeholder="start typing to search"
-                    style={{
-                      width: '100%',
-                      background: 'transparent',
-                      border: 'none',
-                      outline: 'none',
-                      fontFamily: 'monospace',
-                      fontSize: '0.875rem',
-                      color: 'rgb(var(--text-primary))',
-                      paddingRight: query ? '2rem' : '0',
+                  {/* Back button */}
+                  <button
+                    onClick={() => {
+                      setIsOpen(false)
+                      setQuery('')
+                      setSelectedIndex(0)
                     }}
-                    type="text"
-                    value={query}
-                  />
-                  {query && (
-                    <button
-                      onClick={() => setQuery('')}
-                      onMouseEnter={(e) => {
-                        e.currentTarget.style.opacity = '0.7'
-                      }}
-                      onMouseLeave={(e) => {
-                        e.currentTarget.style.opacity = '1'
-                      }}
+                    onMouseEnter={(e) => {
+                      e.currentTarget.style.background = 'rgb(var(--surface-1))'
+                      e.currentTarget.style.borderColor = 'rgb(var(--accent-1))'
+                    }}
+                    onMouseLeave={(e) => {
+                      e.currentTarget.style.background = 'transparent'
+                      e.currentTarget.style.borderColor = 'rgb(var(--border))'
+                    }}
+                    style={{
+                      display: 'flex',
+                      alignItems: 'center',
+                      justifyContent: 'center',
+                      width: '2.5rem',
+                      height: '2.5rem',
+                      background: 'transparent',
+                      border: '1px solid rgb(var(--border))',
+                      color: 'rgb(var(--text-primary))',
+                      cursor: 'pointer',
+                      transition: 'all 0.2s ease',
+                      fontFamily: 'monospace',
+                      padding: 0,
+                      fontSize: '1rem',
+                      flexShrink: 0,
+                    }}
+                  >
+                    ←
+                  </button>
+
+                  {/* Search input with clear button */}
+                  <div
+                    style={{
+                      position: 'relative',
+                      flex: 1,
+                      display: 'flex',
+                      alignItems: 'center',
+                      border: '1px solid rgb(var(--border))',
+                      padding: '0 0.75rem',
+                      height: '2.5rem',
+                      backgroundColor: 'transparent',
+                    }}
+                  >
+                    <input
+                      autoFocus
+                      onChange={(e) => setQuery(e.target.value)}
+                      placeholder="search logs…"
                       style={{
-                        position: 'absolute',
-                        right: '0.5rem',
-                        display: 'flex',
-                        alignItems: 'center',
-                        justifyContent: 'center',
-                        width: '1.5rem',
-                        height: '1.5rem',
-                        background: 'none',
+                        width: '100%',
+                        background: 'transparent',
                         border: 'none',
-                        color: 'rgb(var(--text-primary))',
-                        cursor: 'pointer',
-                        transition: 'opacity 0.2s ease',
+                        outline: 'none',
                         fontFamily: 'monospace',
-                        fontSize: '1rem',
-                        padding: 0,
+                        fontSize: '0.875rem',
+                        color: 'rgb(var(--text-primary))',
+                        paddingRight: query ? '2rem' : '0',
                       }}
-                    >
-                      ×
-                    </button>
-                  )}
+                      type="text"
+                      value={query}
+                    />
+                    {query && (
+                      <button
+                        onClick={() => setQuery('')}
+                        onMouseEnter={(e) => {
+                          e.currentTarget.style.opacity = '0.7'
+                        }}
+                        onMouseLeave={(e) => {
+                          e.currentTarget.style.opacity = '1'
+                        }}
+                        style={{
+                          position: 'absolute',
+                          right: '0.5rem',
+                          display: 'flex',
+                          alignItems: 'center',
+                          justifyContent: 'center',
+                          width: '1.5rem',
+                          height: '1.5rem',
+                          background: 'none',
+                          border: 'none',
+                          color: 'rgb(var(--text-primary))',
+                          cursor: 'pointer',
+                          transition: 'opacity 0.2s ease',
+                          fontFamily: 'monospace',
+                          fontSize: '1rem',
+                          padding: 0,
+                        }}
+                      >
+                        ×
+                      </button>
+                    )}
+                  </div>
                 </div>
               </div>
+              {/* Results area */}
               <div
                 style={{
                   flex: 1,
                   overflowY: 'auto',
-                  borderTop: '1px solid rgb(var(--border))',
+                  position: 'relative',
                 }}
               >
                 {resultsList}
               </div>
             </div>
 
-            {/* ASCII background animation - full container water effect */}
+            {/* ASCII background animation - behind the content */}
             <div
-              className="pointer-events-none absolute inset-0"
+              className="pointer-events-none absolute"
               style={{
+                top: '10rem', // Below mock header and search bar
+                left: 0,
+                right: 0,
+                bottom: 0,
                 overflow: 'hidden',
+                maxWidth: '768px',
+                margin: '0 auto',
               }}
             >
               <WaterAscii

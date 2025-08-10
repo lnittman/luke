@@ -1,5 +1,5 @@
 import { NextResponse } from 'next/server'
-import { getHeroInstructions, setHeroInstructions } from '@/lib/utils/hero'
+import { getHeroInstructions, setHeroInstructions } from '@/lib/utils/hero-server'
 
 // Removed edge runtime - this route needs Node.js file system access
 

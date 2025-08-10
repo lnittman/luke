@@ -17,48 +17,5 @@ export async function generateHeroText(prompt: string) {
   return text
 }
 
-// Server-only code in a separate file to avoid Edge runtime errors
-export async function getHeroInstructions() {
-  'use server'
-
-  try {
-    // Dynamic import to avoid loading these modules in Edge runtime
-    const { join } = await import('path')
-    const { readFile } = await import('fs/promises')
-
-    const instructionsPath = join(
-      process.cwd(),
-      'data',
-      'hero-instructions.txt'
-    )
-    return await readFile(instructionsPath, 'utf8')
-  } catch {
-    return ''
-  }
-}
-
-export async function setHeroInstructions(text: string) {
-  'use server'
-
-  const { join } = await import('path')
-  const { writeFile } = await import('fs/promises')
-
-  const instructionsPath = join(process.cwd(), 'data', 'hero-instructions.txt')
-  await writeFile(instructionsPath, text)
-}
-
-export async function updateHeroFile(prompt?: string) {
-  'use server'
-
-  const { join } = await import('path')
-  const { writeFile } = await import('fs/promises')
-
-  const heroFilePath = join(process.cwd(), 'public', 'hero.json')
-  const instructions = prompt ?? (await getHeroInstructions())
-  const text = await generateHeroText(instructions)
-  await writeFile(
-    heroFilePath,
-    JSON.stringify({ date: new Date().toISOString(), text })
-  )
-  return text
-}
+// Server actions are now in hero-server.ts to avoid client component issues
+// Import from './hero-server' when needed in server components

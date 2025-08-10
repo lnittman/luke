@@ -3,8 +3,19 @@
 import { useState, useRef } from 'react'
 import { AsciiEngine } from '@/lib/ascii-engine'
 import { generateAsciiArt } from './actions'
-import { Send, Download, History, Sparkles, ImageIcon, Loader2, X } from 'lucide-react'
-import { motion, AnimatePresence } from 'framer-motion'
+import { Send, Download, Sparkles, ImageIcon, Loader2 } from 'lucide-react'
+import { AnimatePresence, motion } from 'framer-motion'
+import { BlockLoader } from '@/components/shared/block-loader'
+import { DefaultLayout } from '@/components/shared/default-layout'
+import { ThemeSwitcher } from '@/components/shared/theme-switcher'
+import {
+  Sheet,
+  SheetContent,
+  SheetHeader,
+  SheetTitle,
+  SheetTrigger,
+} from '@/components/ui/shadcn/sheet'
+import styles from '@/components/shared/root.module.scss'
 
 interface AsciiGeneration {
   id: string
@@ -18,8 +29,8 @@ export default function AsciiPage() {
   const [generations, setGenerations] = useState<AsciiGeneration[]>([])
   const [currentGeneration, setCurrentGeneration] = useState<AsciiGeneration | null>(null)
   const [isGenerating, setIsGenerating] = useState(false)
-  const [showHistory, setShowHistory] = useState(false)
-  const inputRef = useRef<HTMLTextAreaElement>(null)
+  const [historyOpen, setHistoryOpen] = useState(false)
+  const inputRef = useRef<HTMLInputElement>(null)
   const fileInputRef = useRef<HTMLInputElement>(null)
 
   const handleGenerate = async () => {
@@ -74,49 +85,269 @@ export default function AsciiPage() {
   }
 
   return (
-    <div className="min-h-screen bg-gradient-to-b from-[rgb(var(--background-start))] to-[rgb(var(--background-end))]">
+    <DefaultLayout>
       {/* Header */}
-      <header className="border-b border-[rgb(var(--border))]/10 px-6 py-4">
-        <div className="max-w-7xl mx-auto flex items-center justify-between">
-          <div className="flex items-center gap-3">
-            <div className="p-2 rounded-xl bg-gradient-to-br from-[rgb(var(--accent-1))] to-[rgb(var(--accent-2))]">
-              <Sparkles className="w-5 h-5 text-white" />
-            </div>
-            <div>
-              <h1 className="text-lg font-semibold">ASCII Studio</h1>
-              <p className="text-xs text-[rgb(var(--text-secondary))]">AI-powered ASCII art generator</p>
-            </div>
+      <div className={styles.header}>
+        <div className={styles.column}>
+          <div style={{ display: 'flex', alignItems: 'center', gap: '1rem' }}>
+            <BlockLoader mode={8} />
+            <h1>ASCII</h1>
           </div>
-          <div className="flex items-center gap-2">
-            <button
-              onClick={() => setShowHistory(!showHistory)}
-              className={`p-2.5 rounded-xl transition-all ${
-                showHistory 
-                  ? 'bg-[rgb(var(--accent-1))]/10 text-[rgb(var(--accent-1))]' 
-                  : 'hover:bg-[rgb(var(--surface-1))]/50'
-              }`}
-              title="History"
-            >
-              <History className="w-4 h-4" />
-            </button>
-            {currentGeneration && (
-              <button
-                onClick={exportAnimation}
-                className="p-2.5 rounded-xl hover:bg-[rgb(var(--surface-1))]/50 transition-all"
-                title="Export"
-              >
-                <Download className="w-4 h-4" />
-              </button>
-            )}
-          </div>
+          <ThemeSwitcher />
         </div>
-      </header>
+      </div>
 
-      <div className="max-w-7xl mx-auto flex h-[calc(100vh-73px)]">
-        {/* Main Content */}
-        <div className="flex-1 flex flex-col">
+      {/* Content */}
+      <div className={styles.content}>
+        <div className={styles.innerViewport} style={{ position: 'relative' }}>
+          {/* Fixed prompt bar under header */}
+          <div
+            style={{
+              position: 'sticky',
+              top: 0,
+              zIndex: 80,
+              borderBottom: '1px solid rgb(var(--border))',
+              backgroundColor: 'rgb(var(--background-start))',
+              padding: '0.75rem 24px',
+            }}
+          >
+            <div style={{ display: 'flex', gap: '0.5rem', alignItems: 'center' }}>
+              <div
+                style={{
+                  flex: 1,
+                  display: 'flex',
+                  alignItems: 'center',
+                  border: '1px solid rgb(var(--border))',
+                  padding: '0 0.75rem',
+                  height: '2.5rem',
+                  backgroundColor: 'rgb(var(--surface-1))',
+                  position: 'relative',
+                }}
+              >
+                <input
+                  ref={inputRef}
+                  value={prompt}
+                  onChange={(e) => setPrompt(e.target.value)}
+                  onKeyDown={(e) => {
+                    if (e.key === 'Enter' && !e.shiftKey) {
+                      e.preventDefault()
+                      handleGenerate()
+                    }
+                  }}
+                  placeholder="describe the ascii art you want to create..."
+                  style={{
+                    width: '100%',
+                    background: 'transparent',
+                    border: 'none',
+                    outline: 'none',
+                    fontFamily: 'monospace',
+                    fontSize: '0.875rem',
+                    color: 'rgb(var(--text-primary))',
+                  }}
+                  disabled={isGenerating}
+                />
+                <div style={{ display: 'flex', alignItems: 'center', gap: '0.25rem' }}>
+                  <input
+                    ref={fileInputRef}
+                    type="file"
+                    accept="image/*"
+                    onChange={handleImageUpload}
+                    style={{ display: 'none' }}
+                  />
+                  <button
+                    onClick={() => fileInputRef.current?.click()}
+                    disabled={isGenerating}
+                    onMouseEnter={(e) => {
+                      e.currentTarget.style.opacity = '0.7'
+                    }}
+                    onMouseLeave={(e) => {
+                      e.currentTarget.style.opacity = '1'
+                    }}
+                    style={{
+                      display: 'flex',
+                      alignItems: 'center',
+                      justifyContent: 'center',
+                      width: '1.5rem',
+                      height: '1.5rem',
+                      background: 'none',
+                      border: 'none',
+                      color: 'rgb(var(--text-secondary))',
+                      cursor: 'pointer',
+                      transition: 'opacity 0.2s ease',
+                      padding: 0,
+                    }}
+                    title="upload image"
+                  >
+                    <ImageIcon className="w-4 h-4" />
+                  </button>
+                  <button
+                    onClick={handleGenerate}
+                    disabled={!prompt.trim() || isGenerating}
+                    onMouseEnter={(e) => {
+                      if (!isGenerating && prompt.trim()) {
+                        e.currentTarget.style.opacity = '0.7'
+                      }
+                    }}
+                    onMouseLeave={(e) => {
+                      e.currentTarget.style.opacity = '1'
+                    }}
+                    style={{
+                      display: 'flex',
+                      alignItems: 'center',
+                      justifyContent: 'center',
+                      width: '1.5rem',
+                      height: '1.5rem',
+                      background: 'none',
+                      border: 'none',
+                      color: isGenerating || !prompt.trim() ? 'rgb(var(--text-secondary))' : 'rgb(var(--accent-1))',
+                      cursor: isGenerating || !prompt.trim() ? 'not-allowed' : 'pointer',
+                      transition: 'opacity 0.2s ease',
+                      padding: 0,
+                      opacity: isGenerating || !prompt.trim() ? 0.5 : 1,
+                    }}
+                  >
+                    {isGenerating ? (
+                      <Loader2 className="w-4 h-4 animate-spin" />
+                    ) : (
+                      <Send className="w-4 h-4" />
+                    )}
+                  </button>
+                </div>
+              </div>
+              <Sheet open={historyOpen} onOpenChange={setHistoryOpen}>
+                <SheetTrigger asChild>
+                  <button
+                    onMouseEnter={(e) => {
+                      e.currentTarget.style.background = 'rgb(var(--surface-1))'
+                      e.currentTarget.style.borderColor = 'rgb(var(--accent-1))'
+                    }}
+                    onMouseLeave={(e) => {
+                      e.currentTarget.style.background = 'none'
+                      e.currentTarget.style.borderColor = 'rgb(var(--border))'
+                    }}
+                    style={{
+                      display: 'flex',
+                      alignItems: 'center',
+                      justifyContent: 'center',
+                      width: '2.5rem',
+                      height: '2.5rem',
+                      background: 'none',
+                      border: '1px solid rgb(var(--border))',
+                      color: 'rgb(var(--text-primary))',
+                      cursor: 'pointer',
+                      transition: 'all 0.2s ease',
+                      fontFamily: 'monospace',
+                      padding: 0,
+                      fontSize: '1rem',
+                    }}
+                    title="history"
+                  >
+                    ⟲
+                  </button>
+                </SheetTrigger>
+                <SheetContent side="right" className="w-[400px] sm:w-[540px]">
+                  <SheetHeader>
+                    <SheetTitle>generation history</SheetTitle>
+                  </SheetHeader>
+                  <div style={{ marginTop: '1.5rem', overflowY: 'auto', maxHeight: 'calc(100vh - 200px)' }}>
+                    {generations.length === 0 ? (
+                      <div
+                        style={{
+                          textAlign: 'center',
+                          padding: '3rem 1rem',
+                          fontFamily: 'monospace',
+                          fontSize: '0.875rem',
+                          color: 'rgb(var(--text-secondary))',
+                        }}
+                      >
+                        no generations yet
+                      </div>
+                    ) : (
+                      <div style={{ display: 'flex', flexDirection: 'column', gap: '0.5rem' }}>
+                        {generations.map((gen) => (
+                          <button
+                            key={gen.id}
+                            onClick={() => {
+                              setCurrentGeneration(gen)
+                              setHistoryOpen(false)
+                            }}
+                            onMouseEnter={(e) => {
+                              e.currentTarget.style.background = 'rgb(var(--surface-1))'
+                              e.currentTarget.style.borderColor = 'rgb(var(--accent-1))'
+                            }}
+                            onMouseLeave={(e) => {
+                              e.currentTarget.style.background = currentGeneration?.id === gen.id ? 'rgb(var(--surface-1))' : 'transparent'
+                              e.currentTarget.style.borderColor = currentGeneration?.id === gen.id ? 'rgb(var(--accent-1))' : 'rgb(var(--border))'
+                            }}
+                            style={{
+                              width: '100%',
+                              padding: '1rem',
+                              textAlign: 'left',
+                              border: `1px solid ${
+                                currentGeneration?.id === gen.id
+                                  ? 'rgb(var(--accent-1))'
+                                  : 'rgb(var(--border))'
+                              }`,
+                              background: currentGeneration?.id === gen.id ? 'rgb(var(--surface-1))' : 'transparent',
+                              cursor: 'pointer',
+                              transition: 'all 0.2s ease',
+                              fontFamily: 'monospace',
+                            }}
+                          >
+                            <div style={{ fontSize: '0.875rem', marginBottom: '0.25rem' }}>
+                              {gen.prompt}
+                            </div>
+                            <div
+                              style={{
+                                fontSize: '0.75rem',
+                                color: 'rgb(var(--text-secondary))',
+                              }}
+                            >
+                              {new Date(gen.timestamp).toLocaleTimeString()} • {gen.frames.length} frames
+                            </div>
+                          </button>
+                        ))}
+                      </div>
+                    )}
+                  </div>
+                </SheetContent>
+              </Sheet>
+              {currentGeneration && (
+                <button
+                  onClick={exportAnimation}
+                  onMouseEnter={(e) => {
+                    e.currentTarget.style.background = 'rgb(var(--surface-1))'
+                    e.currentTarget.style.borderColor = 'rgb(var(--accent-1))'
+                  }}
+                  onMouseLeave={(e) => {
+                    e.currentTarget.style.background = 'none'
+                    e.currentTarget.style.borderColor = 'rgb(var(--border))'
+                  }}
+                  style={{
+                    display: 'flex',
+                    alignItems: 'center',
+                    justifyContent: 'center',
+                    width: '2.5rem',
+                    height: '2.5rem',
+                    background: 'none',
+                    border: '1px solid rgb(var(--border))',
+                    color: 'rgb(var(--text-primary))',
+                    cursor: 'pointer',
+                    transition: 'all 0.2s ease',
+                    fontFamily: 'monospace',
+                    padding: 0,
+                    fontSize: '1rem',
+                  }}
+                  title="export"
+                >
+                  <Download className="w-4 h-4" />
+                </button>
+              )}
+            </div>
+          </div>
+
           {/* Display Area */}
-          <div className="flex-1 p-8 overflow-auto">
+          <div style={{ flex: 1, padding: '24px', overflow: 'auto' }}>
             <AnimatePresence mode="wait">
               {isGenerating ? (
                 <motion.div
@@ -124,11 +355,18 @@ export default function AsciiPage() {
                   initial={{ opacity: 0 }}
                   animate={{ opacity: 1 }}
                   exit={{ opacity: 0 }}
-                  className="flex-1 flex items-center justify-center h-full"
+                  style={{
+                    display: 'flex',
+                    alignItems: 'center',
+                    justifyContent: 'center',
+                    height: '100%',
+                  }}
                 >
-                  <div className="text-center">
-                    <Loader2 className="w-8 h-8 animate-spin text-[rgb(var(--accent-1))] mx-auto mb-4" />
-                    <p className="text-sm text-[rgb(var(--text-secondary))]">Generating ASCII art...</p>
+                  <div style={{ textAlign: 'center' }}>
+                    <Loader2 className="w-8 h-8 animate-spin mx-auto mb-4" style={{ color: 'rgb(var(--accent-1))' }} />
+                    <p style={{ fontSize: '0.875rem', color: 'rgb(var(--text-secondary))' }}>
+                      generating ascii art...
+                    </p>
                   </div>
                 </motion.div>
               ) : currentGeneration ? (
@@ -137,18 +375,35 @@ export default function AsciiPage() {
                   initial={{ opacity: 0, y: 20 }}
                   animate={{ opacity: 1, y: 0 }}
                   exit={{ opacity: 0, y: -20 }}
-                  className="h-full flex flex-col"
+                  style={{ height: '100%', display: 'flex', flexDirection: 'column' }}
                 >
-                  <div className="bg-white/5 backdrop-blur-sm rounded-2xl p-6 flex-1 flex flex-col">
-                    <div className="mb-4 flex items-start justify-between">
-                      <div className="flex-1">
-                        <p className="text-sm font-medium mb-1">{currentGeneration.prompt}</p>
-                        <p className="text-xs text-[rgb(var(--text-secondary))]">
-                          {currentGeneration.frames.length} frames • {new Date(currentGeneration.timestamp).toLocaleTimeString()}
-                        </p>
-                      </div>
+                  <div
+                    style={{
+                      border: '1px solid rgb(var(--border))',
+                      backgroundColor: 'rgb(var(--surface-1))',
+                      padding: '1.5rem',
+                      flex: 1,
+                      display: 'flex',
+                      flexDirection: 'column',
+                    }}
+                  >
+                    <div style={{ marginBottom: '1rem' }}>
+                      <p style={{ fontSize: '0.875rem', fontFamily: 'monospace', marginBottom: '0.25rem' }}>
+                        {currentGeneration.prompt}
+                      </p>
+                      <p style={{ fontSize: '0.75rem', color: 'rgb(var(--text-secondary))', fontFamily: 'monospace' }}>
+                        {currentGeneration.frames.length} frames • {new Date(currentGeneration.timestamp).toLocaleTimeString()}
+                      </p>
                     </div>
-                    <div className="flex-1 bg-black/90 rounded-xl p-6 overflow-auto shadow-2xl">
+                    <div
+                      style={{
+                        flex: 1,
+                        backgroundColor: 'rgb(var(--background-start))',
+                        border: '1px solid rgb(var(--border))',
+                        padding: '1.5rem',
+                        overflow: 'auto',
+                      }}
+                    >
                       {currentGeneration.frames && currentGeneration.frames.length > 0 && (
                         <AsciiEngine
                           frames={currentGeneration.frames}
@@ -156,11 +411,10 @@ export default function AsciiPage() {
                           loop={true}
                           autoPlay={true}
                           style={{
-                            fontSize: '14px',
-                            lineHeight: '16px',
-                            color: '#00ff00',
+                            fontSize: '12px',
+                            lineHeight: '14px',
+                            color: 'rgb(var(--accent-1))',
                             fontFamily: 'monospace',
-                            textShadow: '0 0 5px #00ff00',
                           }}
                         />
                       )}
@@ -173,28 +427,78 @@ export default function AsciiPage() {
                   initial={{ opacity: 0 }}
                   animate={{ opacity: 1 }}
                   exit={{ opacity: 0 }}
-                  className="flex-1 flex items-center justify-center h-full"
+                  style={{
+                    display: 'flex',
+                    alignItems: 'center',
+                    justifyContent: 'center',
+                    height: '100%',
+                  }}
                 >
-                  <div className="text-center max-w-md">
-                    <div className="w-16 h-16 rounded-2xl bg-gradient-to-br from-[rgb(var(--accent-1))]/20 to-[rgb(var(--accent-2))]/20 flex items-center justify-center mx-auto mb-6">
-                      <Sparkles className="w-8 h-8 text-[rgb(var(--accent-1))]" />
+                  <div style={{ textAlign: 'center', maxWidth: '28rem' }}>
+                    <div
+                      style={{
+                        width: '4rem',
+                        height: '4rem',
+                        border: '1px solid rgb(var(--border))',
+                        backgroundColor: 'rgb(var(--surface-1))',
+                        display: 'flex',
+                        alignItems: 'center',
+                        justifyContent: 'center',
+                        margin: '0 auto 1.5rem',
+                      }}
+                    >
+                      <Sparkles className="w-8 h-8" style={{ color: 'rgb(var(--accent-1))' }} />
                     </div>
-                    <h2 className="text-xl font-semibold mb-2">Create ASCII Art with AI</h2>
-                    <p className="text-sm text-[rgb(var(--text-secondary))] mb-6">
-                      Describe what you want to create, and AI will generate unique ASCII animations for you
+                    <h2 style={{ fontSize: '1.25rem', fontFamily: 'monospace', marginBottom: '0.5rem' }}>
+                      create ascii art with ai
+                    </h2>
+                    <p style={{ fontSize: '0.875rem', color: 'rgb(var(--text-secondary))', marginBottom: '1.5rem', fontFamily: 'monospace' }}>
+                      describe what you want to create, and ai will generate unique ascii animations for you
                     </p>
-                    <div className="flex gap-3 justify-center">
+                    <div style={{ display: 'flex', gap: '0.75rem', justifyContent: 'center' }}>
                       <button
                         onClick={() => setPrompt('Create a matrix rain effect with falling green characters')}
-                        className="px-4 py-2 text-xs rounded-xl bg-[rgb(var(--surface-1))]/50 hover:bg-[rgb(var(--surface-1))] transition-all"
+                        onMouseEnter={(e) => {
+                          e.currentTarget.style.background = 'rgb(var(--surface-1))'
+                          e.currentTarget.style.borderColor = 'rgb(var(--accent-1))'
+                        }}
+                        onMouseLeave={(e) => {
+                          e.currentTarget.style.background = 'transparent'
+                          e.currentTarget.style.borderColor = 'rgb(var(--border))'
+                        }}
+                        style={{
+                          padding: '0.5rem 1rem',
+                          fontSize: '0.75rem',
+                          border: '1px solid rgb(var(--border))',
+                          background: 'transparent',
+                          cursor: 'pointer',
+                          transition: 'all 0.2s ease',
+                          fontFamily: 'monospace',
+                        }}
                       >
-                        Try "Matrix Rain"
+                        try "matrix rain"
                       </button>
                       <button
                         onClick={() => setPrompt('Generate ocean waves with ASCII characters')}
-                        className="px-4 py-2 text-xs rounded-xl bg-[rgb(var(--surface-1))]/50 hover:bg-[rgb(var(--surface-1))] transition-all"
+                        onMouseEnter={(e) => {
+                          e.currentTarget.style.background = 'rgb(var(--surface-1))'
+                          e.currentTarget.style.borderColor = 'rgb(var(--accent-1))'
+                        }}
+                        onMouseLeave={(e) => {
+                          e.currentTarget.style.background = 'transparent'
+                          e.currentTarget.style.borderColor = 'rgb(var(--border))'
+                        }}
+                        style={{
+                          padding: '0.5rem 1rem',
+                          fontSize: '0.75rem',
+                          border: '1px solid rgb(var(--border))',
+                          background: 'transparent',
+                          cursor: 'pointer',
+                          transition: 'all 0.2s ease',
+                          fontFamily: 'monospace',
+                        }}
                       >
-                        Try "Ocean Waves"
+                        try "ocean waves"
                       </button>
                     </div>
                   </div>
@@ -202,118 +506,10 @@ export default function AsciiPage() {
               )}
             </AnimatePresence>
           </div>
-
-          {/* Input Area */}
-          <div className="border-t border-[rgb(var(--border))]/10 p-6">
-            <div className="max-w-3xl mx-auto">
-              <div className="relative">
-                <textarea
-                  ref={inputRef}
-                  value={prompt}
-                  onChange={(e) => setPrompt(e.target.value)}
-                  onKeyDown={(e) => {
-                    if (e.key === 'Enter' && !e.shiftKey) {
-                      e.preventDefault()
-                      handleGenerate()
-                    }
-                  }}
-                  placeholder="Describe the ASCII art you want to create..."
-                  className="w-full px-5 py-4 pr-28 bg-white/5 backdrop-blur-sm rounded-2xl resize-none focus:outline-none focus:ring-2 focus:ring-[rgb(var(--accent-1))]/50 placeholder-[rgb(var(--text-secondary))]/50 transition-all"
-                  rows={1}
-                  style={{
-                    minHeight: '56px',
-                    maxHeight: '120px',
-                  }}
-                  disabled={isGenerating}
-                />
-                <div className="absolute right-3 bottom-3 flex items-center gap-2">
-                  <input
-                    ref={fileInputRef}
-                    type="file"
-                    accept="image/*"
-                    onChange={handleImageUpload}
-                    className="hidden"
-                  />
-                  <button
-                    onClick={() => fileInputRef.current?.click()}
-                    className="p-2.5 rounded-xl hover:bg-white/5 transition-all"
-                    title="Upload image"
-                    disabled={isGenerating}
-                  >
-                    <ImageIcon className="w-4 h-4" />
-                  </button>
-                  <button
-                    onClick={handleGenerate}
-                    disabled={!prompt.trim() || isGenerating}
-                    className="p-2.5 rounded-xl bg-gradient-to-r from-[rgb(var(--accent-1))] to-[rgb(var(--accent-2))] text-white hover:opacity-90 transition-all disabled:opacity-50 disabled:cursor-not-allowed shadow-lg"
-                  >
-                    {isGenerating ? (
-                      <Loader2 className="w-4 h-4 animate-spin" />
-                    ) : (
-                      <Send className="w-4 h-4" />
-                    )}
-                  </button>
-                </div>
-              </div>
-            </div>
-          </div>
         </div>
-
-        {/* History Sidebar */}
-        <AnimatePresence>
-          {showHistory && (
-            <motion.aside
-              initial={{ width: 0, opacity: 0 }}
-              animate={{ width: 360, opacity: 1 }}
-              exit={{ width: 0, opacity: 0 }}
-              transition={{ type: 'spring', damping: 25, stiffness: 200 }}
-              className="border-l border-[rgb(var(--border))]/10 bg-white/[0.02] backdrop-blur-sm overflow-hidden"
-            >
-              <div className="p-6 h-full overflow-auto">
-                <div className="flex items-center justify-between mb-6">
-                  <h3 className="font-semibold">Generation History</h3>
-                  <button
-                    onClick={() => setShowHistory(false)}
-                    className="p-1.5 rounded-lg hover:bg-white/5 transition-all"
-                  >
-                    <X className="w-4 h-4" />
-                  </button>
-                </div>
-                <div className="space-y-3">
-                  {generations.length === 0 ? (
-                    <p className="text-sm text-[rgb(var(--text-secondary))]/50 text-center py-8">
-                      No generations yet
-                    </p>
-                  ) : (
-                    generations.map((gen) => (
-                      <motion.button
-                        key={gen.id}
-                        initial={{ opacity: 0, x: 20 }}
-                        animate={{ opacity: 1, x: 0 }}
-                        onClick={() => setCurrentGeneration(gen)}
-                        className={`w-full text-left p-4 rounded-xl transition-all ${
-                          currentGeneration?.id === gen.id
-                            ? 'bg-gradient-to-r from-[rgb(var(--accent-1))]/20 to-[rgb(var(--accent-2))]/20 border border-[rgb(var(--accent-1))]/30'
-                            : 'bg-white/5 hover:bg-white/10'
-                        }`}
-                      >
-                        <p className="text-sm font-medium truncate mb-1">{gen.prompt}</p>
-                        <p className={`text-xs ${
-                          currentGeneration?.id === gen.id
-                            ? 'text-[rgb(var(--accent-1))]'
-                            : 'text-[rgb(var(--text-secondary))]/70'
-                        }`}>
-                          {new Date(gen.timestamp).toLocaleTimeString()} • {gen.frames.length} frames
-                        </p>
-                      </motion.button>
-                    ))
-                  )}
-                </div>
-              </div>
-            </motion.aside>
-          )}
-        </AnimatePresence>
       </div>
-    </div>
+
+      {/* No footer for ASCII page */}
+    </DefaultLayout>
   )
 }
