@@ -30,7 +30,8 @@ const SheetOverlay = React.forwardRef<
     {/* Decorative water ascii overlay */}
     <div className="pointer-events-none absolute inset-0 flex items-center justify-center">
       <WaterAscii
-        style={{ opacity: 0.06, fontSize: '8px', lineHeight: '8px' }}
+        type="ocean"
+        style={{ opacity: 0.12, fontSize: '8px', lineHeight: '8px' }}
       />
     </div>
   </SheetPrimitive.Overlay>

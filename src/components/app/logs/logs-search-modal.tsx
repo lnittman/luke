@@ -380,13 +380,13 @@ export function LogsSearchModal({ logs = [] }: LogsSearchModalProps) {
               }}
             >
               <WaterAscii
-                type="matrix"
+                type="ocean"
                 fillContainer={true}
-                fps={12}
+                fps={8}
                 style={{
                   fontSize: '12px',
                   lineHeight: '14px',
-                  opacity: 0.03,
+                  opacity: 0.1,
                   color: 'rgb(var(--accent-1))',
                   width: '100%',
                   height: '100%',

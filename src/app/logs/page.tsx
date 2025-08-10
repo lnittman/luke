@@ -1,11 +1,8 @@
 'use client'
 
 import { format } from 'date-fns'
-import { useSetAtom } from 'jotai'
 import Link from 'next/link'
 import React, { useEffect, useMemo, useRef, useState } from 'react'
-import { logsSearchModalOpenAtom } from '@/atoms/logs-search'
-import { LogsSearchModal } from '@/components/app/logs/logs-search-modal'
 import { RepoPicker } from '@/components/app/logs/repo-picker'
 import { BlockLoader } from '@/components/shared/block-loader'
 import { DefaultLayout } from '@/components/shared/default-layout'
@@ -17,13 +14,18 @@ import { WaterAscii } from '@/components/shared/water-ascii'
 import { useIsMobile } from '@/hooks/useIsMobile'
 import type { ActivityLog } from '@/lib/db'
 
+// Extended type to include repo name from join
+type ActivityLogWithRepo = ActivityLog & {
+  repo?: string | null
+}
+
 export default function LogsPage() {
-  const [logs, setLogs] = useState<ActivityLog[]>([])
+  const [logs, setLogs] = useState<ActivityLogWithRepo[]>([])
   const [loading, setLoading] = useState(true)
   const [hasMore, setHasMore] = useState(false)
   const [offset, setOffset] = useState(0)
   const [selectedRepo, setSelectedRepo] = useState<string | null>(null)
-  const setLogsSearchModalOpen = useSetAtom(logsSearchModalOpenAtom)
+  const [searchQuery, setSearchQuery] = useState('')
   const isMobile = useIsMobile()
   const searchPlaceholder = useMemo(() => 'search logs…', [])
   const headerRef = useRef<HTMLDivElement>(null)
@@ -83,9 +85,18 @@ export default function LogsPage() {
     }
   }
 
+  // Filter logs based on search query
+  const filteredLogs = useMemo(() => {
+    if (!searchQuery) return logs
+    const query = searchQuery.toLowerCase()
+    return logs.filter(log => 
+      log.summary?.toLowerCase().includes(query) ||
+      log.repo?.toLowerCase().includes(query)
+    )
+  }, [logs, searchQuery])
+
   return (
     <DefaultLayout>
-      <LogsSearchModal logs={logs} />
       <div className={styles.header}>
         <div className={styles.column}>
           <div style={{ display: 'flex', alignItems: 'center', gap: '1rem' }}>
@@ -117,21 +128,22 @@ export default function LogsPage() {
                 }}
               >
                 <WaterAscii
-                  type="matrix"
+                  type="ocean"
                   fillContainer={true}
-                  fps={12}
+                  fps={8}
                   style={{
                     fontSize: '10px',
                     lineHeight: '12px',
                     width: '100%',
                     height: '100%',
-                    opacity: 0.04,
+                    opacity: 0.12,
                     color: 'rgb(var(--accent-1))',
                   }}
                 />
               </div>
             </div>
           )}
+          
           {/* Page header with search and settings - sticky under main header */}
           <div
             ref={headerRef}
@@ -156,395 +168,216 @@ export default function LogsPage() {
                 flex: 1,
               }}
             >
-              {isMobile ? (
-                <button
-                  aria-label="Search Logs"
-                  onClick={() => setLogsSearchModalOpen(true)}
-                  onMouseEnter={(e) => {
-                    e.currentTarget.style.background = 'rgb(var(--surface-1))'
-                    e.currentTarget.style.borderColor = 'rgb(var(--accent-1))'
-                  }}
-                  onMouseLeave={(e) => {
-                    e.currentTarget.style.background = 'none'
-                    e.currentTarget.style.borderColor = 'rgb(var(--border))'
-                  }}
+              {/* Search input for both desktop and mobile */}
+              <div
+                style={{
+                  flex: 1,
+                  maxWidth: isMobile ? '100%' : '420px',
+                  display: 'flex',
+                  alignItems: 'center',
+                  border: '1px solid rgb(var(--border))',
+                  padding: '0 0.75rem',
+                  height: '2.5rem',
+                  backgroundColor: 'transparent',
+                  position: 'relative',
+                }}
+              >
+                <input
+                  type="text"
+                  value={searchQuery}
+                  onChange={(e) => setSearchQuery(e.target.value)}
+                  placeholder={searchPlaceholder}
                   style={{
-                    display: 'flex',
-                    alignItems: 'center',
-                    justifyContent: 'center',
-                    width: '2.5rem',
-                    height: '2.5rem',
-                    background: 'none',
-                    border: '1px solid rgb(var(--border))',
-                    color: 'rgb(var(--text-primary))',
-                    cursor: 'pointer',
-                    transition: 'all 0.2s ease',
-                    fontFamily: 'monospace',
-                    padding: 0,
-                    fontSize: '1rem',
-                  }}
-                  title="Search Logs"
-                >
-                  ⌕
-                </button>
-              ) : (
-                <button
-                  aria-label="Search Logs"
-                  onClick={() => setLogsSearchModalOpen(true)}
-                  onMouseEnter={(e) => {
-                    e.currentTarget.style.background = 'rgb(var(--surface-1))'
-                    e.currentTarget.style.borderColor = 'rgb(var(--accent-1))'
-                  }}
-                  onMouseLeave={(e) => {
-                    e.currentTarget.style.background = 'transparent'
-                    e.currentTarget.style.borderColor = 'rgb(var(--border))'
-                  }}
-                  style={{
-                    display: 'flex',
-                    alignItems: 'center',
-                    gap: '0.5rem',
                     width: '100%',
-                    maxWidth: '420px',
-                    height: '2.5rem',
                     background: 'transparent',
-                    border: '1px solid rgb(var(--border))',
-                    color: 'rgb(var(--text-secondary))',
-                    cursor: 'text',
-                    transition: 'all 0.2s ease',
+                    border: 'none',
+                    outline: 'none',
                     fontFamily: 'monospace',
-                    padding: '0 0.75rem',
                     fontSize: '0.875rem',
-                    textAlign: 'left',
+                    color: 'rgb(var(--text-primary))',
                   }}
-                  title="Search Logs"
-                >
-                  <span style={{ opacity: 0.7 }}>{searchPlaceholder}</span>
-                  <span
+                />
+                {searchQuery && (
+                  <button
+                    onClick={() => setSearchQuery('')}
                     style={{
-                      marginLeft: 'auto',
-                      opacity: 0.5,
-                      fontSize: '0.75rem',
+                      position: 'absolute',
+                      right: '0.5rem',
+                      display: 'flex',
+                      alignItems: 'center',
+                      justifyContent: 'center',
+                      width: '1.5rem',
+                      height: '1.5rem',
+                      background: 'none',
+                      border: 'none',
+                      color: 'rgb(var(--text-primary))',
+                      cursor: 'pointer',
+                      fontFamily: 'monospace',
+                      fontSize: '1rem',
+                      padding: 0,
+                      opacity: 0.7,
+                    }}
+                    onMouseEnter={(e) => {
+                      e.currentTarget.style.opacity = '1'
+                    }}
+                    onMouseLeave={(e) => {
+                      e.currentTarget.style.opacity = '0.7'
                     }}
                   >
-                    ⌘K
-                  </span>
-                </button>
-              )}
+                    ×
+                  </button>
+                )}
+              </div>
             </div>
+
             <div
-              style={{ display: 'flex', gap: '0.5rem', alignItems: 'center' }}
+              style={{
+                display: 'flex',
+                gap: '0.5rem',
+                alignItems: 'center',
+              }}
             >
-              <RepoPicker
-                isMobile={isMobile}
-                onRepoSelect={setSelectedRepo}
-                selectedRepo={selectedRepo}
-              />
-              {process.env.NODE_ENV === 'development' && (
-                <Link
-                  aria-label="Settings"
-                  href="/logs/settings"
-                  onMouseEnter={(e) => {
-                    e.currentTarget.style.background = 'rgb(var(--surface-1))'
-                    e.currentTarget.style.borderColor = 'rgb(var(--accent-1))'
-                  }}
-                  onMouseLeave={(e) => {
-                    e.currentTarget.style.background = 'none'
-                    e.currentTarget.style.borderColor = 'rgb(var(--border))'
-                  }}
-                  style={{
-                    display: 'flex',
-                    alignItems: 'center',
-                    justifyContent: 'center',
-                    width: '2.5rem',
-                    height: '2.5rem',
-                    background: 'none',
-                    border: '1px solid rgb(var(--border))',
-                    color: 'rgb(var(--text-primary))',
-                    cursor: 'pointer',
-                    transition: 'all 0.2s ease',
-                    fontFamily: 'monospace',
-                    padding: 0,
-                    fontSize: '1rem',
-                    textDecoration: 'none',
-                  }}
-                  title="Settings"
-                >
-                  ⚙
-                </Link>
-              )}
+              {!isMobile && <RepoPicker selectedRepo={selectedRepo} onRepoSelect={setSelectedRepo} />}
+              <Link
+                href="/logs/settings"
+                onMouseEnter={(e) => {
+                  e.currentTarget.style.opacity = '1'
+                }}
+                onMouseLeave={(e) => {
+                  e.currentTarget.style.opacity = '0.7'
+                }}
+                style={{
+                  display: 'flex',
+                  alignItems: 'center',
+                  justifyContent: 'center',
+                  width: '2.5rem',
+                  height: '2.5rem',
+                  color: 'rgb(var(--text-primary))',
+                  textDecoration: 'none',
+                  fontSize: '1.25rem',
+                  opacity: 0.7,
+                  transition: 'opacity 0.2s ease',
+                }}
+                title="Settings"
+              >
+                ⚙
+              </Link>
             </div>
           </div>
 
+          {/* Logs content */}
           {loading ? (
             <div
               style={{
-                position: 'relative',
-                display: 'flex',
-                alignItems: 'center',
-                justifyContent: 'center',
-                padding: '3rem 1rem 4rem 1rem',
+                position: 'absolute',
+                top: '50%',
+                left: '50%',
+                transform: 'translate(-50%, -50%)',
+                textAlign: 'center',
+                fontFamily: 'monospace',
+                fontSize: '0.875rem',
+                color: 'rgb(var(--text-secondary))',
+                zIndex: 10,
               }}
             >
-              <div
-                style={{ position: 'relative', zIndex: 1, textAlign: 'center' }}
-              >
-                <div
-                  style={{
-                    fontFamily: 'monospace',
-                    fontSize: '0.875rem',
-                    color: 'rgb(var(--text-secondary))',
-                  }}
-                >
-                  loading logs...
-                </div>
-              </div>
+              loading logs...
             </div>
-          ) : logs.length === 0 ? (
+          ) : filteredLogs.length === 0 ? (
             <div
               style={{
-                position: 'relative',
-                display: 'flex',
-                alignItems: 'center',
-                justifyContent: 'center',
-                padding: '3rem 1rem 4rem 1rem',
+                position: 'absolute',
+                top: '50%',
+                left: '50%',
+                transform: 'translate(-50%, -50%)',
+                textAlign: 'center',
+                fontFamily: 'monospace',
+                fontSize: '0.875rem',
+                color: 'rgb(var(--text-secondary))',
+                zIndex: 10,
               }}
             >
-              <div
-                style={{ position: 'relative', zIndex: 1, textAlign: 'center' }}
-              >
-                <div
-                  style={{
-                    fontFamily: 'monospace',
-                    fontSize: '0.875rem',
-                    color: 'rgb(var(--text-secondary))',
-                  }}
-                >
-                  no logs...
-                </div>
-              </div>
+              {searchQuery ? 'no logs match your search...' : 'no logs...'}
             </div>
           ) : (
             <div style={{ marginTop: 0 }}>
-              {logs.map((log) => (
+              {filteredLogs.map((log) => (
                 <Link
-                  href={`/logs/${log.id}`}
                   key={log.id}
+                  href={`/logs/${log.id}`}
                   style={{
+                    display: 'block',
                     textDecoration: 'none',
                     color: 'inherit',
-                    display: 'block',
                   }}
                 >
                   <div
+                    className={styles.row}
                     onMouseEnter={(e) => {
-                      ;(e.currentTarget as HTMLDivElement).style.opacity = '0.8'
+                      e.currentTarget.style.backgroundColor =
+                        'rgb(var(--surface-1))'
                     }}
                     onMouseLeave={(e) => {
-                      ;(e.currentTarget as HTMLDivElement).style.opacity = '1'
+                      e.currentTarget.style.backgroundColor = 'transparent'
                     }}
                     style={{
-                      minHeight: '7rem',
-                      padding: '1rem 24px',
-                      borderBottom: '0.5px solid rgb(var(--border))',
                       cursor: 'pointer',
-                      transition: 'opacity 0.2s ease',
-                      display: 'flex',
-                      flexDirection: 'column',
-                      justifyContent: 'space-between',
+                      transition: 'background-color 0.2s ease',
                     }}
                   >
-                    {/* Title and content snippet */}
-                    <div style={{ flex: 1 }}>
+                    <div className={styles.column}>
                       <div
                         style={{
+                          display: 'flex',
+                          justifyContent: 'space-between',
+                          alignItems: 'flex-start',
+                          gap: '1rem',
                           fontFamily: 'monospace',
-                          fontSize: '0.875rem',
-                          fontWeight: '500',
-                          color: 'rgb(var(--text-primary))',
-                          marginBottom: '0.5rem',
                         }}
                       >
-                        {log.title ||
-                          log.summary?.split('.')[0] ||
-                          'daily activity log'}
-                      </div>
-                      <div
-                        style={{
-                          fontFamily: 'monospace',
-                          fontSize: '0.75rem',
-                          color: 'rgb(var(--text-secondary))',
-                          opacity: 0.7,
-                          lineHeight: 1.4,
-                          overflow: 'hidden',
-                          display: '-webkit-box',
-                          WebkitLineClamp: 2,
-                          WebkitBoxOrient: 'vertical',
-                        }}
-                      >
-                        {log.summary || 'No summary available'}
-                      </div>
-                    </div>
-
-                    {/* Bottom-aligned metadata tiles */}
-                    <div
-                      style={{
-                        display: 'flex',
-                        gap: '0.5rem',
-                        alignItems: 'center',
-                        marginTop: '0.75rem',
-                      }}
-                    >
-                      {/* Date tile */}
-                      <div
-                        style={{
-                          padding: '0.25rem 0.5rem',
-                          backgroundColor: 'rgb(var(--surface-1))',
-                          border: '0.5px solid rgb(var(--border))',
-                          fontFamily: 'monospace',
-                          fontSize: '0.625rem',
-                          color: 'rgb(var(--text-secondary))',
-                        }}
-                      >
-                        {format(new Date(log.date), 'MMM d').toLowerCase()}
-                      </div>
-
-                      {/* Stats tiles */}
-                      {log.metadata && (
-                        <>
-                          {log.metadata?.totalCommits !== undefined &&
-                            log.metadata.totalCommits > 0 && (
-                              <div
-                                style={{
-                                  padding: '0.25rem 0.5rem',
-                                  backgroundColor: 'rgb(var(--surface-1))',
-                                  border: '0.5px solid rgb(var(--border))',
-                                  display: 'flex',
-                                  alignItems: 'baseline',
-                                  gap: '0.25rem',
-                                  fontFamily: 'monospace',
-                                  fontSize: '0.625rem',
-                                }}
-                              >
-                                <span
-                                  style={{
-                                    fontWeight: 'bold',
-                                    color: 'rgb(var(--accent-1))',
-                                  }}
-                                >
-                                  {log.metadata.totalCommits}
-                                </span>
-                                <span style={{ opacity: 0.7 }}>commits</span>
-                              </div>
-                            )}
-                          {log.metadata?.totalPullRequests !== undefined &&
-                            log.metadata.totalPullRequests > 0 && (
-                              <div
-                                style={{
-                                  padding: '0.25rem 0.5rem',
-                                  backgroundColor: 'rgb(var(--surface-1))',
-                                  border: '0.5px solid rgb(var(--border))',
-                                  display: 'flex',
-                                  alignItems: 'baseline',
-                                  gap: '0.25rem',
-                                  fontFamily: 'monospace',
-                                  fontSize: '0.625rem',
-                                }}
-                              >
-                                <span
-                                  style={{
-                                    fontWeight: 'bold',
-                                    color: 'rgb(var(--accent-1))',
-                                  }}
-                                >
-                                  {log.metadata.totalPullRequests}
-                                </span>
-                                <span style={{ opacity: 0.7 }}>prs</span>
-                              </div>
-                            )}
-                          {log.metadata?.totalIssues !== undefined &&
-                            log.metadata.totalIssues > 0 && (
-                              <div
-                                style={{
-                                  padding: '0.25rem 0.5rem',
-                                  backgroundColor: 'rgb(var(--surface-1))',
-                                  border: '0.5px solid rgb(var(--border))',
-                                  display: 'flex',
-                                  alignItems: 'baseline',
-                                  gap: '0.25rem',
-                                  fontFamily: 'monospace',
-                                  fontSize: '0.625rem',
-                                }}
-                              >
-                                <span
-                                  style={{
-                                    fontWeight: 'bold',
-                                    color: 'rgb(var(--accent-1))',
-                                  }}
-                                >
-                                  {log.metadata.totalIssues}
-                                </span>
-                                <span style={{ opacity: 0.7 }}>issues</span>
-                              </div>
-                            )}
-                          {log.repositoryId && (
+                        <div style={{ flex: 1 }}>
+                          <TextFade 
+                            style={{
+                              fontSize: '0.875rem',
+                              lineHeight: '1.5',
+                              fontFamily: 'monospace',
+                              color: 'rgb(var(--text-primary))',
+                            }}
+                          >
+                            {log.summary || 'No summary'}
+                          </TextFade>
+                          {log.repo && (
                             <div
                               style={{
-                                padding: '0.25rem 0.5rem',
-                                backgroundColor: 'rgb(var(--surface-1))',
-                                border: '0.5px solid rgb(var(--border))',
-                                fontFamily: 'monospace',
-                                fontSize: '0.625rem',
+                                fontSize: '0.75rem',
                                 color: 'rgb(var(--text-secondary))',
-                                opacity: 0.7,
+                                marginTop: '0.25rem',
                               }}
                             >
-                              repo
+                              {log.repo}
                             </div>
                           )}
-                        </>
-                      )}
+                        </div>
+                        <div
+                          style={{
+                            fontSize: '0.75rem',
+                            color: 'rgb(var(--text-secondary))',
+                            whiteSpace: 'nowrap',
+                            flexShrink: 0,
+                          }}
+                        >
+                          {format(new Date(log.date as any), 'MMM d')}
+                        </div>
+                      </div>
                     </div>
                   </div>
                 </Link>
               ))}
-
-              {/* Load More */}
-              {hasMore && (
-                <div style={{ textAlign: 'center', padding: '2rem 0' }}>
-                  <button
-                    onClick={() => fetchLogs(true)}
-                    onMouseEnter={(e) => {
-                      ;(e.currentTarget as HTMLButtonElement).style.transform =
-                        'translateX(2px) translateY(-2px)'
-                    }}
-                    onMouseLeave={(e) => {
-                      ;(e.currentTarget as HTMLButtonElement).style.transform =
-                        'none'
-                    }}
-                    style={{
-                      padding: '0.5rem 1.5rem',
-                      fontFamily: 'monospace',
-                      fontSize: '0.875rem',
-                      backgroundColor: 'transparent',
-                      border: '1px solid rgb(var(--text-secondary))',
-                      cursor: 'pointer',
-                      transition: 'transform 0.1s ease',
-                    }}
-                  >
-                    load more →
-                  </button>
-                </div>
-              )}
             </div>
           )}
         </div>
       </div>
 
-      <div className={styles.footer}>
-        <div className={styles.column}>
-          <FooterNavigation />
-        </div>
-      </div>
+      <FooterNavigation />
     </DefaultLayout>
   )
 }

@@ -1,6 +1,6 @@
 import { and, desc, eq, isNotNull, or } from 'drizzle-orm'
 import { type NextRequest, NextResponse } from 'next/server'
-import { activityDetails, activityLogs, db } from '@/lib/db'
+import { activityDetails, activityLogs, db, repositories } from '@/lib/db'
 
 export async function GET(request: NextRequest) {
   try {
@@ -33,10 +33,25 @@ export async function GET(request: NextRequest) {
         )
       : undefined
 
-    // Fetch logs with pagination and optional filter
+    // Fetch logs with pagination and optional filter, join with repositories
     const logs = await db
-      .select()
+      .select({
+        id: activityLogs.id,
+        date: activityLogs.date,
+        logType: activityLogs.logType,
+        repositoryId: activityLogs.repositoryId,
+        title: activityLogs.title,
+        summary: activityLogs.summary,
+        bullets: activityLogs.bullets,
+        rawData: activityLogs.rawData,
+        metadata: activityLogs.metadata,
+        processed: activityLogs.processed,
+        createdAt: activityLogs.createdAt,
+        updatedAt: activityLogs.updatedAt,
+        repo: repositories.name,
+      })
       .from(activityLogs)
+      .leftJoin(repositories, eq(activityLogs.repositoryId, repositories.id))
       .where(whereConditions)
       .orderBy(desc(activityLogs.date))
       .limit(limit)
