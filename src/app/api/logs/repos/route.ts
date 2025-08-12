@@ -56,6 +56,8 @@ export async function GET() {
             language: repo.language,
             isPrivate: repo.private,
             defaultBranch: repo.default_branch || 'main',
+            // Ensure existing repos are also enabled if not explicitly disabled
+            analysisEnabled: existing.analysisEnabled ?? true,
             metadata: {
               topics: repo.topics,
               homepage: repo.homepage,

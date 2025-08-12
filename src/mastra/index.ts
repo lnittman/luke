@@ -12,6 +12,7 @@ import {
   repoAnalyzerAgent,
 } from './agents/github-agents'
 import generateDailyLog from './workflows/generate-daily-log'
+import { dailyGithubAnalysisWorkflow } from './workflows/daily-github-analysis'
 
 export const mastra = new Mastra({
   agents: {
@@ -28,7 +29,9 @@ export const mastra = new Mastra({
   },
   workflows: {
     generateDailyLog,
+    'daily-github-analysis': dailyGithubAnalysisWorkflow,
   },
 })
 
 export { default as generateDailyLog } from './workflows/generate-daily-log'
+export { dailyGithubAnalysisWorkflow } from './workflows/daily-github-analysis'

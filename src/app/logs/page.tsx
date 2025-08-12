@@ -305,78 +305,252 @@ export default function LogsPage() {
             </div>
           ) : (
             <div style={{ marginTop: 0 }}>
-              {filteredLogs.map((log) => (
-                <Link
-                  key={log.id}
-                  href={`/logs/${log.id}`}
-                  style={{
-                    display: 'block',
-                    textDecoration: 'none',
-                    color: 'inherit',
-                  }}
-                >
-                  <div
-                    className={styles.row}
-                    onMouseEnter={(e) => {
-                      e.currentTarget.style.backgroundColor =
-                        'rgb(var(--surface-1))'
-                    }}
-                    onMouseLeave={(e) => {
-                      e.currentTarget.style.backgroundColor = 'transparent'
-                    }}
+              {filteredLogs.map((log) => {
+                // Parse metadata for dynamic tiles
+                const metadata = log.metadata as any || {}
+                const bullets = log.bullets as string[] || []
+                const repoCount = metadata.repoSummaries ? Object.keys(metadata.repoSummaries).length : 0
+                const commitCount = metadata.totalCommits || 0
+                const qualityTrend = metadata.codeQualityTrend || 'stable'
+                const productivityScore = metadata.productivityScore || 0
+                
+                return (
+                  <Link
+                    key={log.id}
+                    href={`/logs/${log.id}`}
                     style={{
-                      cursor: 'pointer',
-                      transition: 'background-color 0.2s ease',
+                      display: 'block',
+                      textDecoration: 'none',
+                      color: 'inherit',
                     }}
                   >
-                    <div className={styles.column}>
-                      <div
-                        style={{
-                          display: 'flex',
-                          justifyContent: 'space-between',
-                          alignItems: 'flex-start',
-                          gap: '1rem',
-                          fontFamily: 'monospace',
-                        }}
-                      >
-                        <div style={{ flex: 1 }}>
-                          <TextFade 
-                            style={{
-                              fontSize: '0.875rem',
-                              lineHeight: '1.5',
-                              fontFamily: 'monospace',
-                              color: 'rgb(var(--text-primary))',
-                            }}
-                          >
-                            {log.summary || 'No summary'}
-                          </TextFade>
-                          {log.repo && (
-                            <div
-                              style={{
-                                fontSize: '0.75rem',
-                                color: 'rgb(var(--text-secondary))',
-                                marginTop: '0.25rem',
-                              }}
-                            >
-                              {log.repo}
-                            </div>
-                          )}
-                        </div>
+                    <div
+                      className={styles.row}
+                      onMouseEnter={(e) => {
+                        e.currentTarget.style.backgroundColor =
+                          'rgb(var(--surface-1))'
+                      }}
+                      onMouseLeave={(e) => {
+                        e.currentTarget.style.backgroundColor = 'transparent'
+                      }}
+                      style={{
+                        cursor: 'pointer',
+                        transition: 'background-color 0.2s ease',
+                      }}
+                    >
+                      <div className={styles.column}>
                         <div
                           style={{
-                            fontSize: '0.75rem',
-                            color: 'rgb(var(--text-secondary))',
-                            whiteSpace: 'nowrap',
-                            flexShrink: 0,
+                            display: 'flex',
+                            justifyContent: 'space-between',
+                            alignItems: 'flex-start',
+                            gap: '1rem',
+                            fontFamily: 'monospace',
+                            marginBottom: '0.75rem',
                           }}
                         >
-                          {format(new Date(log.date as any), 'MMM d')}
+                          <div style={{ flex: 1 }}>
+                            <div
+                              style={{
+                                fontSize: '0.875rem',
+                                lineHeight: '1.5',
+                                fontFamily: 'monospace',
+                                color: 'rgb(var(--text-primary))',
+                                fontWeight: 500,
+                                marginBottom: '0.25rem',
+                              }}
+                            >
+                              {log.title || format(new Date(log.date as any), 'MMMM d, yyyy')}
+                            </div>
+                            <TextFade 
+                              style={{
+                                fontSize: '0.75rem',
+                                lineHeight: '1.4',
+                                fontFamily: 'monospace',
+                                color: 'rgb(var(--text-secondary))',
+                                display: '-webkit-box',
+                                WebkitLineClamp: 2,
+                                WebkitBoxOrient: 'vertical',
+                                overflow: 'hidden',
+                              }}
+                            >
+                              {log.summary || 'No summary available'}
+                            </TextFade>
+                          </div>
+                          <div
+                            style={{
+                              fontSize: '0.75rem',
+                              color: 'rgb(var(--text-secondary))',
+                              whiteSpace: 'nowrap',
+                              flexShrink: 0,
+                            }}
+                          >
+                            {format(new Date(log.date as any), 'MMM d')}
+                          </div>
+                        </div>
+                        
+                        {/* Dynamic tiles section */}
+                        <div
+                          style={{
+                            display: 'flex',
+                            gap: '0.5rem',
+                            flexWrap: 'wrap',
+                          }}
+                        >
+                          {/* Repo count tile */}
+                          {repoCount > 0 && (
+                            <div
+                              style={{
+                                padding: '0.25rem 0.5rem',
+                                backgroundColor: 'rgb(var(--surface-1))',
+                                border: '1px solid rgb(var(--border))',
+                                fontSize: '0.625rem',
+                                fontFamily: 'monospace',
+                                color: 'rgb(var(--text-secondary))',
+                                display: 'inline-flex',
+                                alignItems: 'center',
+                                gap: '0.25rem',
+                              }}
+                            >
+                              <span style={{ opacity: 0.7 }}>◉</span>
+                              {repoCount} {repoCount === 1 ? 'repo' : 'repos'}
+                            </div>
+                          )}
+                          
+                          {/* Commit count tile */}
+                          {commitCount > 0 && (
+                            <div
+                              style={{
+                                padding: '0.25rem 0.5rem',
+                                backgroundColor: 'rgb(var(--surface-1))',
+                                border: '1px solid rgb(var(--border))',
+                                fontSize: '0.625rem',
+                                fontFamily: 'monospace',
+                                color: 'rgb(var(--text-secondary))',
+                                display: 'inline-flex',
+                                alignItems: 'center',
+                                gap: '0.25rem',
+                              }}
+                            >
+                              <span style={{ opacity: 0.7 }}>→</span>
+                              {commitCount} {commitCount === 1 ? 'commit' : 'commits'}
+                            </div>
+                          )}
+                          
+                          {/* Quality trend tile */}
+                          {qualityTrend && qualityTrend !== 'stable' && (
+                            <div
+                              style={{
+                                padding: '0.25rem 0.5rem',
+                                backgroundColor: 'rgb(var(--surface-1))',
+                                border: '1px solid rgb(var(--border))',
+                                fontSize: '0.625rem',
+                                fontFamily: 'monospace',
+                                color: qualityTrend === 'improving' 
+                                  ? 'rgb(var(--accent-1))' 
+                                  : qualityTrend === 'declining'
+                                  ? 'rgb(var(--accent-2))'
+                                  : 'rgb(var(--text-secondary))',
+                                display: 'inline-flex',
+                                alignItems: 'center',
+                                gap: '0.25rem',
+                              }}
+                            >
+                              <span style={{ opacity: 0.7 }}>
+                                {qualityTrend === 'improving' ? '↑' : qualityTrend === 'declining' ? '↓' : '~'}
+                              </span>
+                              {qualityTrend}
+                            </div>
+                          )}
+                          
+                          {/* Productivity score tile */}
+                          {productivityScore > 0 && (
+                            <div
+                              style={{
+                                padding: '0.25rem 0.5rem',
+                                backgroundColor: 'rgb(var(--surface-1))',
+                                border: '1px solid rgb(var(--border))',
+                                fontSize: '0.625rem',
+                                fontFamily: 'monospace',
+                                color: productivityScore >= 80 
+                                  ? 'rgb(var(--accent-1))' 
+                                  : productivityScore >= 50
+                                  ? 'rgb(var(--text-secondary))'
+                                  : 'rgb(var(--accent-2))',
+                                display: 'inline-flex',
+                                alignItems: 'center',
+                                gap: '0.25rem',
+                              }}
+                            >
+                              <span style={{ opacity: 0.7 }}>◆</span>
+                              {productivityScore}%
+                            </div>
+                          )}
+                          
+                          {/* Highlights count tile */}
+                          {bullets.length > 0 && (
+                            <div
+                              style={{
+                                padding: '0.25rem 0.5rem',
+                                backgroundColor: 'rgb(var(--surface-1))',
+                                border: '1px solid rgb(var(--border))',
+                                fontSize: '0.625rem',
+                                fontFamily: 'monospace',
+                                color: 'rgb(var(--text-secondary))',
+                                display: 'inline-flex',
+                                alignItems: 'center',
+                                gap: '0.25rem',
+                              }}
+                            >
+                              <span style={{ opacity: 0.7 }}>•</span>
+                              {bullets.length} highlights
+                            </div>
+                          )}
+                          
+                          {/* Suggestions tile if present */}
+                          {metadata.suggestions && metadata.suggestions.length > 0 && (
+                            <div
+                              style={{
+                                padding: '0.25rem 0.5rem',
+                                backgroundColor: 'rgb(var(--surface-1))',
+                                border: '1px solid rgb(var(--border))',
+                                fontSize: '0.625rem',
+                                fontFamily: 'monospace',
+                                color: 'rgb(var(--accent-1))',
+                                display: 'inline-flex',
+                                alignItems: 'center',
+                                gap: '0.25rem',
+                              }}
+                            >
+                              <span style={{ opacity: 0.7 }}>✦</span>
+                              {metadata.suggestions.length} suggestions
+                            </div>
+                          )}
+                          
+                          {/* Log type tile */}
+                          <div
+                            style={{
+                              padding: '0.25rem 0.5rem',
+                              backgroundColor: 'rgb(var(--surface-1))',
+                              border: '1px solid rgb(var(--border))',
+                              fontSize: '0.625rem',
+                              fontFamily: 'monospace',
+                              color: 'rgb(var(--text-secondary))',
+                              display: 'inline-flex',
+                              alignItems: 'center',
+                              gap: '0.25rem',
+                              opacity: 0.7,
+                            }}
+                          >
+                            {log.logType === 'global' ? '◈' : '◉'}
+                            {log.logType}
+                          </div>
                         </div>
                       </div>
                     </div>
-                  </div>
-                </Link>
-              ))}
+                  </Link>
+                )
+              })}
             </div>
           )}
         </div>

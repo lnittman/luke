@@ -78,33 +78,30 @@ export const dailyGithubAnalysisWorkflow = createWorkflow({
           success: z.boolean(),
         }),
       })
-        .map({
-          date: { step: shouldContinueStep, path: 'date' },
-          githubToken: { step: shouldContinueStep, path: 'githubToken' },
-        })
+        .map(({ inputData }) => ({
+          date: inputData.date,
+          githubToken: inputData.githubToken,
+        }))
         .then(fetchCommitsStep)
         .map({
           commits: { step: fetchCommitsStep, path: 'commits' },
-          githubToken: { step: shouldContinueStep, path: 'githubToken' },
         })
         .then(analyzeCommitsStep)
         .map({
           commitAnalyses: { step: analyzeCommitsStep, path: 'analyses' },
-          date: { step: shouldContinueStep, path: 'date' },
         })
         .then(analyzeRepositoriesStep)
         .map({
           repoAnalyses: { step: analyzeRepositoriesStep, path: 'repoAnalyses' },
           commitAnalyses: { step: analyzeCommitsStep, path: 'analyses' },
-          date: { step: shouldContinueStep, path: 'date' },
         })
         .then(generateGlobalAnalysisStep)
-        .map({
-          globalAnalysis: { step: generateGlobalAnalysisStep, path: 'globalAnalysis' },
-          repoAnalyses: { step: analyzeRepositoriesStep, path: 'repoAnalyses' },
-          commitAnalyses: { step: analyzeCommitsStep, path: 'analyses' },
-          date: { step: shouldContinueStep, path: 'date' },
-        })
+        .map(({ inputData, getInitData }) => ({
+          globalAnalysis: inputData.globalAnalysis,
+          repoAnalyses: inputData.repoAnalyses,
+          commitAnalyses: inputData.commitAnalyses,
+          date: getInitData().date,
+        }))
         .then(storeAnalysisStep)
         .commit()
     ],

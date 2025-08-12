@@ -16,17 +16,29 @@ export const storeAnalysisStep = createStep({
         analysis: z.any(), // CommitAnalysis
       })
     ),
-    date: z.date(),
+    date: z.union([z.date(), z.string()]),
   }),
   outputSchema: z.object({
     logId: z.string(),
     success: z.boolean(),
   }),
-  execute: async ({ inputData }) => {
+  execute: async ({ inputData, mastra }) => {
+    const logger = mastra?.getLogger()
     const { globalAnalysis, repoAnalyses, commitAnalyses, date } = inputData
+
+    // Handle case where date might be undefined
+    const dateStr = date ? (typeof date === 'string' ? date : date.toISOString().split('T')[0]) : new Date().toISOString().split('T')[0]
+    
+    logger?.info('💾 Starting: Storing analysis data to database', { 
+      date: dateStr,
+      repoCount: repoAnalyses?.length || 0,
+      commitCount: commitAnalyses?.length || 0,
+      suggestionCount: globalAnalysis?.suggestions?.length || 0
+    })
 
     try {
       // Store main activity log with enhanced metadata
+      logger?.info('📝 Storing main activity log')
       const [newLog] = await db
         .insert(activityLogs)
         .values({
@@ -60,10 +72,13 @@ export const storeAnalysisStep = createStep({
         })
         .returning()
 
+      logger?.info('✅ Main log stored', { logId: newLog.id })
+
       // Store detailed activity records
       const details = []
       
       // Store commit analyses as details
+      logger?.info(`📊 Storing ${commitAnalyses.length} commit analyses`)
       for (const { repository, sha, analysis } of commitAnalyses) {
         details.push({
           logId: newLog.id,
@@ -87,24 +102,33 @@ export const storeAnalysisStep = createStep({
       }
 
       // Store repository analyses as details
-      for (const repoAnalysis of repoAnalyses) {
-        details.push({
-          logId: newLog.id,
-          type: 'repository' as const,
-          title: `${repoAnalysis.repository}: ${repoAnalysis.summary.substring(0, 100)}...`,
-          description: JSON.stringify({
-            momentum: repoAnalysis.momentum,
-            codeHealth: repoAnalysis.codeHealth,
-            focusAreas: repoAnalysis.focusAreas,
-            metrics: repoAnalysis.metrics,
-          }),
-          url: `https://github.com/${repoAnalysis.repository}`,
-          metadata: repoAnalysis,
-        })
+      if (repoAnalyses && repoAnalyses.length > 0) {
+        logger?.info(`📁 Storing ${repoAnalyses.length} repository analyses`)
+        for (const repoAnalysis of repoAnalyses) {
+          const summary = repoAnalysis.summary || 'No activity'
+          const title = repoAnalysis.repository 
+            ? `${repoAnalysis.repository}: ${summary.substring(0, 100)}${summary.length > 100 ? '...' : ''}`
+            : `Repository: ${summary.substring(0, 100)}${summary.length > 100 ? '...' : ''}`
+          
+          details.push({
+            logId: newLog.id,
+            type: 'repository' as const,
+            title,
+            description: JSON.stringify({
+              momentum: repoAnalysis.momentum,
+              codeHealth: repoAnalysis.codeHealth,
+              focusAreas: repoAnalysis.focusAreas,
+              metrics: repoAnalysis.metrics,
+            }),
+            url: repoAnalysis.repository ? `https://github.com/${repoAnalysis.repository}` : '',
+            metadata: repoAnalysis,
+          })
+        }
       }
 
       // Store suggestions as separate details
       if (globalAnalysis.suggestions && Array.isArray(globalAnalysis.suggestions)) {
+        logger?.info(`💡 Storing ${globalAnalysis.suggestions.length} suggestions`)
         for (const suggestion of globalAnalysis.suggestions) {
           details.push({
             logId: newLog.id,
@@ -128,13 +152,20 @@ export const storeAnalysisStep = createStep({
 
       // Store all details
       if (details.length > 0) {
+        logger?.info(`📦 Storing ${details.length} detail records`)
         await db.insert(activityDetails).values(details)
+        logger?.info('✅ All detail records stored successfully')
       }
 
-      console.log(`Stored daily analysis with ${details.length} detail records`)
+      logger?.info(`🎉 Storage complete: Daily analysis with ${details.length} detail records`, {
+        logId: newLog.id,
+        commitDetails: commitAnalyses.length,
+        repoDetails: repoAnalyses.length,
+        suggestionDetails: globalAnalysis.suggestions?.length || 0
+      })
       return { logId: newLog.id, success: true }
     } catch (error) {
-      console.error('Error storing analysis data:', error)
+      logger?.error(`❌ Error storing analysis data: ${error instanceof Error ? error.message : 'Unknown error'}`)
       return { logId: '', success: false }
     }
   },

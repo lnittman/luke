@@ -16,8 +16,14 @@ export const checkExistingLogStep = createStep({
     githubToken: z.string().optional(),
     date: z.date(),
   }),
-  execute: async ({ inputData }) => {
+  execute: async ({ inputData, mastra }) => {
+    const logger = mastra?.getLogger()
     const { date, forceRegenerate } = inputData
+    
+    logger?.info('🔍 Starting: Checking for existing log', { 
+      date: date.toISOString().split('T')[0], 
+      forceRegenerate 
+    })
 
     // Check if log already exists
     if (!forceRegenerate) {
@@ -40,7 +46,10 @@ export const checkExistingLogStep = createStep({
         .limit(1)
 
       if (existingLog.length > 0) {
-        console.log('Daily analysis already exists for', date)
+        logger?.info('✅ Found existing log', { 
+          logId: existingLog[0].id, 
+          date: date.toISOString().split('T')[0] 
+        })
         return { 
           shouldContinue: false,
           logId: existingLog[0].id,
@@ -49,29 +58,20 @@ export const checkExistingLogStep = createStep({
       }
     }
 
-    // Get user preferences and GitHub token
-    const [userPref] = await db
-      .select()
-      .from(userPreferences)
-      .where(eq(userPreferences.userId, 'default'))
-      .limit(1)
-
-    if (!userPref?.globalLogsEnabled) {
-      console.log('Global logs disabled')
-      return { 
-        shouldContinue: false,
-        date
-      }
-    }
-
-    const githubToken = (userPref.metadata as any)?.githubToken
+    // Use GitHub token from environment for now
+    const githubToken = process.env.GITHUB_PAT || process.env.GITHUB_TOKEN
     if (!githubToken) {
-      console.error('GitHub token not configured')
+      logger?.error('❌ GitHub token not configured in environment')
       return { 
         shouldContinue: false,
         date
       }
     }
+    
+    logger?.info('✅ No existing log found - proceeding with generation', { 
+      date: date.toISOString().split('T')[0],
+      hasToken: !!githubToken 
+    })
 
     return { 
       shouldContinue: true,

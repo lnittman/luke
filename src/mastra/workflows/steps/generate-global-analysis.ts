@@ -70,18 +70,29 @@ export const generateGlobalAnalysisStep = createStep({
         analysis: z.any(),
       })
     ),
-    date: z.date(),
+    date: z.union([z.date(), z.string()]),
   }),
   outputSchema: z.object({
     globalAnalysis: z.any(), // GlobalAnalysis
   }),
-  execute: async ({ inputData }) => {
+  execute: async ({ inputData, mastra }) => {
+    const logger = mastra?.getLogger()
     const { repoAnalyses, commitAnalyses, date } = inputData
+    
+    // Ensure date is valid
+    const analysisDate = date ? new Date(date) : new Date()
+    const dateString = analysisDate.toISOString().split('T')[0]
+    
+    logger?.info('🌍 Starting global analysis generation', { 
+      date: dateString,
+      repoCount: repoAnalyses.length,
+      commitCount: commitAnalyses.length 
+    })
 
     const globalPrompt = `
 Create a comprehensive daily development analysis.
 
-Date: ${date.toISOString().split('T')[0]}
+Date: ${dateString}
 
 Repository Analyses (${repoAnalyses.length} repos):
 ${JSON.stringify(repoAnalyses, null, 2)}
@@ -107,15 +118,25 @@ Base suggestions on actual code changes and patterns from today.
 Make them highly specific and actionable.
     `.trim()
 
+    logger?.info('🤖 Sending to AI for global analysis')
+    
     const result = await globalAnalysisAgent.generate([
       { role: 'user', content: globalPrompt },
     ])
 
     const globalAnalysis = result.object || JSON.parse(result.text || '{}')
-    globalAnalysis.date = date.toISOString().split('T')[0]
+    globalAnalysis.date = dateString
+    
+    logger?.info('✅ Global analysis generated', { 
+      date: dateString,
+      narrativeLength: globalAnalysis.narrative?.length,
+      highlightCount: globalAnalysis.highlights?.length,
+      suggestionCount: globalAnalysis.suggestions?.length 
+    })
 
     // Enhance suggestion prompts with full markdown templates
     if (globalAnalysis.suggestions && Array.isArray(globalAnalysis.suggestions)) {
+      logger?.info('💡 Enhancing suggestions with detailed prompts')
       globalAnalysis.suggestions = globalAnalysis.suggestions.map((suggestion: any, index: number) => {
         // Generate unique ID if not present
         suggestion.id = suggestion.id || `suggestion-${date.getTime()}-${index}`
@@ -136,8 +157,10 @@ Make them highly specific and actionable.
         
         return suggestion
       })
+      logger?.info(`✅ Enhanced ${globalAnalysis.suggestions.length} suggestions`)
     }
 
+    logger?.info('🎉 Global analysis complete')
     return { globalAnalysis }
   },
 })

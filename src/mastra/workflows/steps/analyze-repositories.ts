@@ -64,7 +64,7 @@ Connect individual commits into larger features and provide actionable insights.
 
       const analysis = result.object || JSON.parse(result.text || '{}')
       analysis.repository = repo
-      analysis.date = date.toISOString().split('T')[0]
+      analysis.date = date ? (typeof date === 'string' ? date : date.toISOString().split('T')[0]) : new Date().toISOString().split('T')[0]
       
       repoAnalyses.push(analysis)
     }

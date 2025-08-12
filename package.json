@@ -4,6 +4,7 @@
   "private": true,
   "scripts": {
     "dev": "next dev -p 9000",
+    "bun:dev": "bun run bun-dev.ts",
     "build": "next build",
     "start": "next start",
     "lint": "biome check",
@@ -142,5 +143,5 @@
     "ultracite": "^5.1.2",
     "webpack": "^5.99.7"
   },
-  "packageManager": "pnpm@9.15.4+sha256.9bee59c7313a216722c079c1e22160dea7f88df4e0c3450b1d7b01b882336c6a"
+  "packageManager": "bun@1.2.18"
 }
