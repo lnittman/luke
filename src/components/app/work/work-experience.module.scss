@@ -16,20 +16,21 @@
   justify-content: space-between;
   background: none;
   border: none;
-  padding: 1rem 0; // tighter to match parent accordion header
+  padding: 0.75rem 0; // no horizontal padding
   font-family: inherit;
   font-size: inherit;
   text-align: left;
   cursor: pointer;
   color: rgb(var(--text-primary));
-  transition: background-color 0.2s ease;
+  transition: none;
   
-  &:hover {
-    background-color: rgb(var(--surface-1) / 0.5);
-  }
+  // Remove hover background to prevent padding appearance
+  // &:hover {
+  //   background-color: rgb(var(--surface-1) / 0.5);
+  // }
 
   @media (min-width: 768px) {
-    padding: 1.5rem 0; // tighter on desktop as well
+    padding: 1rem 0; // no horizontal padding on desktop
   }
 }
 
@@ -65,7 +66,7 @@
   letter-spacing: 0.02em;
   color: rgb(var(--text-primary));
   text-decoration: none;
-  transition: all 0.2s ease;
+  transition: none;
   
   &:hover {
     color: rgb(var(--accent-1));
@@ -114,11 +115,11 @@
 }
 
 .content {
-  padding: 0 0 1rem 0;
+  padding: 0 0 0.75rem 0;
   color: rgb(var(--text-secondary));
 
   @media (min-width: 768px) {
-    padding-bottom: 1.5rem;
+    padding-bottom: 1rem;
   }
 }
 

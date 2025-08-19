@@ -317,7 +317,7 @@
     border-color: rgb(var(--border));
     background: rgb(var(--surface-1));
     color: rgb(var(--text-primary));
-    transition: all 0.15s ease;
+    transition: all 150ms ease-out;
   }
 
   .brutalist-button:hover {
@@ -569,7 +569,7 @@
 .prose a {
   color: rgb(var(--text-accent)) !important;
   text-decoration: none !important;
-  transition: opacity 0.2s ease !important;
+  transition: none !important;
   padding: 0.125rem 0 !important;
 }
 

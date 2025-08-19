@@ -13,7 +13,7 @@ export default function Projects() {
         <div className={styles.column}>
           <div style={{ display: 'flex', alignItems: 'center', gap: '1rem' }}>
             <BlockLoader mode={3} />
-            <h1>PROJECTS</h1>
+            <h1>APPS</h1>
           </div>
           <ThemeSwitcher />
         </div>

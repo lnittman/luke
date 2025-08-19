@@ -233,7 +233,7 @@ export default function LogsPage() {
               <div style={{ textAlign: 'center', padding: '2rem' }}>
                 <BlockLoader mode={1} />
               </div>
-            ) : logs.length === 0 ? (
+            ) : true ? ( // Always show empty placeholder for now
               <div
                 style={{
                   textAlign: 'center',

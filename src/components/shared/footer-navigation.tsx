@@ -9,7 +9,7 @@ import styles from './footer-navigation.module.scss'
 const NAV_ITEMS = [
   { label: 'HOME', href: '/', hotkey: 'h' },
   { label: 'WORK', href: '/work', hotkey: 'w' },
-  { label: 'PROJECTS', href: '/projects', hotkey: 'p' },
+  { label: 'APPS', href: '/projects', hotkey: 'p' },
   { label: 'LOGS', href: '/logs', hotkey: 'l' },
 ]
 

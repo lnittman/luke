@@ -21,7 +21,7 @@
   text-align: left;
   cursor: pointer;
   color: rgb(var(--text-primary));
-  transition: background-color 0.2s ease;
+  transition: none;
   
   &:hover {
     background-color: rgb(var(--surface-1));
@@ -78,7 +78,7 @@
   
   a {
     color: rgb(var(--accent-1));
-    transition: opacity 0.2s ease;
+    transition: none;
     
     &:hover {
       opacity: 0.8;

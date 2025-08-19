@@ -29,7 +29,7 @@
   font-family: inherit;
   font-size: inherit;
   padding: 0.25rem 0;
-  transition: color 0.2s ease;
+  transition: color 150ms ease-out;
   
   &:hover {
     color: rgb(var(--text-primary));
@@ -64,7 +64,7 @@
 .link {
   color: rgb(var(--text-secondary));
   text-decoration: none;
-  transition: color 0.2s ease;
+  transition: color 150ms ease-out;
   
   &:hover {
     color: rgb(var(--accent-1));

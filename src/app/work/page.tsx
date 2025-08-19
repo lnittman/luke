@@ -31,7 +31,7 @@ export default function Work() {
           <div
             className={styles.row}
             style={{
-              paddingBottom: '0',
+              padding: '0',
               borderBottom: '1px solid rgb(var(--border))',
             }}
           >
@@ -49,7 +49,7 @@ export default function Work() {
                     display: 'flex',
                     alignItems: 'center',
                     justifyContent: 'space-between',
-                    padding: '0.5rem 0',
+                    padding: '1rem 0',
                   }}
                 >
                   <h2 style={{ marginBottom: '0' }}>EXPERIENCE</h2>
@@ -66,7 +66,7 @@ export default function Work() {
                     ▸
                   </span>
                 </summary>
-                <div style={{ marginTop: '0.5rem' }}>
+                <div style={{ padding: '0' }}>
                   <div className="space-y-0">
                     {WORK_EXPERIENCES.map((experience) => (
                       <WorkExperience
@@ -83,7 +83,7 @@ export default function Work() {
           <div
             className={styles.row}
             style={{
-              paddingBottom: '0',
+              padding: '0',
               borderBottom: '1px solid rgb(var(--border))',
             }}
           >
@@ -101,7 +101,7 @@ export default function Work() {
                     display: 'flex',
                     alignItems: 'center',
                     justifyContent: 'space-between',
-                    padding: '0.5rem 0',
+                    padding: '1rem 0',
                   }}
                 >
                   <h2 style={{ marginBottom: '0' }}>SKILLS</h2>
@@ -116,7 +116,7 @@ export default function Work() {
                     ▸
                   </span>
                 </summary>
-                <div style={{ marginTop: '0.5rem' }}>
+                <div style={{ padding: '0' }}>
                       <h3>Languages</h3>
                       <p>
                         <a
@@ -638,8 +638,7 @@ export default function Work() {
                   display: 'flex',
                   alignItems: 'center',
                   justifyContent: 'space-between',
-                  borderBottom: '1px solid rgb(var(--border))',
-                  padding: '0.5rem 0',
+                  padding: '1rem 0',
                 }}
               >
                 <h2 style={{ marginBottom: '0' }}>EDUCATION</h2>
