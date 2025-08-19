@@ -75,7 +75,7 @@ export default function NotFound() {
             fontFamily: 'monospace',
             fontSize: '0.875rem',
             cursor: 'pointer',
-            transition: 'all 0.2s ease',
+            transition: 'all 150ms ease-out',
             textTransform: 'uppercase',
           }}
         >
