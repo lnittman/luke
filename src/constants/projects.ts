@@ -120,7 +120,7 @@ export const PROJECTS: Project[] = [
     name: 'webs',
     emoji: '🌐',
     description:
-      'web research platform that transforms URLs into intelligent insights',
+      'configurable internet research agent',
     appUrl: 'https://webs-xyz.vercel.app',
     sourceUrl: 'https://github.com/lnittman/webs-xyz',
     content: {
@@ -194,7 +194,7 @@ export const PROJECTS: Project[] = [
     id: 'arbor',
     name: 'arbor',
     emoji: '🌳',
-    description: 'LLM chat app with workspaces and task-based coding agent',
+    description: 'multi-provider LLM chat app with projects and artifacts',
     appUrl: 'https://arbor-xyz.vercel.app/',
     sourceUrl: 'https://github.com/lnittman/arbor',
     content: {
