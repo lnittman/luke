@@ -33,6 +33,7 @@
   
   &:hover {
     color: rgb(var(--text-primary));
+    transition: none;
   }
   
   &.active {
@@ -68,5 +69,6 @@
   
   &:hover {
     color: rgb(var(--accent-1));
+    transition: none;
   }
 }

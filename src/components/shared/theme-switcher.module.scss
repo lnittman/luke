@@ -15,6 +15,7 @@
   &:hover {
     background: rgb(var(--surface-1));
     border-color: rgb(var(--accent-1));
+    transition: none;
   }
   
   &:active {

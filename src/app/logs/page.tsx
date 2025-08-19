@@ -154,7 +154,7 @@ export default function LogsPage() {
               justifyContent: 'space-between',
               alignItems: 'center',
               marginBottom: '1.5rem',
-              padding: '0.75rem 0',
+              padding: '0.75rem 24px',
               borderBottom: '1px solid rgb(var(--border))',
               backgroundColor: 'rgb(var(--background-start))',
             }}
@@ -228,7 +228,16 @@ export default function LogsPage() {
           </div>
 
           {/* Logs content */}
-          <div style={{ position: 'relative', zIndex: 10, padding: '0' }}>
+          <div style={{ 
+            position: 'relative', 
+            zIndex: 10, 
+            padding: '0',
+            flex: 1,
+            display: 'flex',
+            alignItems: 'center',
+            justifyContent: 'center',
+            minHeight: '50vh',
+          }}>
             {loading ? (
               <div style={{ textAlign: 'center', padding: '2rem' }}>
                 <BlockLoader mode={1} />
@@ -240,11 +249,9 @@ export default function LogsPage() {
                   fontFamily: 'monospace',
                   fontSize: '0.875rem',
                   color: 'rgb(var(--text-secondary))',
-                  padding: '4rem 2rem',
                 }}
               >
-                {searchQuery ? 'no logs found matching your search...' : 'no logs yet...'}
-              </div>
+                {searchQuery ? 'no results...' : 'no logs yet...'}
             ) : (
               <div style={{ maxWidth: '1200px', margin: '0 auto' }}>
                 {logs.map((log) => (
