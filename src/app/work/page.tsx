@@ -49,10 +49,10 @@ export default function Work() {
                     display: 'flex',
                     alignItems: 'center',
                     justifyContent: 'space-between',
-                    padding: '1rem 0',
+                    padding: '0.75rem 0',
                   }}
                 >
-                  <h2 style={{ marginBottom: '0' }}>EXPERIENCE</h2>
+                  <span>EXPERIENCE</span>
                   <span
                     aria-hidden="true"
                     style={{
@@ -101,10 +101,10 @@ export default function Work() {
                     display: 'flex',
                     alignItems: 'center',
                     justifyContent: 'space-between',
-                    padding: '1rem 0',
+                    padding: '0.75rem 0',
                   }}
                 >
-                  <h2 style={{ marginBottom: '0' }}>SKILLS</h2>
+                  <span>SKILLS</span>
                   <span
                     aria-hidden="true"
                     style={{
@@ -638,10 +638,10 @@ export default function Work() {
                   display: 'flex',
                   alignItems: 'center',
                   justifyContent: 'space-between',
-                  padding: '1rem 0',
+                  padding: '0.75rem 0',
                 }}
               >
-                <h2 style={{ marginBottom: '0' }}>EDUCATION</h2>
+                <span>EDUCATION</span>
                 <span
                   aria-hidden="true"
                   style={{

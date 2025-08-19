@@ -154,7 +154,7 @@ export default function LogsPage() {
               justifyContent: 'space-between',
               alignItems: 'center',
               marginBottom: '1.5rem',
-              padding: '0.75rem 24px',
+              padding: '0.75rem 0',
               borderBottom: '1px solid rgb(var(--border))',
               backgroundColor: 'rgb(var(--background-start))',
             }}
@@ -228,7 +228,7 @@ export default function LogsPage() {
           </div>
 
           {/* Logs content */}
-          <div style={{ position: 'relative', zIndex: 10, padding: '0 24px' }}>
+          <div style={{ position: 'relative', zIndex: 10, padding: '0' }}>
             {loading ? (
               <div style={{ textAlign: 'center', padding: '2rem' }}>
                 <BlockLoader mode={1} />
@@ -260,7 +260,7 @@ export default function LogsPage() {
                     {/* Log header */}
                     <div
                       style={{
-                        padding: '1.5rem',
+                        padding: '0.75rem 1.5rem',
                         cursor: 'pointer',
                       }}
                       onClick={() => setSelectedLog(selectedLog?.id === log.id ? null : log)}
