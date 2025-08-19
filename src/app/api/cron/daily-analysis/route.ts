@@ -1,7 +1,7 @@
 import { NextRequest, NextResponse } from 'next/server'
 import { mastra } from '@/mastra'
 
-export const maxDuration = 300 // 5 minutes for comprehensive analysis
+export const maxDuration = 60 // 60 seconds for hobby plan
 
 export async function GET(request: NextRequest) {
   try {

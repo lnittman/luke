@@ -261,96 +261,97 @@ export default function LogsPage() {
                     <div
                       style={{
                         padding: '1.5rem',
-                        borderBottom: '1px solid rgb(var(--border))',
                         cursor: 'pointer',
                       }}
                       onClick={() => setSelectedLog(selectedLog?.id === log.id ? null : log)}
                     >
-                      <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start' }}>
-                        <div style={{ flex: 1 }}>
-                          <h2 style={{ 
-                            fontSize: '1.25rem', 
-                            marginBottom: '0.5rem',
-                            fontFamily: 'monospace',
-                            fontWeight: 600,
-                          }}>
-                            {log.title}
-                          </h2>
-                          {log.haiku && (
-                            <pre style={{
-                              fontFamily: 'monospace',
-                              fontSize: '0.875rem',
-                              color: 'rgb(var(--accent-2))',
-                              margin: '1rem 0',
-                              fontStyle: 'italic',
-                              lineHeight: '1.6',
-                            }}>
-                              {log.haiku}
-                            </pre>
-                          )}
-                          <p style={{
-                            fontSize: '0.875rem',
-                            color: 'rgb(var(--text-secondary))',
-                            lineHeight: '1.5',
-                            marginTop: '0.5rem',
-                          }}>
-                            {log.summary}
-                          </p>
-                        </div>
-                        <div style={{ 
-                          display: 'flex', 
-                          flexDirection: 'column', 
-                          alignItems: 'flex-end',
-                          gap: '0.5rem',
-                          minWidth: '150px',
+                      <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
+                        <h2 style={{ 
+                          fontSize: '1.125rem', 
+                          fontFamily: 'monospace',
+                          fontWeight: 500,
                         }}>
-                          <time style={{
-                            fontSize: '0.75rem',
-                            color: 'rgb(var(--text-secondary))',
-                            fontFamily: 'monospace',
-                          }}>
-                            {formatDate(log.date)}
-                          </time>
-                          {log.version > 1 && (
-                            <span style={{
-                              fontSize: '0.75rem',
-                              color: 'rgb(var(--accent-1))',
-                              fontFamily: 'monospace',
-                            }}>
-                              v{log.version}
-                            </span>
-                          )}
-                        </div>
-                      </div>
-
-                      {/* Metrics bar */}
-                      <div style={{
-                        display: 'flex',
-                        gap: '2rem',
-                        marginTop: '1rem',
-                        fontSize: '0.875rem',
-                        fontFamily: 'monospace',
-                      }}>
-                        <div>
-                          <span style={{ color: 'rgb(var(--text-secondary))' }}>commits: </span>
-                          <span style={{ color: 'rgb(var(--accent-1))' }}>{log.totalCommits}</span>
-                        </div>
-                        <div>
-                          <span style={{ color: 'rgb(var(--text-secondary))' }}>repos: </span>
-                          <span style={{ color: 'rgb(var(--accent-1))' }}>{log.totalRepos}</span>
-                        </div>
-                        <div>
-                          <span style={{ color: 'rgb(var(--text-secondary))' }}>productivity: </span>
-                          <span style={{ color: 'rgb(var(--accent-2))' }}>
-                            {'█'.repeat(log.productivityScore)}{'░'.repeat(10 - log.productivityScore)}
-                          </span>
-                        </div>
+                          {log.title}
+                        </h2>
+                        <span style={{
+                          fontSize: '1.5rem',
+                          color: 'rgb(var(--text-secondary))',
+                          transition: 'transform 0.2s',
+                          transform: selectedLog?.id === log.id ? 'rotate(90deg)' : 'rotate(0)',
+                        }}>
+                          →
+                        </span>
                       </div>
                     </div>
 
                     {/* Expanded content */}
                     {selectedLog?.id === log.id && (
-                      <div style={{ padding: '1.5rem' }}>
+                      <div style={{ 
+                        padding: '1.5rem',
+                        borderTop: '1px solid rgb(var(--border))',
+                      }}>
+                        {/* Date and version */}
+                        <div style={{
+                          display: 'flex',
+                          gap: '1rem',
+                          marginBottom: '1rem',
+                          fontSize: '0.75rem',
+                          color: 'rgb(var(--text-secondary))',
+                          fontFamily: 'monospace',
+                        }}>
+                          <time>{formatDate(log.date)}</time>
+                          {log.version > 1 && <span>v{log.version}</span>}
+                        </div>
+
+                        {/* Haiku */}
+                        {log.haiku && (
+                          <pre style={{
+                            fontFamily: 'monospace',
+                            fontSize: '0.875rem',
+                            color: 'rgb(var(--accent-2))',
+                            margin: '1.5rem 0',
+                            fontStyle: 'italic',
+                            lineHeight: '1.6',
+                          }}>
+                            {log.haiku}
+                          </pre>
+                        )}
+
+                        {/* Summary */}
+                        <p style={{
+                          fontSize: '0.875rem',
+                          color: 'rgb(var(--text-secondary))',
+                          lineHeight: '1.5',
+                          marginBottom: '1.5rem',
+                        }}>
+                          {log.summary}
+                        </p>
+
+                        {/* Metrics */}
+                        <div style={{
+                          display: 'flex',
+                          gap: '2rem',
+                          marginBottom: '1.5rem',
+                          fontSize: '0.875rem',
+                          fontFamily: 'monospace',
+                        }}>
+                          <div>
+                            <span style={{ color: 'rgb(var(--text-secondary))' }}>commits: </span>
+                            <span style={{ color: 'rgb(var(--accent-1))' }}>{log.totalCommits}</span>
+                          </div>
+                          <div>
+                            <span style={{ color: 'rgb(var(--text-secondary))' }}>repos: </span>
+                            <span style={{ color: 'rgb(var(--accent-1))' }}>{log.totalRepos}</span>
+                          </div>
+                          <div>
+                            <span style={{ color: 'rgb(var(--text-secondary))' }}>productivity: </span>
+                            <span style={{ color: 'rgb(var(--accent-2))' }}>
+                              {'█'.repeat(log.productivityScore)}{'░'.repeat(10 - log.productivityScore)}
+                            </span>
+                          </div>
+                        </div>
+
+                        {/* Highlights */}
                         <h3 style={{
                           fontSize: '1rem',
                           marginBottom: '1rem',
