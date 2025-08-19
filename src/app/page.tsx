@@ -35,11 +35,7 @@ export default function Home() {
                 started my career optimizing video transcoding engines at AWS
                 Elemental, then architected distributed systems for address
                 intelligence at Amazon. left big tech to try startups, where i
-                could ship faster and own the full stack.
-              </p>
-              <p>
-                now i&apos;m enjoying building my own products. how do we make AI feel less like an
-                infinite system and more like a useful friend?
+                could ship faster and own the full stack. now i&apos;m enjoying building my own products.
               </p>
             </Accordion>
 

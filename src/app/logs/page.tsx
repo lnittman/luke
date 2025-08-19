@@ -212,6 +212,7 @@ export default function LogsPage() {
                         border: '1px solid rgb(var(--border))',
                         borderRadius: '3px',
                         cursor: 'pointer',
+                        transition: 'none',
                       }}
                       onClick={() => {
                         setSearchQuery('')
