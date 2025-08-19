@@ -49,7 +49,6 @@ export default function Work() {
                     display: 'flex',
                     alignItems: 'center',
                     justifyContent: 'space-between',
-                    borderBottom: '1px solid rgb(var(--border))',
                     padding: '0.5rem 0',
                   }}
                 >
@@ -102,7 +101,6 @@ export default function Work() {
                     display: 'flex',
                     alignItems: 'center',
                     justifyContent: 'space-between',
-                    borderBottom: '1px solid rgb(var(--border))',
                     padding: '0.5rem 0',
                   }}
                 >

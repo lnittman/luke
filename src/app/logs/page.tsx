@@ -33,6 +33,7 @@ export default function LogsPage() {
   const searchPlaceholder = useMemo(() => 'search logs…', [])
   const headerRef = useRef<HTMLDivElement>(null)
   const [headerHeight, setHeaderHeight] = useState(0)
+  const searchInputRef = useRef<HTMLInputElement>(null)
 
   // Fetch logs on mount and when search changes
   useEffect(() => {
@@ -71,6 +72,18 @@ export default function LogsPage() {
     window.addEventListener('resize', measure)
     return () => window.removeEventListener('resize', measure)
   }, [])
+
+  // Handle ESC key to clear search
+  useEffect(() => {
+    const handleKeyDown = (e: KeyboardEvent) => {
+      if (e.key === 'Escape' && searchQuery) {
+        setSearchQuery('')
+        searchInputRef.current?.blur()
+      }
+    }
+    window.addEventListener('keydown', handleKeyDown)
+    return () => window.removeEventListener('keydown', handleKeyDown)
+  }, [searchQuery])
 
   const formatDate = (dateStr: string) => {
     const date = new Date(dateStr)
@@ -154,11 +167,10 @@ export default function LogsPage() {
                 flex: 1,
               }}
             >
-              {/* Search input for both desktop and mobile */}
+              {/* Search input - wider to align with theme switcher */}
               <div
                 style={{
                   flex: 1,
-                  maxWidth: isMobile ? '100%' : '420px',
                   display: 'flex',
                   alignItems: 'center',
                   border: '1px solid rgb(var(--border))',
@@ -169,6 +181,7 @@ export default function LogsPage() {
                 }}
               >
                 <input
+                  ref={searchInputRef}
                   type="text"
                   value={searchQuery}
                   onChange={(e) => setSearchQuery(e.target.value)}
@@ -184,72 +197,34 @@ export default function LogsPage() {
                   }}
                 />
                 {searchQuery && (
-                  <button
-                    onClick={() => setSearchQuery('')}
-                    style={{
-                      position: 'absolute',
-                      right: '0.5rem',
-                      display: 'flex',
-                      alignItems: 'center',
-                      justifyContent: 'center',
-                      width: '1.5rem',
-                      height: '1.5rem',
-                      background: 'none',
-                      border: 'none',
-                      color: 'rgb(var(--text-primary))',
-                      cursor: 'pointer',
-                      fontFamily: 'monospace',
-                      fontSize: '1rem',
-                      padding: 0,
-                      opacity: 0.7,
-                    }}
-                    onMouseEnter={(e) => {
-                      e.currentTarget.style.opacity = '1'
-                    }}
-                    onMouseLeave={(e) => {
-                      e.currentTarget.style.opacity = '0.7'
-                    }}
-                  >
-                    ×
-                  </button>
+                  <div style={{
+                    display: 'flex',
+                    alignItems: 'center',
+                    gap: '0.5rem',
+                  }}>
+                    <kbd
+                      style={{
+                        padding: '0.125rem 0.375rem',
+                        fontSize: '0.75rem',
+                        fontFamily: 'monospace',
+                        color: 'rgb(var(--text-secondary))',
+                        backgroundColor: 'rgba(var(--surface-1), 0.5)',
+                        border: '1px solid rgb(var(--border))',
+                        borderRadius: '3px',
+                        cursor: 'pointer',
+                      }}
+                      onClick={() => {
+                        setSearchQuery('')
+                        searchInputRef.current?.focus()
+                      }}
+                      title="Clear search (ESC)"
+                    >
+                      esc
+                    </kbd>
+                  </div>
                 )}
               </div>
             </div>
-
-            {/* Manual trigger button in dev */}
-            {process.env.NODE_ENV !== 'production' && (
-              <button
-                onClick={async () => {
-                  const response = await fetch('/api/cron/daily-analysis', {
-                    method: 'POST',
-                    headers: { 'Content-Type': 'application/json' },
-                    body: JSON.stringify({ 
-                      date: new Date().toISOString().split('T')[0] 
-                    }),
-                  })
-                  const data = await response.json()
-                  console.log('Manual analysis triggered:', data)
-                  // Refresh logs
-                  setTimeout(() => {
-                    setSearchQuery(searchQuery + ' ') // Force refresh
-                    setTimeout(() => setSearchQuery(searchQuery), 10)
-                  }, 1000)
-                }}
-                style={{
-                  padding: '0.5rem 1rem',
-                  border: '1px solid rgb(var(--border))',
-                  backgroundColor: 'transparent',
-                  color: 'rgb(var(--text-primary))',
-                  fontFamily: 'monospace',
-                  fontSize: '0.875rem',
-                  cursor: 'pointer',
-                  marginLeft: '1rem',
-                }}
-                title="Run analysis for today"
-              >
-                Run Analysis
-              </button>
-            )}
           </div>
 
           {/* Logs content */}
