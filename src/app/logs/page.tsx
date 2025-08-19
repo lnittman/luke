@@ -252,6 +252,7 @@ export default function LogsPage() {
                 }}
               >
                 {searchQuery ? 'no results...' : 'no logs yet...'}
+              </div>
             ) : (
               <div style={{ maxWidth: '1200px', margin: '0 auto' }}>
                 {logs.map((log) => (
