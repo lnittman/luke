@@ -403,7 +403,7 @@ export const PROJECTS: Project[] = [
     id: 'loops',
     name: 'loops',
     emoji: '∞',
-    description: 'stem player for your music with intelligent audio processing',
+    description: 'stem player for your music',
     demoUrl: 'https://loops-app.vercel.app/',
     sourceUrl: 'https://github.com/lnittman/loops',
     content: {
@@ -560,7 +560,7 @@ export const PROJECTS: Project[] = [
     name: 'squish',
     emoji: '🐙',
     description:
-      'multimodal content platform with semantic search and real-time collaboration',
+      'multimodal content sharing platform',
     demoUrl: 'https://squish-xyz.vercel.app/',
     sourceUrl: 'https://github.com/orgs/squish-xyz/repositories',
     content: {

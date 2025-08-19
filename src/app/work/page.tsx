@@ -620,7 +620,7 @@ export default function Work() {
         <div
           className={styles.row}
           style={{
-            paddingBottom: '0',
+            padding: '0',
             borderBottom: '1px solid rgb(var(--border))',
           }}
         >

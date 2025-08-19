@@ -1,10 +1,6 @@
 .accordion {
   width: 100%;
   border-bottom: 1px solid rgb(var(--border));
-  
-  &:last-child {
-    border-bottom: none;
-  }
 }
 
 .header {
@@ -69,9 +65,10 @@
       margin: 0.25rem 0;
       
       &:before {
-        content: '•';
+        content: '▸';
         position: absolute;
         left: -1rem;
+        color: rgb(var(--text-secondary));
       }
     }
   }

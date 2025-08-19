@@ -1,11 +1,6 @@
 .experience {
   width: 100%;
   border-bottom: 1px solid rgb(var(--border));
-  
-  // Remove this to ensure all items have bottom border
-  // &:last-child {
-  //   border-bottom: none;
-  // }
 }
 
 .header {
@@ -115,12 +110,8 @@
 }
 
 .content {
-  padding: 0 0 0.75rem 0;
+  padding: 0 0 1rem 0;
   color: rgb(var(--text-secondary));
-
-  @media (min-width: 768px) {
-    padding-bottom: 1rem;
-  }
 }
 
 .description {
