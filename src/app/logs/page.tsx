@@ -1,35 +1,65 @@
 'use client'
 
-import { format } from 'date-fns'
+import React, { useMemo, useRef, useState, useEffect } from 'react'
 import Link from 'next/link'
-import React, { useEffect, useMemo, useRef, useState } from 'react'
-import { RepoPicker } from '@/components/app/logs/repo-picker'
 import { BlockLoader } from '@/components/shared/block-loader'
 import { DefaultLayout } from '@/components/shared/default-layout'
 import { FooterNavigation } from '@/components/shared/footer-navigation'
 import styles from '@/components/shared/root.module.scss'
-import { TextFade } from '@/components/shared/text-fade'
 import { ThemeSwitcher } from '@/components/shared/theme-switcher'
 import { ArtsyAscii } from '@/components/shared/artsy-ascii'
 import { useIsMobile } from '@/hooks/useIsMobile'
-import type { ActivityLog } from '@/lib/db'
 
-// Extended type to include repo name from join
-type ActivityLogWithRepo = ActivityLog & {
-  repo?: string | null
+interface Log {
+  id: string
+  date: string
+  title: string
+  summary: string
+  haiku: string | null
+  bullets: string[]
+  totalCommits: number
+  totalRepos: number
+  productivityScore: number
+  version: number
+  createdAt: string
 }
 
 export default function LogsPage() {
-  const [logs, setLogs] = useState<ActivityLogWithRepo[]>([])
-  const [loading, setLoading] = useState(true)
-  const [hasMore, setHasMore] = useState(false)
-  const [offset, setOffset] = useState(0)
-  const [selectedRepo, setSelectedRepo] = useState<string | null>(null)
   const [searchQuery, setSearchQuery] = useState('')
+  const [logs, setLogs] = useState<Log[]>([])
+  const [loading, setLoading] = useState(true)
+  const [selectedLog, setSelectedLog] = useState<Log | null>(null)
   const isMobile = useIsMobile()
   const searchPlaceholder = useMemo(() => 'search logs…', [])
   const headerRef = useRef<HTMLDivElement>(null)
   const [headerHeight, setHeaderHeight] = useState(0)
+
+  // Fetch logs on mount and when search changes
+  useEffect(() => {
+    const fetchLogs = async () => {
+      setLoading(true)
+      try {
+        const params = new URLSearchParams()
+        if (searchQuery) params.set('search', searchQuery)
+        params.set('limit', '30')
+        
+        const response = await fetch(`/api/logs?${params}`)
+        const data = await response.json()
+        
+        if (data.logs) {
+          setLogs(data.logs)
+        }
+      } catch (error) {
+        console.error('Failed to fetch logs:', error)
+        setLogs([])
+      } finally {
+        setLoading(false)
+      }
+    }
+
+    const debounceTimer = setTimeout(fetchLogs, searchQuery ? 300 : 0)
+    return () => clearTimeout(debounceTimer)
+  }, [searchQuery])
 
   useEffect(() => {
     const measure = () => {
@@ -42,58 +72,15 @@ export default function LogsPage() {
     return () => window.removeEventListener('resize', measure)
   }, [])
 
-  useEffect(() => {
-    fetchLogs()
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [selectedRepo])
-
-  const fetchLogs = async (loadMore = false) => {
-    try {
-      const currentOffset = loadMore ? offset : 0
-      let url = `/api/logs?limit=10&offset=${currentOffset}`
-      if (selectedRepo) {
-        url += `&repoId=${selectedRepo}`
-      }
-      const response = await fetch(url)
-      const data = await response.json()
-
-      // Handle error response
-      if (!response.ok || data.error) {
-        console.error('Error from API:', data.error || 'Failed to fetch logs')
-        setLogs([])
-        setHasMore(false)
-        return
-      }
-
-      // Handle successful response - ensure logs is an array
-      const logsData = data.logs || []
-
-      if (loadMore) {
-        setLogs((prev) => [...prev, ...logsData])
-      } else {
-        setLogs(logsData)
-      }
-
-      setHasMore(data.hasMore)
-      setOffset(currentOffset + 10)
-    } catch (error) {
-      console.error('Error fetching logs:', error)
-      setLogs([])
-      setHasMore(false)
-    } finally {
-      setLoading(false)
-    }
+  const formatDate = (dateStr: string) => {
+    const date = new Date(dateStr)
+    return date.toLocaleDateString('en-US', {
+      weekday: 'short',
+      year: 'numeric',
+      month: 'short',
+      day: 'numeric',
+    })
   }
-
-  // Filter logs based on search query
-  const filteredLogs = useMemo(() => {
-    if (!searchQuery) return logs
-    const query = searchQuery.toLowerCase()
-    return logs.filter(log => 
-      log.summary?.toLowerCase().includes(query) ||
-      log.repo?.toLowerCase().includes(query)
-    )
-  }, [logs, searchQuery])
 
   return (
     <DefaultLayout>
@@ -109,42 +96,41 @@ export default function LogsPage() {
 
       <div className={styles.content}>
         <div className={styles.innerViewport} style={{ position: 'relative' }}>
-          {(loading || logs.length === 0) && (
+          {/* Always show background ASCII */}
+          <div
+            style={{ 
+              position: 'absolute', 
+              inset: 0, 
+              pointerEvents: 'none',
+              overflow: 'hidden',
+            }}
+          >
             <div
-              style={{ 
-                position: 'absolute', 
-                inset: 0, 
-                pointerEvents: 'none',
-                overflow: 'hidden',
+              style={{
+                position: 'absolute',
+                left: 0,
+                right: 0,
+                bottom: 0,
+                top: headerHeight,
               }}
             >
-              <div
+              <ArtsyAscii
+                type="sparse"
+                fillContainer={true}
+                fps={10}
                 style={{
-                  position: 'absolute',
-                  left: 0,
-                  right: 0,
-                  bottom: 0,
-                  top: headerHeight,
+                  fontSize: '10px',
+                  lineHeight: '12px',
+                  width: '100%',
+                  height: '100%',
+                  opacity: 0.2,
+                  color: 'rgb(var(--accent-1))',
                 }}
-              >
-                <ArtsyAscii
-                  type="sparse"
-                  fillContainer={true}
-                  fps={10}
-                  style={{
-                    fontSize: '10px',
-                    lineHeight: '12px',
-                    width: '100%',
-                    height: '100%',
-                    opacity: 0.2,
-                    color: 'rgb(var(--accent-1))',
-                  }}
-                />
-              </div>
+              />
             </div>
-          )}
+          </div>
           
-          {/* Page header with search and settings - sticky under main header */}
+          {/* Page header with search - sticky under main header */}
           <div
             ref={headerRef}
             style={{
@@ -230,329 +216,207 @@ export default function LogsPage() {
               </div>
             </div>
 
-            <div
-              style={{
-                display: 'flex',
-                gap: '0.5rem',
-                alignItems: 'center',
-                paddingLeft: '1rem',
-              }}
-            >
-              {process.env.NODE_ENV !== 'production' && (
-                <RepoPicker selectedRepo={selectedRepo} onRepoSelect={setSelectedRepo} isMobile={isMobile} />
-              )}
-              {process.env.NODE_ENV !== 'production' && (
-                <Link
-                  href="/logs/settings"
-                  onMouseEnter={(e) => {
-                    e.currentTarget.style.opacity = '1'
-                  }}
-                  onMouseLeave={(e) => {
-                    e.currentTarget.style.opacity = '0.7'
-                  }}
-                  style={{
-                    display: 'flex',
-                    alignItems: 'center',
-                    justifyContent: 'center',
-                    width: '2.5rem',
-                    height: '2.5rem',
-                    color: 'rgb(var(--text-primary))',
-                    textDecoration: 'none',
-                    fontSize: '1.25rem',
-                    opacity: 0.7,
-                    transition: 'opacity 0.2s ease',
-                  }}
-                  title="Settings"
-                >
-                  ⚙
-                </Link>
-              )}
-            </div>
+            {/* Manual trigger button in dev */}
+            {process.env.NODE_ENV !== 'production' && (
+              <button
+                onClick={async () => {
+                  const response = await fetch('/api/cron/daily-analysis', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ 
+                      date: new Date().toISOString().split('T')[0] 
+                    }),
+                  })
+                  const data = await response.json()
+                  console.log('Manual analysis triggered:', data)
+                  // Refresh logs
+                  setTimeout(() => {
+                    setSearchQuery(searchQuery + ' ') // Force refresh
+                    setTimeout(() => setSearchQuery(searchQuery), 10)
+                  }, 1000)
+                }}
+                style={{
+                  padding: '0.5rem 1rem',
+                  border: '1px solid rgb(var(--border))',
+                  backgroundColor: 'transparent',
+                  color: 'rgb(var(--text-primary))',
+                  fontFamily: 'monospace',
+                  fontSize: '0.875rem',
+                  cursor: 'pointer',
+                  marginLeft: '1rem',
+                }}
+                title="Run analysis for today"
+              >
+                Run Analysis
+              </button>
+            )}
           </div>
 
           {/* Logs content */}
-          {loading ? (
-            <div
-              style={{
-                position: 'absolute',
-                top: '50%',
-                left: '50%',
-                transform: 'translate(-50%, -50%)',
-                textAlign: 'center',
-                fontFamily: 'monospace',
-                fontSize: '0.875rem',
-                color: 'rgb(var(--text-secondary))',
-                zIndex: 10,
-              }}
-            >
-              loading logs...
-            </div>
-          ) : filteredLogs.length === 0 ? (
-            <div
-              style={{
-                position: 'absolute',
-                top: '50%',
-                left: '50%',
-                transform: 'translate(-50%, -50%)',
-                textAlign: 'center',
-                fontFamily: 'monospace',
-                fontSize: '0.875rem',
-                color: 'rgb(var(--text-secondary))',
-                zIndex: 10,
-              }}
-            >
-              {searchQuery ? 'no logs match your search...' : 'no logs...'}
-            </div>
-          ) : (
-            <div style={{ marginTop: 0 }}>
-              {filteredLogs.map((log) => {
-                // Parse metadata for dynamic tiles
-                const metadata = log.metadata as any || {}
-                const bullets = log.bullets as string[] || []
-                const repoCount = metadata.repoSummaries ? Object.keys(metadata.repoSummaries).length : 0
-                const commitCount = metadata.totalCommits || 0
-                const qualityTrend = metadata.codeQualityTrend || 'stable'
-                const productivityScore = metadata.productivityScore || 0
-                
-                return (
-                  <Link
+          <div style={{ position: 'relative', zIndex: 10, padding: '0 24px' }}>
+            {loading ? (
+              <div style={{ textAlign: 'center', padding: '2rem' }}>
+                <BlockLoader mode={1} />
+              </div>
+            ) : logs.length === 0 ? (
+              <div
+                style={{
+                  textAlign: 'center',
+                  fontFamily: 'monospace',
+                  fontSize: '0.875rem',
+                  color: 'rgb(var(--text-secondary))',
+                  padding: '4rem 2rem',
+                }}
+              >
+                {searchQuery ? 'no logs found matching your search...' : 'no logs yet...'}
+              </div>
+            ) : (
+              <div style={{ maxWidth: '1200px', margin: '0 auto' }}>
+                {logs.map((log) => (
+                  <div
                     key={log.id}
-                    href={`/logs/${log.id}`}
                     style={{
-                      display: 'block',
-                      textDecoration: 'none',
-                      color: 'inherit',
+                      marginBottom: '2rem',
+                      border: '1px solid rgb(var(--border))',
+                      backgroundColor: 'rgba(var(--surface-1), 0.5)',
+                      backdropFilter: 'blur(8px)',
                     }}
                   >
+                    {/* Log header */}
                     <div
-                      className={styles.row}
-                      onMouseEnter={(e) => {
-                        e.currentTarget.style.backgroundColor =
-                          'rgb(var(--surface-1))'
-                      }}
-                      onMouseLeave={(e) => {
-                        e.currentTarget.style.backgroundColor = 'transparent'
-                      }}
                       style={{
+                        padding: '1.5rem',
+                        borderBottom: '1px solid rgb(var(--border))',
                         cursor: 'pointer',
-                        transition: 'background-color 0.2s ease',
                       }}
+                      onClick={() => setSelectedLog(selectedLog?.id === log.id ? null : log)}
                     >
-                      <div className={styles.column}>
-                        <div
-                          style={{
-                            display: 'flex',
-                            justifyContent: 'space-between',
-                            alignItems: 'flex-start',
-                            gap: '1rem',
+                      <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start' }}>
+                        <div style={{ flex: 1 }}>
+                          <h2 style={{ 
+                            fontSize: '1.25rem', 
+                            marginBottom: '0.5rem',
                             fontFamily: 'monospace',
-                            marginBottom: '0.75rem',
-                          }}
-                        >
-                          <div style={{ flex: 1 }}>
-                            <div
-                              style={{
-                                fontSize: '0.875rem',
-                                lineHeight: '1.5',
-                                fontFamily: 'monospace',
-                                color: 'rgb(var(--text-primary))',
-                                fontWeight: 500,
-                                marginBottom: '0.25rem',
-                              }}
-                            >
-                              {log.title || format(new Date(log.date as any), 'MMMM d, yyyy')}
-                            </div>
-                            <TextFade 
-                              style={{
-                                fontSize: '0.75rem',
-                                lineHeight: '1.4',
-                                fontFamily: 'monospace',
-                                color: 'rgb(var(--text-secondary))',
-                                display: '-webkit-box',
-                                WebkitLineClamp: 2,
-                                WebkitBoxOrient: 'vertical',
-                                overflow: 'hidden',
-                              }}
-                            >
-                              {log.summary || 'No summary available'}
-                            </TextFade>
-                          </div>
-                          <div
-                            style={{
-                              fontSize: '0.75rem',
-                              color: 'rgb(var(--text-secondary))',
-                              whiteSpace: 'nowrap',
-                              flexShrink: 0,
-                            }}
-                          >
-                            {format(new Date(log.date as any), 'MMM d')}
-                          </div>
-                        </div>
-                        
-                        {/* Dynamic tiles section */}
-                        <div
-                          style={{
-                            display: 'flex',
-                            gap: '0.5rem',
-                            flexWrap: 'wrap',
-                          }}
-                        >
-                          {/* Repo count tile */}
-                          {repoCount > 0 && (
-                            <div
-                              style={{
-                                padding: '0.25rem 0.5rem',
-                                backgroundColor: 'rgb(var(--surface-1))',
-                                border: '1px solid rgb(var(--border))',
-                                fontSize: '0.625rem',
-                                fontFamily: 'monospace',
-                                color: 'rgb(var(--text-secondary))',
-                                display: 'inline-flex',
-                                alignItems: 'center',
-                                gap: '0.25rem',
-                              }}
-                            >
-                              <span style={{ opacity: 0.7 }}>◉</span>
-                              {repoCount} {repoCount === 1 ? 'repo' : 'repos'}
-                            </div>
-                          )}
-                          
-                          {/* Commit count tile */}
-                          {commitCount > 0 && (
-                            <div
-                              style={{
-                                padding: '0.25rem 0.5rem',
-                                backgroundColor: 'rgb(var(--surface-1))',
-                                border: '1px solid rgb(var(--border))',
-                                fontSize: '0.625rem',
-                                fontFamily: 'monospace',
-                                color: 'rgb(var(--text-secondary))',
-                                display: 'inline-flex',
-                                alignItems: 'center',
-                                gap: '0.25rem',
-                              }}
-                            >
-                              <span style={{ opacity: 0.7 }}>→</span>
-                              {commitCount} {commitCount === 1 ? 'commit' : 'commits'}
-                            </div>
-                          )}
-                          
-                          {/* Quality trend tile */}
-                          {qualityTrend && qualityTrend !== 'stable' && (
-                            <div
-                              style={{
-                                padding: '0.25rem 0.5rem',
-                                backgroundColor: 'rgb(var(--surface-1))',
-                                border: '1px solid rgb(var(--border))',
-                                fontSize: '0.625rem',
-                                fontFamily: 'monospace',
-                                color: qualityTrend === 'improving' 
-                                  ? 'rgb(var(--accent-1))' 
-                                  : qualityTrend === 'declining'
-                                  ? 'rgb(var(--accent-2))'
-                                  : 'rgb(var(--text-secondary))',
-                                display: 'inline-flex',
-                                alignItems: 'center',
-                                gap: '0.25rem',
-                              }}
-                            >
-                              <span style={{ opacity: 0.7 }}>
-                                {qualityTrend === 'improving' ? '↑' : qualityTrend === 'declining' ? '↓' : '~'}
-                              </span>
-                              {qualityTrend}
-                            </div>
-                          )}
-                          
-                          {/* Productivity score tile */}
-                          {productivityScore > 0 && (
-                            <div
-                              style={{
-                                padding: '0.25rem 0.5rem',
-                                backgroundColor: 'rgb(var(--surface-1))',
-                                border: '1px solid rgb(var(--border))',
-                                fontSize: '0.625rem',
-                                fontFamily: 'monospace',
-                                color: productivityScore >= 80 
-                                  ? 'rgb(var(--accent-1))' 
-                                  : productivityScore >= 50
-                                  ? 'rgb(var(--text-secondary))'
-                                  : 'rgb(var(--accent-2))',
-                                display: 'inline-flex',
-                                alignItems: 'center',
-                                gap: '0.25rem',
-                              }}
-                            >
-                              <span style={{ opacity: 0.7 }}>◆</span>
-                              {productivityScore}%
-                            </div>
-                          )}
-                          
-                          {/* Highlights count tile */}
-                          {bullets.length > 0 && (
-                            <div
-                              style={{
-                                padding: '0.25rem 0.5rem',
-                                backgroundColor: 'rgb(var(--surface-1))',
-                                border: '1px solid rgb(var(--border))',
-                                fontSize: '0.625rem',
-                                fontFamily: 'monospace',
-                                color: 'rgb(var(--text-secondary))',
-                                display: 'inline-flex',
-                                alignItems: 'center',
-                                gap: '0.25rem',
-                              }}
-                            >
-                              <span style={{ opacity: 0.7 }}>•</span>
-                              {bullets.length} highlights
-                            </div>
-                          )}
-                          
-                          {/* Suggestions tile if present */}
-                          {metadata.suggestions && metadata.suggestions.length > 0 && (
-                            <div
-                              style={{
-                                padding: '0.25rem 0.5rem',
-                                backgroundColor: 'rgb(var(--surface-1))',
-                                border: '1px solid rgb(var(--border))',
-                                fontSize: '0.625rem',
-                                fontFamily: 'monospace',
-                                color: 'rgb(var(--accent-1))',
-                                display: 'inline-flex',
-                                alignItems: 'center',
-                                gap: '0.25rem',
-                              }}
-                            >
-                              <span style={{ opacity: 0.7 }}>✦</span>
-                              {metadata.suggestions.length} suggestions
-                            </div>
-                          )}
-                          
-                          {/* Log type tile */}
-                          <div
-                            style={{
-                              padding: '0.25rem 0.5rem',
-                              backgroundColor: 'rgb(var(--surface-1))',
-                              border: '1px solid rgb(var(--border))',
-                              fontSize: '0.625rem',
+                            fontWeight: 600,
+                          }}>
+                            {log.title}
+                          </h2>
+                          {log.haiku && (
+                            <pre style={{
                               fontFamily: 'monospace',
-                              color: 'rgb(var(--text-secondary))',
-                              display: 'inline-flex',
-                              alignItems: 'center',
-                              gap: '0.25rem',
-                              opacity: 0.7,
-                            }}
-                          >
-                            {log.logType === 'global' ? '◈' : '◉'}
-                            {log.logType}
-                          </div>
+                              fontSize: '0.875rem',
+                              color: 'rgb(var(--accent-2))',
+                              margin: '1rem 0',
+                              fontStyle: 'italic',
+                              lineHeight: '1.6',
+                            }}>
+                              {log.haiku}
+                            </pre>
+                          )}
+                          <p style={{
+                            fontSize: '0.875rem',
+                            color: 'rgb(var(--text-secondary))',
+                            lineHeight: '1.5',
+                            marginTop: '0.5rem',
+                          }}>
+                            {log.summary}
+                          </p>
+                        </div>
+                        <div style={{ 
+                          display: 'flex', 
+                          flexDirection: 'column', 
+                          alignItems: 'flex-end',
+                          gap: '0.5rem',
+                          minWidth: '150px',
+                        }}>
+                          <time style={{
+                            fontSize: '0.75rem',
+                            color: 'rgb(var(--text-secondary))',
+                            fontFamily: 'monospace',
+                          }}>
+                            {formatDate(log.date)}
+                          </time>
+                          {log.version > 1 && (
+                            <span style={{
+                              fontSize: '0.75rem',
+                              color: 'rgb(var(--accent-1))',
+                              fontFamily: 'monospace',
+                            }}>
+                              v{log.version}
+                            </span>
+                          )}
+                        </div>
+                      </div>
+
+                      {/* Metrics bar */}
+                      <div style={{
+                        display: 'flex',
+                        gap: '2rem',
+                        marginTop: '1rem',
+                        fontSize: '0.875rem',
+                        fontFamily: 'monospace',
+                      }}>
+                        <div>
+                          <span style={{ color: 'rgb(var(--text-secondary))' }}>commits: </span>
+                          <span style={{ color: 'rgb(var(--accent-1))' }}>{log.totalCommits}</span>
+                        </div>
+                        <div>
+                          <span style={{ color: 'rgb(var(--text-secondary))' }}>repos: </span>
+                          <span style={{ color: 'rgb(var(--accent-1))' }}>{log.totalRepos}</span>
+                        </div>
+                        <div>
+                          <span style={{ color: 'rgb(var(--text-secondary))' }}>productivity: </span>
+                          <span style={{ color: 'rgb(var(--accent-2))' }}>
+                            {'█'.repeat(log.productivityScore)}{'░'.repeat(10 - log.productivityScore)}
+                          </span>
                         </div>
                       </div>
                     </div>
-                  </Link>
-                )
-              })}
-            </div>
-          )}
+
+                    {/* Expanded content */}
+                    {selectedLog?.id === log.id && (
+                      <div style={{ padding: '1.5rem' }}>
+                        <h3 style={{
+                          fontSize: '1rem',
+                          marginBottom: '1rem',
+                          fontFamily: 'monospace',
+                          color: 'rgb(var(--text-primary))',
+                        }}>
+                          Highlights
+                        </h3>
+                        <ul style={{
+                          listStyle: 'none',
+                          padding: 0,
+                          margin: 0,
+                        }}>
+                          {log.bullets.map((bullet, idx) => (
+                            <li key={idx} style={{
+                              fontSize: '0.875rem',
+                              lineHeight: '1.6',
+                              marginBottom: '0.5rem',
+                              fontFamily: 'monospace',
+                              color: 'rgb(var(--text-primary))',
+                              display: 'flex',
+                              alignItems: 'flex-start',
+                            }}>
+                              <span style={{ 
+                                color: 'rgb(var(--accent-1))', 
+                                marginRight: '0.5rem',
+                                flexShrink: 0,
+                              }}>
+                                ▸
+                              </span>
+                              {bullet}
+                            </li>
+                          ))}
+                        </ul>
+                      </div>
+                    )}
+                  </div>
+                ))}
+              </div>
+            )}
+          </div>
         </div>
       </div>
 

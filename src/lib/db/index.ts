@@ -16,7 +16,7 @@ function createDb() {
   if (
     !databaseUrl ||
     databaseUrl === 'postgresql://user:password@host:port/db' ||
-    !databaseUrl.startsWith('postgresql://')
+    (!databaseUrl.startsWith('postgresql://') && !databaseUrl.startsWith('postgres://'))
   ) {
     if (process.env.NODE_ENV !== 'production') {
       console.warn('DATABASE_URL not configured properly, using mock database')

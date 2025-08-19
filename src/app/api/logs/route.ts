@@ -1,112 +1,72 @@
-import { and, desc, eq, isNotNull, or } from 'drizzle-orm'
-import { type NextRequest, NextResponse } from 'next/server'
-import { activityDetails, activityLogs, db, repositories } from '@/lib/db'
+import { NextRequest, NextResponse } from 'next/server'
+import { db } from '@/lib/db'
+import { activityLogs } from '@/lib/db/schema'
+import { desc, sql, and, gte, lte } from 'drizzle-orm'
 
 export async function GET(request: NextRequest) {
   try {
     const searchParams = request.nextUrl.searchParams
-    const limit = Number.parseInt(searchParams.get('limit') || '10')
-    const offset = Number.parseInt(searchParams.get('offset') || '0')
-    const repoId = searchParams.get('repoId')
+    const startDate = searchParams.get('startDate')
+    const endDate = searchParams.get('endDate')
+    const limit = parseInt(searchParams.get('limit') || '30')
+    const search = searchParams.get('search')
 
-    // Check if database is properly configured
-    if (
-      !process.env.DATABASE_URL ||
-      process.env.DATABASE_URL === 'postgresql://user:password@host:port/db'
-    ) {
-      console.warn('Database not configured, returning empty logs')
-      return NextResponse.json({
-        logs: [],
-        hasMore: false,
-      })
+    // Build query conditions
+    const conditions = []
+    
+    if (startDate) {
+      conditions.push(gte(activityLogs.date, new Date(startDate)))
+    }
+    
+    if (endDate) {
+      conditions.push(lte(activityLogs.date, new Date(endDate)))
+    }
+    
+    if (search) {
+      conditions.push(
+        sql`${activityLogs.title} ILIKE ${`%${search}%`} OR ${activityLogs.summary} ILIKE ${`%${search}%`}`
+      )
     }
 
-    // Build query with optional repo filter
-    const whereConditions = repoId
-      ? or(
-          eq(activityLogs.repositoryId, repoId),
-          // Also check if this repo is mentioned in the rawData for global logs
-          and(
-            eq(activityLogs.logType, 'global'),
-            isNotNull(activityLogs.rawData)
-          )
-        )
-      : undefined
-
-    // Fetch logs with pagination and optional filter, join with repositories
+    // Fetch logs
     const logs = await db
       .select({
         id: activityLogs.id,
         date: activityLogs.date,
-        logType: activityLogs.logType,
-        repositoryId: activityLogs.repositoryId,
         title: activityLogs.title,
         summary: activityLogs.summary,
         bullets: activityLogs.bullets,
-        rawData: activityLogs.rawData,
         metadata: activityLogs.metadata,
-        processed: activityLogs.processed,
+        rawData: activityLogs.rawData,
         createdAt: activityLogs.createdAt,
-        updatedAt: activityLogs.updatedAt,
-        repo: repositories.name,
       })
       .from(activityLogs)
-      .leftJoin(repositories, eq(activityLogs.repositoryId, repositories.id))
-      .where(whereConditions)
-      .orderBy(desc(activityLogs.date))
+      .where(conditions.length > 0 ? and(...conditions) : undefined)
+      .orderBy(desc(activityLogs.date), desc(activityLogs.createdAt))
       .limit(limit)
-      .offset(offset)
+
+    // Transform logs to include haiku from metadata
+    const transformedLogs = logs.map(log => {
+      const metadata = log.metadata as any
+      return {
+        ...log,
+        haiku: metadata?.haiku || null,
+        version: metadata?.version || 1,
+        totalCommits: metadata?.totalCommits || 0,
+        totalRepos: metadata?.totalRepos || 0,
+        productivityScore: metadata?.productivityScore || 0,
+        suggestions: metadata?.suggestions || [],
+      }
+    })
 
     return NextResponse.json({
-      logs: logs || [],
-      hasMore: logs?.length === limit,
+      logs: transformedLogs,
+      total: transformedLogs.length,
     })
-  } catch (error) {
-    console.error('Error fetching logs:', error)
-    // Return empty array instead of error to prevent client crash
-    return NextResponse.json({
-      logs: [],
-      hasMore: false,
-      error: 'Database connection issue',
-    })
-  }
-}
-
-// Get a specific log by ID
-export async function POST(request: NextRequest) {
-  try {
-    const { id } = await request.json()
-
-    if (!id) {
-      return NextResponse.json({ error: 'Log ID is required' }, { status: 400 })
-    }
-
-    // Fetch the log
-    const [log] = await db
-      .select()
-      .from(activityLogs)
-      .where(eq(activityLogs.id, id))
-      .limit(1)
-
-    if (!log) {
-      return NextResponse.json({ error: 'Log not found' }, { status: 404 })
-    }
-
-    // Fetch associated details
-    const details = await db
-      .select()
-      .from(activityDetails)
-      .where(eq(activityDetails.logId, id))
-      .orderBy(desc(activityDetails.createdAt))
-
-    return NextResponse.json({
-      log,
-      details,
-    })
-  } catch (error) {
-    console.error('Error fetching log details:', error)
+  } catch (error: any) {
+    console.error('Failed to fetch logs:', error)
     return NextResponse.json(
-      { error: 'Failed to fetch log details' },
+      { error: 'Failed to fetch logs', message: error.message },
       { status: 500 }
     )
   }

@@ -81,6 +81,9 @@ export const activityLogs = pgTable('activity_logs', {
       category: string
       priority: string
     }>
+    // Daily log specific fields
+    haiku?: string
+    version?: number
   }>(),
   processed: boolean('processed').default(false).notNull(),
   analysisDepth: varchar('analysis_depth', { length: 20 }).default('standard'),

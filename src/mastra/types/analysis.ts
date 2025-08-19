@@ -105,6 +105,7 @@ export type Suggestion = z.infer<typeof suggestionSchema>
 export const globalAnalysisSchema = z.object({
   date: z.string(),
   title: z.string().describe('Compelling title for the day\'s work'),
+  haiku: z.string().describe('A haiku poem capturing the essence of the day\'s coding journey'),
   narrative: z.string().describe('2-3 paragraph story of development'),
   highlights: z.array(z.string()).describe('5-10 key accomplishments'),
   repoSummaries: z.array(

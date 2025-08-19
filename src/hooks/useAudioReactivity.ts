@@ -109,7 +109,7 @@ export function useAudioReactivity(options: AudioReactivityOptions = {}) {
 
     const updateAudioData = () => {
       if (analyserRef.current && dataArrayRef.current) {
-        analyserRef.current.getFloatFrequencyData(dataArrayRef.current)
+        analyserRef.current.getFloatFrequencyData(dataArrayRef.current as any)
 
         // Convert frequency data to amplitude (0-1)
         const normalizedData = dataArrayRef.current

@@ -1,4 +1,5 @@
 import { Mastra } from '@mastra/core'
+import { PinoLogger } from '@mastra/loggers'
 import {
   activitySynthesisAgent,
   codeAnalysisAgent,
@@ -11,10 +12,13 @@ import {
   commitAnalyzerAgent,
   repoAnalyzerAgent,
 } from './agents/github-agents'
-import generateDailyLog from './workflows/generate-daily-log'
-import { dailyGithubAnalysisWorkflow } from './workflows/daily-github-analysis'
+import { githubDailyAnalysisWorkflow } from './workflows/github-daily-analysis'
 
 export const mastra = new Mastra({
+  logger: new PinoLogger({
+    name: 'logs',
+    level: 'debug', // Set to debug for maximum verbosity
+  }),
   agents: {
     // Basic agents
     commitAnalyzer: commitAnalyzerAgent,
@@ -28,10 +32,8 @@ export const mastra = new Mastra({
     technicalDebt: technicalDebtAgent,
   },
   workflows: {
-    generateDailyLog,
-    'daily-github-analysis': dailyGithubAnalysisWorkflow,
+    'github-daily-analysis': githubDailyAnalysisWorkflow,
   },
 })
 
-export { default as generateDailyLog } from './workflows/generate-daily-log'
-export { dailyGithubAnalysisWorkflow } from './workflows/daily-github-analysis'
+export { githubDailyAnalysisWorkflow } from './workflows/github-daily-analysis'
