@@ -60,10 +60,12 @@ export default function NotFound() {
         <button
           onClick={() => router.push('/')}
           onMouseEnter={(e) => {
+            e.currentTarget.style.transition = 'none'
             e.currentTarget.style.backgroundColor = 'rgb(var(--surface-1))'
             e.currentTarget.style.borderColor = 'rgb(var(--accent-1))'
           }}
           onMouseLeave={(e) => {
+            e.currentTarget.style.transition = 'all 150ms ease-out'
             e.currentTarget.style.backgroundColor = 'transparent'
             e.currentTarget.style.borderColor = 'rgb(var(--border))'
           }}
