@@ -57,9 +57,9 @@ export function FooterNavigation() {
               onClick={() => router.push(item.href)}
             >
               {item.label}
-              {!isMobile && (
-                <span className={styles.hotkey}>({item.hotkey})</span>
-              )}
+              <span className={styles.hotkey} style={{ display: isMobile ? 'none' : 'inline' }}>
+                ({item.hotkey})
+              </span>
             </button>
             {index < NAV_ITEMS.length - 1 && (
               <span className={styles.separator}>|</span>

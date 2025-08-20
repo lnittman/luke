@@ -48,7 +48,7 @@ function setMetaThemeColor(color: string) {
 }
 
 function setAppleStatusBar(theme: string | undefined) {
-  const isDark = theme === 'dark' || theme === 'stone'
+  const isDark = theme === 'dark'
   let meta = document.querySelector(
     'meta[name="apple-mobile-web-app-status-bar-style"]'
   ) as HTMLMetaElement | null
