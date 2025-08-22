@@ -29,6 +29,82 @@ export interface Project {
 
 export const PROJECTS: Project[] = [
   {
+    id: 'radar',
+    name: 'radar',
+    emoji: '📡',
+    description: 'AI-powered insight generation platform that creates meaningful pings about topics you care about',
+    appUrl: 'https://radar-xyz.vercel.app',
+    sourceUrl: 'https://github.com/lnittman/radar',
+    content: {
+      overview: {
+        title: 'overview',
+        items: [
+          'AI-generated pings on custom topics delivered hourly or on-demand',
+          'multi-model synthesis with tier-based access (GPT-4o, Claude 3.5, Gemini)',
+          'native iOS app with SwiftUI and real-time synchronization',
+          'intelligent pattern recognition and trend analysis over time',
+        ],
+      },
+      core: {
+        title: 'core',
+        items: [
+          'Mastra-powered AI workflows with multi-agent orchestration',
+          'Inngest background job scheduling for hourly ping generation',
+          'real-time streaming interpretations with Server-Sent Events',
+          'row-level security with Clerk authentication across platforms',
+          'Stripe subscription management with usage-based billing',
+        ],
+      },
+      architecture: {
+        title: 'architecture',
+        items: [
+          'turborepo monorepo with 23+ shared packages',
+          'Next.js 15.3 with React 19 and App Router',
+          'Mastra AI service with XML-based prompt templates',
+          'PostgreSQL (Neon) with Drizzle ORM for type-safe queries',
+          'native iOS app with Swift Package Manager architecture',
+        ],
+      },
+      tech: {
+        title: 'tech',
+        items: [
+          { name: 'Next.js 15.3', documentationUrl: 'https://nextjs.org' },
+          { name: 'React 19', documentationUrl: 'https://react.dev' },
+          {
+            name: 'TypeScript',
+            documentationUrl: 'https://www.typescriptlang.org',
+          },
+          {
+            name: 'Tailwind CSS v4',
+            documentationUrl: 'https://tailwindcss.com',
+          },
+          { name: 'Mastra 0.10', documentationUrl: 'https://mastra.ai' },
+          { name: 'Drizzle ORM', documentationUrl: 'https://orm.drizzle.team' },
+          {
+            name: 'PostgreSQL (Neon)',
+            documentationUrl: 'https://neon.tech',
+          },
+          { name: 'Clerk', documentationUrl: 'https://clerk.com' },
+          { name: 'Inngest', documentationUrl: 'https://inngest.com' },
+          { name: 'Stripe', documentationUrl: 'https://stripe.com' },
+          { name: 'OpenRouter', documentationUrl: 'https://openrouter.ai' },
+          { name: 'Jotai', documentationUrl: 'https://jotai.org' },
+          { name: 'SWR', documentationUrl: 'https://swr.vercel.app' },
+          { name: 'Framer Motion', documentationUrl: 'https://www.framer.com/motion' },
+          { name: 'PostHog', documentationUrl: 'https://posthog.com' },
+          { name: 'Upstash Redis', documentationUrl: 'https://upstash.com' },
+          { name: 'Turborepo', documentationUrl: 'https://turbo.build/repo' },
+          { name: 'pnpm workspaces', documentationUrl: 'https://pnpm.io/workspaces' },
+          { name: 'Swift', documentationUrl: 'https://www.swift.org' },
+          { name: 'SwiftUI', documentationUrl: 'https://developer.apple.com/xcode/swiftui' },
+          { name: 'Combine', documentationUrl: 'https://developer.apple.com/documentation/combine' },
+          { name: 'Vercel', documentationUrl: 'https://vercel.com' },
+          { name: 'Biome', documentationUrl: 'https://biomejs.dev' },
+        ],
+      },
+    },
+  },
+  {
     id: 'react-llm',
     name: 'react-lm',
     emoji: '💬',
