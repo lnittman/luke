@@ -32,24 +32,24 @@ export const PROJECTS: Project[] = [
     id: 'radar',
     name: 'radar',
     emoji: '📡',
-    description: 'AI-powered insight generation platform that creates meaningful pings about topics you care about',
+    description: 'ping generation platform',
     appUrl: 'https://radar-xyz.vercel.app',
     sourceUrl: 'https://github.com/lnittman/radar',
     content: {
       overview: {
         title: 'overview',
         items: [
-          'AI-generated pings on custom topics delivered hourly or on-demand',
-          'multi-model synthesis with tier-based access (GPT-4o, Claude 3.5, Gemini)',
+          'allows users to schedule agentic research tasks with configurable frequency (hourly, daily, weekly)',
+          'generates human-friendly reports based on user radar configurations',
+          'features a generative form UI on the homepage for intuitive radar creation',
           'native iOS app with SwiftUI and real-time synchronization',
-          'intelligent pattern recognition and trend analysis over time',
         ],
       },
       core: {
         title: 'core',
         items: [
           'Mastra-powered AI workflows with multi-agent orchestration',
-          'Inngest background job scheduling for hourly ping generation',
+          'Inngest background job scheduling for automated ping generation',
           'real-time streaming interpretations with Server-Sent Events',
           'row-level security with Clerk authentication across platforms',
           'Stripe subscription management with usage-based billing',
@@ -58,8 +58,8 @@ export const PROJECTS: Project[] = [
       architecture: {
         title: 'architecture',
         items: [
-          'turborepo monorepo with 23+ shared packages',
-          'Next.js 15.3 with React 19 and App Router',
+          'turborepo monorepo architecture',
+          'Next.js 15 with React 19 and App Router',
           'Mastra AI service with XML-based prompt templates',
           'PostgreSQL (Neon) with Drizzle ORM for type-safe queries',
           'native iOS app with Swift Package Manager architecture',
@@ -68,7 +68,7 @@ export const PROJECTS: Project[] = [
       tech: {
         title: 'tech',
         items: [
-          { name: 'Next.js 15.3', documentationUrl: 'https://nextjs.org' },
+          { name: 'Next.js 15', documentationUrl: 'https://nextjs.org' },
           { name: 'React 19', documentationUrl: 'https://react.dev' },
           {
             name: 'TypeScript',
@@ -78,7 +78,7 @@ export const PROJECTS: Project[] = [
             name: 'Tailwind CSS v4',
             documentationUrl: 'https://tailwindcss.com',
           },
-          { name: 'Mastra 0.10', documentationUrl: 'https://mastra.ai' },
+          { name: 'Mastra', documentationUrl: 'https://mastra.ai' },
           { name: 'Drizzle ORM', documentationUrl: 'https://orm.drizzle.team' },
           {
             name: 'PostgreSQL (Neon)',
@@ -232,7 +232,7 @@ export const PROJECTS: Project[] = [
       tech: {
         title: 'tech',
         items: [
-          { name: 'Next.js 15.3', documentationUrl: 'https://nextjs.org' },
+          { name: 'Next.js 15', documentationUrl: 'https://nextjs.org' },
           { name: 'React 19', documentationUrl: 'https://react.dev' },
           {
             name: 'TypeScript',

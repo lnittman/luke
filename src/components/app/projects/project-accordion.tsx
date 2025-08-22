@@ -159,6 +159,7 @@ export function ProjectAccordion({
               {project.id === 'sine' ? (
                 <SineMoodRingIcon />
               ) : [
+                  'radar',
                   'loops',
                   'arbor',
                   'voet',
