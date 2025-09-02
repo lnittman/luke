@@ -108,7 +108,7 @@ export const PROJECTS: Project[] = [
     id: 'yuba',
     name: 'yuba',
     emoji: '🏔️',
-    description: 'outdoor adventure companion',
+    description: 'outdoor adventure guide',
     appUrl: 'https://yuba-xyz.vercel.app',
     sourceUrl: 'https://github.com/lnittman/yuba-xyz',
     content: {
@@ -187,8 +187,7 @@ export const PROJECTS: Project[] = [
     id: 'webs-xyz',
     name: 'webs',
     emoji: '🌐',
-    description:
-      'configurable internet research agent',
+    description: 'internet research agent',
     appUrl: 'https://webs-xyz.vercel.app',
     sourceUrl: 'https://github.com/lnittman/webs-xyz',
     content: {
@@ -262,7 +261,7 @@ export const PROJECTS: Project[] = [
     id: 'arbor',
     name: 'arbor',
     emoji: '🌳',
-    description: 'multi-provider LLM chat app with projects and artifacts',
+    description: 'LLM chat with projects and artifacts',
     appUrl: 'https://arbor-xyz.vercel.app/',
     sourceUrl: 'https://github.com/lnittman/arbor',
     content: {
@@ -801,7 +800,7 @@ export const PROJECTS: Project[] = [
     name: 'sine',
     emoji: '🎵',
     demoUrl: 'https://sine-labs.com',
-    description: 'MIDI-based music creation platform for iOS',
+    description: 'MIDI-first mobile music agent',
     sourceUrl: 'https://github.com/lnittman/sine',
     content: {
       overview: {
