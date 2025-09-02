@@ -416,10 +416,10 @@ export const PROJECTS: Project[] = [
         title: 'architecture',
         items: [
           'next.js app with prisma ORM',
-          'Convex backend for real-time chat',
+          'Hono API on Cloudflare Workers',
+          'Mastra framework for empathetic responses',
           'cross-platform with tauri',
           'iOS native support',
-          'stripe payment integration',
         ],
       },
       tech: {
@@ -436,6 +436,9 @@ export const PROJECTS: Project[] = [
             name: 'Framer Motion',
             documentationUrl: 'https://www.framer.com/motion',
           },
+          { name: 'Mastra', documentationUrl: 'https://mastra.ai' },
+          { name: 'Hono', documentationUrl: 'https://hono.dev' },
+          { name: 'Cloudflare Workers', documentationUrl: 'https://workers.cloudflare.com' },
           { name: 'Prisma', documentationUrl: 'https://www.prisma.io' },
           {
             name: 'PostgreSQL',
@@ -533,83 +536,6 @@ export const PROJECTS: Project[] = [
           },
           { name: 'Zustand', documentationUrl: 'https://zustand-demo.pmnd.rs' },
           { name: 'Railway', documentationUrl: 'https://railway.app' },
-        ],
-      },
-    },
-  },
-  {
-    id: 'cards',
-    name: 'cards',
-    emoji: '💼',
-    description: 'professional identity and career platform',
-    appUrl: 'https://cards-xyz.vercel.app/',
-    sourceUrl: 'https://github.com/lnittman/cards',
-    content: {
-      overview: {
-        title: 'overview',
-        items: [
-          'intelligent job application tracking system',
-          'multi-model cover letter generation and job matching',
-          'advanced context management for coherent responses',
-          'customizable workflow automation for job applications',
-        ],
-      },
-      core: {
-        title: 'core',
-        items: [
-          'multi-LLM architecture with provider abstraction',
-          'embedding-based job-resume matching',
-          'automated application workflows',
-          'context-aware prompt engineering',
-        ],
-      },
-      architecture: {
-        title: 'architecture',
-        items: [
-          'next.js app router with RSC',
-          'vercel edge runtime optimization',
-          'vector embeddings with pgvector',
-          'Convex backend for job tracking',
-        ],
-      },
-      tech: {
-        title: 'tech',
-        items: [
-          { name: 'Next.js 14', documentationUrl: 'https://nextjs.org' },
-          {
-            name: 'TypeScript',
-            documentationUrl: 'https://www.typescriptlang.org',
-          },
-          { name: 'Tailwind CSS', documentationUrl: 'https://tailwindcss.com' },
-          { name: 'Prisma', documentationUrl: 'https://www.prisma.io' },
-          {
-            name: 'Vercel AI SDK',
-            documentationUrl: 'https://sdk.vercel.ai/docs',
-          },
-          { name: 'Neon Database', documentationUrl: 'https://neon.tech' },
-          {
-            name: 'Vercel KV',
-            documentationUrl: 'https://vercel.com/storage/kv',
-          },
-          { name: 'NextAuth.js', documentationUrl: 'https://next-auth.js.org' },
-          { name: 'OpenRouter', documentationUrl: 'https://openrouter.ai' },
-          { name: 'Jina', documentationUrl: 'https://jina.ai' },
-          { name: 'Zustand', documentationUrl: 'https://zustand-demo.pmnd.rs' },
-          { name: 'SWR', documentationUrl: 'https://swr.vercel.app' },
-          { name: 'Zod', documentationUrl: 'https://zod.dev' },
-          {
-            name: 'Framer Motion',
-            documentationUrl: 'https://www.framer.com/motion',
-          },
-          {
-            name: 'Edge Functions',
-            documentationUrl:
-              'https://vercel.com/docs/functions/edge-functions',
-          },
-          {
-            name: 'pgvector',
-            documentationUrl: 'https://github.com/pgvector/pgvector',
-          },
         ],
       },
     },
