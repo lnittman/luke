@@ -6,6 +6,16 @@ import styles from '@/components/shared/root.module.scss'
 import { ThemeSwitcher } from '@/components/shared/theme-switcher'
 import { PROJECTS } from '@/constants/projects'
 
+// Force static generation at build time
+export const dynamic = 'force-static'
+export const revalidate = false
+
+// Metadata for better SEO
+export const metadata = {
+  title: 'Apps - Luke Nittmann',
+  description: 'Production applications and projects built with modern web technologies',
+}
+
 export default function Projects() {
   return (
     <DefaultLayout>
