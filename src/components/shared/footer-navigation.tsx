@@ -51,7 +51,7 @@ export function FooterNavigation() {
         {NAV_ITEMS.map((item, index) => (
           <React.Fragment key={item.href}>
             <button
-              className={classNames(styles.button, {
+              className={classNames(styles.navButton, {
                 [styles.active]: pathname === item.href,
               })}
               onClick={() => router.push(item.href)}
@@ -70,7 +70,7 @@ export function FooterNavigation() {
 
       <div className={styles.contact}>
         <button
-          className={styles.button}
+          className={styles.linkButton}
           onClick={() =>
             (window.location.href = 'mailto:luke.nittmann@gmail.com')
           }
@@ -79,7 +79,7 @@ export function FooterNavigation() {
         </button>
         <span className={styles.separator}>|</span>
         <button
-          className={styles.button}
+          className={styles.linkButton}
           onClick={() => window.open('https://github.com/lnittman', '_blank')}
         >
           github
