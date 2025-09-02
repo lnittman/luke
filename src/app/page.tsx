@@ -12,7 +12,7 @@ export default function Home() {
         <div className={styles.column}>
           <div style={{ display: 'flex', alignItems: 'center', gap: '1rem' }}>
             <BlockLoader mode={2} />
-            <h1>LUKE</h1>
+            <h1>HOME</h1>
           </div>
           <ThemeSwitcher />
         </div>
