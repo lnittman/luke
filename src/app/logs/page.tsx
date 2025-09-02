@@ -210,7 +210,7 @@ export default function LogsPage() {
                         color: 'rgb(var(--text-secondary))',
                         backgroundColor: 'rgba(var(--surface-1), 0.5)',
                         border: '1px solid rgb(var(--border))',
-                        borderRadius: '3px',
+                        borderRadius: '0',
                         cursor: 'pointer',
                         transition: 'none',
                       }}
@@ -235,17 +235,26 @@ export default function LogsPage() {
             padding: '0',
             flex: 1,
             display: 'flex',
-            alignItems: 'center',
-            justifyContent: 'center',
-            minHeight: '50vh',
+            flexDirection: 'column',
+            minHeight: `calc(100vh - ${headerHeight}px - 200px)`, // Account for main header and footer
           }}>
             {loading ? (
-              <div style={{ textAlign: 'center', padding: '2rem' }}>
+              <div style={{ 
+                flex: 1,
+                display: 'flex',
+                alignItems: 'center',
+                justifyContent: 'center',
+                textAlign: 'center',
+              }}>
                 <BlockLoader mode={1} />
               </div>
             ) : true ? ( // Always show empty placeholder for now
               <div
                 style={{
+                  flex: 1,
+                  display: 'flex',
+                  alignItems: 'center',
+                  justifyContent: 'center',
                   textAlign: 'center',
                   fontFamily: 'monospace',
                   fontSize: '0.875rem',
