@@ -48,10 +48,10 @@ export const PROJECTS: Project[] = [
       core: {
         title: 'core',
         items: [
-          'Mastra-powered AI workflows with multi-agent orchestration',
+          'Hono API on Cloudflare Workers for edge computing',
           'Inngest background job scheduling for automated ping generation',
+          'Mastra AI workflows with multi-agent orchestration',
           'real-time streaming interpretations with Server-Sent Events',
-          'row-level security with Clerk authentication across platforms',
           'Stripe subscription management with usage-based billing',
         ],
       },
@@ -60,7 +60,7 @@ export const PROJECTS: Project[] = [
         items: [
           'turborepo monorepo architecture',
           'Next.js 15 with React 19 and App Router',
-          'Mastra AI service with XML-based prompt templates',
+          'Hono + Cloudflare Workers backend',
           'PostgreSQL (Neon) with Drizzle ORM for type-safe queries',
           'native iOS app with Swift Package Manager architecture',
         ],
@@ -78,6 +78,8 @@ export const PROJECTS: Project[] = [
             name: 'Tailwind CSS v4',
             documentationUrl: 'https://tailwindcss.com',
           },
+          { name: 'Hono', documentationUrl: 'https://hono.dev' },
+          { name: 'Cloudflare Workers', documentationUrl: 'https://workers.cloudflare.com' },
           { name: 'Mastra', documentationUrl: 'https://mastra.ai' },
           { name: 'Drizzle ORM', documentationUrl: 'https://orm.drizzle.team' },
           {
@@ -95,9 +97,7 @@ export const PROJECTS: Project[] = [
           { name: 'Upstash Redis', documentationUrl: 'https://upstash.com' },
           { name: 'Turborepo', documentationUrl: 'https://turbo.build/repo' },
           { name: 'pnpm workspaces', documentationUrl: 'https://pnpm.io/workspaces' },
-          { name: 'Swift', documentationUrl: 'https://www.swift.org' },
           { name: 'SwiftUI', documentationUrl: 'https://developer.apple.com/xcode/swiftui' },
-          { name: 'Combine', documentationUrl: 'https://developer.apple.com/documentation/combine' },
           { name: 'Vercel', documentationUrl: 'https://vercel.com' },
           { name: 'Biome', documentationUrl: 'https://biomejs.dev' },
         ],
@@ -136,7 +136,7 @@ export const PROJECTS: Project[] = [
         items: [
           'turborepo monorepo with 20+ shared packages',
           'Next.js 15 with React Server Components',
-          'Mastra AI service with multi-agent orchestration',
+          'Mastra AI orchestration for outdoor agents',
           'PostgreSQL with pgvector for semantic search',
           'modular services layer with clean separation',
         ],
@@ -215,8 +215,8 @@ export const PROJECTS: Project[] = [
         items: [
           'turborepo monorepo with 14+ shared packages',
           'Next.js 15 with React Server Components',
-          'Mastra framework for agent orchestration',
-          'Server-Sent Events for real-time streaming',
+          'Convex backend for real-time data',
+          'Server-Sent Events for streaming responses',
           'Clerk auth with row-level security',
         ],
       },
@@ -289,7 +289,7 @@ export const PROJECTS: Project[] = [
         items: [
           'turborepo monorepo with separate chat microservice',
           'Next.js 15 App Router with React Server Components',
-          'Mastra framework for agent orchestration',
+          'Convex backend with native agents and workflows',
           'shared design system and component library',
           'production-ready logging and error handling',
         ],
@@ -302,20 +302,11 @@ export const PROJECTS: Project[] = [
             name: 'TypeScript',
             documentationUrl: 'https://www.typescriptlang.org',
           },
-          { name: 'Mastra', documentationUrl: 'https://mastra.ai' },
+          { name: 'Convex', documentationUrl: 'https://convex.dev' },
+          { name: 'Convex Agents', documentationUrl: 'https://docs.convex.dev/agents' },
           { name: 'MCP', documentationUrl: 'https://modelcontextprotocol.io' },
-          { name: 'Prisma', documentationUrl: 'https://www.prisma.io' },
-          {
-            name: 'PostgreSQL',
-            documentationUrl: 'https://www.postgresql.org',
-          },
           { name: 'Clerk Auth', documentationUrl: 'https://clerk.com' },
           { name: 'Turborepo', documentationUrl: 'https://turbo.build/repo' },
-          { name: 'Swift', documentationUrl: 'https://www.swift.org' },
-          {
-            name: 'SwiftUI',
-            documentationUrl: 'https://developer.apple.com/xcode/swiftui',
-          },
           { name: 'Tauri', documentationUrl: 'https://tauri.app' },
           {
             name: 'Vercel AI SDK',
@@ -351,7 +342,7 @@ export const PROJECTS: Project[] = [
       core: {
         title: 'core',
         items: [
-          'Mastra-powered workflows for intelligent data processing',
+          'AI-powered workflows for intelligent data processing',
           'multi-stage extraction pipelines with schema validation',
           'entity recognition linking players, teams, and matches',
           'distributed cron orchestration for real-time updates',
@@ -362,16 +353,17 @@ export const PROJECTS: Project[] = [
         title: 'architecture',
         items: [
           'Turborepo monorepo with Next.js 15 microservices',
-          'event-driven architecture with job queue processing',
+          'Hono API on Cloudflare Workers for data ingestion',
           'PostgreSQL with Prisma ORM for complex entity relationships',
-          'service layer with OpenRouter LLM integration',
+          'event-driven architecture with job queue processing',
           'Firecrawl web scraping with intelligent content parsing',
         ],
       },
       tech: {
         title: 'tech',
         items: [
-          { name: 'Mastra', documentationUrl: 'https://mastra.ai' },
+          { name: 'Hono', documentationUrl: 'https://hono.dev' },
+          { name: 'Cloudflare Workers', documentationUrl: 'https://workers.cloudflare.com' },
           { name: 'Next.js 15', documentationUrl: 'https://nextjs.org' },
           { name: 'Turborepo', documentationUrl: 'https://turbo.build/repo' },
           { name: 'Prisma', documentationUrl: 'https://www.prisma.io' },
@@ -424,10 +416,10 @@ export const PROJECTS: Project[] = [
         title: 'architecture',
         items: [
           'next.js app with prisma ORM',
+          'Convex backend for real-time chat',
           'cross-platform with tauri',
           'iOS native support',
           'stripe payment integration',
-          'secure API architecture',
         ],
       },
       tech: {
@@ -499,8 +491,8 @@ export const PROJECTS: Project[] = [
         items: [
           'client-side audio processing engine',
           'Web Audio API with custom scheduling',
-          'distributed backend with serverless functions',
-          'audio processing microservices',
+          'Python/FastAPI backend for stem separation',
+          'Docker containerized audio processing',
           'efficient audio file streaming and caching',
         ],
       },
@@ -576,8 +568,8 @@ export const PROJECTS: Project[] = [
         items: [
           'next.js app router with RSC',
           'vercel edge runtime optimization',
-          'vector storage integration',
-          'serverless processing',
+          'vector embeddings with pgvector',
+          'Convex backend for job tracking',
         ],
       },
       tech: {
@@ -655,7 +647,7 @@ export const PROJECTS: Project[] = [
         items: [
           'Turborepo monorepo with 15+ modular packages',
           'Next.js 15 App Router with React Server Components',
-          'FastAPI microservices with SQLModel ORM',
+          'Python/FastAPI backend with SQLModel ORM',
           'PostgreSQL with pgvector for semantic search',
           'scalable deployment on Railway and Neon',
         ],
@@ -826,7 +818,7 @@ export const PROJECTS: Project[] = [
         title: 'architecture',
         items: [
           'SwiftUI/SwiftData iOS app with MIDIKit integration',
-          'FastAPI service layer with WebSocket audio streaming',
+          'Python/FastAPI backend with WebSocket audio streaming',
           'Next.js web platform with drag-and-drop pack management',
           'Google Cloud Storage for processed audio distribution',
           'PostgreSQL with Prisma ORM for metadata and user data',
