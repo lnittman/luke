@@ -14,8 +14,6 @@ const nextConfig = {
   compiler: {
     removeConsole: process.env.NODE_ENV === 'production',
   },
-  // Enable SWC minification
-  swcMinify: true,
   // Optimize bundle size
   experimental: {
     optimizeCss: true,
