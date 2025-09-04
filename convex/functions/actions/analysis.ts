@@ -1,0 +1,83 @@
+import { action } from "../../_generated/server";
+import { v } from "convex/values";
+import { createGlobalAnalysisAgent } from "../../agents/globalAnalysis";
+import { GLOBAL_ANALYSIS_XML } from "../../components/agents/instructions";
+import { internal } from "../../_generated/api";
+import { globalAnalysisSchema } from "../../lib/analysisSchema";
+
+type Analysis = {
+  date: string;
+  title: string;
+  haiku?: string;
+  narrative: string;
+  highlights: string[];
+  repoSummaries: Array<{ repository: string; commitCount: number; mainFocus: string; progress: string }>;
+  crossRepoPatterns: string[];
+  technicalThemes: string[];
+  suggestions: Array<{
+    id: string;
+    title: string;
+    category: string;
+    priority: string;
+    estimatedEffort?: string;
+    rationale?: string;
+    dependencies?: string[];
+    prompt?: string;
+    contextFiles?: string[];
+    relatedCommits?: string[];
+  }>;
+  metrics: {
+    totalCommits: number;
+    totalRepos: number;
+    primaryLanguages: string[];
+    codeQualityTrend: "improving" | "stable" | "declining";
+    productivityScore: number;
+  };
+};
+
+export const generateAnalysis = action({
+  args: {
+    date: v.string(),
+    commits: v.array(
+      v.object({ sha: v.string(), message: v.string(), repository: v.string(), timestamp: v.string(), author: v.string(), url: v.string() })
+    ),
+    pullRequests: v.array(v.any()),
+    issues: v.array(v.any()),
+    totalCommits: v.number(),
+    totalRepos: v.number(),
+    repositories: v.array(v.string()),
+  },
+  handler: async (_ctx, input): Promise<Analysis> => {
+    // Load from Convex settings so prompts are editable without redeploy; fallback to embedded XML.
+    const i = internal as any;
+    const instructions =
+      (await _ctx.runQuery(i.functions.queries.settings.getByKey, {
+        key: "agents/globalAnalysis",
+      })) || GLOBAL_ANALYSIS_XML;
+
+    const agent = createGlobalAnalysisAgent(instructions as string);
+    const { thread } = await agent.createThread(_ctx as any, {});
+    const res = await thread.generateObject({
+      schema: globalAnalysisSchema,
+      prompt: `Analyze this GitHub activity for ${input.date} and create a comprehensive daily log.\n\nActivity data:\n${JSON.stringify(
+        {
+          date: input.date,
+          activity: {
+            commits: input.commits.slice(0, 100),
+            pullRequests: input.pullRequests,
+            issues: input.issues,
+          },
+          stats: {
+            totalCommits: input.totalCommits,
+            totalRepos: input.totalRepos,
+            repositories: input.repositories,
+          },
+        },
+        null,
+        2,
+      )}\n\nReturn only JSON.`,
+    });
+    if (!res?.object) throw new Error("Agent did not return structured output");
+    return res.object as any;
+  },
+});

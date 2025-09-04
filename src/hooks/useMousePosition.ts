@@ -2,7 +2,7 @@
 
 import { useAtomValue, useSetAtom } from 'jotai'
 import { useEffect } from 'react'
-import { mousePositionAtom } from '@/store/atoms'
+import { mousePositionAtom } from '@/atoms/mouse'
 
 export function useMousePosition() {
   const setMousePosition = useSetAtom(mousePositionAtom)

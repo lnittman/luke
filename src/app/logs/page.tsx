@@ -1,6 +1,8 @@
 'use client'
 
 import React, { useMemo, useRef, useState, useEffect } from 'react'
+import { useQuery } from 'convex/react'
+import { api } from '../../../convex/_generated/api'
 import Link from 'next/link'
 import { BlockLoader } from '@/components/shared/block-loader'
 import { DefaultLayout } from '@/components/shared/default-layout'
@@ -35,32 +37,20 @@ export default function LogsPage() {
   const [headerHeight, setHeaderHeight] = useState(0)
   const searchInputRef = useRef<HTMLInputElement>(null)
 
-  // Fetch logs on mount and when search changes
-  useEffect(() => {
-    const fetchLogs = async () => {
-      setLoading(true)
-      try {
-        const params = new URLSearchParams()
-        if (searchQuery) params.set('search', searchQuery)
-        params.set('limit', '30')
-        
-        const response = await fetch(`/api/logs?${params}`)
-        const data = await response.json()
-        
-        if (data.logs) {
-          setLogs(data.logs)
-        }
-      } catch (error) {
-        console.error('Failed to fetch logs:', error)
-        setLogs([])
-      } finally {
-        setLoading(false)
-      }
-    }
+  // Convex: fetch logs reactively
+  const convexLogs = useQuery(api.functions.queries.logs.get, {
+    search: searchQuery || undefined,
+    limit: 30,
+  })
 
-    const debounceTimer = setTimeout(fetchLogs, searchQuery ? 300 : 0)
-    return () => clearTimeout(debounceTimer)
-  }, [searchQuery])
+  useEffect(() => {
+    if (convexLogs === undefined) {
+      setLoading(true)
+    } else {
+      setLogs(convexLogs as any)
+      setLoading(false)
+    }
+  }, [convexLogs])
 
   useEffect(() => {
     const measure = () => {
@@ -248,7 +238,7 @@ export default function LogsPage() {
               }}>
                 <BlockLoader mode={1} />
               </div>
-            ) : true ? ( // Always show empty placeholder for now
+            ) : logs.length === 0 ? (
               <div
                 style={{
                   flex: 1,

@@ -11,7 +11,7 @@ import React, { Suspense, useEffect, useRef } from 'react'
 import { FloatingScene } from '@/components/app/scroll/floating-scene'
 import { projectIcons } from '@/components/app/scroll/project-icons'
 import { LenisProvider } from '@/components/shared/lenis-provider'
-import { BlockLoader } from '@/components/ui/motion'
+import { BlockLoader } from '@/components/ui'
 import { PROJECTS } from '@/constants/projects'
 
 // Dynamically import components with SSR disabled

@@ -1,4 +1,5 @@
 import { Analytics } from '@vercel/analytics/next'
+import { AppConvexProvider } from '@/components/shared/convex-provider'
 import { KeyboardShortcuts } from '@/components/shared/keyboard-shortcuts'
 import { SearchModal } from '@/components/shared/search-modal'
 import { ThemeColorProvider } from '@/components/shared/theme-color-provider'
@@ -48,7 +49,7 @@ export default function RootLayout({
           <ModalProvider>
             <SearchModal />
             <KeyboardShortcuts />
-            {children}
+            <AppConvexProvider>{children}</AppConvexProvider>
             <Analytics />
           </ModalProvider>
         </ThemeProvider>

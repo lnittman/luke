@@ -1,8 +1,12 @@
 'use client'
 
+export const dynamic = 'force-dynamic'
+
 import { notFound } from 'next/navigation'
 import { Link } from 'next-view-transitions'
 import { useEffect, useState } from 'react'
+import { useQuery, useMutation } from 'convex/react'
+import { api } from '../../../../convex/_generated/api'
 
 export default function InstructionsPage() {
   if (process.env.NODE_ENV !== 'development') {
@@ -10,20 +14,16 @@ export default function InstructionsPage() {
   }
 
   const [value, setValue] = useState('')
+  const instructions = useQuery(api.functions.queries.settings.getHeroInstructions, {})
+  const setInstructions = useMutation(api.functions.mutations.settings.setHeroInstructions)
 
   useEffect(() => {
-    fetch('/api/hero/instructions')
-      .then((r) => r.json())
-      .then((d) => setValue(d.instructions || ''))
-  }, [])
+    if (typeof instructions === 'string') setValue(instructions)
+  }, [instructions])
 
   async function handleSubmit(e: React.FormEvent<HTMLFormElement>) {
     e.preventDefault()
-    await fetch('/api/hero/instructions', {
-      method: 'POST',
-      headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({ instructions: value }),
-    })
+    await setInstructions({ instructions: value })
   }
 
   return (

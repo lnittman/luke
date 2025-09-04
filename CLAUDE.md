@@ -5,7 +5,7 @@ This file provides guidance to Claude Code (claude.ai/code) when working with co
 ## Project Overview
 
 Personal portfolio website for Luke Nittmann built with Next.js 15 App Router, featuring:
-- AI-generated hero text using OpenRouter/GPT-4
+- AI-generated hero text using OpenRouter/GPT-5
 - Brutalist design inspired by www-internet-v2
 - Interactive WebGL fluid simulation
 - Comprehensive project showcase with accordion navigation
@@ -34,7 +34,7 @@ Note: Resume generation commands removed - resume functionality extracted to sep
 - **Animation**: Framer Motion for interactions and page transitions
 - **Interactive**: Canvas API for WebGL fluid simulation (NO Three.js)
 - **State**: Modal context for UI state management
-- **AI**: OpenRouter and Google Vertex AI integrations
+- **AI**: OpenRouter (OpenAI GPT‑5) integration
 
 ### Design Philosophy
 - **Brutalist Minimalism**: Clean, functional design celebrating raw technical capabilities

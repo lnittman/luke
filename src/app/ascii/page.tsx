@@ -1,5 +1,7 @@
 'use client'
 
+export const dynamic = 'force-dynamic'
+
 import { useState, useRef, useEffect } from 'react'
 import { AsciiEngine } from '@/lib/ascii-engine'
 import { generateAsciiArt } from './actions'

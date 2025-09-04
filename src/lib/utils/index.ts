@@ -5,4 +5,4 @@ export function cn(...inputs: ClassValue[]) {
   return twMerge(clsx(inputs))
 }
 
-export * from './hero'
+// Removed legacy hero utils (migrated to Convex); keep utils barrel minimal.

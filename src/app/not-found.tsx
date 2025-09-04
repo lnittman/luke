@@ -1,10 +1,6 @@
-'use client'
-
-import { useRouter } from 'next/navigation'
-import { ErrorAscii } from '@/components/shared/error-ascii'
+import Link from 'next/link'
 
 export default function NotFound() {
-  const router = useRouter()
 
   return (
     <div
@@ -21,31 +17,11 @@ export default function NotFound() {
         overflow: 'hidden',
       }}
     >
-      {/* Centered ASCII with 404 inside */}
-      <div
-        style={{
-          position: 'absolute',
-          inset: 0,
-          display: 'flex',
-          alignItems: 'center',
-          justifyContent: 'center',
-          padding: '2rem',
-        }}
-      >
-        <div
-          style={{
-            width: '100%',
-            maxWidth: '600px',
-            height: '300px',
-          }}
-        >
-          <ErrorAscii 
-            type="404"
-            width={80}
-            height={25}
-            fps={10}
-          />
-        </div>
+      {/* Minimal 404 text to avoid client-only component imports during prerender */}
+      <div style={{ position: 'absolute', inset: 0, display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
+        <pre style={{ fontFamily: 'monospace', fontSize: '1rem', color: 'rgb(var(--accent-1))' }}>
+          404 — Not Found
+        </pre>
       </div>
 
       {/* Back Button - positioned below the ASCII */}
@@ -57,18 +33,8 @@ export default function NotFound() {
           paddingBottom: '3rem',
         }}
       >
-        <button
-          onClick={() => router.push('/')}
-          onMouseEnter={(e) => {
-            e.currentTarget.style.transition = 'none'
-            e.currentTarget.style.backgroundColor = 'rgb(var(--surface-1))'
-            e.currentTarget.style.borderColor = 'rgb(var(--accent-1))'
-          }}
-          onMouseLeave={(e) => {
-            e.currentTarget.style.transition = 'all 150ms ease-out'
-            e.currentTarget.style.backgroundColor = 'transparent'
-            e.currentTarget.style.borderColor = 'rgb(var(--border))'
-          }}
+        <Link
+          href="/"
           style={{
             padding: '0.75rem 2rem',
             backgroundColor: 'transparent',
@@ -77,12 +43,11 @@ export default function NotFound() {
             fontFamily: 'monospace',
             fontSize: '0.875rem',
             cursor: 'pointer',
-            transition: 'all 150ms ease-out',
             textTransform: 'uppercase',
           }}
         >
           ← HOME
-        </button>
+        </Link>
       </div>
     </div>
   )
