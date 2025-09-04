@@ -1,5 +1,6 @@
 import { mutation } from "../../_generated/server";
 import { v } from "convex/values";
+import { api } from "../../_generated/api";
 
 export const storeAnalysis = mutation({
   args: {
@@ -66,5 +67,18 @@ export const storeAnalysis = mutation({
     });
 
     return { logId: _id, version, stored: true };
+  },
+});
+
+export const runDailyAnalysisOnce = mutation({
+  args: { date: v.string() }, // YYYY-MM-DD
+  handler: async (ctx, { date }): Promise<{ workflowId: string }> => {
+    // Schedule the action that will start the workflow
+    const scheduledId = await ctx.scheduler.runAfter(
+      0, 
+      (api as any)["functions/actions/analysis"]["triggerDailyWorkflow"], 
+      { date }
+    );
+    return { workflowId: scheduledId.toString() };
   },
 });

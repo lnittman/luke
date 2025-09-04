@@ -1,7 +1,7 @@
 'use client'
 
 import React, { useMemo, useRef, useState, useEffect } from 'react'
-import { useQuery } from 'convex/react'
+import { useQuery, useMutation } from 'convex/react'
 import { api } from '../../../convex/_generated/api'
 import Link from 'next/link'
 import { BlockLoader } from '@/components/shared/block-loader'
@@ -11,6 +11,12 @@ import styles from '@/components/shared/root.module.scss'
 import { ThemeSwitcher } from '@/components/shared/theme-switcher'
 import { ArtsyAscii } from '@/components/shared/artsy-ascii'
 import { useIsMobile } from '@/hooks/useIsMobile'
+import { Button } from '@/components/ui/button'
+import { Popover, PopoverContent, PopoverTrigger } from '@/components/ui/popover'
+import { Sheet, SheetContent, SheetHeader, SheetTitle, SheetTrigger, SheetFooter } from '@/components/ui/sheet'
+import { Calendar } from '@/components/ui/calendar'
+import { toast } from 'sonner'
+import { format, subDays, startOfMonth, endOfMonth } from 'date-fns'
 
 interface Log {
   id: string
@@ -36,10 +42,17 @@ export default function LogsPage() {
   const headerRef = useRef<HTMLDivElement>(null)
   const [headerHeight, setHeaderHeight] = useState(0)
   const searchInputRef = useRef<HTMLInputElement>(null)
+  const [dateRange, setDateRange] = useState<{ from: Date | undefined; to: Date | undefined }>({ from: undefined, to: undefined })
+  const [filtersOpen, setFiltersOpen] = useState(false)
+  const [generateMenuOpen, setGenerateMenuOpen] = useState(false)
+  const isDev = process.env.NODE_ENV !== 'production'
+  const runDailyAnalysis = useMutation(api.functions.mutations.logs.runDailyAnalysisOnce)
 
   // Convex: fetch logs reactively
   const convexLogs = useQuery(api.functions.queries.logs.get, {
     search: searchQuery || undefined,
+    startDate: dateRange.from ? format(dateRange.from, 'yyyy-MM-dd') : undefined,
+    endDate: dateRange.to ? format(dateRange.to, 'yyyy-MM-dd') : undefined,
     limit: 30,
   })
 
@@ -83,6 +96,47 @@ export default function LogsPage() {
       month: 'short',
       day: 'numeric',
     })
+  }
+
+  const handleApplyFilters = () => {
+    setFiltersOpen(false)
+  }
+
+  const handleClearFilters = () => {
+    setDateRange({ from: undefined, to: undefined })
+    setFiltersOpen(false)
+  }
+
+  const handleGenerate = async (date: string) => {
+    try {
+      const result = await runDailyAnalysis({ date })
+      toast.success(
+        <div className="font-mono uppercase">
+          <div className="text-xs opacity-70">QUEUED DAILY ANALYSIS</div>
+          <div className="text-sm">{date}</div>
+        </div>,
+        {
+          style: {
+            background: 'rgb(var(--surface-1))',
+            border: '1px solid rgb(var(--border))',
+            borderLeft: '2px solid rgb(var(--accent-1))',
+            borderRadius: '0',
+            fontFamily: 'monospace',
+          },
+        }
+      )
+      setGenerateMenuOpen(false)
+    } catch (error) {
+      toast.error('Failed to trigger analysis', {
+        style: {
+          background: 'rgb(var(--surface-1))',
+          border: '1px solid rgb(var(--border))',
+          borderLeft: '2px solid rgb(var(--accent-2))',
+          borderRadius: '0',
+          fontFamily: 'monospace',
+        },
+      })
+    }
   }
 
   return (
@@ -157,7 +211,7 @@ export default function LogsPage() {
                 flex: 1,
               }}
             >
-              {/* Search input - wider to align with theme switcher */}
+              {/* Search input */}
               <div
                 style={{
                   flex: 1,
@@ -215,6 +269,229 @@ export default function LogsPage() {
                   </div>
                 )}
               </div>
+
+              {/* Result Count */}
+              {!loading && (
+                <span style={{
+                  fontSize: '0.75rem',
+                  fontFamily: 'monospace',
+                  textTransform: 'uppercase',
+                  color: 'rgb(var(--text-secondary))',
+                  display: isMobile ? 'none' : 'block',
+                }}>
+                  {logs.length} {logs.length === 1 ? 'log' : 'logs'}
+                  {(dateRange.from || dateRange.to) && ' • filtered'}
+                </span>
+              )}
+              
+              {/* Filters Button */}
+              {isMobile ? (
+                <Sheet open={filtersOpen} onOpenChange={setFiltersOpen}>
+                  <SheetTrigger asChild>
+                    <Button
+                      variant="outline"
+                      size="icon"
+                      style={{
+                        height: '2.5rem',
+                        width: '2.5rem',
+                        border: '1px solid rgb(var(--border))',
+                        backgroundColor: 'rgba(var(--surface-1), 0.5)',
+                        borderRadius: '0',
+                      }}
+                    >
+                      <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
+                        <path d="M22 3H2l8 9.46V19l4 2v-8.54L22 3z" />
+                      </svg>
+                    </Button>
+                  </SheetTrigger>
+                  <SheetContent
+                    side="bottom"
+                    className="rounded-none border-t border-[rgb(var(--border))] bg-[rgb(var(--background-start))]"
+                    style={{ paddingBottom: 'env(safe-area-inset-bottom)' }}
+                  >
+                    <SheetHeader>
+                      <SheetTitle className="font-mono text-sm uppercase">Filters</SheetTitle>
+                    </SheetHeader>
+                    <div className="py-4">
+                      <div className="mb-3">
+                        <div className="text-xs font-mono uppercase text-[rgb(var(--text-secondary))] mb-3">Date Range</div>
+                        <Calendar
+                          mode="range"
+                          selected={dateRange}
+                          onSelect={(range: any) => setDateRange(range || { from: undefined, to: undefined })}
+                          className="rounded-none border border-[rgb(var(--border))]"
+                        />
+                      </div>
+                      <div className="flex gap-2 mb-3">
+                        <Button
+                          onClick={() => setDateRange({ from: subDays(new Date(), 7), to: new Date() })}
+                          variant="outline"
+                          size="sm"
+                          className="flex-1 rounded-none font-mono text-xs border-[rgb(var(--border))]"
+                        >
+                          Last 7
+                        </Button>
+                        <Button
+                          onClick={() => setDateRange({ from: subDays(new Date(), 30), to: new Date() })}
+                          variant="outline"
+                          size="sm"
+                          className="flex-1 rounded-none font-mono text-xs border-[rgb(var(--border))]"
+                        >
+                          Last 30
+                        </Button>
+                        <Button
+                          onClick={() => setDateRange({ from: undefined, to: undefined })}
+                          variant="outline"
+                          size="sm"
+                          className="flex-1 rounded-none font-mono text-xs border-[rgb(var(--border))]"
+                        >
+                          All
+                        </Button>
+                      </div>
+                    </div>
+                    <SheetFooter>
+                      <Button
+                        onClick={handleClearFilters}
+                        variant="outline"
+                        className="rounded-none font-mono border-[rgb(var(--border))]"
+                      >
+                        Clear
+                      </Button>
+                      <Button
+                        onClick={handleApplyFilters}
+                        className="rounded-none font-mono bg-[rgb(var(--accent-1))] text-[rgb(var(--background-start))] hover:bg-[rgb(var(--accent-2))]"
+                      >
+                        Apply
+                      </Button>
+                    </SheetFooter>
+                  </SheetContent>
+                </Sheet>
+              ) : (
+                <Popover open={filtersOpen} onOpenChange={setFiltersOpen}>
+                  <PopoverTrigger asChild>
+                    <Button
+                      variant="outline"
+                      size="icon"
+                      style={{
+                        height: '2.5rem',
+                        width: '2.5rem',
+                        border: '1px solid rgb(var(--border))',
+                        backgroundColor: 'rgba(var(--surface-1), 0.5)',
+                        borderRadius: '0',
+                      }}
+                    >
+                      <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
+                        <path d="M22 3H2l8 9.46V19l4 2v-8.54L22 3z" />
+                      </svg>
+                    </Button>
+                  </PopoverTrigger>
+                  <PopoverContent
+                    className="w-80 p-3 border-[rgb(var(--border))] bg-[rgb(var(--background-start))] rounded-none"
+                    align="end"
+                  >
+                    <div className="space-y-3">
+                      <div className="text-xs font-mono uppercase text-[rgb(var(--text-secondary))]">Date Range</div>
+                      <Calendar
+                        mode="range"
+                        selected={dateRange}
+                        onSelect={(range: any) => setDateRange(range || { from: undefined, to: undefined })}
+                        className="rounded-none border border-[rgb(var(--border))]"
+                      />
+                      <div className="flex gap-2">
+                        <Button
+                          onClick={() => setDateRange({ from: subDays(new Date(), 7), to: new Date() })}
+                          variant="outline"
+                          size="sm"
+                          className="flex-1 rounded-none font-mono text-xs border-[rgb(var(--border))]"
+                        >
+                          Last 7
+                        </Button>
+                        <Button
+                          onClick={() => setDateRange({ from: subDays(new Date(), 30), to: new Date() })}
+                          variant="outline"
+                          size="sm"
+                          className="flex-1 rounded-none font-mono text-xs border-[rgb(var(--border))]"
+                        >
+                          Last 30
+                        </Button>
+                        <Button
+                          onClick={() => setDateRange({ from: undefined, to: undefined })}
+                          variant="outline"
+                          size="sm"
+                          className="flex-1 rounded-none font-mono text-xs border-[rgb(var(--border))]"
+                        >
+                          All
+                        </Button>
+                      </div>
+                      <div className="flex gap-2">
+                        <Button
+                          onClick={handleClearFilters}
+                          variant="outline"
+                          className="flex-1 rounded-none font-mono text-sm border-[rgb(var(--border))]"
+                        >
+                          Clear
+                        </Button>
+                        <Button
+                          onClick={handleApplyFilters}
+                          className="flex-1 rounded-none font-mono text-sm bg-[rgb(var(--accent-1))] text-[rgb(var(--background-start))] hover:bg-[rgb(var(--accent-2))]"
+                        >
+                          Apply
+                        </Button>
+                      </div>
+                    </div>
+                  </PopoverContent>
+                </Popover>
+              )}
+              
+              {/* Generate Button (Dev Only) */}
+              {isDev && (
+                <Popover open={generateMenuOpen} onOpenChange={setGenerateMenuOpen}>
+                  <PopoverTrigger asChild>
+                    <Button
+                      variant="outline"
+                      size="icon"
+                      style={{
+                        height: '2.5rem',
+                        width: '2.5rem',
+                        border: '1px solid rgb(var(--border))',
+                        backgroundColor: 'rgba(var(--surface-1), 0.5)',
+                        borderRadius: '0',
+                      }}
+                    >
+                      <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
+                        <path d="M12 3L2 12h3v8h6v-6h2v6h6v-8h3L12 3z" />
+                      </svg>
+                    </Button>
+                  </PopoverTrigger>
+                  <PopoverContent
+                    className="w-56 p-3 border-[rgb(var(--border))] bg-[rgb(var(--background-start))] rounded-none"
+                    align="end"
+                  >
+                    <div className="space-y-2">
+                      <div className="text-xs font-mono uppercase text-[rgb(var(--text-secondary))] mb-3">
+                        Generate Analysis
+                      </div>
+                      <Button
+                        onClick={() => {
+                          const yesterday = format(subDays(new Date(), 1), 'yyyy-MM-dd')
+                          handleGenerate(yesterday)
+                        }}
+                        className="w-full justify-start font-mono text-sm border-[rgb(var(--border))] bg-transparent hover:bg-[rgb(var(--surface-1))] hover:border-[rgb(var(--accent-1))] rounded-none"
+                        variant="outline"
+                      >
+                        Yesterday
+                      </Button>
+                      <Button
+                        onClick={() => handleGenerate(format(new Date(), 'yyyy-MM-dd'))}
+                        className="w-full justify-start font-mono text-sm border-[rgb(var(--border))] bg-transparent hover:bg-[rgb(var(--surface-1))] hover:border-[rgb(var(--accent-1))] rounded-none"
+                        variant="outline"
+                      >
+                        Today
+                      </Button>
+                    </div>
+                  </PopoverContent>
+                </Popover>
+              )}
             </div>
           </div>
 
@@ -235,6 +512,8 @@ export default function LogsPage() {
                 alignItems: 'center',
                 justifyContent: 'center',
                 textAlign: 'center',
+                minHeight: 'calc(100vh - 300px)',
+                overflow: 'hidden',
               }}>
                 <BlockLoader mode={1} />
               </div>
@@ -249,6 +528,8 @@ export default function LogsPage() {
                   fontFamily: 'monospace',
                   fontSize: '0.875rem',
                   color: 'rgb(var(--text-secondary))',
+                  minHeight: 'calc(100vh - 300px)',
+                  overflow: 'hidden',
                 }}
               >
                 {searchQuery ? 'no results...' : 'no logs yet...'}

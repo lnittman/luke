@@ -4,6 +4,7 @@ import { createGlobalAnalysisAgent } from "../../agents/globalAnalysis";
 import { GLOBAL_ANALYSIS_XML } from "../../components/agents/instructions";
 import { internal } from "../../_generated/api";
 import { globalAnalysisSchema } from "../../lib/analysisSchema";
+import { workflow } from "../../index";
 
 type Analysis = {
   date: string;
@@ -79,5 +80,17 @@ export const generateAnalysis = action({
     });
     if (!res?.object) throw new Error("Agent did not return structured output");
     return res.object as any;
+  },
+});
+
+export const triggerDailyWorkflow = action({
+  args: { date: v.string() }, // YYYY-MM-DD
+  handler: async (ctx, { date }): Promise<{ workflowId: string }> => {
+    const workflowId: string = await workflow.start(
+      ctx,
+      internal.workflows.dailyAnalysis.dailyAnalysis,
+      { date }
+    );
+    return { workflowId };
   },
 });
