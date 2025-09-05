@@ -56,7 +56,9 @@ export const generateAnalysis = action({
         key: "agents/globalAnalysis",
       })) || GLOBAL_ANALYSIS_XML;
 
-    const agent = createGlobalAnalysisAgent(instructions as string);
+    // Get API key from Convex environment
+    const apiKey = process.env.OPENROUTER_API_KEY;
+    const agent = createGlobalAnalysisAgent(instructions as string, apiKey);
     const { thread } = await agent.createThread(_ctx as any, {});
     const res = await thread.generateObject({
       schema: globalAnalysisSchema,
