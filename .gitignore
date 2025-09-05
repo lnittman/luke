@@ -37,3 +37,6 @@ next-env.d.ts
 .opencode/
 dev.log
 security
+
+# playwright mcp artifacts
+.playwright-mcp/
