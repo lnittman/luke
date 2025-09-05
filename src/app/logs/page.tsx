@@ -270,19 +270,6 @@ export default function LogsPage() {
                 )}
               </div>
 
-              {/* Result Count */}
-              {!loading && (
-                <span style={{
-                  fontSize: '0.75rem',
-                  fontFamily: 'monospace',
-                  textTransform: 'uppercase',
-                  color: 'rgb(var(--text-secondary))',
-                  display: isMobile ? 'none' : 'block',
-                }}>
-                  {logs.length} {logs.length === 1 ? 'log' : 'logs'}
-                  {(dateRange.from || dateRange.to) && ' • filtered'}
-                </span>
-              )}
               
               {/* Filters Button */}
               {isMobile ? (
@@ -384,23 +371,63 @@ export default function LogsPage() {
                     </Button>
                   </PopoverTrigger>
                   <PopoverContent
-                    className="w-80 p-3 border-[rgb(var(--border))] bg-[rgb(var(--background-start))] rounded-none"
+                    className="w-80 p-0 rounded-none"
+                    style={{
+                      border: '1px solid rgb(var(--border))',
+                      backgroundColor: 'rgb(var(--background-start))',
+                      boxShadow: 'none',
+                    }}
                     align="end"
                   >
-                    <div className="space-y-3">
-                      <div className="text-xs font-mono uppercase text-[rgb(var(--text-secondary))]">Date Range</div>
+                    <div style={{ padding: '1rem' }}>
+                      <div style={{
+                        fontSize: '0.75rem',
+                        fontFamily: 'monospace',
+                        textTransform: 'uppercase',
+                        color: 'rgb(var(--text-secondary))',
+                        marginBottom: '0.75rem',
+                      }}>Date Range</div>
                       <Calendar
                         mode="range"
                         selected={dateRange}
                         onSelect={(range: any) => setDateRange(range || { from: undefined, to: undefined })}
-                        className="rounded-none border border-[rgb(var(--border))]"
+                        className="rounded-none"
+                        classNames={{
+                          months: "flex flex-col sm:flex-row space-y-4 sm:space-x-4 sm:space-y-0",
+                          month: "space-y-4",
+                          caption: "flex justify-center pt-1 relative items-center",
+                          caption_label: "text-sm font-mono",
+                          nav: "space-x-1 flex items-center",
+                          nav_button: "h-7 w-7 bg-transparent p-0 opacity-50 hover:opacity-100",
+                          nav_button_previous: "absolute left-1",
+                          nav_button_next: "absolute right-1",
+                          table: "w-full border-collapse space-y-1",
+                          head_row: "flex",
+                          head_cell: "text-[rgb(var(--text-secondary))] rounded-none w-9 font-normal text-[0.8rem] font-mono",
+                          row: "flex w-full mt-2",
+                          cell: "text-center text-sm p-0 relative [&:has([aria-selected])]:bg-[rgb(var(--surface-1))] first:[&:has([aria-selected])]:rounded-none last:[&:has([aria-selected])]:rounded-none focus-within:relative focus-within:z-20",
+                          day: "h-9 w-9 p-0 font-normal font-mono text-sm aria-selected:opacity-100 hover:bg-[rgb(var(--surface-1))] rounded-none",
+                          day_selected: "bg-[rgb(var(--accent-1))] text-[rgb(var(--background-start))] hover:bg-[rgb(var(--accent-1))] hover:text-[rgb(var(--background-start))] focus:bg-[rgb(var(--accent-1))] focus:text-[rgb(var(--background-start))]",
+                          day_today: "bg-[rgb(var(--surface-1))] text-[rgb(var(--accent-1))]",
+                          day_outside: "text-[rgb(var(--text-secondary))] opacity-50",
+                          day_disabled: "text-[rgb(var(--text-secondary))] opacity-50",
+                          day_range_middle: "aria-selected:bg-[rgb(var(--surface-1))] aria-selected:text-[rgb(var(--text-primary))]",
+                          day_hidden: "invisible",
+                        }}
                       />
-                      <div className="flex gap-2">
+                      <div style={{ display: 'flex', gap: '0.5rem', marginTop: '0.75rem', marginBottom: '0.75rem' }}>
                         <Button
                           onClick={() => setDateRange({ from: subDays(new Date(), 7), to: new Date() })}
                           variant="outline"
                           size="sm"
-                          className="flex-1 rounded-none font-mono text-xs border-[rgb(var(--border))]"
+                          style={{
+                            flex: 1,
+                            borderRadius: '0',
+                            fontFamily: 'monospace',
+                            fontSize: '0.75rem',
+                            border: '1px solid rgb(var(--border))',
+                            backgroundColor: 'transparent',
+                          }}
                         >
                           Last 7
                         </Button>
@@ -408,7 +435,14 @@ export default function LogsPage() {
                           onClick={() => setDateRange({ from: subDays(new Date(), 30), to: new Date() })}
                           variant="outline"
                           size="sm"
-                          className="flex-1 rounded-none font-mono text-xs border-[rgb(var(--border))]"
+                          style={{
+                            flex: 1,
+                            borderRadius: '0',
+                            fontFamily: 'monospace',
+                            fontSize: '0.75rem',
+                            border: '1px solid rgb(var(--border))',
+                            backgroundColor: 'transparent',
+                          }}
                         >
                           Last 30
                         </Button>
@@ -416,22 +450,44 @@ export default function LogsPage() {
                           onClick={() => setDateRange({ from: undefined, to: undefined })}
                           variant="outline"
                           size="sm"
-                          className="flex-1 rounded-none font-mono text-xs border-[rgb(var(--border))]"
+                          style={{
+                            flex: 1,
+                            borderRadius: '0',
+                            fontFamily: 'monospace',
+                            fontSize: '0.75rem',
+                            border: '1px solid rgb(var(--border))',
+                            backgroundColor: 'transparent',
+                          }}
                         >
                           All
                         </Button>
                       </div>
-                      <div className="flex gap-2">
+                      <div style={{ display: 'flex', gap: '0.5rem' }}>
                         <Button
                           onClick={handleClearFilters}
                           variant="outline"
-                          className="flex-1 rounded-none font-mono text-sm border-[rgb(var(--border))]"
+                          style={{
+                            flex: 1,
+                            borderRadius: '0',
+                            fontFamily: 'monospace',
+                            fontSize: '0.875rem',
+                            border: '1px solid rgb(var(--border))',
+                            backgroundColor: 'transparent',
+                          }}
                         >
                           Clear
                         </Button>
                         <Button
                           onClick={handleApplyFilters}
-                          className="flex-1 rounded-none font-mono text-sm bg-[rgb(var(--accent-1))] text-[rgb(var(--background-start))] hover:bg-[rgb(var(--accent-2))]"
+                          style={{
+                            flex: 1,
+                            borderRadius: '0',
+                            fontFamily: 'monospace',
+                            fontSize: '0.875rem',
+                            backgroundColor: 'rgb(var(--accent-1))',
+                            color: 'rgb(var(--background-start))',
+                            border: 'none',
+                          }}
                         >
                           Apply
                         </Button>
@@ -461,30 +517,61 @@ export default function LogsPage() {
                     </Button>
                   </PopoverTrigger>
                   <PopoverContent
-                    className="w-56 p-3 border-[rgb(var(--border))] bg-[rgb(var(--background-start))] rounded-none"
+                    className="w-56 p-0 rounded-none"
+                    style={{
+                      border: '1px solid rgb(var(--border))',
+                      backgroundColor: 'rgb(var(--background-start))',
+                      boxShadow: 'none',
+                    }}
                     align="end"
                   >
-                    <div className="space-y-2">
-                      <div className="text-xs font-mono uppercase text-[rgb(var(--text-secondary))] mb-3">
+                    <div style={{ padding: '1rem' }}>
+                      <div style={{
+                        fontSize: '0.75rem',
+                        fontFamily: 'monospace',
+                        textTransform: 'uppercase',
+                        color: 'rgb(var(--text-secondary))',
+                        marginBottom: '0.75rem',
+                      }}>
                         Generate Analysis
                       </div>
-                      <Button
-                        onClick={() => {
-                          const yesterday = format(subDays(new Date(), 1), 'yyyy-MM-dd')
-                          handleGenerate(yesterday)
-                        }}
-                        className="w-full justify-start font-mono text-sm border-[rgb(var(--border))] bg-transparent hover:bg-[rgb(var(--surface-1))] hover:border-[rgb(var(--accent-1))] rounded-none"
-                        variant="outline"
-                      >
-                        Yesterday
-                      </Button>
-                      <Button
-                        onClick={() => handleGenerate(format(new Date(), 'yyyy-MM-dd'))}
-                        className="w-full justify-start font-mono text-sm border-[rgb(var(--border))] bg-transparent hover:bg-[rgb(var(--surface-1))] hover:border-[rgb(var(--accent-1))] rounded-none"
-                        variant="outline"
-                      >
-                        Today
-                      </Button>
+                      <div style={{ display: 'flex', flexDirection: 'column', gap: '0.5rem' }}>
+                        <Button
+                          onClick={() => {
+                            const yesterday = format(subDays(new Date(), 1), 'yyyy-MM-dd')
+                            handleGenerate(yesterday)
+                          }}
+                          variant="outline"
+                          style={{
+                            width: '100%',
+                            justifyContent: 'flex-start',
+                            fontFamily: 'monospace',
+                            fontSize: '0.875rem',
+                            border: '1px solid rgb(var(--border))',
+                            backgroundColor: 'transparent',
+                            borderRadius: '0',
+                            padding: '0.5rem 0.75rem',
+                          }}
+                        >
+                          Yesterday
+                        </Button>
+                        <Button
+                          onClick={() => handleGenerate(format(new Date(), 'yyyy-MM-dd'))}
+                          variant="outline"
+                          style={{
+                            width: '100%',
+                            justifyContent: 'flex-start',
+                            fontFamily: 'monospace',
+                            fontSize: '0.875rem',
+                            border: '1px solid rgb(var(--border))',
+                            backgroundColor: 'transparent',
+                            borderRadius: '0',
+                            padding: '0.5rem 0.75rem',
+                          }}
+                        >
+                          Today
+                        </Button>
+                      </div>
                     </div>
                   </PopoverContent>
                 </Popover>
