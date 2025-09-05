@@ -72,13 +72,15 @@ export const storeAnalysis = mutation({
 
 export const runDailyAnalysisOnce = mutation({
   args: { date: v.string() }, // YYYY-MM-DD
-  handler: async (ctx, { date }): Promise<{ workflowId: string }> => {
+  handler: async (ctx, { date }): Promise<{ scheduledId: string }> => {
     // Schedule the action that will start the workflow
-    const scheduledId = await ctx.scheduler.runAfter(
+    // Using internal API reference with correct path format
+    const i = api as any;
+    await ctx.scheduler.runAfter(
       0, 
-      (api as any)["functions/actions/analysis"]["triggerDailyWorkflow"], 
+      i.functions.actions.analysis.triggerDailyWorkflow, 
       { date }
     );
-    return { workflowId: scheduledId.toString() };
+    return { scheduledId: date };
   },
 });

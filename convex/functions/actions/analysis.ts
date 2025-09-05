@@ -1,4 +1,4 @@
-import { action } from "../../_generated/server";
+import { action, internalAction } from "../../_generated/server";
 import { v } from "convex/values";
 import { createGlobalAnalysisAgent } from "../../agents/globalAnalysis";
 import { GLOBAL_ANALYSIS_XML } from "../../components/agents/instructions";
@@ -85,7 +85,7 @@ export const generateAnalysis = action({
   },
 });
 
-export const triggerDailyWorkflow = action({
+export const triggerDailyWorkflow = internalAction({
   args: { date: v.string() }, // YYYY-MM-DD
   handler: async (ctx, { date }): Promise<{ workflowId: string }> => {
     const workflowId: string = await workflow.start(
