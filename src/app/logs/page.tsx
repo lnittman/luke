@@ -297,11 +297,10 @@ export default function LogsPage() {
                         border: '1px solid rgb(var(--border))',
                         backgroundColor: 'rgba(var(--surface-1), 0.5)',
                         borderRadius: '0',
+                        fontSize: '1.125rem',
                       }}
                     >
-                      <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
-                        <path d="M22 3H2l8 9.46V19l4 2v-8.54L22 3z" />
-                      </svg>
+                      ⧉
                     </Button>
                   </SheetTrigger>
                   <SheetContent
@@ -378,11 +377,10 @@ export default function LogsPage() {
                         border: '1px solid rgb(var(--border))',
                         backgroundColor: 'rgba(var(--surface-1), 0.5)',
                         borderRadius: '0',
+                        fontSize: '1.125rem',
                       }}
                     >
-                      <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
-                        <path d="M22 3H2l8 9.46V19l4 2v-8.54L22 3z" />
-                      </svg>
+                      ⧉
                     </Button>
                   </PopoverTrigger>
                   <PopoverContent
@@ -456,11 +454,10 @@ export default function LogsPage() {
                         border: '1px solid rgb(var(--border))',
                         backgroundColor: 'rgba(var(--surface-1), 0.5)',
                         borderRadius: '0',
+                        fontSize: '1.125rem',
                       }}
                     >
-                      <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
-                        <path d="M12 3L2 12h3v8h6v-6h2v6h6v-8h3L12 3z" />
-                      </svg>
+                      ⬆
                     </Button>
                   </PopoverTrigger>
                   <PopoverContent

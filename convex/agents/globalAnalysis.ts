@@ -1,13 +1,15 @@
 import { Agent } from "@convex-dev/agent";
 import { components } from "../_generated/api";
-import { openai } from "@ai-sdk/openai";
+import { createOpenAI } from "@ai-sdk/openai";
 
 export function createGlobalAnalysisAgent(instructions: string, apiKey?: string) {
-  // Use OpenAI SDK with OpenRouter base URL as a workaround for compatibility issues
-  const model = openai("openai/gpt-5", {
+  // Configure OpenAI SDK to use OpenRouter
+  const openrouter = createOpenAI({
     baseURL: "https://openrouter.ai/api/v1",
     apiKey: apiKey || process.env.OPENROUTER_API_KEY || "",
   });
+  
+  const model = openrouter("openai/gpt-5");
   
   return new Agent(components.agent, {
     name: "Global Analysis Agent",
