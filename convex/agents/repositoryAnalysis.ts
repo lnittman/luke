@@ -1,11 +1,10 @@
 import { Agent } from "@convex-dev/agent";
 import { components, internal } from "../_generated/api";
-import { createOpenAI } from "@ai-sdk/openai";
+import { createOpenRouter } from "@openrouter/ai-sdk-provider";
 import { REPOSITORY_ANALYSIS_XML, REPO_ANALYZER_XML } from "../components/agents/instructions";
 
-// Configure OpenAI SDK to use OpenRouter
-const openrouter = createOpenAI({
-  baseURL: "https://openrouter.ai/api/v1",
+// Use OpenRouter provider for AI SDK v5 compatibility
+const openrouter = createOpenRouter({
   apiKey: process.env.OPENROUTER_API_KEY || "",
 });
 

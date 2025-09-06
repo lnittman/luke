@@ -1,15 +1,12 @@
 import { Agent } from "@convex-dev/agent";
 import { components, internal } from "../_generated/api";
-import { createOpenAI } from "@ai-sdk/openai";
+import { openrouter } from "@openrouter/ai-sdk-provider";
 import { analyzeCommitDiffTool, analyzePullRequestTool, analyzeRepositoryContextTool, detectCodePatternsTool } from "./tools/codeReview";
 import { fetchCommitDetailsTool, fetchRepoInfoTool, fetchUserActivityTool } from "./tools/github";
 import { CODE_ANALYSIS_XML, REPO_CONTEXT_XML, ACTIVITY_SYNTHESIS_XML, PR_REVIEW_XML, TECHNICAL_DEBT_XML } from "../components/agents/instructions";
 
-// Configure OpenAI SDK to use OpenRouter
-const openrouter = createOpenAI({
-  baseURL: "https://openrouter.ai/api/v1",
-  apiKey: process.env.OPENROUTER_API_KEY || "",
-});
+// Use OpenRouter provider for AI SDK v5 compatibility
+// Note: API key is read from OPENROUTER_API_KEY env var automatically
 
 async function load(ctx: any, key: string, fallback: string) {
   const i = internal as any;

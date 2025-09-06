@@ -18,6 +18,7 @@ import type * as components_agents_instructions from "../components/agents/instr
 import type * as crons from "../crons.js";
 import type * as functions_actions_analysis from "../functions/actions/analysis.js";
 import type * as functions_actions_github from "../functions/actions/github.js";
+import type * as functions_actions_syncFromProduction from "../functions/actions/syncFromProduction.js";
 import type * as functions_mutations_logs from "../functions/mutations/logs.js";
 import type * as functions_mutations_settings from "../functions/mutations/settings.js";
 import type * as functions_queries_logs from "../functions/queries/logs.js";
@@ -53,6 +54,7 @@ declare const fullApi: ApiFromModules<{
   crons: typeof crons;
   "functions/actions/analysis": typeof functions_actions_analysis;
   "functions/actions/github": typeof functions_actions_github;
+  "functions/actions/syncFromProduction": typeof functions_actions_syncFromProduction;
   "functions/mutations/logs": typeof functions_mutations_logs;
   "functions/mutations/settings": typeof functions_mutations_settings;
   "functions/queries/logs": typeof functions_queries_logs;

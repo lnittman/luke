@@ -88,6 +88,13 @@ export const generateAnalysis = action({
 export const triggerDailyWorkflow = internalAction({
   args: { date: v.string() }, // YYYY-MM-DD
   handler: async (ctx, { date }): Promise<{ workflowId: string }> => {
+    // Skip execution in development to avoid duplicate OpenRouter costs
+    // In dev, use scripts/sync-prod-to-dev.sh to copy production data
+    if (process.env.ENVIRONMENT === "development") {
+      console.log("Skipping daily workflow in development environment");
+      return { workflowId: "skipped-dev" };
+    }
+    
     const workflowId: string = await workflow.start(
       ctx,
       internal.workflows.dailyAnalysis.dailyAnalysis,
