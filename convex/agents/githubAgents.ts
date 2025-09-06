@@ -21,7 +21,7 @@ export async function makeCommitAnalyzerAgent(ctx: any) {
   const instructions = await load(ctx, "agents/commitAnalyzer", COMMIT_ANALYZER_XML);
   return new Agent(components.agent, {
     name: "Commit Analyzer",
-    languageModel: openrouter("openai/gpt-5"),
+    languageModel: openrouter("anthropic/claude-3.5-sonnet"),
     tools: { fetchCommitDetailsTool },
     instructions,
   });
@@ -31,7 +31,7 @@ export async function makeActivitySummarizerAgent(ctx: any) {
   const instructions = await load(ctx, "agents/activitySummarizer", ACTIVITY_SUMMARIZER_XML);
   return new Agent(components.agent, {
     name: "Activity Summarizer",
-    languageModel: openrouter("openai/gpt-5"),
+    languageModel: openrouter("anthropic/claude-3.5-sonnet"),
     tools: { fetchUserActivityTool, fetchRepoInfoTool },
     instructions,
   });
@@ -41,7 +41,7 @@ export async function makeRepoAnalyzerAgent(ctx: any) {
   const instructions = await load(ctx, "agents/repoAnalyzer", REPO_ANALYZER_XML);
   return new Agent(components.agent, {
     name: "Repository Analyzer",
-    languageModel: openrouter("openai/gpt-5"),
+    languageModel: openrouter("anthropic/claude-3.5-sonnet"),
     tools: { fetchRepoInfoTool },
     instructions,
   });

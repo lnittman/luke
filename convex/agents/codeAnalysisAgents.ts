@@ -20,7 +20,7 @@ export async function makeCodeAnalysisAgent(ctx: any) {
   const instructions = await load(ctx, "agents/codeAnalysis", CODE_ANALYSIS_XML);
   return new Agent(components.agent, {
     name: "Deep Code Analysis Agent",
-    languageModel: openrouter("openai/gpt-5"),
+    languageModel: openrouter("anthropic/claude-3.5-sonnet"),
     tools: { analyzeCommitDiffTool, detectCodePatternsTool, fetchCommitDetailsTool },
     instructions,
   });
@@ -30,7 +30,7 @@ export async function makeRepoContextAgent(ctx: any) {
   const instructions = await load(ctx, "agents/repoContext", REPO_CONTEXT_XML);
   return new Agent(components.agent, {
     name: "Repository Context Agent",
-    languageModel: openrouter("openai/gpt-5"),
+    languageModel: openrouter("anthropic/claude-3.5-sonnet"),
     tools: { analyzeRepositoryContextTool, fetchRepoInfoTool },
     instructions,
   });
@@ -40,7 +40,7 @@ export async function makeActivitySynthesisAgent(ctx: any) {
   const instructions = await load(ctx, "agents/activitySynthesis", ACTIVITY_SYNTHESIS_XML);
   return new Agent(components.agent, {
     name: "Activity Synthesis Agent",
-    languageModel: openrouter("openai/gpt-5"),
+    languageModel: openrouter("anthropic/claude-3.5-sonnet"),
     tools: { fetchUserActivityTool, analyzePullRequestTool },
     instructions,
   });
@@ -50,7 +50,7 @@ export async function makePrReviewAgent(ctx: any) {
   const instructions = await load(ctx, "agents/prReview", PR_REVIEW_XML);
   return new Agent(components.agent, {
     name: "Pull Request Review Agent",
-    languageModel: openrouter("openai/gpt-5"),
+    languageModel: openrouter("anthropic/claude-3.5-sonnet"),
     tools: { analyzePullRequestTool, analyzeCommitDiffTool, detectCodePatternsTool },
     instructions,
   });
@@ -60,7 +60,7 @@ export async function makeTechnicalDebtAgent(ctx: any) {
   const instructions = await load(ctx, "agents/technicalDebt", TECHNICAL_DEBT_XML);
   return new Agent(components.agent, {
     name: "Technical Debt Tracker",
-    languageModel: openrouter("openai/gpt-5"),
+    languageModel: openrouter("anthropic/claude-3.5-sonnet"),
     tools: { analyzeCommitDiffTool, detectCodePatternsTool },
     instructions,
   });
@@ -73,7 +73,7 @@ export async function makeCustomRulesAgent(ctx: any, rules: string[], focusAreas
   const instructions = `${prefix}\n\n${base}`;
   return new Agent(components.agent, {
     name: "Custom Rules Agent",
-    languageModel: openrouter("openai/gpt-5"),
+    languageModel: openrouter("anthropic/claude-3.5-sonnet"),
     tools: { analyzeCommitDiffTool, detectCodePatternsTool },
     instructions,
   });
