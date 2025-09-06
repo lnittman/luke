@@ -2,6 +2,10 @@ import { v } from "convex/values";
 import { workflow } from "../index";
 import { internal } from "../_generated/api";
 
+// IMPORTANT: This is a workflow definition, not a mutation.
+// It should only be called via workflow.start(), not directly.
+// If you see errors about invalid arguments, check that nothing is calling this directly.
+
 export const dailyAnalysis = workflow.define({
   args: { date: v.string() },
   handler: async (step, { date }): Promise<{ logId: any; version: number; stored: boolean }> => {
