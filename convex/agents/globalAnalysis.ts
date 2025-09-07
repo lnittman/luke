@@ -8,7 +8,7 @@ export function createGlobalAnalysisAgent(instructions: string, apiKey?: string)
     apiKey: apiKey || process.env.OPENROUTER_API_KEY || "",
   });
   
-  const model = openrouter("anthropic/claude-3.5-sonnet");
+  const model = openrouter("anthropic/claude-sonnet-4");
   
   return new Agent(components.agent, {
     name: "Global Analysis Agent",
