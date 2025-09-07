@@ -26,4 +26,16 @@ export default defineSchema({
     value: v.any(),
     updatedAt: v.number(),
   }).index("by_key", ["key"]),
+
+  workflowEvents: defineTable({
+    workflowId: v.string(),
+    type: v.string(), // "started", "step_completed", "failed", "completed"
+    step: v.optional(v.string()),
+    details: v.optional(v.any()),
+    error: v.optional(v.string()),
+    timestamp: v.string(),
+    createdAt: v.number(),
+  })
+    .index("by_workflow", ["workflowId"])
+    .index("by_createdAt", ["createdAt"]),
 });

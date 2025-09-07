@@ -86,7 +86,7 @@ export const generateAnalysis = action({
 });
 
 export const triggerDailyWorkflow = internalAction({
-  args: { date: v.string() }, // YYYY-MM-DD
+  args: { date: v.optional(v.string()) }, // YYYY-MM-DD (optional; defaults to yesterday UTC)
   handler: async (ctx, { date }): Promise<{ workflowId: string }> => {
     // Skip execution in development to avoid duplicate OpenRouter costs
     // In dev, use scripts/sync-prod-to-dev.sh to copy production data
@@ -95,10 +95,25 @@ export const triggerDailyWorkflow = internalAction({
       return { workflowId: "skipped-dev" };
     }
     
+    // Compute target date if not provided (yesterday in UTC)
+    const targetDate = (() => {
+      if (date) return date;
+      const now = new Date();
+      const y = new Date(now.getTime() - 24 * 60 * 60 * 1000);
+      const yyyy = y.getUTCFullYear();
+      const mm = String(y.getUTCMonth() + 1).padStart(2, '0');
+      const dd = String(y.getUTCDate()).padStart(2, '0');
+      return `${yyyy}-${mm}-${dd}`;
+    })();
+
+    // Generate a simple tracking ID (avoid Date.now()/Math.random() inside workflows; ok here in action)
+    const trackingId = `wf_${targetDate}_${Math.random().toString(36).slice(2, 8)}`;
+    
     const workflowId: string = await workflow.start(
       ctx,
-      internal.workflows.dailyAnalysis.dailyAnalysis,
-      { date }
+      // Switch to the agentic workflow for fine-grained processing
+      internal.workflows.agenticDailyAnalysis.agenticDailyAnalysis,
+      { date: targetDate, workflowId: trackingId }
     );
     return { workflowId };
   },

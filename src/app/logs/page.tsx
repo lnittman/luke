@@ -646,6 +646,13 @@ export default function LogsPage() {
                         }}>
                           {log.title}
                         </h2>
+                        <Link href={`/logs/${log.id}`} style={{
+                          fontFamily: 'monospace',
+                          fontSize: '.8rem',
+                          color: 'rgb(var(--accent-1))',
+                          textDecoration: 'none',
+                          marginRight: '1rem'
+                        }}>details</Link>
                         <span style={{
                           fontSize: '1.5rem',
                           color: 'rgb(var(--text-secondary))',
