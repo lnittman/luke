@@ -1,0 +1,14 @@
+{
+  "name": "luke-cli",
+  "version": "0.1.0",
+  "private": true,
+  "bin": {
+    "luke": "./bin/luke.js"
+  },
+  "type": "module",
+  "dependencies": {
+    "commander": "^12.1.0",
+    "execa": "^8.0.1"
+  }
+}
+

@@ -78,29 +78,30 @@ export const agenticDailyAnalysis = workflow.define({
       // =====================================
       // Step 2: Parallel Per-Repository Analysis
       // =====================================
-      console.log(`[Workflow ${wfId}] Step 2: Analyzing ${commitsByRepo.size} repositories in parallel`);
+      // Analyze all repositories (no max). Sort by descending commit count for faster ROI.
+      const selected = Array.from(commitsByRepo.entries()).sort((a, b) => b[1].length - a[1].length);
+      console.log(`[Workflow ${wfId}] Step 2: Analyzing ${selected.length} repositories`);
       
       await step.runMutation(i.functions.mutations.workflowTracking.logWorkflowEvent, {
         workflowId: wfId,
         event: {
           type: "step_started",
           step: "repository_analysis",
-          details: { repositories: Array.from(commitsByRepo.keys()) },
+          details: { repositories: selected.map(([name, items]) => ({ name, commits: items.length })) },
           timestamp: getTimestamp(),
         },
       });
       
-      // Analyze each repository in parallel
-      const repoAnalysisPromises = Array.from(commitsByRepo.entries()).map(
-        async ([repo, commits]) => {
-          // Batch commits to avoid overwhelming the agent
-          const batchSize = 10;
-          const batches = [];
-          for (let i = 0; i < commits.length; i += batchSize) {
-            batches.push(commits.slice(i, i + batchSize));
-          }
-          
-          return await step.runAction(
+      // Analyze repositories sequentially for resilience (and to log per-repo errors)
+      const repoAnalyses: any[] = [];
+      for (const [repo, commits] of selected) {
+        const batchSize = 10;
+        const batches = [] as any[];
+        for (let i = 0; i < commits.length; i += batchSize) {
+          batches.push(commits.slice(i, i + batchSize));
+        }
+        try {
+          const result = await step.runAction(
             i.functions.actions.agentAnalysis.analyzeRepository,
             { 
               repository: repo, 
@@ -111,10 +112,14 @@ export const agenticDailyAnalysis = workflow.define({
             },
             { name: `analyze_${repo.replace(/[\/\-]/g, '_')}` }
           );
+          repoAnalyses.push(result);
+        } catch (e) {
+          await step.runMutation(i.functions.mutations.workflowTracking.logWorkflowEvent, {
+            workflowId: wfId,
+            event: { type: "step_completed", step: `repository_analysis:${repo}`, details: { error: String(e) }, timestamp: getTimestamp() },
+          });
         }
-      );
-      
-      const repoAnalyses = await Promise.all(repoAnalysisPromises);
+      }
       
       // Collect all agent thread IDs
       repoAnalyses.forEach(analysis => {
@@ -155,13 +160,18 @@ export const agenticDailyAnalysis = workflow.define({
         },
       });
       
-      const patterns = await step.runAction(
-        i.functions.actions.agentAnalysis.detectCrossRepoPatterns,
-        { 
-          repoAnalyses,
-          date
-        }
-      );
+      let patterns: any = { patterns: [], themes: [], stackTrends: [], methodologyInsights: [], balanceAssessment: "" };
+      try {
+        patterns = await step.runAction(
+          i.functions.actions.agentAnalysis.detectCrossRepoPatterns,
+          { repoAnalyses, date }
+        );
+      } catch (e) {
+        await step.runMutation(i.functions.mutations.workflowTracking.logWorkflowEvent, {
+          workflowId: wfId,
+          event: { type: "step_completed", step: "pattern_detection", details: { error: String(e) }, timestamp: getTimestamp() },
+        });
+      }
       
       if (patterns.threadId) {
         agentThreads.push({
@@ -198,11 +208,23 @@ export const agenticDailyAnalysis = workflow.define({
         },
       });
       
+      // Prepare compact repo summaries (only key metadata)
+      const compactRepoSummaries = repoAnalyses.map((r: any) => ({
+        repository: r.repository,
+        commitCount: r.commitCount,
+        mainFocus: r.mainFocus,
+        progress: r.progress,
+        technicalHighlights: Array.isArray(r.technicalHighlights) ? r.technicalHighlights.slice(0, 5) : [],
+        concerns: Array.isArray(r.concerns) ? r.concerns.slice(0, 3) : [],
+        nextSteps: Array.isArray(r.nextSteps) ? r.nextSteps.slice(0, 3) : [],
+        stats: r.stats || undefined,
+      }));
+
       const synthesis = await step.runAction(
         i.functions.actions.agentAnalysis.generateGlobalSynthesis,
         {
           date,
-          repoAnalyses,
+          repoAnalyses: compactRepoSummaries,
           patterns,
           stats: {
             totalCommits: activity.totalCommits,

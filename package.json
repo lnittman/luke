@@ -23,6 +23,8 @@
   "dependencies": {
     "@ai-sdk/openai": "^2.0.24",
     "@ai-sdk/rsc": "^1.0.5",
+    "@convex-dev/action-cache": "^0.2.11",
+    "@convex-dev/action-retrier": "^0.2.1",
     "@convex-dev/agent": "^0.2.7",
     "@convex-dev/crons": "^0.1.9",
     "@convex-dev/workflow": "^0.2.6",

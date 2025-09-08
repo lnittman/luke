@@ -8,17 +8,19 @@ const openrouter = createOpenRouter({
   apiKey: process.env.OPENROUTER_API_KEY || "",
 });
 
-async function load(ctx: any, key: string, fallback: string) {
+async function loadRequired(ctx: any, key: string) {
   const i = internal as any;
-  return (
-    (await ctx.runQuery(i.functions.queries.settings.getByKey, { key })) ||
-    fallback
-  );
+  const val = await ctx.runQuery(i.functions.queries.settings.getByKey, { key });
+  if (!val) {
+    const msg = `Missing agent instructions for "${key}". Please set settings or run seedAgentInstructions.`;
+    console.error(msg);
+    throw new Error(msg);
+  }
+  return val as string;
 }
 
 export async function makeRepositoryAnalysisAgent(ctx: any) {
-  // Use repoAnalyzer key as the canonical storage, fall back to repositoryAnalysis XML
-  const instructions = await load(ctx, "agents/repoAnalyzer", REPO_ANALYZER_XML || REPOSITORY_ANALYSIS_XML);
+  const instructions = await loadRequired(ctx, "agents/repoAnalyzer");
   const model = openrouter("anthropic/claude-sonnet-4");
   return new Agent(components.agent, {
     name: "Repository Analysis Agent",

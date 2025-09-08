@@ -1,7 +1,7 @@
 import { action, internalAction } from "../../_generated/server";
 import { v } from "convex/values";
 import { createGlobalAnalysisAgent } from "../../agents/globalAnalysis";
-import { GLOBAL_ANALYSIS_XML } from "../../components/agents/instructions";
+// No embedded fallback — instructions must be present in settings
 import { internal } from "../../_generated/api";
 import { globalAnalysisSchema } from "../../lib/analysisSchema";
 import { workflow } from "../../index";
@@ -49,12 +49,14 @@ export const generateAnalysis = action({
     repositories: v.array(v.string()),
   },
   handler: async (_ctx, input): Promise<Analysis> => {
-    // Load from Convex settings so prompts are editable without redeploy; fallback to embedded XML.
+    // Load from Convex settings; if missing, fail gracefully (no embedded fallback)
     const i = internal as any;
-    const instructions =
-      (await _ctx.runQuery(i.functions.queries.settings.getByKey, {
-        key: "agents/globalAnalysis",
-      })) || GLOBAL_ANALYSIS_XML;
+    const instructions = await _ctx.runQuery(i.functions.queries.settings.getByKey, {
+      key: "agents/globalAnalysis",
+    });
+    if (!instructions) {
+      throw new Error("Missing settings: agents/globalAnalysis. Seed or set instructions before running analysis.");
+    }
 
     // Get API key from Convex environment
     const apiKey = process.env.OPENROUTER_API_KEY;
@@ -78,7 +80,7 @@ export const generateAnalysis = action({
         },
         null,
         2,
-      )}\n\nReturn only JSON.`,
+      )}\n\nReturn ONLY JSON matching the provided schema. No prose.`,
     });
     if (!res?.object) throw new Error("Agent did not return structured output");
     return res.object as any;

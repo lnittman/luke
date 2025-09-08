@@ -68,3 +68,35 @@ export const fetchRepoInfoTool = createTool({
   },
 });
 
+// PR tools
+export const listPullRequestsTool = createTool({
+  description: "List pull requests for a repo (optionally by state)",
+  args: z.object({ owner: z.string(), repo: z.string(), state: z.enum(["open","closed","all"]).optional() }),
+  async handler(_ctx, { owner, repo, state = "open" }) {
+    const octokit = makeOctokit();
+    const { data } = await octokit.pulls.list({ owner, repo, state, per_page: 100 });
+    return data.map(pr => ({ number: pr.number, title: pr.title, state: pr.state as string, user: pr.user?.login || null, merged: !!pr.merged_at }));
+  },
+});
+
+export const getPullRequestFilesTool = createTool({
+  description: "Get changed files for a pull request",
+  args: z.object({ owner: z.string(), repo: z.string(), number: z.number() }),
+  async handler(_ctx, { owner, repo, number }) {
+    const octokit = makeOctokit();
+    const { data } = await octokit.pulls.listFiles({ owner, repo, pull_number: number, per_page: 100 });
+    return data.map(f => ({ filename: f.filename, status: f.status as string, additions: f.additions, deletions: f.deletions, changes: f.changes, patch: f.patch }));
+  },
+});
+
+
+// Issue tools
+export const listIssuesTool = createTool({
+  description: "List issues for a repo (optionally by state)",
+  args: z.object({ owner: z.string(), repo: z.string(), state: z.enum(["open","closed","all"]).optional() }),
+  async handler(_ctx, { owner, repo, state = "open" }) {
+    const octokit = makeOctokit();
+    const { data } = await octokit.issues.listForRepo({ owner, repo, state, per_page: 100 });
+    return data.filter(i => !(i as any).pull_request).map(i => ({ number: i.number, title: i.title, state: i.state as string, labels: (i.labels||[] as any[]).map(l => (l as any).name) }));
+  },
+});

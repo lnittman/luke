@@ -7,9 +7,10 @@ import {
 } from "../../agents/githubAgents";
 import { createGlobalAnalysisAgent } from "../../agents/globalAnalysis";
 import { GLOBAL_ANALYSIS_XML } from "../../components/agents/instructions";
-import { internal } from "../../_generated/api";
 import { globalAnalysisSchema } from "../../lib/analysisSchema";
+import { internal } from "../../_generated/api";
 import { z } from "zod";
+import { retrier } from "../../index";
 
 // Analyze a single repository with its commits
 export const analyzeRepository = action({
@@ -40,19 +41,20 @@ export const analyzeRepository = action({
     const batchAnalyses = [];
     for (const [index, batch] of commitBatches.entries()) {
       const prompt = `
-Analyze this batch of commits (${index + 1}/${commitBatches.length}) for repository ${repository}:
+You are analyzing repository ${repository}. This is batch ${index + 1}/${commitBatches.length} for ${date}.
+
+Tool discipline:
+- For each commit, call fetchCommitDetailsTool({ owner, repo, sha }) to retrieve files and patches. Use owner=\"${repository.split('/')[0]}\", repo=\"${repository.split('/')[1]}\".
+- If a pull request seems related, call getPullRequestFilesTool({ owner, repo, number }) to inspect changed files. Do not guess.
+
+Synthesize this batch: major changes, architectural implications, risks, progress signals. Keep it concise.
 
 Commits:
 ${batch.map(c => `- ${c.sha.substring(0, 7)}: ${c.message}`).join('\n')}
 
-${pullRequests.length > 0 ? `Pull Requests:\n${pullRequests.map((pr: any) => `- #${pr.number}: ${pr.title} (${pr.state})`).join('\n')}` : ''}
+${pullRequests.length > 0 ? `Related Pull Requests:\n${pullRequests.map((pr: any) => `- #${pr.number}: ${pr.title} (${pr.state})`).join('\n')}` : ''}
 
-${issues.length > 0 ? `Issues:\n${issues.map((issue: any) => `- #${issue.number}: ${issue.title} (${issue.state})`).join('\n')}` : ''}
-
-Provide:
-1. Main changes and patterns in this batch
-2. Technical improvements or concerns
-3. Progress indicators
+${issues.length > 0 ? `Related Issues:\n${issues.map((issue: any) => `- #${issue.number}: ${issue.title} (${issue.state})`).join('\n')}` : ''}
 `;
       
       const result = await thread.generateText({ 
@@ -62,44 +64,32 @@ Provide:
       batchAnalyses.push(result.text);
     }
     
-    // Generate final repository summary
-    const summaryPrompt = `
-Based on the analysis of ${commitBatches.flat().length} commits in ${repository} on ${date}, create a comprehensive repository summary.
-
-Batch analyses:
-${batchAnalyses.join('\n---\n')}
-
-Generate a JSON summary with:
-{
-  "repository": "${repository}",
-  "commitCount": ${commitBatches.flat().length},
-  "mainFocus": "primary area of work",
-  "progress": "what was accomplished",
-  "technicalHighlights": ["key technical achievements"],
-  "concerns": ["any issues or tech debt"],
-  "nextSteps": ["suggested follow-ups"]
-}
-`;
-    
-    const RepoSummarySchema = z.object({
-      repository: z.string(),
-      commitCount: z.number(),
-      mainFocus: z.string(),
-      progress: z.string(),
-      technicalHighlights: z.array(z.string()).optional().default([]),
-      concerns: z.array(z.string()).optional().default([]),
-      nextSteps: z.array(z.string()).optional().default([])
-    });
-    const summary = await thread.generateObject({
-      prompt: summaryPrompt,
-      schema: RepoSummarySchema
-    });
-    
-    return {
-      ...summary.object,
-      threadId: thread.threadId,
-      messageCount: batchAnalyses.length + 2 // batches + summary
-    };
+    // Generate final repository summary using Action Retrier + Action Cache wrapper
+    try {
+      const runId = await retrier.run(
+        ctx as any,
+        (internal as any)["functions/internal/cached"].cachedGenerateRepoSummary,
+        { repository, date, batchAnalyses, pullRequests, issues }
+      );
+      const res = await awaitRetrierResult(ctx as any, runId);
+      if (res.type === "completed" && (res as any).result.type === "success") {
+        return (res as any).result.returnValue as any;
+      }
+      throw new Error(`Repo summary run failed: ${JSON.stringify(res)}`);
+    } catch (err) {
+        console.warn(`[RepoAnalyzer] Fallback summary for ${repository}:`, err);
+        const commitCount = commitBatches.flat().length;
+        return {
+          repository,
+          commitCount,
+          mainFocus: 'updates and fixes',
+          progress: `landed ${commitCount} commits`,
+          technicalHighlights: [],
+          concerns: [],
+          nextSteps: [],
+          messageCount: batchAnalyses.length + 1
+        } as any;
+    }
   }
 });
 
@@ -185,7 +175,10 @@ export const generateGlobalSynthesis = action({
     const i = internal as any;
     const instructions = await ctx.runQuery(i.functions.queries.settings.getByKey, {
       key: "agents/globalAnalysis",
-    }) || GLOBAL_ANALYSIS_XML;
+    });
+    if (!instructions) {
+      throw new Error("Missing settings: agents/globalAnalysis. Seed or set instructions before running synthesis.");
+    }
     
     // Create global analysis agent
     const agent = createGlobalAnalysisAgent(instructions as string, process.env.OPENROUTER_API_KEY);
@@ -194,45 +187,93 @@ export const generateGlobalSynthesis = action({
     const { thread } = await agent.createThread(ctx as any, {});
     
     const prompt = `
-Create a comprehensive daily development log for ${date}.
+Create a daily development log for ${date} that is concise in narrative (aim 1-3 short paragraphs) but rich in structured metadata.
 
 Statistics:
 - Total commits: ${stats.totalCommits}
 - Repositories: ${stats.repositories.join(', ')}
 
-Repository Work:
+Repository summaries (key metadata only):
 ${repoAnalyses.map(r => `
 ${r.repository} (${r.commitCount} commits):
 - Focus: ${r.mainFocus}
 - Progress: ${r.progress}
-- Highlights: ${r.technicalHighlights?.join(', ') || 'none'}
+- Highlights: ${Array.isArray(r.technicalHighlights) && r.technicalHighlights.length ? r.technicalHighlights.join(', ') : 'none'}
+${r.stats ? `- Stats: +${r.stats.totalAdditions}/-${r.stats.totalDeletions}, files: ${r.stats.filesChanged}` : ''}
 `).join('\n')}
 
-Cross-Repository Patterns:
-- Patterns: ${patterns.patterns?.join(', ') || 'none identified'}
-- Themes: ${patterns.themes?.join(', ') || 'none identified'}
+Cross-Repository:
+- Patterns: ${patterns.patterns?.join(', ') || 'none'}
+- Themes: ${patterns.themes?.join(', ') || 'none'}
 - Balance: ${patterns.balanceAssessment || 'not assessed'}
 
-Generate a comprehensive log with:
-1. Engaging title capturing the day's essence
-2. Narrative summary (2-3 paragraphs)
-3. Key highlights and achievements
-4. Technical themes and patterns
-5. Actionable suggestions for tomorrow
-6. Metrics and productivity assessment
-7. Optional: A haiku capturing the day's coding spirit
+Requirements:
+- Provide engaging title
+- Narrative summary (concise)
+- Highlights (bulleted, crisp)
+- Technical themes & patterns (from inputs)
+- Suggestions (actionable, prioritized)
+- Metrics (totals + productivity score)
+- Optional haiku
 
-Return as structured JSON matching the log schema.
+Return ONLY JSON matching the provided schema. No additional prose.
 `;
     
-    const result = await thread.generateObject({
-      prompt,
-      schema: globalAnalysisSchema as any
-    });
-    
-    return {
-      ...result.object,
-      threadId: thread.threadId
-    };
+    // Primary: structured generation with Action Retrier + Action Cache wrapper
+    try {
+      const runId = await retrier.run(
+        ctx as any,
+        (internal as any)["functions/internal/cached"].cachedGenerateGlobalSynthesis,
+        { date, repoAnalyses, patterns, stats }
+      );
+      const res = await awaitRetrierResult(ctx as any, runId);
+      if (res.type === "completed" && (res as any).result.type === "success") {
+        return (res as any).result.returnValue as any;
+      }
+      throw new Error(`Synthesis run failed: ${JSON.stringify(res)}`);
+    } catch (err) {
+        // Fallback: build a minimal but valid object and validate
+        console.warn("[GlobalSynthesis] Structured generation failed, using fallback:", err);
+        const primaryRepoSummaries = (repoAnalyses || []).map((r: any) => ({
+          repository: r.repository,
+          commitCount: Number(r.commitCount || 0),
+          mainFocus: String(r.mainFocus || "Updates"),
+          progress: String(r.progress || "Progress recorded"),
+        }));
+        const highlights: string[] = [];
+        for (const r of primaryRepoSummaries.slice(0, 8)) {
+          highlights.push(`${r.repository}: ${r.commitCount} commits — ${r.mainFocus}`);
+        }
+        const productivityScore = Math.max(1, Math.min(10, Math.round((stats.totalCommits || 0) / 10)));
+        const fallback = {
+          date,
+          title: `Daily work • ${stats.totalCommits} commits across ${stats.totalRepos} repos`,
+          haiku: undefined,
+          narrative: `Worked across ${stats.totalRepos} repositories with ${stats.totalCommits} commits. Key repos show momentum with meaningful progress. Cross-repo themes were identified to guide next steps.`,
+          highlights,
+          repoSummaries: primaryRepoSummaries,
+          crossRepoPatterns: (patterns?.patterns as string[]) || [],
+          technicalThemes: (patterns?.themes as string[]) || [],
+          suggestions: [],
+          metrics: {
+            totalCommits: stats.totalCommits || 0,
+            totalRepos: stats.totalRepos || 0,
+            primaryLanguages: [],
+            codeQualityTrend: "stable" as const,
+            productivityScore,
+          },
+        };
+        const parsed = (globalAnalysisSchema as any).parse(fallback);
+        return { ...parsed, threadId: thread.threadId };
+    }
   }
 });
+async function awaitRetrierResult(ctx: any, runId: string) {
+  // Poll retrier status until completion; small backoff
+  for (let i = 0; i < 60; i++) {
+    const status = await retrier.status(ctx, runId as any);
+    if (status.type === "completed") return status;
+    await new Promise((r) => setTimeout(r, Math.min(250 * (i + 1), 2000)));
+  }
+  throw new Error("Action retrier timed out waiting for completion");
+}

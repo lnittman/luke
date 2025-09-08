@@ -20,9 +20,13 @@ import type * as functions_actions_agentAnalysis from "../functions/actions/agen
 import type * as functions_actions_analysis from "../functions/actions/analysis.js";
 import type * as functions_actions_github from "../functions/actions/github.js";
 import type * as functions_actions_syncFromProduction from "../functions/actions/syncFromProduction.js";
+import type * as functions_internal_cached from "../functions/internal/cached.js";
+import type * as functions_internal_llm from "../functions/internal/llm.js";
+import type * as functions_mutations_cache from "../functions/mutations/cache.js";
 import type * as functions_mutations_logs from "../functions/mutations/logs.js";
 import type * as functions_mutations_settings from "../functions/mutations/settings.js";
 import type * as functions_mutations_workflowTracking from "../functions/mutations/workflowTracking.js";
+import type * as functions_queries_cache from "../functions/queries/cache.js";
 import type * as functions_queries_logs from "../functions/queries/logs.js";
 import type * as functions_queries_logsById from "../functions/queries/logsById.js";
 import type * as functions_queries_settings from "../functions/queries/settings.js";
@@ -31,6 +35,7 @@ import type * as functions_queries_workflowTracking from "../functions/queries/w
 import type * as http from "../http.js";
 import type * as index from "../index.js";
 import type * as lib_analysisSchema from "../lib/analysisSchema.js";
+import type * as lib_llmCache from "../lib/llmCache.js";
 import type * as schedules_index from "../schedules/index.js";
 import type * as workflows_agenticDailyAnalysis from "../workflows/agenticDailyAnalysis.js";
 import type * as workflows_dailyAnalysis from "../workflows/dailyAnalysis.js";
@@ -62,9 +67,13 @@ declare const fullApi: ApiFromModules<{
   "functions/actions/analysis": typeof functions_actions_analysis;
   "functions/actions/github": typeof functions_actions_github;
   "functions/actions/syncFromProduction": typeof functions_actions_syncFromProduction;
+  "functions/internal/cached": typeof functions_internal_cached;
+  "functions/internal/llm": typeof functions_internal_llm;
+  "functions/mutations/cache": typeof functions_mutations_cache;
   "functions/mutations/logs": typeof functions_mutations_logs;
   "functions/mutations/settings": typeof functions_mutations_settings;
   "functions/mutations/workflowTracking": typeof functions_mutations_workflowTracking;
+  "functions/queries/cache": typeof functions_queries_cache;
   "functions/queries/logs": typeof functions_queries_logs;
   "functions/queries/logsById": typeof functions_queries_logsById;
   "functions/queries/settings": typeof functions_queries_settings;
@@ -73,6 +82,7 @@ declare const fullApi: ApiFromModules<{
   http: typeof http;
   index: typeof index;
   "lib/analysisSchema": typeof lib_analysisSchema;
+  "lib/llmCache": typeof lib_llmCache;
   "schedules/index": typeof schedules_index;
   "workflows/agenticDailyAnalysis": typeof workflows_agenticDailyAnalysis;
   "workflows/dailyAnalysis": typeof workflows_dailyAnalysis;
@@ -3163,6 +3173,95 @@ export declare const components: {
             | { cronspec: string; kind: "cron"; tz?: string };
         },
         string
+      >;
+    };
+  };
+  actionRetrier: {
+    public: {
+      cancel: FunctionReference<
+        "mutation",
+        "internal",
+        { runId: string },
+        boolean
+      >;
+      cleanup: FunctionReference<
+        "mutation",
+        "internal",
+        { runId: string },
+        any
+      >;
+      start: FunctionReference<
+        "mutation",
+        "internal",
+        {
+          functionArgs: any;
+          functionHandle: string;
+          options: {
+            base: number;
+            initialBackoffMs: number;
+            logLevel: "DEBUG" | "INFO" | "WARN" | "ERROR";
+            maxFailures: number;
+            onComplete?: string;
+            runAfter?: number;
+            runAt?: number;
+          };
+        },
+        string
+      >;
+      status: FunctionReference<
+        "query",
+        "internal",
+        { runId: string },
+        | { type: "inProgress" }
+        | {
+            result:
+              | { returnValue: any; type: "success" }
+              | { error: string; type: "failed" }
+              | { type: "canceled" };
+            type: "completed";
+          }
+      >;
+    };
+  };
+  actionCache: {
+    crons: {
+      purge: FunctionReference<
+        "mutation",
+        "internal",
+        { expiresAt?: number },
+        null
+      >;
+    };
+    lib: {
+      get: FunctionReference<
+        "query",
+        "internal",
+        { args: any; name: string; ttl: number | null },
+        { kind: "hit"; value: any } | { expiredEntry?: string; kind: "miss" }
+      >;
+      put: FunctionReference<
+        "mutation",
+        "internal",
+        {
+          args: any;
+          expiredEntry?: string;
+          name: string;
+          ttl: number | null;
+          value: any;
+        },
+        { cacheHit: boolean; deletedExpiredEntry: boolean }
+      >;
+      remove: FunctionReference<
+        "mutation",
+        "internal",
+        { args: any; name: string },
+        null
+      >;
+      removeAll: FunctionReference<
+        "mutation",
+        "internal",
+        { batchSize?: number; before?: number; name?: string },
+        null
       >;
     };
   };
