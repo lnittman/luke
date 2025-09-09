@@ -32,15 +32,17 @@ export function LogAccordion({ log, defaultOpen = false }: { log: LogItem, defau
   return (
     <div className={styles.accordion}>
       <button aria-expanded={isOpen} className={styles.header} onClick={() => setIsOpen(!isOpen)}>
-        <div className={styles.titleWrapper}>
-          <div className={styles.titleLine}>
-            <Link className={styles.name} href={`/logs/${log.id}`} onClick={(e) => e.stopPropagation()}>
-              {formatTitle(log.date)}
-            </Link>
+        <div style={{ display: 'flex', width: '100%', padding: '0 24px', alignItems: 'center' }}>
+          <div className={styles.titleWrapper}>
+            <div className={styles.titleLine}>
+              <Link className={styles.name} href={`/logs/${log.id}`} onClick={(e) => e.stopPropagation()}>
+                {formatTitle(log.date)}
+              </Link>
+            </div>
           </div>
-        </div>
-        <div className={styles.actions}>
-          <span className={styles.arrow}>{isOpen ? '▾' : '▸'}</span>
+          <div className={styles.actions}>
+            <span className={styles.arrow}>{isOpen ? '▾' : '▸'}</span>
+          </div>
         </div>
       </button>
 

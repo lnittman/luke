@@ -198,7 +198,6 @@ export default function LogsPage() {
               display: 'flex',
               justifyContent: 'space-between',
               alignItems: 'center',
-              marginBottom: '1.5rem',
               padding: '0.75rem 24px',
               borderBottom: '1px solid rgb(var(--border))',
               backgroundColor: 'rgb(var(--background-start))',
@@ -620,7 +619,7 @@ export default function LogsPage() {
                 {searchQuery ? 'no results...' : 'no logs yet...'}
               </div>
             ) : (
-              <div style={{ maxWidth: '1200px', margin: '0 auto' }}>
+              <div>
                 {logs.map((log) => (
                   <LogAccordion key={log.id} log={log as any} />
                 ))}
