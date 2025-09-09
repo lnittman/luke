@@ -89,7 +89,7 @@ export function WorkflowEvent({ event }: WorkflowEventProps) {
       
       {isExpanded && hasDetails && (
         <div style={{ 
-          padding: '0 0 1rem 0',
+          padding: '0',
           animation: 'fade-in 0.2s ease-out',
         }}>
           {event.error && (

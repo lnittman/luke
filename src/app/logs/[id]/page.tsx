@@ -8,7 +8,7 @@ import styles from '@/components/shared/root.module.scss'
 import Link from 'next/link'
 import { useParams } from 'next/navigation'
 import { ThemeSwitcher } from '@/components/shared/theme-switcher'
-import { TextScrambleLoader } from '@/components/app/logs/TextScramble'
+import { TextScramble } from '@/components/ui/text-scramble'
 import { CodeBlock } from '@/components/app/logs/CodeBlock'
 import { WorkflowEvent } from '@/components/app/logs/WorkflowEvent'
 import { BlockLoader } from '@/components/shared/block-loader'
@@ -43,11 +43,13 @@ function LogDetailContent() {
         flexDirection: 'column',
         gap: '1rem',
       }}>
-        <TextScrambleLoader 
-          isLoading={true} 
-          loadingText="fetching log data..."
+        <TextScramble 
+          duration={0.8}
+          speed={0.04}
           className="text-[rgb(var(--text-secondary))]"
-        />
+        >
+          fetching log data...
+        </TextScramble>
       </div>
     )
   }
@@ -86,11 +88,13 @@ function LogDetailContent() {
       <div style={{ border: '1px solid rgb(var(--border))', marginBottom: '1rem' }}>
         <div style={{ padding: '1rem 1.5rem', borderBottom: '1px solid rgb(var(--border))' }}>
           <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
-            <TextScrambleLoader 
-              text={log.title || '(untitled)'}
-              isLoading={false}
+            <TextScramble 
+              duration={0.6}
+              speed={0.03}
               className="font-mono text-lg"
-            />
+            >
+              {log.title || '(untitled)'}
+            </TextScramble>
             <span style={{ fontFamily: 'monospace', color: 'rgb(var(--text-secondary))' }}>
               {formatEU(log.date)}
             </span>
@@ -229,7 +233,7 @@ function LogDetailContent() {
       {/* Raw Data */}
       {log.rawData && (
         <div style={{ border: '1px solid rgb(var(--border))', marginBottom: '1rem' }}>
-          <details>
+          <details open>
             <summary style={{
               padding: '0.75rem 1.5rem',
               borderBottom: '1px solid rgb(var(--border))',
@@ -241,7 +245,7 @@ function LogDetailContent() {
             }}>
               Raw Data
             </summary>
-            <div style={{ padding: '1rem' }}>
+            <div>
               <CodeBlock 
                 code={JSON.stringify(log.rawData, null, 2)} 
                 language="json"
@@ -268,17 +272,19 @@ function LogDetailContent() {
             </div>
           )}
         </div>
-        <div style={{ padding: '1rem 1.5rem' }}>
+        <div style={{ padding: '0 1.5rem 1rem 1.5rem' }}>
           {!workflowId ? (
             <div style={{ fontFamily: 'monospace', fontSize: '.9rem', color: 'rgb(var(--text-secondary))' }}>
               No events
             </div>
           ) : events === undefined ? (
-            <TextScrambleLoader 
-              isLoading={true} 
-              loadingText="loading workflow events..."
+            <TextScramble 
+              duration={0.8}
+              speed={0.04}
               className="text-[rgb(var(--text-secondary))] text-sm"
-            />
+            >
+              loading workflow events...
+            </TextScramble>
           ) : events.length === 0 ? (
             <div style={{ fontFamily: 'monospace', fontSize: '.9rem', color: 'rgb(var(--text-secondary))' }}>
               No events recorded
@@ -304,11 +310,13 @@ export default function LogDetailPage() {
           <div style={{ display: 'flex', alignItems: 'center', gap: '1rem' }}>
             <BlockLoader mode={2} />
             <Suspense fallback={
-              <TextScrambleLoader 
-                isLoading={true} 
-                loadingText="loading..."
+              <TextScramble 
+                duration={0.6}
+                speed={0.03}
                 className="text-2xl font-mono"
-              />
+              >
+                loading...
+              </TextScramble>
             }>
               <LogHeader />
             </Suspense>
@@ -321,11 +329,13 @@ export default function LogDetailPage() {
         <div className={styles.innerViewport}>
           <Suspense fallback={
             <div style={{ padding: '2rem', fontFamily: 'monospace' }}>
-              <TextScrambleLoader 
-                isLoading={true} 
-                loadingText="loading log details..."
+              <TextScramble 
+                duration={0.8}
+                speed={0.04}
                 className="text-[rgb(var(--text-secondary))]"
-              />
+              >
+                loading log details...
+              </TextScramble>
             </div>
           }>
             <LogDetailContent />

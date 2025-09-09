@@ -1,74 +1,85 @@
-'use client'
+'use client';
+import { type JSX, useEffect, useState } from 'react';
+import { motion, MotionProps } from 'motion/react';
 
-import { motion } from 'framer-motion'
-import React, { useEffect, useState } from 'react'
+export type TextScrambleProps = {
+  children: string;
+  duration?: number;
+  speed?: number;
+  characterSet?: string;
+  as?: React.ElementType;
+  className?: string;
+  trigger?: boolean;
+  onScrambleComplete?: () => void;
+} & MotionProps;
 
-interface TextScrambleProps {
-  text: string
-  className?: string
-  scrambleSpeed?: number
-  scrambleDuration?: number
-}
-
-const CHARACTERS =
-  'ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789!@#$%^&*()_+-=[]{}|;:,.<>?'
+const defaultChars =
+  'ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789';
 
 export function TextScramble({
-  text,
-  className = '',
-  scrambleSpeed = 50,
-  scrambleDuration = 1500,
+  children,
+  duration = 0.8,
+  speed = 0.04,
+  characterSet = defaultChars,
+  className,
+  as: Component = 'p',
+  trigger = true,
+  onScrambleComplete,
+  ...props
 }: TextScrambleProps) {
-  const [displayText, setDisplayText] = useState(text)
-  const [isScrambling, setIsScrambling] = useState(false)
+  const MotionComponent = motion.create(
+    Component as keyof JSX.IntrinsicElements
+  );
+  const [displayText, setDisplayText] = useState(children);
+  const [isAnimating, setIsAnimating] = useState(false);
+  const text = children;
 
-  const scrambleText = () => {
-    setIsScrambling(true)
-    const chars = text.split('')
-    const iterations = scrambleDuration / scrambleSpeed
-    let currentIteration = 0
+  const scramble = async () => {
+    if (isAnimating) return;
+    setIsAnimating(true);
+
+    const steps = duration / speed;
+    let step = 0;
 
     const interval = setInterval(() => {
-      currentIteration++
-      const progress = currentIteration / iterations
+      let scrambled = '';
+      const progress = step / steps;
 
-      const scrambled = chars
-        .map((char, index) => {
-          if (char === ' ') return ' '
+      for (let i = 0; i < text.length; i++) {
+        if (text[i] === ' ') {
+          scrambled += ' ';
+          continue;
+        }
 
-          // Gradually reveal the original text
-          if (progress > index / chars.length) {
-            return char
-          }
-
-          // Return random character
-          return CHARACTERS[Math.floor(Math.random() * CHARACTERS.length)]
-        })
-        .join('')
-
-      setDisplayText(scrambled)
-
-      if (currentIteration >= iterations) {
-        clearInterval(interval)
-        setDisplayText(text)
-        setIsScrambling(false)
+        if (progress * text.length > i) {
+          scrambled += text[i];
+        } else {
+          scrambled +=
+            characterSet[Math.floor(Math.random() * characterSet.length)];
+        }
       }
-    }, scrambleSpeed)
-  }
+
+      setDisplayText(scrambled);
+      step++;
+
+      if (step > steps) {
+        clearInterval(interval);
+        setDisplayText(text);
+        setIsAnimating(false);
+        onScrambleComplete?.();
+      }
+    }, speed * 1000);
+  };
 
   useEffect(() => {
-    scrambleText()
-  }, [text])
+    if (!trigger) return;
+
+    scramble();
+  }, [trigger]);
 
   return (
-    <motion.span
-      animate={{ opacity: 1 }}
-      className={className}
-      initial={{ opacity: 0 }}
-      onHoverStart={() => !isScrambling && scrambleText()}
-      style={{ fontFamily: 'var(--font-mono)' }}
-    >
+    <MotionComponent className={className} {...props}>
       {displayText}
-    </motion.span>
-  )
+    </MotionComponent>
+  );
 }
