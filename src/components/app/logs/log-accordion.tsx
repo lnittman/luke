@@ -79,7 +79,7 @@ export function LogAccordion({ log, defaultOpen = false }: { log: LogItem, defau
           )}
 
           <div className={styles.buttons}>
-            <Link className={styles.link} href={`/logs/${log.id}`} onClick={(e) => e.stopPropagation()}>OPEN DETAILS</Link>
+            <Link className={styles.link} href={`/logs/${log.id}`} onClick={(e) => e.stopPropagation()}>details ▸</Link>
           </div>
         </div>
       )}
