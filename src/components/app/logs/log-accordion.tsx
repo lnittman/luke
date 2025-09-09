@@ -34,18 +34,10 @@ export function LogAccordion({ log, defaultOpen = false }: { log: LogItem, defau
       <button aria-expanded={isOpen} className={styles.header} onClick={() => setIsOpen(!isOpen)}>
         <div className={styles.titleWrapper}>
           <div className={styles.titleLine}>
-            <span className={styles.emoji}>✦</span>
             <Link className={styles.name} href={`/logs/${log.id}`} onClick={(e) => e.stopPropagation()}>
               {formatTitle(log.date)}
             </Link>
           </div>
-          {(log.title || firstLine) && (
-            <div className={styles.description}>
-              {log.title ? <span style={{ marginRight: '.5rem' }}>{log.title}</span> : null}
-              {log.title && firstLine ? <span>— </span> : null}
-              {firstLine}
-            </div>
-          )}
         </div>
         <div className={styles.actions}>
           <span className={styles.arrow}>{isOpen ? '▾' : '▸'}</span>
