@@ -19,11 +19,11 @@ export interface LogItem {
 }
 
 function formatTitle(dateStr: string) {
-  const d = new Date(dateStr)
-  const month = d.toLocaleDateString('en-US', { month: 'long' })
-  const day = d.getUTCDate()
-  const year = d.getUTCFullYear()
-  return `${month} ${day} - ${year}`
+  // Input is YYYY-MM-DD; format as DD.MM.YYYY without timezone ambiguity
+  const parts = dateStr.split('-')
+  if (parts.length !== 3) return dateStr
+  const [y, m, d] = parts
+  return `${d}.${m}.${y}`
 }
 
 export function LogAccordion({ log, defaultOpen = false }: { log: LogItem, defaultOpen?: boolean }) {

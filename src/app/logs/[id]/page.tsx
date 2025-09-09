@@ -45,7 +45,12 @@ export default function LogDetailPage() {
                 <div style={{ padding: '1rem 1.5rem', borderBottom: '1px solid rgb(var(--border))' }}>
                   <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
                     <h2 style={{ fontFamily: 'monospace', fontSize: '1.125rem' }}>{log.title || '(untitled)'}</h2>
-                    <span style={{ fontFamily: 'monospace', color: 'rgb(var(--text-secondary))' }}>{log.date}</span>
+                    <span style={{ fontFamily: 'monospace', color: 'rgb(var(--text-secondary))' }}>
+                      {(() => {
+                        const p = (log.date || '').split('-')
+                        return p.length === 3 ? `${p[2]}.${p[1]}.${p[0]}` : log.date
+                      })()}
+                    </span>
                   </div>
                 </div>
                 <div style={{ padding: '1rem 1.5rem' }}>
