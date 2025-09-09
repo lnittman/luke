@@ -18,11 +18,12 @@ export interface LogItem {
   createdAt: string
 }
 
-function formatDate(dateStr: string) {
-  const date = new Date(dateStr)
-  return date.toLocaleDateString('en-US', {
-    weekday: 'short', year: 'numeric', month: 'short', day: 'numeric',
-  })
+function formatTitle(dateStr: string) {
+  const d = new Date(dateStr)
+  const month = d.toLocaleDateString('en-US', { month: 'long' })
+  const day = d.getUTCDate()
+  const year = d.getUTCFullYear()
+  return `${month} ${day} - ${year}`
 }
 
 export function LogAccordion({ log, defaultOpen = false }: { log: LogItem, defaultOpen?: boolean }) {
@@ -35,13 +36,16 @@ export function LogAccordion({ log, defaultOpen = false }: { log: LogItem, defau
           <div className={styles.titleLine}>
             <span className={styles.emoji}>✦</span>
             <Link className={styles.name} href={`/logs/${log.id}`} onClick={(e) => e.stopPropagation()}>
-              {log.title}
+              {formatTitle(log.date)}
             </Link>
           </div>
-          <div className={styles.description}>
-            <time style={{ marginRight: '0.75rem' }}>{formatDate(log.date)}</time>
-            {firstLine}
-          </div>
+          {(log.title || firstLine) && (
+            <div className={styles.description}>
+              {log.title ? <span style={{ marginRight: '.5rem' }}>{log.title}</span> : null}
+              {log.title && firstLine ? <span>— </span> : null}
+              {firstLine}
+            </div>
+          )}
         </div>
         <div className={styles.actions}>
           <span className={styles.arrow}>{isOpen ? '▾' : '▸'}</span>
@@ -88,4 +92,3 @@ export function LogAccordion({ log, defaultOpen = false }: { log: LogItem, defau
     </div>
   )
 }
-
