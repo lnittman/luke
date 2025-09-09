@@ -1,0 +1,140 @@
+.accordion {
+  width: 100%;
+  border-bottom: 1px solid rgb(var(--border));
+}
+
+.header {
+  width: 100%;
+  margin: 0;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  background: none;
+  border: none;
+  padding: 1.5rem 24px;
+  font-family: inherit;
+  font-size: inherit;
+  text-align: left;
+  cursor: pointer;
+  color: rgb(var(--text-primary));
+  transition: none;
+  &:hover {
+    background-color: rgb(var(--surface-1) / 0.5);
+  }
+}
+
+.emoji {
+  font-size: 1.25rem;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 2rem;
+  height: 2rem;
+  flex-shrink: 0;
+}
+
+.titleWrapper {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  gap: 0.5rem;
+}
+
+.titleLine {
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+}
+
+.name {
+  font-weight: 500;
+  font-size: 1rem;
+  letter-spacing: 0.02em;
+  text-transform: lowercase;
+  text-decoration: none;
+  color: inherit;
+  transition: none;
+  &:hover { text-decoration: underline; }
+}
+
+.description {
+  font-size: 0.875rem;
+  color: rgb(var(--text-secondary));
+}
+
+.actions {
+  display: flex;
+  align-items: center;
+  gap: 1.5rem;
+}
+
+.link {
+  font-size: 0.75rem;
+  letter-spacing: 0.05em;
+  color: rgb(var(--accent-1));
+  text-decoration: none;
+  padding: 0.25rem 0.75rem;
+  border: 1px solid rgb(var(--accent-1));
+  transition: none;
+  &:hover {
+    background: rgb(var(--accent-1));
+    color: rgb(var(--background-start));
+  }
+}
+
+.arrow {
+  font-size: 0.875rem;
+  color: rgb(var(--text-secondary));
+  width: 1rem;
+  text-align: center;
+}
+
+.content {
+  padding: 1rem 24px 2rem 24px;
+  color: rgb(var(--text-secondary));
+}
+
+.metrics {
+  display: flex;
+  gap: 2rem;
+  margin: 1rem 0 1.25rem 0;
+  font-size: 0.875rem;
+  font-family: monospace;
+}
+
+.section {
+  margin-top: 1.25rem;
+  &:first-child { margin-top: 0; }
+  h3 {
+    color: rgb(var(--text-primary));
+    font-size: 0.75rem;
+    font-weight: normal;
+    letter-spacing: 0.1em;
+    margin-bottom: 0.75rem;
+  }
+  ul {
+    margin: 0;
+    padding: 0;
+    list-style: none;
+  }
+  li {
+    position: relative;
+    margin: 0.5rem 0;
+    padding-left: 1rem;
+    font-size: 0.875rem;
+    line-height: 1.6;
+    &:before {
+      content: '→';
+      position: absolute;
+      left: 0;
+      color: rgb(var(--text-secondary) / 0.5);
+    }
+  }
+}
+
+.buttons {
+  margin-top: 1rem;
+  display: flex;
+  gap: 0.75rem;
+}
+

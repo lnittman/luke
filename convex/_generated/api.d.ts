@@ -22,7 +22,6 @@ import type * as functions_actions_github from "../functions/actions/github.js";
 import type * as functions_actions_syncFromProduction from "../functions/actions/syncFromProduction.js";
 import type * as functions_internal_cached from "../functions/internal/cached.js";
 import type * as functions_internal_llm from "../functions/internal/llm.js";
-import type * as functions_mutations_cleanup from "../functions/mutations/cleanup.js";
 import type * as functions_mutations_logs from "../functions/mutations/logs.js";
 import type * as functions_mutations_settings from "../functions/mutations/settings.js";
 import type * as functions_mutations_workflowTracking from "../functions/mutations/workflowTracking.js";
@@ -68,7 +67,6 @@ declare const fullApi: ApiFromModules<{
   "functions/actions/syncFromProduction": typeof functions_actions_syncFromProduction;
   "functions/internal/cached": typeof functions_internal_cached;
   "functions/internal/llm": typeof functions_internal_llm;
-  "functions/mutations/cleanup": typeof functions_mutations_cleanup;
   "functions/mutations/logs": typeof functions_mutations_logs;
   "functions/mutations/settings": typeof functions_mutations_settings;
   "functions/mutations/workflowTracking": typeof functions_mutations_workflowTracking;
