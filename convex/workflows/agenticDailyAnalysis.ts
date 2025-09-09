@@ -269,14 +269,19 @@ export const agenticDailyAnalysis = workflow.define({
         },
       });
       
+      const { threadId: _synthThread, ...synthOut } = synthesis as any;
       const result = await step.runMutation(i.functions.mutations.logs.storeAnalysis, {
-        ...synthesis,
-        rawData: { 
-          activity, 
-          repoAnalyses,
-          patterns,
+        ...synthOut,
+        rawData: {
+          stats: {
+            totalCommits: activity.totalCommits,
+            totalRepos: activity.totalRepos,
+            repositories: activity.repositories,
+          },
+          repoSummaries: compactRepoSummaries,
+          patterns: { patterns: patterns.patterns || [], themes: patterns.themes || [] },
           workflowId: wfId,
-          agentThreads // Store all agent thread IDs for UI visualization
+          agentThreads,
         },
       });
       

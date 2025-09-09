@@ -44,8 +44,8 @@ export const analyzeRepository = action({
 You are analyzing repository ${repository}. This is batch ${index + 1}/${commitBatches.length} for ${date}.
 
 Tool discipline:
-- For each commit, call fetchCommitDetailsTool({ owner, repo, sha }) to retrieve files and patches. Use owner=\"${repository.split('/')[0]}\", repo=\"${repository.split('/')[1]}\".
-- If a pull request seems related, call getPullRequestFilesTool({ owner, repo, number }) to inspect changed files. Do not guess.
+- For each commit, call fetchCommitDetailsTool({ owner, repo, sha }) to retrieve files and change stats (no patch text). Use owner=\"${repository.split('/')[0]}\", repo=\"${repository.split('/')[1]}\".
+- If a pull request seems related, call getPullRequestFilesTool({ owner, repo, number }) to inspect changed files (no patches). Do not guess.
 
 Synthesize this batch: major changes, architectural implications, risks, progress signals. Keep it concise.
 
@@ -57,8 +57,8 @@ ${pullRequests.length > 0 ? `Related Pull Requests:\n${pullRequests.map((pr: any
 ${issues.length > 0 ? `Related Issues:\n${issues.map((issue: any) => `- #${issue.number}: ${issue.title} (${issue.state})`).join('\n')}` : ''}
 `;
       
-      const result = await thread.generateText({ 
-        prompt
+      const result = await thread.generateText({
+        prompt: `${prompt}\n\nOutput constraints:\n- Keep the narrative under 700 characters.\n- Do not include code or diffs.\n- Focus on concrete, high-signal observations only.`
       });
       
       batchAnalyses.push(result.text);

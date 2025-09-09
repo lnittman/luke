@@ -44,10 +44,20 @@ export const fetchCommitDetailsTool = createTool({
   async handler(_ctx, { owner, repo, sha }) {
     const octokit = makeOctokit();
     const { data: commit } = await octokit.repos.getCommit({ owner, repo, ref: sha });
+    // Return only compact metadata; no patch text to keep payloads small.
+    const subject = (commit.commit.message || "").split("\n")[0].slice(0, 200);
+    const files = (commit.files || []).map((f) => ({
+      filename: f.filename,
+      status: f.status as string,
+      additions: f.additions,
+      deletions: f.deletions,
+      changes: f.changes,
+    }));
     return {
-      message: commit.commit.message,
-      files: commit.files || [],
+      message: subject,
+      files,
       stats: commit.stats || {},
+      htmlUrl: commit.html_url,
     } as const;
   },
 });
@@ -85,7 +95,8 @@ export const getPullRequestFilesTool = createTool({
   async handler(_ctx, { owner, repo, number }) {
     const octokit = makeOctokit();
     const { data } = await octokit.pulls.listFiles({ owner, repo, pull_number: number, per_page: 100 });
-    return data.map(f => ({ filename: f.filename, status: f.status as string, additions: f.additions, deletions: f.deletions, changes: f.changes, patch: f.patch }));
+    // Exclude patch text to avoid oversized tool results
+    return data.map(f => ({ filename: f.filename, status: f.status as string, additions: f.additions, deletions: f.deletions, changes: f.changes }));
   },
 });
 

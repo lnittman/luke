@@ -84,3 +84,13 @@ export const runDailyAnalysisOnce = mutation({
     return { scheduledId: date };
   },
 });
+
+export const deleteById = mutation({
+  args: { id: v.id("logs") },
+  handler: async (ctx, { id }) => {
+    const doc = await ctx.db.get(id);
+    if (!doc) return { deleted: false };
+    await ctx.db.delete(id);
+    return { deleted: true };
+  },
+});

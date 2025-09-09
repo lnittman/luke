@@ -27,14 +27,6 @@ export default defineSchema({
     updatedAt: v.number(),
   }).index("by_key", ["key"]),
 
-  aiCache: defineTable({
-    key: v.string(),
-    value: v.any(),
-    expiresAt: v.number(),
-    createdAt: v.number(),
-  })
-    .index("by_key", ["key"])
-    .index("by_expires", ["expiresAt"]),
 
   workflowEvents: defineTable({
     workflowId: v.string(),
