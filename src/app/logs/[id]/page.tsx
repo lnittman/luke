@@ -7,7 +7,8 @@ import { DefaultLayout } from '@/components/shared/default-layout'
 import styles from '@/components/shared/root.module.scss'
 import Link from 'next/link'
 import { useParams } from 'next/navigation'
-import { ArtsyAscii } from '@/components/shared/artsy-ascii'
+import { BlockLoader } from '@/components/shared/block-loader'
+import { ThemeSwitcher } from '@/components/shared/theme-switcher'
 
 function formatEU(dateStr?: string) {
   if (!dateStr) return ''
@@ -32,14 +33,13 @@ export default function LogDetailPage() {
 
   return (
     <DefaultLayout>
-      <div className={styles.header} style={{ position: 'relative', overflow: 'hidden' }}>
-        <div style={{ position: 'absolute', inset: 0, pointerEvents: 'none', opacity: 0.18 }}>
-          <ArtsyAscii type="minimal" fillContainer fps={10} style={{ color: 'rgb(var(--accent-1))' }} />
-        </div>
+      <div className={styles.header}>
         <div className={styles.column}>
-          <div style={{ display: 'flex', alignItems: 'center', gap: '1rem', position: 'relative', zIndex: 1 }}>
+          <div style={{ display: 'flex', alignItems: 'center', gap: '1rem' }}>
+            <BlockLoader mode={2} />
             <h1>{formatEU(log?.date)}</h1>
           </div>
+          <ThemeSwitcher />
         </div>
       </div>
 
