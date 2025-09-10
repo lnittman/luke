@@ -1,16 +1,18 @@
 'use client'
 
-import React, { Suspense, useMemo } from 'react'
+import React, { Suspense, useMemo, useState, useRef, useEffect } from 'react'
 import { useQuery } from 'convex/react'
 import { api } from '../../../../convex/_generated/api'
 import { DefaultLayout } from '@/components/shared/default-layout'
+import { FooterNavigation } from '@/components/shared/footer-navigation'
 import styles from '@/components/shared/root.module.scss'
 import Link from 'next/link'
-import { useParams } from 'next/navigation'
+import { useParams, useRouter } from 'next/navigation'
 import { ThemeSwitcher } from '@/components/shared/theme-switcher'
 import { TextScramble } from '@/components/ui/text-scramble'
 import { CodeBlock } from '@/components/app/logs/CodeBlock'
 import { WorkflowEvent } from '@/components/app/logs/WorkflowEvent'
+import { LogAccordionSection } from '@/components/app/logs/LogAccordionSection'
 import { BlockLoader } from '@/components/shared/block-loader'
 
 function formatEU(dateStr?: string) {
@@ -21,8 +23,11 @@ function formatEU(dateStr?: string) {
 
 function LogDetailContent() {
   const params = useParams()
+  const router = useRouter()
   const logId = (params?.id as string) as any
   const log = useQuery(api.functions.queries.logsById.getById, { id: logId }) as any
+  const [searchQuery, setSearchQuery] = useState('')
+  const searchInputRef = useRef<HTMLInputElement>(null)
 
   const workflowId: string | undefined = useMemo(() => {
     if (!log?.rawData) return undefined
@@ -33,6 +38,18 @@ function LogDetailContent() {
     api.functions.queries.workflowTracking.listEvents,
     workflowId ? { workflowId } : 'skip'
   ) as any[] | undefined
+
+  // Handle ESC key to clear search
+  useEffect(() => {
+    const handleKeyDown = (e: KeyboardEvent) => {
+      if (e.key === 'Escape' && searchQuery) {
+        setSearchQuery('')
+        searchInputRef.current?.blur()
+      }
+    }
+    window.addEventListener('keydown', handleKeyDown)
+    return () => window.removeEventListener('keydown', handleKeyDown)
+  }, [searchQuery])
 
   if (!log) {
     return (
@@ -51,32 +68,31 @@ function LogDetailContent() {
     )
   }
 
-  const sectionStyle = {
-    width: '100%',
-    borderBottom: '1px solid rgb(var(--border))',
-  }
-
-  const headerStyle = {
-    padding: '1.5rem 24px',
-    fontFamily: 'monospace',
-    fontSize: '1rem',
-    textTransform: 'uppercase' as const,
-    color: 'rgb(var(--text-primary))',
-    display: 'flex',
-    alignItems: 'center',
-    justifyContent: 'space-between',
-  }
-
-  const contentStyle = {
-    padding: '0 24px 1.5rem 24px',
-    color: 'rgb(var(--text-secondary))',
-  }
-
   return (
-    <div className="space-y-0" style={{ marginTop: '0' }}>
-      {/* Back button section */}
-      <div style={sectionStyle}>
-        <div style={{ padding: '1rem 24px', display: 'flex', alignItems: 'center', gap: '1rem' }}>
+    <>
+      {/* Search header with back button - sticky under main header */}
+      <div
+        style={{
+          position: 'sticky',
+          top: 0,
+          zIndex: 80,
+          display: 'flex',
+          justifyContent: 'space-between',
+          alignItems: 'center',
+          padding: '0.75rem 24px',
+          borderBottom: '1px solid rgb(var(--border))',
+          backgroundColor: 'rgb(var(--background-start))',
+        }}
+      >
+        <div
+          style={{
+            display: 'flex',
+            gap: '0.5rem',
+            alignItems: 'center',
+            flex: 1,
+          }}
+        >
+          {/* Back button */}
           <Link
             href="/logs"
             aria-label="Back to logs"
@@ -93,6 +109,7 @@ function LogDetailContent() {
               transition: 'none',
               fontFamily: 'monospace',
               fontSize: '1.25rem',
+              flexShrink: 0,
             }}
             onMouseEnter={(e) => {
               e.currentTarget.style.backgroundColor = 'rgb(var(--surface-1))'
@@ -103,45 +120,80 @@ function LogDetailContent() {
           >
             ←
           </Link>
-          <div style={{ flex: 1 }}>
-            <TextScramble 
-              duration={0.6}
-              speed={0.03}
-              className="font-mono text-lg"
-            >
-              {log.title || '(untitled)'}
-            </TextScramble>
-            <div style={{ 
-              fontFamily: 'monospace', 
-              fontSize: '0.875rem',
-              color: 'rgb(var(--text-secondary))',
-              marginTop: '0.25rem'
-            }}>
-              {formatEU(log.date)}
-            </div>
+
+          {/* Search input */}
+          <div
+            style={{
+              flex: 1,
+              display: 'flex',
+              alignItems: 'center',
+              border: '1px solid rgb(var(--border))',
+              padding: '0 0.75rem',
+              height: '2.5rem',
+              backgroundColor: 'transparent',
+              position: 'relative',
+            }}
+          >
+            <input
+              ref={searchInputRef}
+              type="text"
+              value={searchQuery}
+              onChange={(e) => setSearchQuery(e.target.value)}
+              placeholder="search logs…"
+              style={{
+                width: '100%',
+                background: 'transparent',
+                border: 'none',
+                outline: 'none',
+                fontFamily: 'monospace',
+                fontSize: '0.875rem',
+                color: 'rgb(var(--text-primary))',
+              }}
+            />
+            {searchQuery && (
+              <div style={{
+                display: 'flex',
+                alignItems: 'center',
+                gap: '0.5rem',
+              }}>
+                <kbd
+                  style={{
+                    padding: '0.125rem 0.375rem',
+                    fontSize: '0.75rem',
+                    fontFamily: 'monospace',
+                    color: 'rgb(var(--text-secondary))',
+                    backgroundColor: 'rgba(var(--surface-1), 0.5)',
+                    border: '1px solid rgb(var(--border))',
+                    borderRadius: '0',
+                    cursor: 'pointer',
+                    transition: 'none',
+                  }}
+                  onClick={() => {
+                    setSearchQuery('')
+                    searchInputRef.current?.focus()
+                  }}
+                  title="Clear search (ESC)"
+                >
+                  esc
+                </kbd>
+              </div>
+            )}
           </div>
         </div>
       </div>
 
-      {/* Summary section */}
-      <div style={sectionStyle}>
-        <div style={headerStyle}>
-          <span>SUMMARY</span>
-        </div>
-        <div style={contentStyle}>
+      {/* Content sections */}
+      <div className="space-y-0" style={{ marginTop: '0' }}>
+        {/* Summary section */}
+        <LogAccordionSection title="SUMMARY" defaultOpen={true}>
           <p style={{ fontFamily: 'monospace', fontSize: '.9rem', margin: 0, lineHeight: 1.6 }}>
             {log.summary}
           </p>
-        </div>
-      </div>
+        </LogAccordionSection>
 
-      {/* Haiku Section */}
-      {log.haiku && (
-        <div style={sectionStyle}>
-          <div style={headerStyle}>
-            <span>HAIKU</span>
-          </div>
-          <div style={contentStyle}>
+        {/* Haiku Section */}
+        {log.haiku && (
+          <LogAccordionSection title="HAIKU" defaultOpen={false}>
             <pre style={{ 
               fontFamily: 'monospace', 
               fontSize: '.875rem', 
@@ -152,17 +204,12 @@ function LogDetailContent() {
             }}>
               {log.haiku}
             </pre>
-          </div>
-        </div>
-      )}
+          </LogAccordionSection>
+        )}
 
-      {/* Metrics */}
-      {(log.totalCommits !== undefined || log.totalRepos !== undefined || log.productivityScore !== undefined) && (
-        <div style={sectionStyle}>
-          <div style={headerStyle}>
-            <span>METRICS</span>
-          </div>
-          <div style={contentStyle}>
+        {/* Metrics */}
+        {(log.totalCommits !== undefined || log.totalRepos !== undefined || log.productivityScore !== undefined) && (
+          <LogAccordionSection title="METRICS" defaultOpen={false}>
             <div style={{
               display: 'flex',
               gap: '2rem',
@@ -190,17 +237,12 @@ function LogDetailContent() {
                 </div>
               )}
             </div>
-          </div>
-        </div>
-      )}
+          </LogAccordionSection>
+        )}
 
-      {/* Highlights */}
-      {log.bullets?.length > 0 && (
-        <div style={sectionStyle}>
-          <div style={headerStyle}>
-            <span>HIGHLIGHTS</span>
-          </div>
-          <div style={contentStyle}>
+        {/* Highlights */}
+        {log.bullets?.length > 0 && (
+          <LogAccordionSection title="HIGHLIGHTS" defaultOpen={true}>
             <ul style={{ margin: 0, padding: 0, listStyle: 'none' }}>
               {log.bullets.map((b: string, i: number) => (
                 <li key={i} style={{
@@ -220,17 +262,12 @@ function LogDetailContent() {
                 </li>
               ))}
             </ul>
-          </div>
-        </div>
-      )}
+          </LogAccordionSection>
+        )}
 
-      {/* Agent Threads */}
-      {log.rawData?.agentThreads && log.rawData.agentThreads.length > 0 && (
-        <div style={sectionStyle}>
-          <div style={headerStyle}>
-            <span>AGENT THREADS</span>
-          </div>
-          <div style={contentStyle}>
+        {/* Agent Threads */}
+        {log.rawData?.agentThreads && log.rawData.agentThreads.length > 0 && (
+          <LogAccordionSection title="THREADS" defaultOpen={false}>
             {log.rawData.agentThreads.map((t: any, i: number) => (
               <div key={i} style={{
                 display: 'flex',
@@ -254,30 +291,14 @@ function LogDetailContent() {
                 </span>
               </div>
             ))}
-          </div>
-        </div>
-      )}
+          </LogAccordionSection>
+        )}
 
-      {/* Workflow Events */}
-      <div style={sectionStyle}>
-        <div style={headerStyle}>
-          <span>WORKFLOW EVENTS</span>
-          {!workflowId && (
-            <span style={{ 
-              fontFamily: 'monospace', 
-              fontSize: '.8rem', 
-              color: 'rgb(var(--text-secondary))',
-              fontWeight: 'normal',
-              textTransform: 'none',
-            }}>
-              (no workflow id)
-            </span>
-          )}
-        </div>
-        <div style={contentStyle}>
+        {/* Workflow Events */}
+        <LogAccordionSection title="EVENTS" defaultOpen={false}>
           {!workflowId ? (
             <div style={{ fontFamily: 'monospace', fontSize: '.9rem', color: 'rgb(var(--text-secondary))' }}>
-              No events
+              No workflow id
             </div>
           ) : events === undefined ? (
             <TextScramble 
@@ -298,30 +319,19 @@ function LogDetailContent() {
               ))}
             </div>
           )}
-        </div>
-      </div>
+        </LogAccordionSection>
 
-      {/* Raw Data */}
-      {log.rawData && (
-        <div style={sectionStyle}>
-          <details open>
-            <summary style={{
-              ...headerStyle,
-              cursor: 'pointer',
-              listStyle: 'none',
-            }}>
-              RAW DATA
-            </summary>
-            <div style={contentStyle}>
-              <CodeBlock 
-                code={JSON.stringify(log.rawData, null, 2)} 
-                language="json"
-              />
-            </div>
-          </details>
-        </div>
-      )}
-    </div>
+        {/* Raw Data */}
+        {log.rawData && (
+          <LogAccordionSection title="RAW" defaultOpen={false}>
+            <CodeBlock 
+              code={JSON.stringify(log.rawData, null, 2)} 
+              language="json"
+            />
+          </LogAccordionSection>
+        )}
+      </div>
+    </>
   )
 }
 
@@ -368,7 +378,7 @@ export default function LogDetailPage() {
 
       <div className={styles.footer}>
         <div className={styles.column}>
-          {/* Footer content could go here if needed */}
+          <FooterNavigation />
         </div>
       </div>
     </DefaultLayout>
