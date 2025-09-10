@@ -12,7 +12,7 @@ export function buildCrons() {
   crons.daily(
     "daily-analysis",
     { hourUTC: 3, minuteUTC: 0 },
-    internal.analysis.actions.triggerDailyWorkflow,
+    internal.agents.actions.triggerDailyWorkflow,
     {}
   );
 

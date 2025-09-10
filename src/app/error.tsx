@@ -80,30 +80,67 @@ export default function Error({
         >
           {error.message || 'Something went wrong'}
         </p>
-        <button
-          onClick={reset}
-          onMouseEnter={(e) => {
-            e.currentTarget.style.backgroundColor = 'rgb(var(--surface-1))'
-            e.currentTarget.style.borderColor = 'rgb(var(--accent-1))'
-          }}
-          onMouseLeave={(e) => {
-            e.currentTarget.style.backgroundColor = 'transparent'
-            e.currentTarget.style.borderColor = 'rgb(var(--border))'
-          }}
-          style={{
-            padding: '0.75rem 2rem',
-            backgroundColor: 'transparent',
-            border: '1px solid rgb(var(--border))',
-            color: 'rgb(var(--text-primary))',
-            fontFamily: 'monospace',
-            fontSize: '0.875rem',
-            cursor: 'pointer',
-            transition: 'all 0.2s ease',
-            textTransform: 'uppercase',
-          }}
-        >
-          ↻ TRY AGAIN
-        </button>
+        <div style={{ display: 'flex', gap: '1rem' }}>
+          <button
+            onClick={reset}
+            onMouseEnter={(e) => {
+              e.currentTarget.style.backgroundColor = 'rgb(var(--surface-1))'
+              e.currentTarget.style.borderColor = 'rgb(var(--accent-1))'
+            }}
+            onMouseLeave={(e) => {
+              e.currentTarget.style.backgroundColor = 'transparent'
+              e.currentTarget.style.borderColor = 'rgb(var(--border))'
+            }}
+            style={{
+              padding: '0.75rem 2rem',
+              backgroundColor: 'transparent',
+              border: '1px solid rgb(var(--border))',
+              color: 'rgb(var(--text-primary))',
+              fontFamily: 'monospace',
+              fontSize: '0.875rem',
+              cursor: 'pointer',
+              transition: 'all 0.2s ease',
+              textTransform: 'uppercase',
+            }}
+          >
+            ↻ TRY AGAIN
+          </button>
+          <button
+            onClick={() => {
+              const errorDetails = `Error: ${error.message}\n\nStack: ${error.stack || 'No stack trace available'}\n\nDigest: ${error.digest || 'No digest available'}`
+              navigator.clipboard.writeText(errorDetails)
+              const btn = event?.currentTarget as HTMLButtonElement
+              if (btn) {
+                const originalText = btn.textContent
+                btn.textContent = '✓ COPIED'
+                setTimeout(() => {
+                  btn.textContent = originalText
+                }, 2000)
+              }
+            }}
+            onMouseEnter={(e) => {
+              e.currentTarget.style.backgroundColor = 'rgb(var(--surface-1))'
+              e.currentTarget.style.borderColor = 'rgb(var(--accent-2))'
+            }}
+            onMouseLeave={(e) => {
+              e.currentTarget.style.backgroundColor = 'transparent'
+              e.currentTarget.style.borderColor = 'rgb(var(--border))'
+            }}
+            style={{
+              padding: '0.75rem 2rem',
+              backgroundColor: 'transparent',
+              border: '1px solid rgb(var(--border))',
+              color: 'rgb(var(--text-primary))',
+              fontFamily: 'monospace',
+              fontSize: '0.875rem',
+              cursor: 'pointer',
+              transition: 'all 0.2s ease',
+              textTransform: 'uppercase',
+            }}
+          >
+            ⎘ COPY ERROR
+          </button>
+        </div>
       </div>
     </div>
   )

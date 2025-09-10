@@ -8,15 +8,15 @@
  * @module
  */
 
-import type * as analysis_actions from "../analysis/actions.js";
-import type * as analysis_agentAnalysis from "../analysis/agentAnalysis.js";
-import type * as analysis_codeAnalysisAgents from "../analysis/codeAnalysisAgents.js";
-import type * as analysis_githubAgents from "../analysis/githubAgents.js";
-import type * as analysis_globalAnalysis from "../analysis/globalAnalysis.js";
-import type * as analysis_repositoryAnalysis from "../analysis/repositoryAnalysis.js";
-import type * as analysis_tools_codeReview from "../analysis/tools/codeReview.js";
-import type * as analysis_tools_github from "../analysis/tools/github.js";
-import type * as components_agents_instructions from "../components/agents/instructions.js";
+import type * as agents_actions from "../agents/actions.js";
+import type * as agents_agentAnalysis from "../agents/agentAnalysis.js";
+import type * as agents_codeAnalysisAgents from "../agents/codeAnalysisAgents.js";
+import type * as agents_githubAgents from "../agents/githubAgents.js";
+import type * as agents_globalAnalysis from "../agents/globalAnalysis.js";
+import type * as agents_instructions from "../agents/instructions.js";
+import type * as agents_repositoryAnalysis from "../agents/repositoryAnalysis.js";
+import type * as agents_tools_codeReview from "../agents/tools/codeReview.js";
+import type * as agents_tools_github from "../agents/tools/github.js";
 import type * as crons from "../crons.js";
 import type * as github_actions from "../github/actions.js";
 import type * as http from "../http.js";
@@ -53,15 +53,15 @@ import type {
  * ```
  */
 declare const fullApi: ApiFromModules<{
-  "analysis/actions": typeof analysis_actions;
-  "analysis/agentAnalysis": typeof analysis_agentAnalysis;
-  "analysis/codeAnalysisAgents": typeof analysis_codeAnalysisAgents;
-  "analysis/githubAgents": typeof analysis_githubAgents;
-  "analysis/globalAnalysis": typeof analysis_globalAnalysis;
-  "analysis/repositoryAnalysis": typeof analysis_repositoryAnalysis;
-  "analysis/tools/codeReview": typeof analysis_tools_codeReview;
-  "analysis/tools/github": typeof analysis_tools_github;
-  "components/agents/instructions": typeof components_agents_instructions;
+  "agents/actions": typeof agents_actions;
+  "agents/agentAnalysis": typeof agents_agentAnalysis;
+  "agents/codeAnalysisAgents": typeof agents_codeAnalysisAgents;
+  "agents/githubAgents": typeof agents_githubAgents;
+  "agents/globalAnalysis": typeof agents_globalAnalysis;
+  "agents/instructions": typeof agents_instructions;
+  "agents/repositoryAnalysis": typeof agents_repositoryAnalysis;
+  "agents/tools/codeReview": typeof agents_tools_codeReview;
+  "agents/tools/github": typeof agents_tools_github;
   crons: typeof crons;
   "github/actions": typeof github_actions;
   http: typeof http;
