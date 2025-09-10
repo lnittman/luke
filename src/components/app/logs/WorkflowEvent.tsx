@@ -26,7 +26,7 @@ export function WorkflowEvent({ event }: WorkflowEventProps) {
         onClick={() => hasDetails && setIsExpanded(!isExpanded)}
         style={{
           width: '100%',
-          padding: '0.75rem 0',
+          padding: '0.75rem 1rem',
           display: 'flex',
           alignItems: 'flex-start',
           gap: '1rem',
@@ -89,7 +89,7 @@ export function WorkflowEvent({ event }: WorkflowEventProps) {
       
       {isExpanded && hasDetails && (
         <div style={{ 
-          padding: '0 0 1rem 0',
+          padding: '0 1rem 1rem 1rem',
           animation: 'fade-in 0.2s ease-out',
         }}>
           {event.error && (

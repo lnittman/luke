@@ -345,9 +345,14 @@ function LogDetailContent() {
                 No events recorded
               </div>
             ) : (
-              events.map((event: any) => (
-                <WorkflowEvent key={event._id} event={event} />
-              ))
+              <div style={{
+                border: '1px solid rgb(var(--border))',
+                overflow: 'hidden',
+              }}>
+                {events.map((event: any) => (
+                  <WorkflowEvent key={event._id} event={event} />
+                ))}
+              </div>
             )}
           </div>
         </div>
