@@ -12,7 +12,6 @@ import { ThemeSwitcher } from '@/components/shared/theme-switcher'
 import { TextScramble } from '@/components/ui/text-scramble'
 import { CodeBlock } from '@/components/app/logs/CodeBlock'
 import { WorkflowEvent } from '@/components/app/logs/WorkflowEvent'
-import { LogAccordionSection } from '@/components/app/logs/LogAccordionSection'
 import { BlockLoader } from '@/components/shared/block-loader'
 
 function formatEU(dateStr?: string) {
@@ -66,6 +65,24 @@ function LogDetailContent() {
         </TextScramble>
       </div>
     )
+  }
+
+  const sectionStyle = {
+    width: '100%',
+    borderBottom: '1px solid rgb(var(--border))',
+  }
+
+  const headerStyle = {
+    padding: '1.5rem 24px',
+    fontFamily: 'monospace',
+    fontSize: '1rem',
+    textTransform: 'uppercase' as const,
+    color: 'rgb(var(--text-primary))',
+  }
+
+  const contentStyle = {
+    padding: '0 24px 1.5rem 24px',
+    color: 'rgb(var(--text-secondary))',
   }
 
   return (
@@ -185,150 +202,188 @@ function LogDetailContent() {
       {/* Content sections */}
       <div className="space-y-0" style={{ marginTop: '0' }}>
         {/* Summary section */}
-        <LogAccordionSection title="SUMMARY" defaultOpen={true}>
-          <p style={{ fontFamily: 'monospace', fontSize: '.9rem', margin: 0, lineHeight: 1.6 }}>
-            {log.summary}
-          </p>
-        </LogAccordionSection>
+        <div style={sectionStyle}>
+          <div style={headerStyle}>SUMMARY</div>
+          <div style={contentStyle}>
+            <p style={{ fontFamily: 'monospace', fontSize: '.9rem', margin: 0, lineHeight: 1.6 }}>
+              {log.summary}
+            </p>
+          </div>
+        </div>
 
         {/* Haiku Section */}
         {log.haiku && (
-          <LogAccordionSection title="HAIKU" defaultOpen={false}>
-            <pre style={{ 
-              fontFamily: 'monospace', 
-              fontSize: '.875rem', 
-              color: 'rgb(var(--accent-2))', 
-              margin: 0, 
-              fontStyle: 'italic', 
-              lineHeight: 1.6 
-            }}>
-              {log.haiku}
-            </pre>
-          </LogAccordionSection>
+          <div style={sectionStyle}>
+            <div style={headerStyle}>HAIKU</div>
+            <div style={contentStyle}>
+              <pre style={{ 
+                fontFamily: 'monospace', 
+                fontSize: '.875rem', 
+                color: 'rgb(var(--accent-2))', 
+                margin: 0, 
+                fontStyle: 'italic', 
+                lineHeight: 1.6 
+              }}>
+                {log.haiku}
+              </pre>
+            </div>
+          </div>
         )}
 
         {/* Metrics */}
         {(log.totalCommits !== undefined || log.totalRepos !== undefined || log.productivityScore !== undefined) && (
-          <LogAccordionSection title="METRICS" defaultOpen={false}>
-            <div style={{
-              display: 'flex',
-              gap: '2rem',
-              fontFamily: 'monospace',
-              fontSize: '0.875rem',
-            }}>
-              {log.totalCommits !== undefined && (
-                <div>
-                  <span style={{ color: 'rgb(var(--text-secondary))' }}>commits: </span>
-                  <span style={{ color: 'rgb(var(--accent-1))' }}>{log.totalCommits}</span>
-                </div>
-              )}
-              {log.totalRepos !== undefined && (
-                <div>
-                  <span style={{ color: 'rgb(var(--text-secondary))' }}>repos: </span>
-                  <span style={{ color: 'rgb(var(--accent-1))' }}>{log.totalRepos}</span>
-                </div>
-              )}
-              {log.productivityScore !== undefined && (
-                <div>
-                  <span style={{ color: 'rgb(var(--text-secondary))' }}>productivity: </span>
-                  <span style={{ color: 'rgb(var(--accent-2))' }}>
-                    {'█'.repeat(log.productivityScore)}{'░'.repeat(10 - log.productivityScore)}
-                  </span>
-                </div>
-              )}
+          <div style={sectionStyle}>
+            <div style={headerStyle}>METRICS</div>
+            <div style={contentStyle}>
+              <div style={{
+                display: 'flex',
+                gap: '2rem',
+                fontFamily: 'monospace',
+                fontSize: '0.875rem',
+              }}>
+                {log.totalCommits !== undefined && (
+                  <div>
+                    <span style={{ color: 'rgb(var(--text-secondary))' }}>commits: </span>
+                    <span style={{ color: 'rgb(var(--accent-1))' }}>{log.totalCommits}</span>
+                  </div>
+                )}
+                {log.totalRepos !== undefined && (
+                  <div>
+                    <span style={{ color: 'rgb(var(--text-secondary))' }}>repos: </span>
+                    <span style={{ color: 'rgb(var(--accent-1))' }}>{log.totalRepos}</span>
+                  </div>
+                )}
+                {log.productivityScore !== undefined && (
+                  <div>
+                    <span style={{ color: 'rgb(var(--text-secondary))' }}>productivity: </span>
+                    <span style={{ color: 'rgb(var(--accent-2))' }}>
+                      {'█'.repeat(log.productivityScore)}{'░'.repeat(10 - log.productivityScore)}
+                    </span>
+                  </div>
+                )}
+              </div>
             </div>
-          </LogAccordionSection>
+          </div>
         )}
 
         {/* Highlights */}
         {log.bullets?.length > 0 && (
-          <LogAccordionSection title="HIGHLIGHTS" defaultOpen={true}>
-            <ul style={{ margin: 0, padding: 0, listStyle: 'none' }}>
-              {log.bullets.map((b: string, i: number) => (
-                <li key={i} style={{
-                  position: 'relative',
-                  margin: '0.5rem 0',
-                  paddingLeft: '1rem',
-                  fontFamily: 'monospace',
-                  fontSize: '0.875rem',
-                  lineHeight: 1.6,
-                }}>
-                  <span style={{
-                    position: 'absolute',
-                    left: 0,
-                    color: 'rgb(var(--text-secondary) / 0.5)',
-                  }}>→</span>
-                  {b}
-                </li>
-              ))}
-            </ul>
-          </LogAccordionSection>
+          <div style={sectionStyle}>
+            <div style={headerStyle}>HIGHLIGHTS</div>
+            <div style={contentStyle}>
+              <ul style={{ margin: 0, padding: 0, listStyle: 'none' }}>
+                {log.bullets.map((b: string, i: number) => (
+                  <li key={i} style={{
+                    position: 'relative',
+                    margin: '0.5rem 0',
+                    paddingLeft: '1rem',
+                    fontFamily: 'monospace',
+                    fontSize: '0.875rem',
+                    lineHeight: 1.6,
+                  }}>
+                    <span style={{
+                      position: 'absolute',
+                      left: 0,
+                      color: 'rgb(var(--text-secondary) / 0.5)',
+                    }}>→</span>
+                    {b}
+                  </li>
+                ))}
+              </ul>
+            </div>
+          </div>
         )}
 
         {/* Agent Threads */}
         {log.rawData?.agentThreads && log.rawData.agentThreads.length > 0 && (
-          <LogAccordionSection title="THREADS" defaultOpen={false}>
-            {log.rawData.agentThreads.map((t: any, i: number) => (
-              <div key={i} style={{
-                display: 'flex',
-                gap: '1rem',
-                padding: '0.5rem 0',
-                borderBottom: i < log.rawData.agentThreads.length - 1 ? '1px solid rgb(var(--border))' : 'none',
-                fontFamily: 'monospace',
-                fontSize: '0.875rem',
-              }}>
-                <span style={{ minWidth: '100px', color: 'rgb(var(--accent-1))' }}>{t.type}</span>
-                <span style={{ minWidth: '150px', color: 'rgb(var(--text-secondary))' }}>
-                  {t.repository || '-'}
-                </span>
-                <span style={{ 
-                  flex: 1, 
-                  wordBreak: 'break-all', 
-                  color: 'rgb(var(--text-secondary) / 0.7)',
-                  fontSize: '0.75rem',
+          <div style={sectionStyle}>
+            <div style={headerStyle}>THREADS</div>
+            <div style={contentStyle}>
+              {log.rawData.agentThreads.map((t: any, i: number) => (
+                <div key={i} style={{
+                  display: 'flex',
+                  gap: '1rem',
+                  padding: '0.5rem 0',
+                  borderBottom: i < log.rawData.agentThreads.length - 1 ? '1px solid rgb(var(--border))' : 'none',
+                  fontFamily: 'monospace',
+                  fontSize: '0.875rem',
                 }}>
-                  {t.threadId}
-                </span>
-              </div>
-            ))}
-          </LogAccordionSection>
+                  <span style={{ minWidth: '100px', color: 'rgb(var(--accent-1))' }}>{t.type}</span>
+                  <span style={{ minWidth: '150px', color: 'rgb(var(--text-secondary))' }}>
+                    {t.repository || '-'}
+                  </span>
+                  <span style={{ 
+                    flex: 1, 
+                    wordBreak: 'break-all', 
+                    color: 'rgb(var(--text-secondary) / 0.7)',
+                    fontSize: '0.75rem',
+                  }}>
+                    {t.threadId}
+                  </span>
+                </div>
+              ))}
+            </div>
+          </div>
         )}
 
         {/* Workflow Events */}
-        <LogAccordionSection title="EVENTS" defaultOpen={false}>
-          {!workflowId ? (
-            <div style={{ fontFamily: 'monospace', fontSize: '.9rem', color: 'rgb(var(--text-secondary))' }}>
-              No workflow id
-            </div>
-          ) : events === undefined ? (
-            <TextScramble 
-              duration={0.8}
-              speed={0.04}
-              className="text-[rgb(var(--text-secondary))] text-sm"
-            >
-              loading workflow events...
-            </TextScramble>
-          ) : events.length === 0 ? (
-            <div style={{ fontFamily: 'monospace', fontSize: '.9rem', color: 'rgb(var(--text-secondary))' }}>
-              No events recorded
-            </div>
-          ) : (
-            <div>
-              {events.map((event: any) => (
-                <WorkflowEvent key={event._id} event={event} />
-              ))}
-            </div>
-          )}
-        </LogAccordionSection>
+        <div style={sectionStyle}>
+          <div style={headerStyle}>EVENTS</div>
+          <div style={contentStyle}>
+            {!workflowId ? (
+              <div style={{ fontFamily: 'monospace', fontSize: '.9rem', color: 'rgb(var(--text-secondary))' }}>
+                No workflow id
+              </div>
+            ) : events === undefined ? (
+              <TextScramble 
+                duration={0.8}
+                speed={0.04}
+                className="text-[rgb(var(--text-secondary))] text-sm"
+              >
+                loading workflow events...
+              </TextScramble>
+            ) : events.length === 0 ? (
+              <div style={{ fontFamily: 'monospace', fontSize: '.9rem', color: 'rgb(var(--text-secondary))' }}>
+                No events recorded
+              </div>
+            ) : (
+              <div>
+                {events.map((event: any) => (
+                  <WorkflowEvent key={event._id} event={event} />
+                ))}
+              </div>
+            )}
+          </div>
+        </div>
 
         {/* Raw Data */}
         {log.rawData && (
-          <LogAccordionSection title="RAW" defaultOpen={false}>
-            <CodeBlock 
-              code={JSON.stringify(log.rawData, null, 2)} 
-              language="json"
-            />
-          </LogAccordionSection>
+          <div style={sectionStyle}>
+            <details open>
+              <summary style={{
+                ...headerStyle,
+                cursor: 'pointer',
+                listStyle: 'none',
+                display: 'flex',
+                alignItems: 'center',
+                justifyContent: 'space-between',
+              }}>
+                <span>RAW</span>
+                <span style={{ 
+                  fontSize: '0.875rem', 
+                  color: 'rgb(var(--text-secondary))' 
+                }}>
+                  ▾
+                </span>
+              </summary>
+              <div style={contentStyle}>
+                <CodeBlock 
+                  code={JSON.stringify(log.rawData, null, 2)} 
+                  language="json"
+                />
+              </div>
+            </details>
+          </div>
         )}
       </div>
     </>
