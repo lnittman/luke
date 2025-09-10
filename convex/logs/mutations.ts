@@ -78,7 +78,7 @@ export const runDailyAnalysisOnce = mutation({
     const i = api as any;
     await ctx.scheduler.runAfter(
       0, 
-      i.analysis.actions.triggerDailyWorkflow, 
+      i.agents.actions.triggerDailyWorkflow, 
       { date }
     );
     return { scheduledId: date };

@@ -82,7 +82,7 @@ export const dailyAnalysis = workflow.define({
         },
       });
       
-      const analysis = await step.runAction(i.analysis.actions.generateAnalysis, {
+      const analysis = await step.runAction(i.agents.actions.generateAnalysis, {
         date,
         ...activity,
       });

@@ -102,7 +102,7 @@ export const agenticDailyAnalysis = workflow.define({
         }
         try {
           const result = await step.runAction(
-            i.analysis.actions.analyzeRepository,
+            i.agents.actions.analyzeRepository,
             { 
               repository: repo, 
               commitBatches: batches,
@@ -163,7 +163,7 @@ export const agenticDailyAnalysis = workflow.define({
       let patterns: any = { patterns: [], themes: [], stackTrends: [], methodologyInsights: [], balanceAssessment: "" };
       try {
         patterns = await step.runAction(
-          i.analysis.actions.detectCrossRepoPatterns,
+          i.agents.actions.detectCrossRepoPatterns,
           { repoAnalyses, date }
         );
       } catch (e) {
@@ -221,7 +221,7 @@ export const agenticDailyAnalysis = workflow.define({
       }));
 
       const synthesis = await step.runAction(
-        i.analysis.actions.generateGlobalSynthesis,
+        i.agents.actions.generateGlobalSynthesis,
         {
           date,
           repoAnalyses: compactRepoSummaries,
