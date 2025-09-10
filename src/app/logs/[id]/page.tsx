@@ -345,11 +345,9 @@ function LogDetailContent() {
                 No events recorded
               </div>
             ) : (
-              <div>
-                {events.map((event: any) => (
-                  <WorkflowEvent key={event._id} event={event} />
-                ))}
-              </div>
+              events.map((event: any) => (
+                <WorkflowEvent key={event._id} event={event} />
+              ))
             )}
           </div>
         </div>

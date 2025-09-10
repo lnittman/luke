@@ -85,7 +85,6 @@ export function CodeBlock({ code, language = 'json', className = '' }: CodeBlock
         padding: '1rem',
         margin: 0,
         overflow: 'auto',
-        maxHeight: '400px',
       }}>
         <code style={{
           fontFamily: 'monospace',
