@@ -271,25 +271,23 @@ function LogDetailContent() {
           <div style={sectionStyle}>
             <div style={headerStyle}>HIGHLIGHTS</div>
             <div style={contentStyle}>
-              <ul style={{ margin: 0, padding: 0, listStyle: 'none' }}>
-                {log.bullets.map((b: string, i: number) => (
-                  <li key={i} style={{
-                    position: 'relative',
-                    margin: '0.5rem 0',
-                    paddingLeft: '1rem',
-                    fontFamily: 'monospace',
-                    fontSize: '0.875rem',
-                    lineHeight: 1.6,
-                  }}>
-                    <span style={{
-                      position: 'absolute',
-                      left: 0,
-                      color: 'rgb(var(--text-secondary) / 0.5)',
-                    }}>→</span>
-                    {b}
-                  </li>
-                ))}
-              </ul>
+              {log.bullets.map((b: string, i: number) => (
+                <div key={i} style={{
+                  position: 'relative',
+                  margin: '0.5rem 0',
+                  paddingLeft: '1rem',
+                  fontFamily: 'monospace',
+                  fontSize: '0.875rem',
+                  lineHeight: 1.6,
+                }}>
+                  <span style={{
+                    position: 'absolute',
+                    left: 0,
+                    color: 'rgb(var(--text-secondary) / 0.5)',
+                  }}>→</span>
+                  {b}
+                </div>
+              ))}
             </div>
           </div>
         )}
@@ -359,30 +357,13 @@ function LogDetailContent() {
         {/* Raw Data */}
         {log.rawData && (
           <div style={sectionStyle}>
-            <details open>
-              <summary style={{
-                ...headerStyle,
-                cursor: 'pointer',
-                listStyle: 'none',
-                display: 'flex',
-                alignItems: 'center',
-                justifyContent: 'space-between',
-              }}>
-                <span>RAW</span>
-                <span style={{ 
-                  fontSize: '0.875rem', 
-                  color: 'rgb(var(--text-secondary))' 
-                }}>
-                  ▾
-                </span>
-              </summary>
-              <div style={contentStyle}>
-                <CodeBlock 
-                  code={JSON.stringify(log.rawData, null, 2)} 
-                  language="json"
-                />
-              </div>
-            </details>
+            <div style={headerStyle}>RAW</div>
+            <div style={contentStyle}>
+              <CodeBlock 
+                code={JSON.stringify(log.rawData, null, 2)} 
+                language="json"
+              />
+            </div>
           </div>
         )}
       </div>
