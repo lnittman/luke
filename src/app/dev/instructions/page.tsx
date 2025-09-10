@@ -14,8 +14,8 @@ export default function InstructionsPage() {
   }
 
   const [value, setValue] = useState('')
-  const instructions = useQuery(api.functions.queries.settings.getHeroInstructions, {})
-  const setInstructions = useMutation(api.functions.mutations.settings.setHeroInstructions)
+  const instructions = useQuery(api.settings.queries.getHeroInstructions, {})
+  const setInstructions = useMutation(api.settings.mutations.setHeroInstructions)
 
   useEffect(() => {
     if (typeof instructions === 'string') setValue(instructions)

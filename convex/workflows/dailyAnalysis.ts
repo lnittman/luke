@@ -21,7 +21,7 @@ export const dailyAnalysis = workflow.define({
     
     try {
       // Log workflow start
-      await step.runMutation(i.functions.mutations.workflowTracking.logWorkflowEvent, {
+      await step.runMutation(i.workflows.mutations.logWorkflowEvent, {
         workflowId: wfId,
         event: {
           type: "started",
@@ -34,7 +34,7 @@ export const dailyAnalysis = workflow.define({
       console.log(`[Workflow ${wfId}] Starting daily analysis for ${date}`);
       steps.push({ step: "fetch_activity", status: "started", timestamp: getTimestamp() });
       
-      await step.runMutation(i.functions.mutations.workflowTracking.logWorkflowEvent, {
+      await step.runMutation(i.workflows.mutations.logWorkflowEvent, {
         workflowId: wfId,
         event: {
           type: "step_started",
@@ -43,7 +43,7 @@ export const dailyAnalysis = workflow.define({
         },
       });
       
-      const activity = await step.runAction(i.functions.actions.github.fetchDailyActivity, { date });
+      const activity = await step.runAction(i.github.actions.fetchDailyActivity, { date });
       
       steps.push({ 
         step: "fetch_activity", 
@@ -55,7 +55,7 @@ export const dailyAnalysis = workflow.define({
         }
       });
       
-      await step.runMutation(i.functions.mutations.workflowTracking.logWorkflowEvent, {
+      await step.runMutation(i.workflows.mutations.logWorkflowEvent, {
         workflowId: wfId,
         event: {
           type: "step_completed",
@@ -73,7 +73,7 @@ export const dailyAnalysis = workflow.define({
       // Step 2: Generate AI analysis
       steps.push({ step: "generate_analysis", status: "started", timestamp: getTimestamp() });
       
-      await step.runMutation(i.functions.mutations.workflowTracking.logWorkflowEvent, {
+      await step.runMutation(i.workflows.mutations.logWorkflowEvent, {
         workflowId: wfId,
         event: {
           type: "step_started",
@@ -82,7 +82,7 @@ export const dailyAnalysis = workflow.define({
         },
       });
       
-      const analysis = await step.runAction(i.functions.actions.analysis.generateAnalysis, {
+      const analysis = await step.runAction(i.analysis.actions.generateAnalysis, {
         date,
         ...activity,
       });
@@ -94,7 +94,7 @@ export const dailyAnalysis = workflow.define({
         details: { title: analysis.title }
       });
       
-      await step.runMutation(i.functions.mutations.workflowTracking.logWorkflowEvent, {
+      await step.runMutation(i.workflows.mutations.logWorkflowEvent, {
         workflowId: wfId,
         event: {
           type: "step_completed",
@@ -109,7 +109,7 @@ export const dailyAnalysis = workflow.define({
       // Step 3: Store the analysis
       steps.push({ step: "store_analysis", status: "started", timestamp: getTimestamp() });
       
-      await step.runMutation(i.functions.mutations.workflowTracking.logWorkflowEvent, {
+      await step.runMutation(i.workflows.mutations.logWorkflowEvent, {
         workflowId: wfId,
         event: {
           type: "step_started",
@@ -118,7 +118,7 @@ export const dailyAnalysis = workflow.define({
         },
       });
       
-      const result = await step.runMutation(i.functions.mutations.logs.storeAnalysis, {
+      const result = await step.runMutation(i.logs.mutations.storeAnalysis, {
         ...analysis,
         rawData: { activity, workflowSteps: steps, workflowId: wfId },
       });
@@ -130,7 +130,7 @@ export const dailyAnalysis = workflow.define({
         details: { logId: result.logId }
       });
       
-      await step.runMutation(i.functions.mutations.workflowTracking.logWorkflowEvent, {
+      await step.runMutation(i.workflows.mutations.logWorkflowEvent, {
         workflowId: wfId,
         event: {
           type: "step_completed",
@@ -140,7 +140,7 @@ export const dailyAnalysis = workflow.define({
         },
       });
       
-      await step.runMutation(i.functions.mutations.workflowTracking.logWorkflowEvent, {
+      await step.runMutation(i.workflows.mutations.logWorkflowEvent, {
         workflowId: wfId,
         event: {
           type: "completed",
@@ -161,7 +161,7 @@ export const dailyAnalysis = workflow.define({
         error: String(error)
       });
       
-      await step.runMutation(i.functions.mutations.workflowTracking.logWorkflowEvent, {
+      await step.runMutation(i.workflows.mutations.logWorkflowEvent, {
         workflowId: wfId,
         event: {
           type: "failed",

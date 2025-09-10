@@ -15,7 +15,7 @@ const openrouter = createOpenRouter({
 
 async function loadRequired(ctx: any, key: string) {
   const i = internal as any;
-  const val = await ctx.runQuery(i.functions.queries.settings.getByKey, { key });
+  const val = await ctx.runQuery(i.settings.queries.getByKey, { key });
   if (!val) {
     const msg = `Missing agent instructions for "${key}" in settings. Seed them or set via settings.setByKey.`;
     console.error(msg);

@@ -24,7 +24,7 @@ function LogDetailContent() {
   const params = useParams()
   const router = useRouter()
   const logId = (params?.id as string) as any
-  const log = useQuery(api.functions.queries.logsById.getById, { id: logId }) as any
+  const log = useQuery(api.logs.logsById.getById, { id: logId }) as any
   const [searchQuery, setSearchQuery] = useState('')
   const searchInputRef = useRef<HTMLInputElement>(null)
 
@@ -34,7 +34,7 @@ function LogDetailContent() {
   }, [log])
 
   const events = useQuery(
-    api.functions.queries.workflowTracking.listEvents,
+    api.workflows.queries.listEvents,
     workflowId ? { workflowId } : 'skip'
   ) as any[] | undefined
 
@@ -427,7 +427,7 @@ export default function LogDetailPage() {
 function LogHeader() {
   const params = useParams()
   const logId = (params?.id as string) as any
-  const log = useQuery(api.functions.queries.logsById.getById, { id: logId }) as any
+  const log = useQuery(api.logs.logsById.getById, { id: logId }) as any
   
   return <h1>{formatEU(log?.date) || 'LOGS'}</h1>
 }

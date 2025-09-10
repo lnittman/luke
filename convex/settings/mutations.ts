@@ -1,4 +1,4 @@
-import { mutation } from "../../_generated/server";
+import { mutation } from "../_generated/server";
 import { v } from "convex/values";
 
 export const setByKey = mutation({
@@ -52,7 +52,7 @@ import {
   COMMIT_ANALYZER_XML,
   ACTIVITY_SUMMARIZER_XML,
   REPO_ANALYZER_XML,
-} from "../../components/agents/instructions";
+} from "../components/agents/instructions";
 
 export const seedAgentInstructions = mutation({
   args: {},

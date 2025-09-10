@@ -12,7 +12,7 @@ export function buildCrons() {
   crons.daily(
     "daily-analysis",
     { hourUTC: 3, minuteUTC: 0 },
-    internal.functions.actions.analysis.triggerDailyWorkflow,
+    internal.analysis.actions.triggerDailyWorkflow,
     {}
   );
 
@@ -21,7 +21,7 @@ export function buildCrons() {
   crons.daily(
     "dev-sync-from-prod",
     { hourUTC: 3, minuteUTC: 30 },
-    internal.functions.actions.syncFromProduction.syncLatestAnalysis,
+    internal.syncFromProduction.syncLatestAnalysis,
     {}
   );
 

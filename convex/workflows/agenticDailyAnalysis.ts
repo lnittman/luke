@@ -27,7 +27,7 @@ export const agenticDailyAnalysis = workflow.define({
     
     try {
       // Log workflow start
-      await step.runMutation(i.functions.mutations.workflowTracking.logWorkflowEvent, {
+      await step.runMutation(i.workflows.mutations.logWorkflowEvent, {
         workflowId: wfId,
         event: {
           type: "started",
@@ -41,7 +41,7 @@ export const agenticDailyAnalysis = workflow.define({
       // =====================================
       console.log(`[Workflow ${wfId}] Step 1: Fetching GitHub activity`);
       
-      await step.runMutation(i.functions.mutations.workflowTracking.logWorkflowEvent, {
+      await step.runMutation(i.workflows.mutations.logWorkflowEvent, {
         workflowId: wfId,
         event: {
           type: "step_started",
@@ -50,7 +50,7 @@ export const agenticDailyAnalysis = workflow.define({
         },
       });
       
-      const activity = await step.runAction(i.functions.actions.github.fetchDailyActivity, { date });
+      const activity = await step.runAction(i.github.actions.fetchDailyActivity, { date });
       
       // Group commits by repository
       const commitsByRepo = new Map<string, any[]>();
@@ -61,7 +61,7 @@ export const agenticDailyAnalysis = workflow.define({
         commitsByRepo.get(commit.repository)!.push(commit);
       }
       
-      await step.runMutation(i.functions.mutations.workflowTracking.logWorkflowEvent, {
+      await step.runMutation(i.workflows.mutations.logWorkflowEvent, {
         workflowId: wfId,
         event: {
           type: "step_completed",
@@ -82,7 +82,7 @@ export const agenticDailyAnalysis = workflow.define({
       const selected = Array.from(commitsByRepo.entries()).sort((a, b) => b[1].length - a[1].length);
       console.log(`[Workflow ${wfId}] Step 2: Analyzing ${selected.length} repositories`);
       
-      await step.runMutation(i.functions.mutations.workflowTracking.logWorkflowEvent, {
+      await step.runMutation(i.workflows.mutations.logWorkflowEvent, {
         workflowId: wfId,
         event: {
           type: "step_started",
@@ -102,7 +102,7 @@ export const agenticDailyAnalysis = workflow.define({
         }
         try {
           const result = await step.runAction(
-            i.functions.actions.agentAnalysis.analyzeRepository,
+            i.analysis.actions.analyzeRepository,
             { 
               repository: repo, 
               commitBatches: batches,
@@ -114,7 +114,7 @@ export const agenticDailyAnalysis = workflow.define({
           );
           repoAnalyses.push(result);
         } catch (e) {
-          await step.runMutation(i.functions.mutations.workflowTracking.logWorkflowEvent, {
+          await step.runMutation(i.workflows.mutations.logWorkflowEvent, {
             workflowId: wfId,
             event: { type: "step_completed", step: `repository_analysis:${repo}`, details: { error: String(e) }, timestamp: getTimestamp() },
           });
@@ -133,7 +133,7 @@ export const agenticDailyAnalysis = workflow.define({
         }
       });
       
-      await step.runMutation(i.functions.mutations.workflowTracking.logWorkflowEvent, {
+      await step.runMutation(i.workflows.mutations.logWorkflowEvent, {
         workflowId: wfId,
         event: {
           type: "step_completed",
@@ -151,7 +151,7 @@ export const agenticDailyAnalysis = workflow.define({
       // =====================================
       console.log(`[Workflow ${wfId}] Step 3: Detecting cross-repository patterns`);
       
-      await step.runMutation(i.functions.mutations.workflowTracking.logWorkflowEvent, {
+      await step.runMutation(i.workflows.mutations.logWorkflowEvent, {
         workflowId: wfId,
         event: {
           type: "step_started",
@@ -163,11 +163,11 @@ export const agenticDailyAnalysis = workflow.define({
       let patterns: any = { patterns: [], themes: [], stackTrends: [], methodologyInsights: [], balanceAssessment: "" };
       try {
         patterns = await step.runAction(
-          i.functions.actions.agentAnalysis.detectCrossRepoPatterns,
+          i.analysis.actions.detectCrossRepoPatterns,
           { repoAnalyses, date }
         );
       } catch (e) {
-        await step.runMutation(i.functions.mutations.workflowTracking.logWorkflowEvent, {
+        await step.runMutation(i.workflows.mutations.logWorkflowEvent, {
           workflowId: wfId,
           event: { type: "step_completed", step: "pattern_detection", details: { error: String(e) }, timestamp: getTimestamp() },
         });
@@ -181,7 +181,7 @@ export const agenticDailyAnalysis = workflow.define({
         });
       }
       
-      await step.runMutation(i.functions.mutations.workflowTracking.logWorkflowEvent, {
+      await step.runMutation(i.workflows.mutations.logWorkflowEvent, {
         workflowId: wfId,
         event: {
           type: "step_completed",
@@ -199,7 +199,7 @@ export const agenticDailyAnalysis = workflow.define({
       // =====================================
       console.log(`[Workflow ${wfId}] Step 4: Generating global synthesis`);
       
-      await step.runMutation(i.functions.mutations.workflowTracking.logWorkflowEvent, {
+      await step.runMutation(i.workflows.mutations.logWorkflowEvent, {
         workflowId: wfId,
         event: {
           type: "step_started",
@@ -221,7 +221,7 @@ export const agenticDailyAnalysis = workflow.define({
       }));
 
       const synthesis = await step.runAction(
-        i.functions.actions.agentAnalysis.generateGlobalSynthesis,
+        i.analysis.actions.generateGlobalSynthesis,
         {
           date,
           repoAnalyses: compactRepoSummaries,
@@ -242,7 +242,7 @@ export const agenticDailyAnalysis = workflow.define({
         });
       }
       
-      await step.runMutation(i.functions.mutations.workflowTracking.logWorkflowEvent, {
+      await step.runMutation(i.workflows.mutations.logWorkflowEvent, {
         workflowId: wfId,
         event: {
           type: "step_completed",
@@ -260,7 +260,7 @@ export const agenticDailyAnalysis = workflow.define({
       // =====================================
       console.log(`[Workflow ${wfId}] Step 5: Storing analysis with observability data`);
       
-      await step.runMutation(i.functions.mutations.workflowTracking.logWorkflowEvent, {
+      await step.runMutation(i.workflows.mutations.logWorkflowEvent, {
         workflowId: wfId,
         event: {
           type: "step_started",
@@ -270,7 +270,7 @@ export const agenticDailyAnalysis = workflow.define({
       });
       
       const { threadId: _synthThread, ...synthOut } = synthesis as any;
-      const result = await step.runMutation(i.functions.mutations.logs.storeAnalysis, {
+      const result = await step.runMutation(i.logs.mutations.storeAnalysis, {
         ...synthOut,
         rawData: {
           stats: {
@@ -285,7 +285,7 @@ export const agenticDailyAnalysis = workflow.define({
         },
       });
       
-      await step.runMutation(i.functions.mutations.workflowTracking.logWorkflowEvent, {
+      await step.runMutation(i.workflows.mutations.logWorkflowEvent, {
         workflowId: wfId,
         event: {
           type: "step_completed",
@@ -295,7 +295,7 @@ export const agenticDailyAnalysis = workflow.define({
         },
       });
       
-      await step.runMutation(i.functions.mutations.workflowTracking.logWorkflowEvent, {
+      await step.runMutation(i.workflows.mutations.logWorkflowEvent, {
         workflowId: wfId,
         event: {
           type: "completed",
@@ -319,7 +319,7 @@ export const agenticDailyAnalysis = workflow.define({
     } catch (error) {
       console.error(`[Workflow ${wfId}] Error in agentic daily analysis:`, error);
       
-      await step.runMutation(i.functions.mutations.workflowTracking.logWorkflowEvent, {
+      await step.runMutation(i.workflows.mutations.logWorkflowEvent, {
         workflowId: wfId,
         event: {
           type: "failed",

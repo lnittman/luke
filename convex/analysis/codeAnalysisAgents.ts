@@ -10,7 +10,7 @@ import { CODE_ANALYSIS_XML, REPO_CONTEXT_XML, ACTIVITY_SYNTHESIS_XML, PR_REVIEW_
 
 async function loadRequired(ctx: any, key: string) {
   const i = internal as any;
-  const val = await ctx.runQuery(i.functions.queries.settings.getByKey, { key });
+  const val = await ctx.runQuery(i.settings.queries.getByKey, { key });
   if (!val) {
     const msg = `Missing agent instructions for "${key}". Please set settings or run seedAgentInstructions.`;
     console.error(msg);

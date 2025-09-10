@@ -1,16 +1,16 @@
-import { action } from "../../_generated/server";
+import { action } from "../_generated/server";
 import { v } from "convex/values";
 import { 
   makeRepoAnalyzerAgent, 
   makeActivitySummarizerAgent,
   makeCommitAnalyzerAgent 
-} from "../../agents/githubAgents";
-import { createGlobalAnalysisAgent } from "../../agents/globalAnalysis";
-import { GLOBAL_ANALYSIS_XML } from "../../components/agents/instructions";
-import { globalAnalysisSchema } from "../../lib/analysisSchema";
-import { internal } from "../../_generated/api";
+} from "./githubAgents";
+import { createGlobalAnalysisAgent } from "./globalAnalysis";
+import { GLOBAL_ANALYSIS_XML } from "../components/agents/instructions";
+import { globalAnalysisSchema } from "../lib/analysisSchema";
+import { internal } from "../_generated/api";
 import { z } from "zod";
-import { retrier } from "../../index";
+import { retrier } from "../index";
 
 // Analyze a single repository with its commits
 export const analyzeRepository = action({
@@ -68,7 +68,7 @@ ${issues.length > 0 ? `Related Issues:\n${issues.map((issue: any) => `- #${issue
     try {
       const runId = await retrier.run(
         ctx as any,
-        (internal as any)["functions/internal/cached"].cachedGenerateRepoSummary,
+        (internal as any).lib.cached.cachedGenerateRepoSummary,
         { repository, date, batchAnalyses, pullRequests, issues }
       );
       const res = await awaitRetrierResult(ctx as any, runId);
@@ -173,7 +173,7 @@ export const generateGlobalSynthesis = action({
     
     // Load instructions from settings or use default
     const i = internal as any;
-    const instructions = await ctx.runQuery(i.functions.queries.settings.getByKey, {
+    const instructions = await ctx.runQuery(i.settings.queries.getByKey, {
       key: "agents/globalAnalysis",
     });
     if (!instructions) {
@@ -223,7 +223,7 @@ Return ONLY JSON matching the provided schema. No additional prose.
     try {
       const runId = await retrier.run(
         ctx as any,
-        (internal as any)["functions/internal/cached"].cachedGenerateGlobalSynthesis,
+        (internal as any).lib.cached.cachedGenerateGlobalSynthesis,
         { date, repoAnalyses, patterns, stats }
       );
       const res = await awaitRetrierResult(ctx as any, runId);

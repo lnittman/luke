@@ -1,11 +1,11 @@
-import { internalAction } from "../../_generated/server";
+import { internalAction } from "../_generated/server";
 import { v } from "convex/values";
-import { makeRepoAnalyzerAgent, makeActivitySummarizerAgent } from "../../agents/githubAgents";
-import { createGlobalAnalysisAgent } from "../../agents/globalAnalysis";
-import { internal } from "../../_generated/api";
-import { repoSummaryCache, synthesisCache } from "../../lib/llmCache";
+import { makeRepoAnalyzerAgent, makeActivitySummarizerAgent } from "../analysis/githubAgents";
+import { createGlobalAnalysisAgent } from "../analysis/globalAnalysis";
+import { internal } from "../_generated/api";
+import { repoSummaryCache, synthesisCache } from "../lib/llmCache";
 import { z } from "zod";
-import { globalAnalysisSchema } from "../../lib/analysisSchema";
+import { globalAnalysisSchema } from "../lib/analysisSchema";
 
 // Compute-only action: generates a repository summary object (no caching here)
 export const generateRepoSummary = internalAction({
@@ -46,7 +46,7 @@ export const generateGlobalSynthesis = internalAction({
   },
   handler: async (ctx, { date, repoAnalyses, patterns, stats }) => {
     const i = internal as any;
-    const instructions = await ctx.runQuery(i.functions.queries.settings.getByKey, { key: "agents/globalAnalysis" });
+    const instructions = await ctx.runQuery(i.settings.queries.getByKey, { key: "agents/globalAnalysis" });
     if (!instructions) {
       throw new Error("Missing settings: agents/globalAnalysis. Seed or set instructions before synthesis.");
     }

@@ -1,6 +1,6 @@
-import { mutation } from "../../_generated/server";
+import { mutation } from "../_generated/server";
 import { v } from "convex/values";
-import { api } from "../../_generated/api";
+import { api } from "../_generated/api";
 
 export const storeAnalysis = mutation({
   args: {
@@ -78,7 +78,7 @@ export const runDailyAnalysisOnce = mutation({
     const i = api as any;
     await ctx.scheduler.runAfter(
       0, 
-      i.functions.actions.analysis.triggerDailyWorkflow, 
+      i.analysis.actions.triggerDailyWorkflow, 
       { date }
     );
     return { scheduledId: date };

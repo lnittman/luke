@@ -1,6 +1,6 @@
-import { internalAction } from "../../_generated/server";
+import { internalAction } from "./_generated/server";
 import { v } from "convex/values";
-import { api, internal } from "../../_generated/api";
+import { api, internal } from "./_generated/api";
 
 export const syncLatestAnalysis = internalAction({
   args: { date: v.optional(v.string()) }, // YYYY-MM-DD, defaults to yesterday

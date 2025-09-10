@@ -8,35 +8,35 @@
  * @module
  */
 
-import type * as agents_codeAnalysisAgents from "../agents/codeAnalysisAgents.js";
-import type * as agents_githubAgents from "../agents/githubAgents.js";
-import type * as agents_globalAnalysis from "../agents/globalAnalysis.js";
-import type * as agents_repositoryAnalysis from "../agents/repositoryAnalysis.js";
-import type * as agents_tools_codeReview from "../agents/tools/codeReview.js";
-import type * as agents_tools_github from "../agents/tools/github.js";
+import type * as analysis_actions from "../analysis/actions.js";
+import type * as analysis_agentAnalysis from "../analysis/agentAnalysis.js";
+import type * as analysis_codeAnalysisAgents from "../analysis/codeAnalysisAgents.js";
+import type * as analysis_githubAgents from "../analysis/githubAgents.js";
+import type * as analysis_globalAnalysis from "../analysis/globalAnalysis.js";
+import type * as analysis_repositoryAnalysis from "../analysis/repositoryAnalysis.js";
+import type * as analysis_tools_codeReview from "../analysis/tools/codeReview.js";
+import type * as analysis_tools_github from "../analysis/tools/github.js";
 import type * as components_agents_instructions from "../components/agents/instructions.js";
 import type * as crons from "../crons.js";
-import type * as functions_actions_agentAnalysis from "../functions/actions/agentAnalysis.js";
-import type * as functions_actions_analysis from "../functions/actions/analysis.js";
-import type * as functions_actions_github from "../functions/actions/github.js";
-import type * as functions_actions_syncFromProduction from "../functions/actions/syncFromProduction.js";
-import type * as functions_internal_cached from "../functions/internal/cached.js";
-import type * as functions_internal_llm from "../functions/internal/llm.js";
-import type * as functions_mutations_logs from "../functions/mutations/logs.js";
-import type * as functions_mutations_settings from "../functions/mutations/settings.js";
-import type * as functions_mutations_workflowTracking from "../functions/mutations/workflowTracking.js";
-import type * as functions_queries_logs from "../functions/queries/logs.js";
-import type * as functions_queries_logsById from "../functions/queries/logsById.js";
-import type * as functions_queries_settings from "../functions/queries/settings.js";
-import type * as functions_queries_workflowStatus from "../functions/queries/workflowStatus.js";
-import type * as functions_queries_workflowTracking from "../functions/queries/workflowTracking.js";
+import type * as github_actions from "../github/actions.js";
 import type * as http from "../http.js";
 import type * as index from "../index.js";
 import type * as lib_analysisSchema from "../lib/analysisSchema.js";
+import type * as lib_cached from "../lib/cached.js";
+import type * as lib_llm from "../lib/llm.js";
 import type * as lib_llmCache from "../lib/llmCache.js";
+import type * as logs_logsById from "../logs/logsById.js";
+import type * as logs_mutations from "../logs/mutations.js";
+import type * as logs_queries from "../logs/queries.js";
 import type * as schedules_index from "../schedules/index.js";
+import type * as settings_mutations from "../settings/mutations.js";
+import type * as settings_queries from "../settings/queries.js";
+import type * as syncFromProduction from "../syncFromProduction.js";
 import type * as workflows_agenticDailyAnalysis from "../workflows/agenticDailyAnalysis.js";
 import type * as workflows_dailyAnalysis from "../workflows/dailyAnalysis.js";
+import type * as workflows_mutations from "../workflows/mutations.js";
+import type * as workflows_queries from "../workflows/queries.js";
+import type * as workflows_workflowStatus from "../workflows/workflowStatus.js";
 
 import type {
   ApiFromModules,
@@ -53,35 +53,35 @@ import type {
  * ```
  */
 declare const fullApi: ApiFromModules<{
-  "agents/codeAnalysisAgents": typeof agents_codeAnalysisAgents;
-  "agents/githubAgents": typeof agents_githubAgents;
-  "agents/globalAnalysis": typeof agents_globalAnalysis;
-  "agents/repositoryAnalysis": typeof agents_repositoryAnalysis;
-  "agents/tools/codeReview": typeof agents_tools_codeReview;
-  "agents/tools/github": typeof agents_tools_github;
+  "analysis/actions": typeof analysis_actions;
+  "analysis/agentAnalysis": typeof analysis_agentAnalysis;
+  "analysis/codeAnalysisAgents": typeof analysis_codeAnalysisAgents;
+  "analysis/githubAgents": typeof analysis_githubAgents;
+  "analysis/globalAnalysis": typeof analysis_globalAnalysis;
+  "analysis/repositoryAnalysis": typeof analysis_repositoryAnalysis;
+  "analysis/tools/codeReview": typeof analysis_tools_codeReview;
+  "analysis/tools/github": typeof analysis_tools_github;
   "components/agents/instructions": typeof components_agents_instructions;
   crons: typeof crons;
-  "functions/actions/agentAnalysis": typeof functions_actions_agentAnalysis;
-  "functions/actions/analysis": typeof functions_actions_analysis;
-  "functions/actions/github": typeof functions_actions_github;
-  "functions/actions/syncFromProduction": typeof functions_actions_syncFromProduction;
-  "functions/internal/cached": typeof functions_internal_cached;
-  "functions/internal/llm": typeof functions_internal_llm;
-  "functions/mutations/logs": typeof functions_mutations_logs;
-  "functions/mutations/settings": typeof functions_mutations_settings;
-  "functions/mutations/workflowTracking": typeof functions_mutations_workflowTracking;
-  "functions/queries/logs": typeof functions_queries_logs;
-  "functions/queries/logsById": typeof functions_queries_logsById;
-  "functions/queries/settings": typeof functions_queries_settings;
-  "functions/queries/workflowStatus": typeof functions_queries_workflowStatus;
-  "functions/queries/workflowTracking": typeof functions_queries_workflowTracking;
+  "github/actions": typeof github_actions;
   http: typeof http;
   index: typeof index;
   "lib/analysisSchema": typeof lib_analysisSchema;
+  "lib/cached": typeof lib_cached;
+  "lib/llm": typeof lib_llm;
   "lib/llmCache": typeof lib_llmCache;
+  "logs/logsById": typeof logs_logsById;
+  "logs/mutations": typeof logs_mutations;
+  "logs/queries": typeof logs_queries;
   "schedules/index": typeof schedules_index;
+  "settings/mutations": typeof settings_mutations;
+  "settings/queries": typeof settings_queries;
+  syncFromProduction: typeof syncFromProduction;
   "workflows/agenticDailyAnalysis": typeof workflows_agenticDailyAnalysis;
   "workflows/dailyAnalysis": typeof workflows_dailyAnalysis;
+  "workflows/mutations": typeof workflows_mutations;
+  "workflows/queries": typeof workflows_queries;
+  "workflows/workflowStatus": typeof workflows_workflowStatus;
 }>;
 declare const fullApiWithMounts: typeof fullApi;
 

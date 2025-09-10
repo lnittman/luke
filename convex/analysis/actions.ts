@@ -1,10 +1,10 @@
-import { action, internalAction } from "../../_generated/server";
+import { action, internalAction } from "../_generated/server";
 import { v } from "convex/values";
-import { createGlobalAnalysisAgent } from "../../agents/globalAnalysis";
+import { createGlobalAnalysisAgent } from "./globalAnalysis";
 // No embedded fallback — instructions must be present in settings
-import { internal } from "../../_generated/api";
-import { globalAnalysisSchema } from "../../lib/analysisSchema";
-import { workflow } from "../../index";
+import { internal } from "../_generated/api";
+import { globalAnalysisSchema } from "../lib/analysisSchema";
+import { workflow } from "../index";
 
 type Analysis = {
   date: string;
@@ -51,7 +51,7 @@ export const generateAnalysis = action({
   handler: async (_ctx, input): Promise<Analysis> => {
     // Load from Convex settings; if missing, fail gracefully (no embedded fallback)
     const i = internal as any;
-    const instructions = await _ctx.runQuery(i.functions.queries.settings.getByKey, {
+    const instructions = await _ctx.runQuery(i.settings.queries.getByKey, {
       key: "agents/globalAnalysis",
     });
     if (!instructions) {
