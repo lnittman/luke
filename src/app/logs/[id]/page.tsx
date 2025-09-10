@@ -37,11 +37,8 @@ function LogDetailContent() {
   if (!log) {
     return (
       <div style={{ 
-        padding: '2rem', 
+        padding: '2rem 24px', 
         fontFamily: 'monospace',
-        display: 'flex',
-        flexDirection: 'column',
-        gap: '1rem',
       }}>
         <TextScramble 
           duration={0.8}
@@ -54,40 +51,59 @@ function LogDetailContent() {
     )
   }
 
-  return (
-    <div style={{ maxWidth: 1200, margin: '0 auto', padding: '1rem' }}>
-      {/* Local content heading with back button */}
-      <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', margin: '0 0 0.75rem 0' }}>
-        <Link
-          href="/logs"
-          aria-label="Back to logs"
-          title="Back"
-          style={{
-            display: 'inline-flex',
-            alignItems: 'center',
-            justifyContent: 'center',
-            width: '2.5rem',
-            height: '2.5rem',
-            border: '1px solid rgb(var(--border))',
-            color: 'rgb(var(--text-primary))',
-            textDecoration: 'none',
-            transition: 'none',
-          }}
-          onMouseEnter={(e) => {
-            e.currentTarget.style.backgroundColor = 'rgb(var(--surface-1))'
-          }}
-          onMouseLeave={(e) => {
-            e.currentTarget.style.backgroundColor = 'transparent'
-          }}
-        >
-          ←
-        </Link>
-      </div>
+  const sectionStyle = {
+    width: '100%',
+    borderBottom: '1px solid rgb(var(--border))',
+  }
 
-      {/* Summary card */}
-      <div style={{ border: '1px solid rgb(var(--border))', marginBottom: '1rem' }}>
-        <div style={{ padding: '1rem 1.5rem', borderBottom: '1px solid rgb(var(--border))' }}>
-          <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
+  const headerStyle = {
+    padding: '1.5rem 24px',
+    fontFamily: 'monospace',
+    fontSize: '1rem',
+    textTransform: 'uppercase' as const,
+    color: 'rgb(var(--text-primary))',
+    display: 'flex',
+    alignItems: 'center',
+    justifyContent: 'space-between',
+  }
+
+  const contentStyle = {
+    padding: '0 24px 1.5rem 24px',
+    color: 'rgb(var(--text-secondary))',
+  }
+
+  return (
+    <div className="space-y-0" style={{ marginTop: '0' }}>
+      {/* Back button section */}
+      <div style={sectionStyle}>
+        <div style={{ padding: '1rem 24px', display: 'flex', alignItems: 'center', gap: '1rem' }}>
+          <Link
+            href="/logs"
+            aria-label="Back to logs"
+            title="Back"
+            style={{
+              display: 'inline-flex',
+              alignItems: 'center',
+              justifyContent: 'center',
+              width: '2.5rem',
+              height: '2.5rem',
+              border: '1px solid rgb(var(--border))',
+              color: 'rgb(var(--text-primary))',
+              textDecoration: 'none',
+              transition: 'none',
+              fontFamily: 'monospace',
+              fontSize: '1.25rem',
+            }}
+            onMouseEnter={(e) => {
+              e.currentTarget.style.backgroundColor = 'rgb(var(--surface-1))'
+            }}
+            onMouseLeave={(e) => {
+              e.currentTarget.style.backgroundColor = 'transparent'
+            }}
+          >
+            ←
+          </Link>
+          <div style={{ flex: 1 }}>
             <TextScramble 
               duration={0.6}
               speed={0.03}
@@ -95,13 +111,25 @@ function LogDetailContent() {
             >
               {log.title || '(untitled)'}
             </TextScramble>
-            <span style={{ fontFamily: 'monospace', color: 'rgb(var(--text-secondary))' }}>
+            <div style={{ 
+              fontFamily: 'monospace', 
+              fontSize: '0.875rem',
+              color: 'rgb(var(--text-secondary))',
+              marginTop: '0.25rem'
+            }}>
               {formatEU(log.date)}
-            </span>
+            </div>
           </div>
         </div>
-        <div style={{ padding: '1rem 1.5rem' }}>
-          <p style={{ fontFamily: 'monospace', fontSize: '.9rem', color: 'rgb(var(--text-secondary))' }}>
+      </div>
+
+      {/* Summary section */}
+      <div style={sectionStyle}>
+        <div style={headerStyle}>
+          <span>SUMMARY</span>
+        </div>
+        <div style={contentStyle}>
+          <p style={{ fontFamily: 'monospace', fontSize: '.9rem', margin: 0, lineHeight: 1.6 }}>
             {log.summary}
           </p>
         </div>
@@ -109,11 +137,11 @@ function LogDetailContent() {
 
       {/* Haiku Section */}
       {log.haiku && (
-        <div style={{ border: '1px solid rgb(var(--border))', marginBottom: '1rem' }}>
-          <div style={{ padding: '0.75rem 1.5rem', borderBottom: '1px solid rgb(var(--border))' }}>
-            <h3 style={{ fontFamily: 'monospace', fontSize: '0.875rem', textTransform: 'uppercase' }}>Haiku</h3>
+        <div style={sectionStyle}>
+          <div style={headerStyle}>
+            <span>HAIKU</span>
           </div>
-          <div style={{ padding: '1rem 1.5rem' }}>
+          <div style={contentStyle}>
             <pre style={{ 
               fontFamily: 'monospace', 
               fontSize: '.875rem', 
@@ -129,49 +157,50 @@ function LogDetailContent() {
       )}
 
       {/* Metrics */}
-      {(log.totalCommits || log.totalRepos || log.productivityScore) && (
-        <div style={{ border: '1px solid rgb(var(--border))', marginBottom: '1rem' }}>
-          <div style={{ padding: '0.75rem 1.5rem', borderBottom: '1px solid rgb(var(--border))' }}>
-            <h3 style={{ fontFamily: 'monospace', fontSize: '0.875rem', textTransform: 'uppercase' }}>Metrics</h3>
+      {(log.totalCommits !== undefined || log.totalRepos !== undefined || log.productivityScore !== undefined) && (
+        <div style={sectionStyle}>
+          <div style={headerStyle}>
+            <span>METRICS</span>
           </div>
-          <div style={{ 
-            padding: '1rem 1.5rem',
-            display: 'flex',
-            gap: '2rem',
-            fontFamily: 'monospace',
-            fontSize: '0.875rem',
-          }}>
-            {log.totalCommits !== undefined && (
-              <div>
-                <span style={{ color: 'rgb(var(--text-secondary))' }}>commits: </span>
-                <span style={{ color: 'rgb(var(--accent-1))' }}>{log.totalCommits}</span>
-              </div>
-            )}
-            {log.totalRepos !== undefined && (
-              <div>
-                <span style={{ color: 'rgb(var(--text-secondary))' }}>repos: </span>
-                <span style={{ color: 'rgb(var(--accent-1))' }}>{log.totalRepos}</span>
-              </div>
-            )}
-            {log.productivityScore !== undefined && (
-              <div>
-                <span style={{ color: 'rgb(var(--text-secondary))' }}>productivity: </span>
-                <span style={{ color: 'rgb(var(--accent-2))' }}>
-                  {'█'.repeat(log.productivityScore)}{'░'.repeat(10 - log.productivityScore)}
-                </span>
-              </div>
-            )}
+          <div style={contentStyle}>
+            <div style={{
+              display: 'flex',
+              gap: '2rem',
+              fontFamily: 'monospace',
+              fontSize: '0.875rem',
+            }}>
+              {log.totalCommits !== undefined && (
+                <div>
+                  <span style={{ color: 'rgb(var(--text-secondary))' }}>commits: </span>
+                  <span style={{ color: 'rgb(var(--accent-1))' }}>{log.totalCommits}</span>
+                </div>
+              )}
+              {log.totalRepos !== undefined && (
+                <div>
+                  <span style={{ color: 'rgb(var(--text-secondary))' }}>repos: </span>
+                  <span style={{ color: 'rgb(var(--accent-1))' }}>{log.totalRepos}</span>
+                </div>
+              )}
+              {log.productivityScore !== undefined && (
+                <div>
+                  <span style={{ color: 'rgb(var(--text-secondary))' }}>productivity: </span>
+                  <span style={{ color: 'rgb(var(--accent-2))' }}>
+                    {'█'.repeat(log.productivityScore)}{'░'.repeat(10 - log.productivityScore)}
+                  </span>
+                </div>
+              )}
+            </div>
           </div>
         </div>
       )}
 
       {/* Highlights */}
       {log.bullets?.length > 0 && (
-        <div style={{ border: '1px solid rgb(var(--border))', marginBottom: '1rem' }}>
-          <div style={{ padding: '0.75rem 1.5rem', borderBottom: '1px solid rgb(var(--border))' }}>
-            <h3 style={{ fontFamily: 'monospace', fontSize: '0.875rem', textTransform: 'uppercase' }}>Highlights</h3>
+        <div style={sectionStyle}>
+          <div style={headerStyle}>
+            <span>HIGHLIGHTS</span>
           </div>
-          <div style={{ padding: '1rem 1.5rem' }}>
+          <div style={contentStyle}>
             <ul style={{ margin: 0, padding: 0, listStyle: 'none' }}>
               {log.bullets.map((b: string, i: number) => (
                 <li key={i} style={{
@@ -181,7 +210,6 @@ function LogDetailContent() {
                   fontFamily: 'monospace',
                   fontSize: '0.875rem',
                   lineHeight: 1.6,
-                  color: 'rgb(var(--text-secondary))',
                 }}>
                   <span style={{
                     position: 'absolute',
@@ -198,11 +226,11 @@ function LogDetailContent() {
 
       {/* Agent Threads */}
       {log.rawData?.agentThreads && log.rawData.agentThreads.length > 0 && (
-        <div style={{ border: '1px solid rgb(var(--border))', marginBottom: '1rem' }}>
-          <div style={{ padding: '0.75rem 1.5rem', borderBottom: '1px solid rgb(var(--border))' }}>
-            <h3 style={{ fontFamily: 'monospace', fontSize: '0.875rem', textTransform: 'uppercase' }}>Agent Threads</h3>
+        <div style={sectionStyle}>
+          <div style={headerStyle}>
+            <span>AGENT THREADS</span>
           </div>
-          <div style={{ padding: '1rem 1.5rem' }}>
+          <div style={contentStyle}>
             {log.rawData.agentThreads.map((t: any, i: number) => (
               <div key={i} style={{
                 display: 'flex',
@@ -230,49 +258,23 @@ function LogDetailContent() {
         </div>
       )}
 
-      {/* Raw Data */}
-      {log.rawData && (
-        <div style={{ border: '1px solid rgb(var(--border))', marginBottom: '1rem' }}>
-          <details open>
-            <summary style={{
-              padding: '0.75rem 1.5rem',
-              borderBottom: '1px solid rgb(var(--border))',
-              cursor: 'pointer',
-              fontFamily: 'monospace',
-              fontSize: '0.875rem',
-              textTransform: 'uppercase',
-              listStyle: 'none',
-            }}>
-              Raw Data
-            </summary>
-            <div>
-              <CodeBlock 
-                code={JSON.stringify(log.rawData, null, 2)} 
-                language="json"
-              />
-            </div>
-          </details>
-        </div>
-      )}
-
       {/* Workflow Events */}
-      <div style={{ border: '1px solid rgb(var(--border))' }}>
-        <div style={{ padding: '0.75rem 1.5rem', borderBottom: '1px solid rgb(var(--border))' }}>
-          <h3 style={{ fontFamily: 'monospace', fontSize: '0.875rem', textTransform: 'uppercase' }}>
-            Workflow Events
-          </h3>
+      <div style={sectionStyle}>
+        <div style={headerStyle}>
+          <span>WORKFLOW EVENTS</span>
           {!workflowId && (
-            <div style={{ 
+            <span style={{ 
               fontFamily: 'monospace', 
               fontSize: '.8rem', 
               color: 'rgb(var(--text-secondary))',
-              marginTop: '0.25rem' 
+              fontWeight: 'normal',
+              textTransform: 'none',
             }}>
-              No workflowId on this log
-            </div>
+              (no workflow id)
+            </span>
           )}
         </div>
-        <div style={{ padding: '0 1.5rem 1rem 1.5rem' }}>
+        <div style={contentStyle}>
           {!workflowId ? (
             <div style={{ fontFamily: 'monospace', fontSize: '.9rem', color: 'rgb(var(--text-secondary))' }}>
               No events
@@ -298,6 +300,27 @@ function LogDetailContent() {
           )}
         </div>
       </div>
+
+      {/* Raw Data */}
+      {log.rawData && (
+        <div style={sectionStyle}>
+          <details open>
+            <summary style={{
+              ...headerStyle,
+              cursor: 'pointer',
+              listStyle: 'none',
+            }}>
+              RAW DATA
+            </summary>
+            <div style={contentStyle}>
+              <CodeBlock 
+                code={JSON.stringify(log.rawData, null, 2)} 
+                language="json"
+              />
+            </div>
+          </details>
+        </div>
+      )}
     </div>
   )
 }
@@ -328,7 +351,7 @@ export default function LogDetailPage() {
       <div className={styles.content}>
         <div className={styles.innerViewport}>
           <Suspense fallback={
-            <div style={{ padding: '2rem', fontFamily: 'monospace' }}>
+            <div style={{ padding: '2rem 24px', fontFamily: 'monospace' }}>
               <TextScramble 
                 duration={0.8}
                 speed={0.04}
@@ -340,6 +363,12 @@ export default function LogDetailPage() {
           }>
             <LogDetailContent />
           </Suspense>
+        </div>
+      </div>
+
+      <div className={styles.footer}>
+        <div className={styles.column}>
+          {/* Footer content could go here if needed */}
         </div>
       </div>
     </DefaultLayout>
