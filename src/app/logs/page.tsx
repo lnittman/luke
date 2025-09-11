@@ -47,10 +47,10 @@ export default function LogsPage() {
   const [filtersOpen, setFiltersOpen] = useState(false)
   const [generateMenuOpen, setGenerateMenuOpen] = useState(false)
   const isDev = process.env.NODE_ENV !== 'production'
-  const runDailyAnalysis = useMutation(api.logs.mutations.runDailyAnalysisOnce)
+  const runDailyAnalysis = useMutation(api.app.logs.mutations.runDailyAnalysisOnce)
 
   // Convex: fetch logs reactively
-  const convexLogs = useQuery(api.logs.queries.get, {
+  const convexLogs = useQuery(api.app.logs.queries.get, {
     search: searchQuery || undefined,
     startDate: dateRange.from ? format(dateRange.from, 'yyyy-MM-dd') : undefined,
     endDate: dateRange.to ? format(dateRange.to, 'yyyy-MM-dd') : undefined,

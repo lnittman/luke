@@ -1,5 +1,5 @@
 import { Agent } from "@convex-dev/agent";
-import { components, internal } from "../../_generated/api";
+import { components, internal } from "../../../_generated/api";
 import { createOpenRouter } from "@openrouter/ai-sdk-provider";
 import { 
   fetchCommitDetailsTool, fetchRepoInfoTool, fetchUserActivityTool,

@@ -1,5 +1,5 @@
 import { Agent } from "@convex-dev/agent";
-import { components } from "../../_generated/api";
+import { components } from "../../../_generated/api";
 import { createOpenRouter } from "@openrouter/ai-sdk-provider";
 
 export function createGlobalAnalysisAgent(instructions: string, apiKey?: string) {
