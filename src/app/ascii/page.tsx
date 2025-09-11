@@ -3,7 +3,7 @@
 export const dynamic = 'force-dynamic'
 
 import { useState, useRef, useEffect } from 'react'
-import { AsciiEngine } from '@/lib/ascii-engine'
+import { AsciiEngine } from '@/lib/ascii'
 import { generateAsciiArt } from './actions'
 import { BlockLoader } from '@/components/shared/block-loader'
 import { DefaultLayout } from '@/components/shared/default-layout'

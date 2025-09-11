@@ -4,7 +4,7 @@ import { KeyboardShortcuts } from '@/components/shared/keyboard-shortcuts'
 import { SearchModal } from '@/components/shared/search-modal'
 import { ThemeColorProvider } from '@/components/shared/theme-color-provider'
 import { ThemeProvider } from '@/components/shared/theme-provider'
-import { ModalProvider } from '@/lib/modal-context'
+import { ModalProvider } from '@/lib/context'
 import { metadata, viewport } from './metadata'
 
 import '../styles/global.scss'

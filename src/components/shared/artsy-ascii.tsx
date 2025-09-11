@@ -1,12 +1,12 @@
 'use client'
 
 import { type CSSProperties, useEffect, useState } from 'react'
-import { AsciiEngine } from '@/lib/ascii-engine'
-import { generateMatrixRainFrames } from '@/lib/ascii-engine/generators/matrix'
-import { generateDataFlowFrames, generatePulseFrames, generateWaveFrames } from '@/lib/ascii-engine/generators/wave'
-import { generateSparseWaveFrames, generateMinimalWaveFrames } from '@/lib/ascii-engine/generators/sparse-wave'
-import { generateIntenseFlameFrames } from '@/lib/ascii-engine/generators/flame'
-import { generateErrorFrames } from '@/lib/ascii-engine/generators/404'
+import { AsciiEngine } from '@/lib/ascii'
+import { generateMatrixRainFrames } from '@/lib/ascii/generators/matrix'
+import { generateDataFlowFrames, generatePulseFrames, generateWaveFrames } from '@/lib/ascii/generators/wave'
+import { generateSparseWaveFrames, generateMinimalWaveFrames } from '@/lib/ascii/generators/sparse-wave'
+import { generateIntenseFlameFrames } from '@/lib/ascii/generators/flame'
+import { generateErrorFrames } from '@/lib/ascii/generators/404'
 
 interface ArtsyAsciiProps {
   className?: string

@@ -2,7 +2,7 @@
 
 import { AnimatePresence, motion } from 'framer-motion'
 import { useEffect } from 'react'
-import { useModal } from '@/lib/modal-context'
+import { useModal } from '@/lib/context'
 
 export function ModalRenderer() {
   const { modals, closeModal } = useModal()

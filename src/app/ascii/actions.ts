@@ -1,9 +1,9 @@
 'use server'
 
 import { generateText } from 'ai'
-import { openRouter } from '@/lib/ai-providers'
-import { generateMatrixRainFrames } from '@/lib/ascii-engine/generators/matrix'
-import { generateWaveFrames, generateDataFlowFrames, generatePulseFrames } from '@/lib/ascii-engine/generators/wave'
+import { openRouter } from '@/lib/ai'
+import { generateMatrixRainFrames } from '@/lib/ascii/generators/matrix'
+import { generateWaveFrames, generateDataFlowFrames, generatePulseFrames } from '@/lib/ascii/generators/wave'
 
 export async function generateAsciiArt(prompt: string) {
   try {

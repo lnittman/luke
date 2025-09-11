@@ -1,9 +1,9 @@
 'use client'
 
 import { type CSSProperties, useEffect, useState } from 'react'
-import { AsciiEngine } from '@/lib/ascii-engine'
-import { generateWaterFrames, generateOceanWavesFrames, generateRainFrames } from '@/lib/ascii-engine/generators/water'
-import { generateMatrixRainFrames } from '@/lib/ascii-engine/generators/matrix'
+import { AsciiEngine } from '@/lib/ascii'
+import { generateWaterFrames, generateOceanWavesFrames, generateRainFrames } from '@/lib/ascii/generators/water'
+import { generateMatrixRainFrames } from '@/lib/ascii/generators/matrix'
 
 interface WaterAsciiProps {
   className?: string

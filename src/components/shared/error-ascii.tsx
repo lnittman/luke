@@ -1,8 +1,8 @@
 'use client'
 
 import { type CSSProperties } from 'react'
-import { AsciiEngine } from '@/lib/ascii-engine'
-import { generate404Frames, generateErrorFrames } from '@/lib/ascii-engine/generators/404'
+import { AsciiEngine } from '@/lib/ascii'
+import { generate404Frames, generateErrorFrames } from '@/lib/ascii/generators/404'
 
 interface ErrorAsciiProps {
   className?: string
