@@ -27,7 +27,7 @@ program.command('logs:list')
   .option('--search <text>')
   .option('--prod', 'use production deployment')
   .action(async (opts) => {
-    const res = await convexRun('functions/queries/logs:get', {
+    const res = await convexRun('logs/queries:get', {
       startDate: opts.start, endDate: opts.end, search: opts.search
     }, { prod: !!opts.prod });
     for (const item of res) {
@@ -39,13 +39,13 @@ program.command('logs:show')
   .argument('<id>')
   .option('--prod', 'use production deployment')
   .action(async (id, opts) => {
-    const log = await convexRun('functions/queries/logsById:getById', { id }, { prod: !!opts.prod });
+    const log = await convexRun('logs/logsById:getById', { id }, { prod: !!opts.prod });
     if (!log) { console.error('Not found'); process.exit(1); }
     console.log(`# ${log.title}\n${log.date}\n`);
     console.log(log.summary);
     const wf = log.rawData?.workflowId;
     if (wf) {
-      const events = await convexRun('functions/queries/workflowTracking:listEvents', { workflowId: wf }, { prod: !!opts.prod });
+      const events = await convexRun('workflows/queries:listEvents', { workflowId: wf }, { prod: !!opts.prod });
       console.log('\nWorkflow events:');
       for (const e of events) {
         const step = e.step ? `:${e.step}` : '';
@@ -61,10 +61,10 @@ program.command('workflow:trigger')
     const date = opts.date;
     // Prefer scheduler mutation; falls back to internal action via prod
     if (date) {
-      const res = await convexRun('functions/mutations/logs:runDailyAnalysisOnce', { date }, { prod: !!opts.prod });
+      const res = await convexRun('logs/mutations:runDailyAnalysisOnce', { date }, { prod: !!opts.prod });
       console.log('Scheduled:', res);
     } else {
-      const res = await convexRun('functions/actions/analysis:triggerDailyWorkflow', {}, { prod: !!opts.prod });
+      const res = await convexRun('agents/actions:triggerDailyWorkflow', {}, { prod: !!opts.prod });
       console.log('Triggered:', res);
     }
   });
@@ -73,7 +73,7 @@ program.command('agent:get')
   .argument('<key>')
   .option('--prod', 'use production deployment')
   .action(async (key, opts) => {
-    const res = await convexRun('functions/queries/settings:getByKey', { key }, { prod: !!opts.prod });
+    const res = await convexRun('settings/queries:getByKey', { key }, { prod: !!opts.prod });
     process.stdout.write(res ?? '');
   });
 
@@ -84,7 +84,7 @@ program.command('agent:set')
   .action(async (key, opts) => {
     const fs = await import('fs/promises');
     const value = await fs.readFile(opts.file, 'utf8');
-    const res = await convexRun('functions/mutations/settings:setByKey', { key, value }, { prod: !!opts.prod });
+    const res = await convexRun('settings/mutations:setByKey', { key, value }, { prod: !!opts.prod });
     console.log('Updated:', res);
   });
 
