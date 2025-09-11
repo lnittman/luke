@@ -1,9 +1,9 @@
 import { Agent } from "@convex-dev/agent";
-import { components, internal } from "../_generated/api";
+import { components, internal } from "../../_generated/api";
 import { openrouter } from "@openrouter/ai-sdk-provider";
-import { analyzeCommitDiffTool, analyzePullRequestTool, analyzeRepositoryContextTool, detectCodePatternsTool } from "./tools/codeReview";
-import { fetchCommitDetailsTool, fetchRepoInfoTool, fetchUserActivityTool } from "./tools/github";
-import { CODE_ANALYSIS_XML, REPO_CONTEXT_XML, ACTIVITY_SYNTHESIS_XML, PR_REVIEW_XML, TECHNICAL_DEBT_XML } from "./instructions";
+import { analyzeCommitDiffTool, analyzePullRequestTool, analyzeRepositoryContextTool, detectCodePatternsTool } from "../tools/codeReview";
+import { fetchCommitDetailsTool, fetchRepoInfoTool, fetchUserActivityTool } from "../tools/github";
+import { CODE_ANALYSIS_XML, REPO_CONTEXT_XML, ACTIVITY_SYNTHESIS_XML, PR_REVIEW_XML, TECHNICAL_DEBT_XML } from "../instructions";
 
 // Use OpenRouter provider for AI SDK v5 compatibility
 // Note: API key is read from OPENROUTER_API_KEY env var automatically

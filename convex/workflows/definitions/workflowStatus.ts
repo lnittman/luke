@@ -1,6 +1,6 @@
-import { query } from "../_generated/server";
+import { query } from "../../_generated/server";
 import { v } from "convex/values";
-import { components } from "../_generated/api";
+import { components } from "../../_generated/api";
 
 // Query to get workflow status and details
 export const getWorkflowStatus = query({

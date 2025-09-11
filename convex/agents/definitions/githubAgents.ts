@@ -1,12 +1,12 @@
 import { Agent } from "@convex-dev/agent";
-import { components, internal } from "../_generated/api";
+import { components, internal } from "../../_generated/api";
 import { createOpenRouter } from "@openrouter/ai-sdk-provider";
 import { 
   fetchCommitDetailsTool, fetchRepoInfoTool, fetchUserActivityTool,
   listPullRequestsTool, getPullRequestFilesTool,
   listIssuesTool
-} from "./tools/github";
-import { COMMIT_ANALYZER_XML, ACTIVITY_SUMMARIZER_XML, REPO_ANALYZER_XML } from "./instructions";
+} from "../tools/github";
+import { COMMIT_ANALYZER_XML, ACTIVITY_SUMMARIZER_XML, REPO_ANALYZER_XML } from "../instructions";
 
 // Use OpenRouter provider for AI SDK v5 compatibility
 const openrouter = createOpenRouter({

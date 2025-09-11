@@ -1,7 +1,7 @@
 import { internalAction } from "../_generated/server";
 import { v } from "convex/values";
-import { makeRepoAnalyzerAgent, makeActivitySummarizerAgent } from "../agents/githubAgents";
-import { createGlobalAnalysisAgent } from "../agents/globalAnalysis";
+import { makeRepoAnalyzerAgent, makeActivitySummarizerAgent } from "../agents/definitions/githubAgents";
+import { createGlobalAnalysisAgent } from "../agents/definitions/globalAnalysis";
 import { internal } from "../_generated/api";
 import { repoSummaryCache, synthesisCache } from "../lib/llmCache";
 import { z } from "zod";

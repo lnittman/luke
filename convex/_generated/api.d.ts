@@ -9,12 +9,12 @@
  */
 
 import type * as agents_actions from "../agents/actions.js";
-import type * as agents_agentAnalysis from "../agents/agentAnalysis.js";
-import type * as agents_codeAnalysisAgents from "../agents/codeAnalysisAgents.js";
-import type * as agents_githubAgents from "../agents/githubAgents.js";
-import type * as agents_globalAnalysis from "../agents/globalAnalysis.js";
+import type * as agents_definitions_agentAnalysis from "../agents/definitions/agentAnalysis.js";
+import type * as agents_definitions_codeAnalysisAgents from "../agents/definitions/codeAnalysisAgents.js";
+import type * as agents_definitions_githubAgents from "../agents/definitions/githubAgents.js";
+import type * as agents_definitions_globalAnalysis from "../agents/definitions/globalAnalysis.js";
+import type * as agents_definitions_repositoryAnalysis from "../agents/definitions/repositoryAnalysis.js";
 import type * as agents_instructions from "../agents/instructions.js";
-import type * as agents_repositoryAnalysis from "../agents/repositoryAnalysis.js";
 import type * as agents_tools_codeReview from "../agents/tools/codeReview.js";
 import type * as agents_tools_github from "../agents/tools/github.js";
 import type * as crons from "../crons.js";
@@ -32,11 +32,11 @@ import type * as schedules_index from "../schedules/index.js";
 import type * as settings_mutations from "../settings/mutations.js";
 import type * as settings_queries from "../settings/queries.js";
 import type * as syncFromProduction from "../syncFromProduction.js";
-import type * as workflows_agenticDailyAnalysis from "../workflows/agenticDailyAnalysis.js";
-import type * as workflows_dailyAnalysis from "../workflows/dailyAnalysis.js";
+import type * as workflows_definitions_agenticDailyAnalysis from "../workflows/definitions/agenticDailyAnalysis.js";
+import type * as workflows_definitions_dailyAnalysis from "../workflows/definitions/dailyAnalysis.js";
+import type * as workflows_definitions_workflowStatus from "../workflows/definitions/workflowStatus.js";
 import type * as workflows_mutations from "../workflows/mutations.js";
 import type * as workflows_queries from "../workflows/queries.js";
-import type * as workflows_workflowStatus from "../workflows/workflowStatus.js";
 
 import type {
   ApiFromModules,
@@ -54,12 +54,12 @@ import type {
  */
 declare const fullApi: ApiFromModules<{
   "agents/actions": typeof agents_actions;
-  "agents/agentAnalysis": typeof agents_agentAnalysis;
-  "agents/codeAnalysisAgents": typeof agents_codeAnalysisAgents;
-  "agents/githubAgents": typeof agents_githubAgents;
-  "agents/globalAnalysis": typeof agents_globalAnalysis;
+  "agents/definitions/agentAnalysis": typeof agents_definitions_agentAnalysis;
+  "agents/definitions/codeAnalysisAgents": typeof agents_definitions_codeAnalysisAgents;
+  "agents/definitions/githubAgents": typeof agents_definitions_githubAgents;
+  "agents/definitions/globalAnalysis": typeof agents_definitions_globalAnalysis;
+  "agents/definitions/repositoryAnalysis": typeof agents_definitions_repositoryAnalysis;
   "agents/instructions": typeof agents_instructions;
-  "agents/repositoryAnalysis": typeof agents_repositoryAnalysis;
   "agents/tools/codeReview": typeof agents_tools_codeReview;
   "agents/tools/github": typeof agents_tools_github;
   crons: typeof crons;
@@ -77,11 +77,11 @@ declare const fullApi: ApiFromModules<{
   "settings/mutations": typeof settings_mutations;
   "settings/queries": typeof settings_queries;
   syncFromProduction: typeof syncFromProduction;
-  "workflows/agenticDailyAnalysis": typeof workflows_agenticDailyAnalysis;
-  "workflows/dailyAnalysis": typeof workflows_dailyAnalysis;
+  "workflows/definitions/agenticDailyAnalysis": typeof workflows_definitions_agenticDailyAnalysis;
+  "workflows/definitions/dailyAnalysis": typeof workflows_definitions_dailyAnalysis;
+  "workflows/definitions/workflowStatus": typeof workflows_definitions_workflowStatus;
   "workflows/mutations": typeof workflows_mutations;
   "workflows/queries": typeof workflows_queries;
-  "workflows/workflowStatus": typeof workflows_workflowStatus;
 }>;
 declare const fullApiWithMounts: typeof fullApi;
 

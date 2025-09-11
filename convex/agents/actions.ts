@@ -1,6 +1,6 @@
 import { action, internalAction } from "../_generated/server";
 import { v } from "convex/values";
-import { createGlobalAnalysisAgent } from "./globalAnalysis";
+import { createGlobalAnalysisAgent } from "./definitions/globalAnalysis";
 // No embedded fallback — instructions must be present in settings
 import { internal } from "../_generated/api";
 import { globalAnalysisSchema } from "../lib/analysisSchema";
@@ -114,7 +114,7 @@ export const triggerDailyWorkflow = internalAction({
     const workflowId: string = await workflow.start(
       ctx,
       // Switch to the agentic workflow for fine-grained processing
-      internal.workflows.agenticDailyAnalysis.agenticDailyAnalysis,
+      internal.workflows.definitions.agenticDailyAnalysis.agenticDailyAnalysis,
       { date: targetDate, workflowId: trackingId }
     );
     return { workflowId };

@@ -17,7 +17,7 @@ http.route({
     const body = await request.json().catch(() => ({} as any));
     const date = body.date || new Date(Date.now() - 24 * 60 * 60 * 1000).toISOString().split("T")[0];
 
-    const workflowId = await workflow.start(ctx, internal.workflows.dailyAnalysis.dailyAnalysis, { date });
+    const workflowId = await workflow.start(ctx, internal.workflows.definitions.dailyAnalysis.dailyAnalysis, { date });
     return new Response(JSON.stringify({ ok: true, workflowId }), { status: 200 });
   }),
 });

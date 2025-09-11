@@ -1,6 +1,6 @@
 import { v } from "convex/values";
-import { workflow } from "../index";
-import { internal } from "../_generated/api";
+import { workflow } from "../../index";
+import { internal } from "../../_generated/api";
 
 // Fine-grained agentic workflow with full observability
 export const agenticDailyAnalysis = workflow.define({
