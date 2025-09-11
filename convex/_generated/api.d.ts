@@ -9,7 +9,7 @@
  */
 
 import type * as agents_actions from "../agents/actions.js";
-import type * as agents_definitions_agentAnalysis from "../agents/definitions/agentAnalysis.js";
+import type * as agents_agentAnalysis from "../agents/agentAnalysis.js";
 import type * as agents_definitions_codeAnalysisAgents from "../agents/definitions/codeAnalysisAgents.js";
 import type * as agents_definitions_githubAgents from "../agents/definitions/githubAgents.js";
 import type * as agents_definitions_globalAnalysis from "../agents/definitions/globalAnalysis.js";
@@ -54,7 +54,7 @@ import type {
  */
 declare const fullApi: ApiFromModules<{
   "agents/actions": typeof agents_actions;
-  "agents/definitions/agentAnalysis": typeof agents_definitions_agentAnalysis;
+  "agents/agentAnalysis": typeof agents_agentAnalysis;
   "agents/definitions/codeAnalysisAgents": typeof agents_definitions_codeAnalysisAgents;
   "agents/definitions/githubAgents": typeof agents_definitions_githubAgents;
   "agents/definitions/globalAnalysis": typeof agents_definitions_globalAnalysis;

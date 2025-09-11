@@ -1,15 +1,15 @@
-import { action } from "../../_generated/server";
+import { action } from "../_generated/server";
 import { v } from "convex/values";
 import { 
   makeRepoAnalyzerAgent, 
   makeActivitySummarizerAgent,
   makeCommitAnalyzerAgent 
-} from "./githubAgents";
-import { createGlobalAnalysisAgent } from "./globalAnalysis";
-import { globalAnalysisSchema } from "../../lib/analysisSchema";
-import { internal } from "../../_generated/api";
+} from "./definitions/githubAgents";
+import { createGlobalAnalysisAgent } from "./definitions/globalAnalysis";
+import { globalAnalysisSchema } from "../lib/analysisSchema";
+import { internal } from "../_generated/api";
 import { z } from "zod";
-import { retrier } from "../../index";
+import { retrier } from "../index";
 
 // Analyze a single repository with its commits
 export const analyzeRepository = action({
