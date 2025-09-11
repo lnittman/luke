@@ -6,7 +6,6 @@ import {
   makeCommitAnalyzerAgent 
 } from "./githubAgents";
 import { createGlobalAnalysisAgent } from "./globalAnalysis";
-import { GLOBAL_ANALYSIS_XML } from "../instructions";
 import { globalAnalysisSchema } from "../../lib/analysisSchema";
 import { internal } from "../../_generated/api";
 import { z } from "zod";

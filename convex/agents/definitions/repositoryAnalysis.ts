@@ -1,7 +1,6 @@
 import { Agent } from "@convex-dev/agent";
 import { components, internal } from "../../_generated/api";
 import { createOpenRouter } from "@openrouter/ai-sdk-provider";
-import { REPOSITORY_ANALYSIS_XML, REPO_ANALYZER_XML } from "../instructions";
 
 // Use OpenRouter provider for AI SDK v5 compatibility
 const openrouter = createOpenRouter({

@@ -6,7 +6,6 @@ import {
   listPullRequestsTool, getPullRequestFilesTool,
   listIssuesTool
 } from "../tools/github";
-import { COMMIT_ANALYZER_XML, ACTIVITY_SUMMARIZER_XML, REPO_ANALYZER_XML } from "../instructions";
 
 // Use OpenRouter provider for AI SDK v5 compatibility
 const openrouter = createOpenRouter({
