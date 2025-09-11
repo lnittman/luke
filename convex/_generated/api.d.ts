@@ -28,7 +28,6 @@ import type * as lib_llmCache from "../lib/llmCache.js";
 import type * as logs_logsById from "../logs/logsById.js";
 import type * as logs_mutations from "../logs/mutations.js";
 import type * as logs_queries from "../logs/queries.js";
-import type * as schedules_index from "../schedules/index.js";
 import type * as settings_mutations from "../settings/mutations.js";
 import type * as settings_queries from "../settings/queries.js";
 import type * as syncFromProduction from "../syncFromProduction.js";
@@ -73,7 +72,6 @@ declare const fullApi: ApiFromModules<{
   "logs/logsById": typeof logs_logsById;
   "logs/mutations": typeof logs_mutations;
   "logs/queries": typeof logs_queries;
-  "schedules/index": typeof schedules_index;
   "settings/mutations": typeof settings_mutations;
   "settings/queries": typeof settings_queries;
   syncFromProduction: typeof syncFromProduction;
