@@ -8,7 +8,7 @@ import { generateAsciiArt } from './actions'
 import { BlockLoader } from '@/components/shared/block-loader'
 import { DefaultLayout } from '@/components/shared/default-layout'
 import { ThemeSwitcher } from '@/components/shared/theme-switcher'
-import { useIsMobile } from '@/hooks/useIsMobile'
+import { useIsMobile } from '@/hooks/use-is-mobile'
 import styles from '@/components/shared/root.module.scss'
 
 interface AsciiGeneration {

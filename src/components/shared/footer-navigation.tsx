@@ -3,7 +3,7 @@
 import classNames from 'classnames'
 import { usePathname, useRouter } from 'next/navigation'
 import React from 'react'
-import { useIsMobile } from '@/hooks/useIsMobile'
+import { useIsMobile } from '@/hooks/use-is-mobile'
 import styles from './footer-navigation.module.scss'
 
 const NAV_ITEMS = [
