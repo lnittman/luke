@@ -11,7 +11,7 @@ const crons = cronJobs();
 crons.daily(
   "daily-analysis",
   { hourUTC: 0, minuteUTC: 0 },
-  internal.app.agents.actions.triggerDailyWorkflow,
+  internal.agents.actions.triggerDailyWorkflow,
   {}
 );
 

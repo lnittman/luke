@@ -1,11 +1,11 @@
 import { internalAction } from "../_generated/server";
 import { v } from "convex/values";
-import { makeRepoAnalyzerAgent, makeActivitySummarizerAgent } from "../app/agents/definitions/githubAgents";
-import { createGlobalAnalysisAgent } from "../app/agents/definitions/globalAnalysis";
+import { makeRepoAnalyzerAgent, makeActivitySummarizerAgent } from "./definitions/githubAgents";
+import { createGlobalAnalysisAgent } from "./definitions/globalAnalysis";
 import { internal } from "../_generated/api";
-import { repoSummaryCache, synthesisCache } from "../lib/llmCache";
+import { repoSummaryCache, synthesisCache } from "./llmCache";
 import { z } from "zod";
-import { globalAnalysisSchema } from "../lib/analysisSchema";
+import { globalAnalysisSchema } from "./analysisSchema";
 
 // Compute-only action: generates a repository summary object (no caching here)
 export const generateRepoSummary = internalAction({

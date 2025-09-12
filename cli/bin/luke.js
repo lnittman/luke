@@ -64,7 +64,7 @@ program.command('workflow:trigger')
       const res = await convexRun('logs/mutations:runDailyAnalysisOnce', { date }, { prod: !!opts.prod });
       console.log('Scheduled:', res);
     } else {
-      const res = await convexRun('app/agents/actions:triggerDailyWorkflow', {}, { prod: !!opts.prod });
+      const res = await convexRun('agents/actions:triggerDailyWorkflow', {}, { prod: !!opts.prod });
       console.log('Triggered:', res);
     }
   });

@@ -52,7 +52,7 @@ import {
   COMMIT_ANALYZER_XML,
   ACTIVITY_SUMMARIZER_XML,
   REPO_ANALYZER_XML,
-} from "../agents/instructions";
+} from "../../agents/instructions";
 
 export const seedAgentInstructions = mutation({
   args: {},
