@@ -2,7 +2,7 @@
 
 import { Anthropic, OpenAI } from '@lobehub/icons'
 import { Copy, FileText } from 'lucide-react'
-import { usePathname, useRouter } from 'next/navigation'
+import { usePathname } from 'next/navigation'
 import { useState } from 'react'
 import TurndownService from 'turndown'
 import {
@@ -34,7 +34,6 @@ const AI_PROVIDERS = [
 export function OpenInAI() {
   const [open, setOpen] = useState(false)
   const [copied, setCopied] = useState(false)
-  const router = useRouter()
   const pathname = usePathname()
 
   const getPageMarkdown = () => {
@@ -69,9 +68,27 @@ export function OpenInAI() {
   }
 
   const handleViewMarkdown = () => {
-    // Get page name from pathname, default to 'page' if root
-    const pageName = pathname === '/' ? 'home' : pathname.split('/').filter(Boolean).join('-')
-    router.push(`/${pageName}.md`)
+    const md = getPageMarkdown()
+
+    // Create a new window/tab with clean markdown display
+    const markdownWindow = window.open('', '_blank')
+    if (markdownWindow) {
+      const pageName = pathname === '/' ? 'home' : pathname.split('/').filter(Boolean).join('-')
+      markdownWindow.document.write(`
+        <!DOCTYPE html>
+        <html lang="en">
+          <head>
+            <meta charset="utf-8" />
+            <meta name="viewport" content="width=device-width, initial-scale=1" />
+            <title>${pageName}.md</title>
+          </head>
+          <body style="margin: 0; padding: 0; font-family: monospace; background-color: #fff; color: #000;">
+            <pre style="margin: 0; padding: 1rem; white-space: pre-wrap; word-break: break-word; font-size: 14px; line-height: 1.6;">${md}</pre>
+          </body>
+        </html>
+      `)
+      markdownWindow.document.close()
+    }
     setOpen(false)
   }
 

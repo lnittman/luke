@@ -3,14 +3,6 @@ import { NextResponse } from 'next/server'
 
 // This function can be marked `async` if using `await` inside
 export function middleware(request: NextRequest) {
-  // Handle .md file requests - rewrite to /md/[slug]
-  if (request.nextUrl.pathname.endsWith('.md')) {
-    const slug = request.nextUrl.pathname.slice(1, -3) // Remove leading / and .md
-    const url = request.nextUrl.clone()
-    url.pathname = `/md/${slug}`
-    return NextResponse.rewrite(url)
-  }
-
   // Skip middleware for non-API routes
   if (!request.nextUrl.pathname.startsWith('/api/')) {
     return NextResponse.next()
@@ -51,5 +43,5 @@ export function middleware(request: NextRequest) {
 
 // Configure matcher for the middleware
 export const config = {
-  matcher: ['/api/:path*', '/:path*.md'],
+  matcher: ['/api/:path*'],
 }
