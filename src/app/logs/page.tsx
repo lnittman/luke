@@ -306,6 +306,28 @@ export default function LogsPage() {
                           selected={dateRange}
                           onSelect={(range: any) => setDateRange(range || { from: undefined, to: undefined })}
                           className="rounded-none border border-[rgb(var(--border))]"
+                          classNames={{
+                            months: "flex flex-col sm:flex-row",
+                            month: "space-y-3",
+                            caption: "flex justify-between items-center mb-3 px-1",
+                            caption_label: "text-sm font-mono uppercase",
+                            nav: "flex items-center gap-1",
+                            nav_button: "h-7 w-7 bg-transparent p-0 border border-[rgb(var(--border))] hover:bg-[rgb(var(--surface-1))] transition-none",
+                            nav_button_previous: "",
+                            nav_button_next: "",
+                            table: "w-full border-collapse",
+                            head_row: "flex mb-1",
+                            head_cell: "text-[rgb(var(--text-secondary))] w-9 font-normal text-[0.75rem] font-mono uppercase",
+                            row: "flex w-full mt-0",
+                            cell: "text-center text-sm p-0 relative transition-none",
+                            day: "h-9 w-9 p-0 font-normal font-mono text-sm hover:bg-[rgb(var(--surface-1))] transition-none",
+                            day_selected: "bg-[rgb(var(--accent-1))] text-[rgb(var(--background-start))] hover:bg-[rgb(var(--accent-1))] transition-none",
+                            day_today: "border border-[rgb(var(--accent-1))]",
+                            day_outside: "text-[rgb(var(--text-secondary))] opacity-30",
+                            day_disabled: "text-[rgb(var(--text-secondary))] opacity-30",
+                            day_range_middle: "bg-[rgb(var(--surface-1))] text-[rgb(var(--text-primary))]",
+                            day_hidden: "invisible",
+                          }}
                         />
                       </div>
                       <div className="flex gap-2 mb-3">
@@ -393,25 +415,25 @@ export default function LogsPage() {
                         onSelect={(range: any) => setDateRange(range || { from: undefined, to: undefined })}
                         className="rounded-none"
                         classNames={{
-                          months: "flex flex-col sm:flex-row space-y-4 sm:space-x-4 sm:space-y-0",
-                          month: "space-y-4",
-                          caption: "flex justify-center pt-1 relative items-center",
-                          caption_label: "text-sm font-mono",
-                          nav: "space-x-1 flex items-center",
-                          nav_button: "h-7 w-7 bg-transparent p-0 opacity-50 hover:opacity-100",
-                          nav_button_previous: "absolute left-1",
-                          nav_button_next: "absolute right-1",
-                          table: "w-full border-collapse space-y-1",
-                          head_row: "flex",
-                          head_cell: "text-[rgb(var(--text-secondary))] rounded-none w-9 font-normal text-[0.8rem] font-mono",
-                          row: "flex w-full mt-2",
-                          cell: "text-center text-sm p-0 relative [&:has([aria-selected])]:bg-[rgb(var(--surface-1))] first:[&:has([aria-selected])]:rounded-none last:[&:has([aria-selected])]:rounded-none focus-within:relative focus-within:z-20",
-                          day: "h-9 w-9 p-0 font-normal font-mono text-sm aria-selected:opacity-100 hover:bg-[rgb(var(--surface-1))] rounded-none",
-                          day_selected: "bg-[rgb(var(--accent-1))] text-[rgb(var(--background-start))] hover:bg-[rgb(var(--accent-1))] hover:text-[rgb(var(--background-start))] focus:bg-[rgb(var(--accent-1))] focus:text-[rgb(var(--background-start))]",
-                          day_today: "bg-[rgb(var(--surface-1))] text-[rgb(var(--accent-1))]",
-                          day_outside: "text-[rgb(var(--text-secondary))] opacity-50",
-                          day_disabled: "text-[rgb(var(--text-secondary))] opacity-50",
-                          day_range_middle: "aria-selected:bg-[rgb(var(--surface-1))] aria-selected:text-[rgb(var(--text-primary))]",
+                          months: "flex flex-col sm:flex-row",
+                          month: "space-y-3",
+                          caption: "flex justify-between items-center mb-3 px-1",
+                          caption_label: "text-sm font-mono uppercase",
+                          nav: "flex items-center gap-1",
+                          nav_button: "h-7 w-7 bg-transparent p-0 border border-[rgb(var(--border))] hover:bg-[rgb(var(--surface-1))] transition-none",
+                          nav_button_previous: "",
+                          nav_button_next: "",
+                          table: "w-full border-collapse",
+                          head_row: "flex mb-1",
+                          head_cell: "text-[rgb(var(--text-secondary))] w-9 font-normal text-[0.75rem] font-mono uppercase",
+                          row: "flex w-full mt-0",
+                          cell: "text-center text-sm p-0 relative transition-none",
+                          day: "h-9 w-9 p-0 font-normal font-mono text-sm hover:bg-[rgb(var(--surface-1))] transition-none",
+                          day_selected: "bg-[rgb(var(--accent-1))] text-[rgb(var(--background-start))] hover:bg-[rgb(var(--accent-1))] transition-none",
+                          day_today: "border border-[rgb(var(--accent-1))]",
+                          day_outside: "text-[rgb(var(--text-secondary))] opacity-30",
+                          day_disabled: "text-[rgb(var(--text-secondary))] opacity-30",
+                          day_range_middle: "bg-[rgb(var(--surface-1))] text-[rgb(var(--text-primary))]",
                           day_hidden: "invisible",
                         }}
                       />
