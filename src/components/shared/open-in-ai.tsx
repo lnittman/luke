@@ -94,7 +94,19 @@ export function OpenInAI() {
 
   const handleOpenInProvider = async (provider: typeof AI_PROVIDERS[0]) => {
     const md = getPageMarkdown()
-    await navigator.clipboard.writeText(md)
+    const pageName = pathname === '/' ? 'home' : pathname.split('/').filter(Boolean).join(' / ')
+
+    const prompt = `I'd like your help understanding this page from my website.
+
+Page: ${pageName}
+
+Here's the content in markdown:
+
+${md}
+
+Please provide a concise summary of what this page communicates and any suggestions for improvement.`
+
+    await navigator.clipboard.writeText(prompt)
     window.open(provider.url, '_blank')
     setOpen(false)
   }

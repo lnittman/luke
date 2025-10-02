@@ -18,6 +18,15 @@ const nextConfig = {
   experimental: {
     optimizeCss: true,
   },
+  // Fix EMFILE errors with Bun
+  webpack: (config) => {
+    config.watchOptions = {
+      poll: 1000,
+      aggregateTimeout: 300,
+      ignored: ['**/node_modules', '**/.next', '**/.git'],
+    }
+    return config
+  },
   // Next.js now supports PWA features natively through the file-based API
   // You can add headers if needed for PWA security, etc.
   async headers() {
