@@ -34,8 +34,7 @@ export default function Process() {
             <div className={styles.column}>
               <h2>SOFTWARE</h2>
               <p>
-                my terminal environment is optimized for context accessibility
-                and remote mobility. i use{' '}
+                i use{' '}
                 <a
                   href="https://ghostty.org"
                   target="_blank"
@@ -43,42 +42,41 @@ export default function Process() {
                 >
                   Ghostty
                 </a>{' '}
-                as my GPU-accelerated terminal, running{' '}
+                with{' '}
                 <a
                   href="https://github.com/tmux/tmux"
                   target="_blank"
                   rel="noopener noreferrer"
                 >
                   tmux
-                </a>{' '}
-                with a window-per-app architecture. each application gets its
-                own isolated tmux window—one for the web app, one for the
-                backend, one for mobile, etc.
-              </p>
-              <p>
-                inside tmux, i maintain a single{' '}
+                </a>
+                . one window per project. inside each window: files open in{' '}
                 <a
                   href="https://neovim.io"
                   target="_blank"
                   rel="noopener noreferrer"
                 >
-                  Neovim
-                </a>{' '}
-                session configured with{' '}
+                  nvim
+                </a>
+                , dev servers running, multiple agent CLI sessions. everything
+                in one{' '}
                 <a
                   href="https://www.lazyvim.org"
                   target="_blank"
                   rel="noopener noreferrer"
                 >
                   LazyVim
-                </a>
-                . within this session, i create tabs for different files and
-                terminal buffers. this means i can have my code editor, dev
-                servers, and AI coding agents all running in the same vim
+                </a>{' '}
                 session, navigable with vim keybindings.
               </p>
               <p>
-                for remote work, i use{' '}
+                i can jump between files, terminals, and agent chats
+                without leaving vim. yank code from one chat/file, paste into another.
+                jump tmux windows to a different project, yank a pattern, bring it back.
+                agent CLIs can refer to external directories on disk.
+              </p>
+              <p>
+                i also use{' '}
                 <a
                   href="https://termius.com"
                   target="_blank"
@@ -86,7 +84,7 @@ export default function Process() {
                 >
                   Termius
                 </a>{' '}
-                on iOS and Android devices with{' '}
+                +{' '}
                 <a
                   href="https://tailscale.com"
                   target="_blank"
@@ -94,9 +92,7 @@ export default function Process() {
                 >
                   Tailscale
                 </a>{' '}
-                VPN. this setup lets me ssh into my development machine from my
-                phone or iPad and continue coding with full context from
-                anywhere.
+                to ssh from my phone or iPad. same session, from wherever.
               </p>
 
               {/* Visual panel: terminal layout */}
@@ -118,17 +114,16 @@ export default function Process() {
                     lineHeight: 1.6,
                   }}
                 >
-                  {`tmux session
-├─ window 1: radar-web
-│  ├─ tab: nvim (files)
-│  ├─ tab: terminal (pnpm dev)
-│  └─ tab: terminal (claude code)
-├─ window 2: radar-api
-│  ├─ tab: nvim (files)
-│  └─ tab: terminal (server)
-└─ window 3: radar-ios
-   ├─ tab: nvim (swift files)
-   └─ tab: terminal (xcodebuild)`}
+                  {`tmux window: project-a
+├─ nvim buffer: src/app/page.tsx
+├─ nvim buffer: components/hero.tsx
+├─ terminal buffer: pnpm dev
+├─ terminal buffer: codex (writing code)
+├─ terminal buffer: claude (planning)
+└─ terminal buffer: backend dev
+
+all navigable with vim keys
+yank/paste between any buffer`}
                 </pre>
               </div>
             </div>
@@ -139,7 +134,7 @@ export default function Process() {
             <div className={styles.column}>
               <h2>AGENTS</h2>
               <p>
-                i primarily use{' '}
+                i run Codex CLI and{' '}
                 <a
                   href="https://claude.com/claude-code"
                   target="_blank"
@@ -147,24 +142,17 @@ export default function Process() {
                 >
                   Claude Code
                 </a>{' '}
-                as my CLI coding agent, with occasional use of Codex CLI as a
-                secondary interface. these agents run in dedicated tmux terminal
-                buffers right alongside my dev servers and build processes.
+                at the same time in different buffers. stream of
+                consciousness—codex builds something, i ask claude to review it
+                and write a handoff prompt, paste that back to codex. or claude
+                debugs with MCP tools and generates tasks for codex to execute.
               </p>
               <p>
-                the key advantage of this setup is context accessibility. when
-                an agent is running in a tmux terminal buffer within my nvim
-                session, i can instantly yank code from any open file, paste it
-                into the agent conversation, or reference other repositories
-                open in different tmux windows—all without leaving the keyboard
-                or breaking my flow.
-              </p>
-              <p>
-                agents have full awareness of the codebase through the terminal
-                environment. they can read files, run tests, execute builds, and
-                commit changes. because everything runs in tmux, the entire
-                development context is always visible and accessible through vim
-                keybindings.
+                agents can see everything in the terminal. i yank code from one
+                file, paste into an agent. reference code from a different repo
+                in another tmux window. all without leaving vim. they can run
+                commands, read files, execute tests, commit changes. everything
+                they need is already in context.
               </p>
 
               {/* Visual panel: agent terminal layout */}
@@ -186,16 +174,16 @@ export default function Process() {
                     lineHeight: 1.6,
                   }}
                 >
-                  {`nvim session
-├─ buffer: src/app/page.tsx
-├─ buffer: src/components/hero.tsx
-├─ terminal buffer: pnpm dev (localhost:3000)
-└─ terminal buffer: claude code
-   └─ agent has access to:
-      • all open buffers
-      • git status
-      • file system
-      • MCP servers`}
+                  {`typical flow:
+me → codex: "build auth flow"
+codex → implements basic version
+me → claude: "review this, make it better"
+claude → writes detailed handoff prompt
+me → codex: [paste claude's prompt]
+codex → refines implementation
+me → claude: "check deployment"
+claude → uses vercel MCP, finds issues
+claude → generates fix tasks for codex`}
                 </pre>
               </div>
             </div>
@@ -206,9 +194,8 @@ export default function Process() {
             <div className={styles.column}>
               <h2>FLYWHEELS</h2>
               <p>
-                Model Context Protocol servers create continuous feedback loops
-                that accelerate development. i use MCP integrations for my
-                primary deployment targets and development workflows.
+                MCP servers let agents interact with deployment platforms and
+                development tools. write, test, deploy, verify, repeat.
               </p>
               <p>
                 <a
@@ -218,11 +205,8 @@ export default function Process() {
                 >
                   Convex MCP
                 </a>{' '}
-                gives agents direct access to my backend. they can query the
-                database, inspect schemas, execute functions, and verify data
-                mutations without leaving the terminal. this means when building
-                a feature, the agent can write the backend function, test it
-                against real data, and verify the results—all in one flow.
+                — query database, run functions, inspect schemas. write a
+                backend mutation, test against real data, verify results.
               </p>
               <p>
                 <a
@@ -232,9 +216,7 @@ export default function Process() {
                 >
                   Vercel MCP
                 </a>{' '}
-                handles frontend deployments. agents can trigger builds, check
-                deployment status, grab preview URLs, and verify that changes
-                shipped correctly. this closes the loop from code to production.
+                — trigger deploys, check status, grab preview URLs.
               </p>
               <p>
                 <a
@@ -244,22 +226,25 @@ export default function Process() {
                 >
                   Playwright MCP
                 </a>{' '}
-                enables browser automation for web projects. agents can interact
-                with the live application, run end-to-end tests, take
-                screenshots, and verify UI behavior. this is critical for
-                testing user flows without manual clicking.
+                — browser automation. click through flows, take screenshots,
+                verify UI.
               </p>
               <p>
-                Xcode MCP provides build and simulator control for iOS and macOS
-                projects. agents can compile Swift code, run builds, launch the
-                simulator, and execute tests. this brings native development
-                into the same feedback loop as web projects.
+                Xcode MCP — build control for iOS/macOS. compile, test, launch
+                simulator.
               </p>
               <p>
-                these tools create flywheels: write code → test with MCP →
-                deploy with MCP → verify with MCP → iterate. the faster this
-                loop spins, the faster i ship.
+                <a
+                  href="https://github.com/modelcontextprotocol/servers/tree/main/src/ref"
+                  target="_blank"
+                  rel="noopener noreferrer"
+                >
+                  Ref MCP
+                </a>{' '}
+                — searches docs across web and private sources. handy for
+                pulling API docs without breaking flow.
               </p>
+              <p>faster loop, faster shipping.</p>
 
               {/* Visual panel: flywheel diagram */}
               <div
@@ -300,12 +285,12 @@ export default function Process() {
    └──────┬──────┘     frontend deploy
           │
           ▼
-   ┌─────────────┐
-   │   VERIFY    │
+   ┌─────────────┐     ref MCP
+   │   VERIFY    │ ◄── docs lookup
    │   working   │
    └──────┬──────┘
           │
-          └──────► iterate`}
+          └──────► iterate faster`}
                 </pre>
               </div>
             </div>
@@ -316,55 +301,34 @@ export default function Process() {
             <div className={styles.column}>
               <h2>PATTERNS</h2>
               <p>
-                the most important insight from this setup is cross-repo
-                context. because i can have multiple repositories open
-                simultaneously in tmux windows, and navigate between them with
-                vim keybindings, i can easily yank code from one project and
-                paste it into another.
+                having cross-repo context matters. i can see multiple projects
+                in tmux windows and yank/paste between them. the filesystem
+                becomes a library of working patterns.
               </p>
               <p>
-                this enables pattern-based development. instead of writing every
-                feature from scratch, i build with reusable architectural
-                blocks. my projects share common patterns: authentication flows,
-                data fetching hooks, API client setup, component structures.
-                when i need a feature, i jump to a repo that has it, yank the
-                implementation, paste it into the new project, and adapt it.
+                need auth? switch to a project that has it, yank the code, paste
+                into the new project, adapt. same with API clients, hooks,
+                component patterns, configs. everything is already working
+                somewhere.
               </p>
               <p>
-                agents amplify this workflow. with MCP access to multiple repos,
-                they can reference patterns across boundaries. "implement auth
-                like radar" means the agent can look at radar's auth
-                implementation through Convex MCP, understand the pattern, and
-                replicate it in the current project.
+                agents with MCP make this better. "implement auth like
+                project-a" and the agent reads that code, understands the
+                pattern, replicates it. this works because i use the same tools
+                across projects—same state management, same API patterns, same
+                composition strategies.
               </p>
               <p>
-                this isn't blind copy-paste. blocks are reused because projects
-                follow consistent architectural patterns. same state management
-                library, same API patterns, same component composition
-                strategies. consistency across projects makes pattern transfer
-                reliable.
+                each pattern gets reused. you're not learning "how to implement
+                X" repeatedly—you're building a workflow around writing good
+                prompts. energy goes into prompts, not memorizing
+                implementation.
               </p>
               <p>
-                this approach aligns with principles from{' '}
-                <a
-                  href="https://www.catb.org/~esr/writings/taoup/html/"
-                  target="_blank"
-                  rel="noopener noreferrer"
-                >
-                  The Art of Unix Programming
-                </a>{' '}
-                by Eric Raymond—modularity, composition, and the Rule of
-                Modularity: "Write simple parts connected by clean interfaces."
-                it also reflects ideas from{' '}
-                <a
-                  href="https://web.stanford.edu/~ouster/cgi-bin/book.php"
-                  target="_blank"
-                  rel="noopener noreferrer"
-                >
-                  A Philosophy of Software Design
-                </a>{' '}
-                by John Ousterhout about reducing complexity through consistent
-                abstractions.
+                something i've noticed: if you capture the pattern behind
+                something silly that inspires you, that toolset can make
+                something meaningful later. patterns from experiments become
+                building blocks.
               </p>
 
               {/* Visual panel: pattern flow */}
@@ -386,29 +350,31 @@ export default function Process() {
                     lineHeight: 1.6,
                   }}
                 >
-                  {`pattern transfer workflow
+                  {`pattern library growth
 
-repo: radar                repo: new-project
-├─ auth/                   ├─ auth/
-│  ├─ clerk.ts            │  └─ [empty]
-│  └─ session.ts          │
-├─ hooks/                  ├─ hooks/
-│  └─ useAuth.ts ──────┐   │  └─ [empty]
-└─ middleware/          │   └─ middleware/
-   └─ auth.ts           │      └─ [empty]
-                        │
-                        │ vim yank (yyy)
-                        │ tmux switch (Alt-2)
-                        │ vim paste (p)
-                        │
-                        └────► adapt pattern
-                               to new context
+project 1
+├─ auth/ (session mgmt)
+├─ hooks/ (data fetching)
+└─ api/ (client setup)
+         │
+         │ yank pattern
+         ▼
+project 2
+├─ auth/ ✓ (adapted)
+├─ hooks/ ✓ (same pattern)
+├─ api/ ✓ (same pattern)
+└─ animations/ (new pattern!)
+         │
+         │ yank pattern
+         ▼
+project 3
+└─ animations/ ✓ (from project 2)
 
-agents via MCP can:
-• read patterns from radar
-• understand the architecture
-• replicate in new-project
-• maintain consistency`}
+compound gains:
+• patterns → reused across projects
+• each reuse = faster build
+• focus shifts to prompts/workflow
+• library grows over time`}
                 </pre>
               </div>
             </div>
