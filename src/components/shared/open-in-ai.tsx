@@ -21,12 +21,12 @@ import styles from './open-in-ai.module.scss'
 const AI_PROVIDERS = [
   {
     name: 'Claude',
-    url: 'https://claude.ai/new',
+    baseUrl: 'https://claude.ai/new',
     icon: Anthropic,
   },
   {
     name: 'ChatGPT',
-    url: 'https://chatgpt.com',
+    baseUrl: 'https://chatgpt.com',
     icon: OpenAI,
   },
 ]
@@ -106,8 +106,20 @@ ${md}
 
 Please help me understand what this page is about and what Luke is communicating here.`
 
-    await navigator.clipboard.writeText(prompt)
-    window.open(provider.url, '_blank')
+    // Build URL with query parameters based on provider
+    let url = provider.baseUrl
+
+    if (provider.name === 'ChatGPT') {
+      // ChatGPT uses q parameter for pre-filled prompt
+      const params = new URLSearchParams({ q: prompt })
+      url = `${provider.baseUrl}?${params.toString()}`
+    } else if (provider.name === 'Claude') {
+      // Claude AI doesn't support URL parameters for prefilled prompts
+      // Copy to clipboard as fallback
+      await navigator.clipboard.writeText(prompt)
+    }
+
+    window.open(url, '_blank')
     setOpen(false)
   }
 
