@@ -1,7 +1,7 @@
 'use client'
 
 import { Anthropic, OpenAI } from '@lobehub/icons'
-import { Copy, FileText, Sparkles } from 'lucide-react'
+import { Copy, FileText } from 'lucide-react'
 import { usePathname, useRouter } from 'next/navigation'
 import { useState } from 'react'
 import TurndownService from 'turndown'
@@ -72,7 +72,7 @@ export function OpenInAI() {
       <Popover open={open} onOpenChange={setOpen}>
         <PopoverTrigger asChild>
           <button className={styles.trigger} aria-label="Open in AI">
-            <Sparkles />
+            <span>✦</span>
           </button>
         </PopoverTrigger>
         <PopoverContent align="end" className={styles.popover}>
@@ -86,29 +86,28 @@ export function OpenInAI() {
             View as Markdown
           </button>
 
-          <div className={styles.divider} />
-
-          <div className={styles.label}>Open in:</div>
-
-          <div className={styles.providerGrid}>
-            {AI_PROVIDERS.map((provider) => {
-              const Icon = provider.icon
-              return (
-                <Tooltip key={provider.name}>
-                  <TooltipTrigger asChild>
-                    <button
-                      className={styles.providerButton}
-                      onClick={() => handleOpenInProvider(provider)}
-                    >
-                      <Icon size={16} />
-                    </button>
-                  </TooltipTrigger>
-                  <TooltipContent className={styles.tooltip}>
-                    {provider.name}
-                  </TooltipContent>
-                </Tooltip>
-              )
-            })}
+          <div className={styles.labelRow}>
+            <div className={styles.label}>Open in:</div>
+            <div className={styles.providerGrid}>
+              {AI_PROVIDERS.map((provider) => {
+                const Icon = provider.icon
+                return (
+                  <Tooltip key={provider.name}>
+                    <TooltipTrigger asChild>
+                      <button
+                        className={styles.providerButton}
+                        onClick={() => handleOpenInProvider(provider)}
+                      >
+                        <Icon size={16} />
+                      </button>
+                    </TooltipTrigger>
+                    <TooltipContent className={styles.tooltip}>
+                      {provider.name}
+                    </TooltipContent>
+                  </Tooltip>
+                )
+              })}
+            </div>
           </div>
         </PopoverContent>
       </Popover>

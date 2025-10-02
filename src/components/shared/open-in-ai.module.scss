@@ -2,8 +2,8 @@
   display: flex;
   align-items: center;
   justify-content: center;
-  width: 2rem;
-  height: 2rem;
+  width: 2.5rem;
+  height: 2.5rem;
   background: none;
   border: 1px solid rgb(var(--border));
   color: rgb(var(--text-primary));
@@ -11,11 +11,8 @@
   transition: all 150ms ease-out;
   font-family: var(--font-mono);
   padding: 0;
-
-  svg {
-    width: 0.875rem;
-    height: 0.875rem;
-  }
+  font-size: 1rem;
+  line-height: 1;
 
   &:hover {
     background: rgb(var(--surface-1));
@@ -50,10 +47,6 @@
   transition: none;
   text-align: left;
 
-  &:last-child {
-    border-bottom: none;
-  }
-
   &:hover {
     background: rgb(var(--surface-2));
     color: rgb(var(--text-primary));
@@ -66,12 +59,19 @@
   margin: 0;
 }
 
+.labelRow {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 0.75rem 1rem;
+  border-bottom: 1px solid rgb(var(--border));
+}
+
 .label {
   font-family: var(--font-mono);
   font-size: 0.75rem;
   text-transform: uppercase;
   color: rgb(var(--text-secondary));
-  padding: 0.75rem 1rem 0.5rem;
   opacity: 0.7;
 }
 
@@ -80,7 +80,6 @@
   align-items: center;
   justify-content: flex-end;
   gap: 0.5rem;
-  padding: 0.75rem 1rem;
 }
 
 .providerButton {
