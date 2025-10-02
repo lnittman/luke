@@ -2,6 +2,7 @@ import { Accordion } from '@/components/app/home/accordion'
 import { BlockLoader } from '@/components/shared/block-loader'
 import { DefaultLayout } from '@/components/shared/default-layout'
 import { FooterNavigation } from '@/components/shared/footer-navigation'
+import { OpenInAI } from '@/components/shared/open-in-ai'
 import styles from '@/components/shared/root.module.scss'
 import { ThemeSwitcher } from '@/components/shared/theme-switcher'
 
@@ -24,7 +25,10 @@ export default function Home() {
             <BlockLoader mode={2} />
             <h1>HOME</h1>
           </div>
-          <ThemeSwitcher />
+          <div style={{ display: 'flex', alignItems: 'center', gap: '0.5rem' }}>
+            <OpenInAI />
+            <ThemeSwitcher />
+          </div>
         </div>
       </div>
 

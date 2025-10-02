@@ -2,6 +2,7 @@ import { Accordion } from '@/components/app/home/accordion'
 import { BlockLoader } from '@/components/shared/block-loader'
 import { DefaultLayout } from '@/components/shared/default-layout'
 import { FooterNavigation } from '@/components/shared/footer-navigation'
+import { OpenInAI } from '@/components/shared/open-in-ai'
 import styles from '@/components/shared/root.module.scss'
 import { ThemeSwitcher } from '@/components/shared/theme-switcher'
 
@@ -24,7 +25,10 @@ export default function Process() {
             <BlockLoader mode={4} />
             <h1>PROCESS</h1>
           </div>
-          <ThemeSwitcher />
+          <div style={{ display: 'flex', alignItems: 'center', gap: '0.5rem' }}>
+            <OpenInAI />
+            <ThemeSwitcher />
+          </div>
         </div>
       </div>
 
@@ -211,7 +215,7 @@ yank/paste between any buffer`}
                   }}
                 >
                   {`typical flow:
-me → codex: "build auth flow"
+me → codex: "build presence feature"
 codex → implements basic version
 me → claude: "review this, make it better"
 claude → writes detailed handoff prompt
@@ -337,13 +341,13 @@ claude → generates fix tasks for codex`}
                 ~/Developer directory.
               </p>
               <p>
-                when you need auth: find a reference project that has it, yank
-                relevant context, paste into the new project, adapt. same with
-                API clients, hooks, components, styles, config. everything is
-                already working somewhere.
+                when you need presence: find a reference project that has it,
+                yank relevant context, paste into the new project, adapt. same
+                with API clients, hooks, components, styles, config. everything
+                is already working somewhere.
               </p>
               <p>
-                "implement auth like project-a" - the agent reads project-a,
+                "implement presence like project-a" - the agent reads project-a,
                 understands the pattern, replicates it for the current context.
                 this works well when using the same tools across projects—same
                 state management, same API patterns, same composition
@@ -404,14 +408,14 @@ claude → generates fix tasks for codex`}
                   {`pattern library growth
 
 project 1
-├─ auth/ (session mgmt)
+├─ presence/ (user status)
 ├─ hooks/ (data fetching)
 └─ api/ (client setup)
          │
          │ yank pattern
          ▼
 project 2
-├─ auth/ ✓ (adapted)
+├─ presence/ ✓ (adapted)
 ├─ hooks/ ✓ (same pattern)
 ├─ api/ ✓ (same pattern)
 └─ animations/ (new pattern!)
