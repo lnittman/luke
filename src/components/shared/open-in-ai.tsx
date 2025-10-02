@@ -38,12 +38,27 @@ export function OpenInAI() {
   const pathname = usePathname()
 
   const getPageMarkdown = () => {
-    const content = document.querySelector('main') || document.body
+    // Get the main content area - look for innerViewport first, then content
+    const innerViewport = document.querySelector('[class*="innerViewport"]')
+    const content = innerViewport || document.querySelector('main') || document.body
+
+    // Clone the content to avoid modifying the DOM
+    const clone = content.cloneNode(true) as HTMLElement
+
+    // Remove non-content elements (loaders, navigation, etc)
+    clone.querySelectorAll('[class*="loader"]').forEach(el => el.remove())
+    clone.querySelectorAll('nav').forEach(el => el.remove())
+    clone.querySelectorAll('button').forEach(el => el.remove())
+    clone.querySelectorAll('header').forEach(el => el.remove())
+    clone.querySelectorAll('footer').forEach(el => el.remove())
+
     const turndownService = new TurndownService({
       headingStyle: 'atx',
       codeBlockStyle: 'fenced',
+      emDelimiter: '_',
     })
-    return turndownService.turndown(content.innerHTML)
+
+    return turndownService.turndown(clone.innerHTML)
   }
 
   const handleCopyMarkdown = async () => {

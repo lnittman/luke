@@ -2,11 +2,6 @@
 
 import { useEffect, useState } from 'react'
 import TurndownService from 'turndown'
-import { DefaultLayout } from '@/components/shared/default-layout'
-import { BlockLoader } from '@/components/shared/block-loader'
-import { ThemeSwitcher } from '@/components/shared/theme-switcher'
-import { FooterNavigation } from '@/components/shared/footer-navigation'
-import styles from '@/components/shared/root.module.scss'
 
 interface PageProps {
   params: Promise<{ slug: string }>
@@ -51,46 +46,35 @@ export default function MarkdownPage({ params }: PageProps) {
       })
   }, [slug])
 
+  if (loading) {
+    return (
+      <html lang="en">
+        <head>
+          <meta charSet="utf-8" />
+          <meta name="viewport" content="width=device-width, initial-scale=1" />
+          <title>{slug}.md</title>
+        </head>
+        <body style={{ margin: 0, padding: 0, fontFamily: 'monospace' }}>
+          <pre style={{ margin: 0, padding: '1rem', whiteSpace: 'pre-wrap' }}>
+            Loading markdown...
+          </pre>
+        </body>
+      </html>
+    )
+  }
+
   return (
-    <DefaultLayout>
-      <div className={styles.header}>
-        <div className={styles.column}>
-          <div style={{ display: 'flex', alignItems: 'center', gap: '1rem' }}>
-            <BlockLoader mode={3} />
-            <h1>{slug.toUpperCase()}.MD</h1>
-          </div>
-          <ThemeSwitcher />
-        </div>
-      </div>
-
-      <div className={styles.content}>
-        <div className={styles.innerViewport}>
-          <div className={styles.column}>
-            {loading ? (
-              <p>Loading markdown...</p>
-            ) : (
-              <pre
-                style={{
-                  fontFamily: 'var(--font-mono)',
-                  fontSize: '0.875rem',
-                  lineHeight: '1.6',
-                  whiteSpace: 'pre-wrap',
-                  wordBreak: 'break-word',
-                  color: 'rgb(var(--text-primary))',
-                }}
-              >
-                {markdown}
-              </pre>
-            )}
-          </div>
-        </div>
-      </div>
-
-      <div className={styles.footer}>
-        <div className={styles.column}>
-          <FooterNavigation />
-        </div>
-      </div>
-    </DefaultLayout>
+    <html lang="en">
+      <head>
+        <meta charSet="utf-8" />
+        <meta name="viewport" content="width=device-width, initial-scale=1" />
+        <title>{slug}.md</title>
+      </head>
+      <body style={{ margin: 0, padding: 0, fontFamily: 'monospace', backgroundColor: '#fff', color: '#000' }}>
+        <pre style={{ margin: 0, padding: '1rem', whiteSpace: 'pre-wrap', wordBreak: 'break-word', fontSize: '14px', lineHeight: '1.6' }}>
+          {markdown}
+        </pre>
+      </body>
+    </html>
   )
 }
