@@ -100,7 +100,16 @@ export default function Process() {
                 >
                   Tailscale
                 </a>{' '}
-                to ssh from my phone or iPad. same session, from wherever.
+                to ssh from my phone or tablet. same session, from wherever. i
+                use a{' '}
+                <a
+                  href="https://daylightcomputer.com"
+                  target="_blank"
+                  rel="noopener noreferrer"
+                >
+                  Daylight DC-1
+                </a>{' '}
+                tablet for coding outdoors and at night.
               </p>
 
               <div
@@ -419,6 +428,188 @@ compound gains:
 • library grows over time`}
                 </pre>
               </div>
+            </Accordion>
+
+            <Accordion defaultOpen={false} title="LINKS">
+              <p>hardware:</p>
+              <ul>
+                <li>
+                  <a
+                    href="https://daylightcomputer.com"
+                    target="_blank"
+                    rel="noopener noreferrer"
+                  >
+                    Daylight DC-1
+                  </a>{' '}
+                  — tablet for outdoor/night coding
+                </li>
+              </ul>
+
+              <p>terminal + environment:</p>
+              <ul>
+                <li>
+                  <a
+                    href="https://ghostty.org"
+                    target="_blank"
+                    rel="noopener noreferrer"
+                  >
+                    Ghostty
+                  </a>{' '}
+                  — GPU-accelerated terminal
+                </li>
+                <li>
+                  <a
+                    href="https://github.com/tmux/tmux"
+                    target="_blank"
+                    rel="noopener noreferrer"
+                  >
+                    tmux
+                  </a>{' '}
+                  — terminal multiplexer
+                </li>
+                <li>
+                  <a
+                    href="https://neovim.io"
+                    target="_blank"
+                    rel="noopener noreferrer"
+                  >
+                    Neovim
+                  </a>{' '}
+                  — vim-based text editor
+                </li>
+                <li>
+                  <a
+                    href="https://www.lazyvim.org"
+                    target="_blank"
+                    rel="noopener noreferrer"
+                  >
+                    LazyVim
+                  </a>{' '}
+                  — vim plugin manager
+                </li>
+                <li>
+                  <a
+                    href="https://github.com/lnittman/config"
+                    target="_blank"
+                    rel="noopener noreferrer"
+                  >
+                    lnittman/config
+                  </a>{' '}
+                  — my dotfiles
+                </li>
+              </ul>
+
+              <p>remote access:</p>
+              <ul>
+                <li>
+                  <a
+                    href="https://termius.com"
+                    target="_blank"
+                    rel="noopener noreferrer"
+                  >
+                    Termius
+                  </a>{' '}
+                  — SSH client for iOS/Android
+                </li>
+                <li>
+                  <a
+                    href="https://tailscale.com"
+                    target="_blank"
+                    rel="noopener noreferrer"
+                  >
+                    Tailscale
+                  </a>{' '}
+                  — VPN for device access
+                </li>
+              </ul>
+
+              <p>AI agents:</p>
+              <ul>
+                <li>
+                  <a
+                    href="https://www.google.com/search?q=codex+cli"
+                    target="_blank"
+                    rel="noopener noreferrer"
+                  >
+                    Codex CLI
+                  </a>{' '}
+                  — GPT-5 coding agent
+                </li>
+                <li>
+                  <a
+                    href="https://claude.com/claude-code"
+                    target="_blank"
+                    rel="noopener noreferrer"
+                  >
+                    Claude Code
+                  </a>{' '}
+                  — CLI agent with MCP
+                </li>
+                <li>
+                  <a
+                    href="https://github.com/lnittman/halo"
+                    target="_blank"
+                    rel="noopener noreferrer"
+                  >
+                    halo
+                  </a>{' '}
+                  — prompt framework
+                </li>
+              </ul>
+
+              <p>MCP servers:</p>
+              <ul>
+                <li>
+                  <a
+                    href="https://docs.convex.dev/client/mcp"
+                    target="_blank"
+                    rel="noopener noreferrer"
+                  >
+                    Convex MCP
+                  </a>{' '}
+                  — backend integration
+                </li>
+                <li>
+                  <a
+                    href="https://vercel.com"
+                    target="_blank"
+                    rel="noopener noreferrer"
+                  >
+                    Vercel MCP
+                  </a>{' '}
+                  — deployment management
+                </li>
+                <li>
+                  <a
+                    href="https://playwright.dev"
+                    target="_blank"
+                    rel="noopener noreferrer"
+                  >
+                    Playwright MCP
+                  </a>{' '}
+                  — browser automation
+                </li>
+                <li>
+                  <a
+                    href="https://github.com/cameroncooke/XcodeBuildMCP"
+                    target="_blank"
+                    rel="noopener noreferrer"
+                  >
+                    Xcode MCP
+                  </a>{' '}
+                  — iOS/macOS builds
+                </li>
+                <li>
+                  <a
+                    href="https://github.com/modelcontextprotocol/servers/tree/main/src/ref"
+                    target="_blank"
+                    rel="noopener noreferrer"
+                  >
+                    Ref MCP
+                  </a>{' '}
+                  — docs search + private repos
+                </li>
+              </ul>
             </Accordion>
           </div>
         </div>
