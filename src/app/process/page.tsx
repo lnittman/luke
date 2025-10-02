@@ -434,6 +434,378 @@ compound gains:
               </div>
             </Accordion>
 
+            <Accordion defaultOpen={false} title="PROMPTS">
+              <p>
+                copy these prompts into your AI coding agent. they're designed to
+                run from your ~ directory and demonstrate the workflow patterns
+                described above.
+              </p>
+
+              <div
+                style={{
+                  width: '100%',
+                  border: '1px solid rgb(var(--border))',
+                  padding: '1.5rem',
+                  marginTop: '1.5rem',
+                  fontFamily: 'monospace',
+                  fontSize: '0.75rem',
+                  backgroundColor: 'rgb(var(--surface-1))',
+                }}
+              >
+                <p
+                  style={{
+                    margin: 0,
+                    marginBottom: '1rem',
+                    color: 'rgb(var(--text-primary))',
+                    fontWeight: 'bold',
+                  }}
+                >
+                  1. ENVIRONMENT SETUP
+                </p>
+                <pre
+                  style={{
+                    margin: 0,
+                    color: 'rgb(var(--text-secondary))',
+                    lineHeight: 1.6,
+                    whiteSpace: 'pre-wrap',
+                    wordBreak: 'break-word',
+                  }}
+                >
+                  {`<environment_setup>
+<context>
+i want to set up an ai-native development environment following Luke Nittmann's workflow from lukenittmann.com/process. i need you to scaffold my ~/Developer directory and configure essential tools.
+</context>
+
+<requirements>
+  <directory_structure>
+    create ~/Developer/ as the root workspace
+    organize all projects under this directory
+    maintain clean separation between projects
+  </directory_structure>
+
+  <essential_repos>
+    clone lnittman/config (dotfiles: nvim, tmux, zsh)
+    clone lnittman/halo (prompt framework)
+    set up proper symlinks to ~/.config and ~/.halo
+  </essential_repos>
+
+  <verification>
+    verify all symlinks are correct
+    check that commands are in PATH
+    test basic functionality
+  </verification>
+</requirements>
+
+<execution_steps>
+1. create ~/Developer directory structure
+2. clone repositories:
+   - git clone https://github.com/lnittman/config.git ~/Developer/config
+   - git clone https://github.com/lnittman/halo.git ~/Developer/halo
+
+3. run config setup script:
+   - cd ~/Developer/config
+   - ./setup.sh
+
+4. link halo to ~/.halo:
+   - ln -s ~/Developer/halo ~/.halo
+   - add to PATH: echo 'export PATH="$HOME/.halo:$PATH"' >> ~/.zshrc
+   - source ~/.zshrc
+
+5. verify setup:
+   - check nvim config: ls -la ~/.config/nvim
+   - check tmux config: ls -la ~/.tmux.conf
+   - check halo commands: ls -la ~/.halo/commands
+   - test halo: /prime (should be available as command)
+</execution_steps>
+
+<success_criteria>
+all symlinks created successfully
+halo commands accessible from any directory
+terminal environment ready for tmux + nvim workflow
+able to run /prime command from halo framework
+</success_criteria>
+</environment_setup>`}
+                </pre>
+              </div>
+
+              <div
+                style={{
+                  width: '100%',
+                  border: '1px solid rgb(var(--border))',
+                  padding: '1.5rem',
+                  marginTop: '1.5rem',
+                  fontFamily: 'monospace',
+                  fontSize: '0.75rem',
+                  backgroundColor: 'rgb(var(--surface-1))',
+                }}
+              >
+                <p
+                  style={{
+                    margin: 0,
+                    marginBottom: '1rem',
+                    color: 'rgb(var(--text-primary))',
+                    fontWeight: 'bold',
+                  }}
+                >
+                  2. PATTERN-BASED DEVELOPMENT
+                </p>
+                <pre
+                  style={{
+                    margin: 0,
+                    color: 'rgb(var(--text-secondary))',
+                    lineHeight: 1.6,
+                    whiteSpace: 'pre-wrap',
+                    wordBreak: 'break-word',
+                  }}
+                >
+                  {`<pattern_development>
+<context>
+i'm building a feature that i've implemented before in another project. instead of rebuilding from scratch, i want to find the existing pattern in ~/Developer/, understand how it works, and adapt it to my current project.
+</context>
+
+<cross_repo_workflow>
+  <discovery_phase>
+    scan ~/Developer/ for projects with similar features
+    identify which project has the best reference implementation
+    understand the pattern: components, hooks, API structure, state management
+  </discovery_phase>
+
+  <analysis_phase>
+    examine the reference implementation:
+    - what files are involved?
+    - what dependencies does it use?
+    - how is state managed?
+    - what's the data flow?
+    - are there any gotchas or edge cases handled?
+  </analysis_phase>
+
+  <adaptation_phase>
+    adapt the pattern to current project context:
+    - adjust to current tech stack (if different)
+    - match existing code style and conventions
+    - integrate with current state management
+    - update imports and dependencies
+    - preserve the core pattern while fitting local architecture
+  </adaptation_phase>
+</cross_repo_workflow>
+
+<thinking_process>
+let me think about this feature:
+
+what pattern am i looking for?
+- [describe the feature/pattern you need]
+
+which projects might have this?
+- scan ~/Developer/ for likely candidates
+- check recent projects first (more likely to match current stack)
+
+what's the reference implementation?
+- examine [project-name] at [path]
+- key files: [list relevant files]
+- pattern structure: [describe architecture]
+
+how do i adapt it?
+- current project uses [tech stack]
+- reference uses [tech stack]
+- adjustments needed: [list differences]
+- integration points: [describe how it fits]
+</thinking_process>
+
+<output_format>
+## Pattern Analysis
+
+**reference project**: ~/Developer/[project-name]
+**pattern**: [pattern name/description]
+**files involved**: [list files]
+
+## Key Implementation Details
+
+[code snippets or architectural notes from reference]
+
+## Adaptation Plan
+
+1. [step 1: what to copy]
+2. [step 2: what to modify]
+3. [step 3: how to integrate]
+
+## Code Implementation
+
+[adapted code for current project]
+
+## Verification Steps
+
+- [ ] pattern adapted to current stack
+- [ ] integrates with existing architecture
+- [ ] maintains reference pattern benefits
+- [ ] follows current project conventions
+</output_format>
+</pattern_development>`}
+                </pre>
+              </div>
+
+              <div
+                style={{
+                  width: '100%',
+                  border: '1px solid rgb(var(--border))',
+                  padding: '1.5rem',
+                  marginTop: '1.5rem',
+                  fontFamily: 'monospace',
+                  fontSize: '0.75rem',
+                  backgroundColor: 'rgb(var(--surface-1))',
+                }}
+              >
+                <p
+                  style={{
+                    margin: 0,
+                    marginBottom: '1rem',
+                    color: 'rgb(var(--text-primary))',
+                    fontWeight: 'bold',
+                  }}
+                >
+                  3. AGENT ORCHESTRATION
+                </p>
+                <pre
+                  style={{
+                    margin: 0,
+                    color: 'rgb(var(--text-secondary))',
+                    lineHeight: 1.6,
+                    whiteSpace: 'pre-wrap',
+                    wordBreak: 'break-word',
+                  }}
+                >
+                  {`<agent_orchestration>
+<context>
+i'm working with multiple AI agents simultaneously (like Codex + Claude Code). i need clear handoff prompts that let me coordinate between agents, where one reviews another's work or generates tasks for the other to execute.
+</context>
+
+<multi_agent_strategy>
+  <agent_roles>
+    **builder agent** (Codex, GPT-5):
+    - rapid feature implementation
+    - follows specs precisely
+    - executes defined tasks
+
+    **orchestrator agent** (Claude Code with MCP):
+    - uses MCP tools for deployment/testing
+    - reviews implementation quality
+    - generates detailed handoff prompts
+    - debugs with context from multiple sources
+  </agent_roles>
+
+  <coordination_patterns>
+    ## builder → orchestrator
+    "i just implemented [feature]. review the code and suggest improvements."
+
+    ## orchestrator → builder
+    "here's a detailed prompt to refine the implementation: [structured prompt]"
+
+    ## orchestrator discovers issue → builder fixes
+    "used Playwright MCP to test, found these issues: [list]. here are exact fix tasks: [tasks]"
+  </coordination_patterns>
+</multi_agent_strategy>
+
+<handoff_template>
+when generating prompts for another agent:
+
+## Implementation Context
+
+**what was built**: [feature description]
+**current state**: [what works, what doesn't]
+**files changed**: [list of files]
+
+## Code Review Findings
+
+[specific issues or improvements needed]
+
+## Refined Requirements
+
+<requirements>
+  [structured requirements for next agent]
+</requirements>
+
+## Suggested Approach
+
+1. [specific implementation step]
+2. [specific implementation step]
+3. [verification step]
+
+## Success Criteria
+
+- [ ] [measurable outcome 1]
+- [ ] [measurable outcome 2]
+- [ ] [measurable outcome 3]
+</handoff_template>
+
+<workflow_example>
+# typical multi-agent session
+
+## round 1: initial build
+me → builder: "implement user presence feature"
+builder → implements basic version
+
+## round 2: review + refinement prompt
+me → orchestrator: "review this presence implementation"
+orchestrator → analyzes code, generates detailed refinement prompt
+
+## round 3: refined build
+me → builder: [paste orchestrator's prompt]
+builder → implements refined version
+
+## round 4: deployment verification
+me → orchestrator: "check deployment with vercel MCP"
+orchestrator → uses MCP to verify, finds edge case
+orchestrator → generates fix tasks
+
+## round 5: fixes
+me → builder: [paste fix tasks]
+builder → applies fixes
+
+## result
+feature implemented with multiple perspectives
+higher quality through review cycles
+MCP tools used for real-world verification
+clear handoff prompts maintain context
+</workflow_example>
+
+<output_format>
+when acting as the orchestrator reviewing another agent's work:
+
+## Code Review
+
+**reviewed**: [feature/files]
+**quality**: [assessment]
+**issues found**: [count]
+
+## Detailed Findings
+
+### Issue 1: [title]
+**location**: [file:line]
+**problem**: [description]
+**fix**: [specific fix]
+
+[repeat for each issue]
+
+## Handoff Prompt for Builder Agent
+
+[generate complete, structured prompt that builder can execute]
+</output_format>
+</agent_orchestration>`}
+                </pre>
+              </div>
+
+              <p style={{ marginTop: '1.5rem' }}>
+                these prompts use XML structure following{' '}
+                <a
+                  href="https://docs.anthropic.com/en/docs/build-with-claude/prompt-engineering/use-xml-tags"
+                  target="_blank"
+                  rel="noopener noreferrer"
+                >
+                  Anthropic's prompt engineering guidelines
+                </a>
+                . modify them to fit your workflow and project structure.
+              </p>
+            </Accordion>
+
             <Accordion defaultOpen={false} title="LINKS">
               <p>hardware:</p>
               <ul>
