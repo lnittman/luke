@@ -1,3 +1,4 @@
+import { Accordion } from '@/components/app/home/accordion'
 import { BlockLoader } from '@/components/shared/block-loader'
 import { DefaultLayout } from '@/components/shared/default-layout'
 import { FooterNavigation } from '@/components/shared/footer-navigation'
@@ -29,10 +30,8 @@ export default function Process() {
 
       <div className={styles.content}>
         <div className={styles.innerViewport}>
-          {/* SOFTWARE Section */}
-          <div className={styles.row}>
-            <div className={styles.column}>
-              <h2>SOFTWARE</h2>
+          <div className="space-y-0" style={{ marginTop: '0' }}>
+            <Accordion defaultOpen={false} title="SOFTWARE">
               <p>
                 i use{' '}
                 <a
@@ -67,7 +66,16 @@ export default function Process() {
                 >
                   LazyVim
                 </a>{' '}
-                session, navigable with vim keybindings.
+                session (my plugin manager), navigable with vim keybindings. my
+                full config is at{' '}
+                <a
+                  href="https://github.com/lnittman/config"
+                  target="_blank"
+                  rel="noopener noreferrer"
+                >
+                  lnittman/config
+                </a>
+                .
               </p>
               <p>
                 i can jump between files, terminals, and agent chats without
@@ -95,7 +103,6 @@ export default function Process() {
                 to ssh from my phone or iPad. same session, from wherever.
               </p>
 
-              {/* Visual panel: terminal layout */}
               <div
                 style={{
                   width: '100%',
@@ -126,15 +133,19 @@ all navigable with vim keys
 yank/paste between any buffer`}
                 </pre>
               </div>
-            </div>
-          </div>
+            </Accordion>
 
-          {/* AGENTS Section */}
-          <div className={styles.row}>
-            <div className={styles.column}>
-              <h2>AGENTS</h2>
+            <Accordion defaultOpen={false} title="AGENTS">
               <p>
-                i run Codex CLI and{' '}
+                i run{' '}
+                <a
+                  href="https://www.google.com/search?q=codex+cli"
+                  target="_blank"
+                  rel="noopener noreferrer"
+                >
+                  Codex CLI
+                </a>{' '}
+                and{' '}
                 <a
                   href="https://claude.com/claude-code"
                   target="_blank"
@@ -154,8 +165,24 @@ yank/paste between any buffer`}
                 commands, read files, execute tests, commit changes. everything
                 they need is already in context.
               </p>
+              <p>
+                i use{' '}
+                <a
+                  href="https://github.com/lnittman/halo"
+                  target="_blank"
+                  rel="noopener noreferrer"
+                >
+                  halo
+                </a>
+                , a universal prompt framework with templates and commands.
+                instead of writing prompts from scratch, i use commands like
+                /prime, /build, /test, /docs. external commands like
+                /external:codex or /external:claude generate structured prompts
+                for specific tools. components library has reusable patterns—XML
+                structures, reasoning patterns, output formats. makes prompts
+                consistent and saves me from reinventing the wheel.
+              </p>
 
-              {/* Visual panel: agent terminal layout */}
               <div
                 style={{
                   width: '100%',
@@ -186,13 +213,9 @@ claude → uses vercel MCP, finds issues
 claude → generates fix tasks for codex`}
                 </pre>
               </div>
-            </div>
-          </div>
+            </Accordion>
 
-          {/* FLYWHEELS Section */}
-          <div className={styles.row}>
-            <div className={styles.column}>
-              <h2>FLYWHEELS</h2>
+            <Accordion defaultOpen={false} title="FLYWHEELS">
               <p>
                 MCP servers let agents interact with deployment platforms and
                 development tools. write, test, deploy, verify, repeat.
@@ -248,7 +271,6 @@ claude → generates fix tasks for codex`}
               </p>
               <p>faster loop, faster shipping.</p>
 
-              {/* Visual panel: flywheel diagram */}
               <div
                 style={{
                   width: '100%',
@@ -295,44 +317,63 @@ claude → generates fix tasks for codex`}
           └──────► iterate faster`}
                 </pre>
               </div>
-            </div>
-          </div>
+            </Accordion>
 
-          {/* PATTERNS Section */}
-          <div className={styles.row}>
-            <div className={styles.column}>
-              <h2>PATTERNS</h2>
+            <Accordion defaultOpen={false} title="PATTERNS">
               <p>
-                having cross-repo context matters. i can always see multiple projects in tmux windows and yank/paste
-                between them. the filesystem becomes a library of working patterns.
-                be as organized as you need.
-                form a working mental model around your ~/Developer directory.
+                having cross-repo context matters. i can always see multiple
+                projects in tmux windows and yank/paste between them. the
+                filesystem becomes a library of working patterns. be as
+                organized as you need. form a working mental model around your
+                ~/Developer directory.
               </p>
               <p>
-                when you need auth: find a reference project that has it, yank relevant context, paste
-                into the new project, adapt. same with API clients, hooks, components, styles, config.
-                everything is already working somewhere.
+                when you need auth: find a reference project that has it, yank
+                relevant context, paste into the new project, adapt. same with
+                API clients, hooks, components, styles, config. everything is
+                already working somewhere.
               </p>
               <p>
-                "implement auth like project-a" - the agent reads project-a, understands the
-                pattern, replicates it for the current context. this works well when using the same tools
-                across projects—same state management, same API patterns, same composition strategies.
-                products must have differentiators but many 'features' are boilerplate / common.
+                "implement auth like project-a" - the agent reads project-a,
+                understands the pattern, replicates it for the current context.
+                this works well when using the same tools across projects—same
+                state management, same API patterns, same composition
+                strategies. products must have differentiators but many
+                'features' are boilerplate / common.
               </p>
               <p>
-                patterns can be reused. avoid the trap of 'learning' how to implement
-                XYZ repeatedly—build a workflow around writing good prompts.
-                energy goes into prompts, not memorizing implementation.
-                implementation always informs the prompt.
+                patterns can be reused. avoid the trap of 'learning' how to
+                implement XYZ repeatedly—build a workflow around writing good
+                prompts. energy goes into prompts, not memorizing
+                implementation. implementation always informs the prompt.
               </p>
               <p>
-                if you capture the pattern behind something silly that inspires you,
-                that toolset can make for something meaningful later on.
-                patterns from experiments become building blocks.
-                random ideas are very important, *not* a waste of time.
+                if you capture the pattern behind something silly that inspires
+                you, that toolset can make for something meaningful later on.
+                patterns from experiments become building blocks. random ideas
+                are very important, *not* a waste of time.
+              </p>
+              <p>
+                curiosity matters more now. if you understand software you can
+                find great examples and reference points. github explore is
+                invaluable—find libraries and repos you like, ask claude how
+                they're made, how you'd implement their features in your
+                codebase adapted to your preferred tech.
+              </p>
+              <p>
+                LLMs aren't the first tool for building software in semantic
+                terms but for me it's by far the most instinctive. i can speak
+                exactly what i mean and the agent attempts to do it. you can
+                tend your own garden and create a personalized framework with
+                hooks for contextual relevancy at the most personalized points
+                of integration with actual development workflows.
+              </p>
+              <p>
+                it involves 'giving up' on coding as it was done before and
+                'leaning in' to the promise that your taste and technical skill
+                and personality will ultimately shine through in-app.
               </p>
 
-              {/* Visual panel: pattern flow */}
               <div
                 style={{
                   width: '100%',
@@ -378,7 +419,7 @@ compound gains:
 • library grows over time`}
                 </pre>
               </div>
-            </div>
+            </Accordion>
           </div>
         </div>
       </div>
