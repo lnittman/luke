@@ -145,7 +145,7 @@ export default function LogsPage() {
       <div className={styles.header}>
         <div className={styles.column}>
           <div style={{ display: 'flex', alignItems: 'center', gap: '1rem' }}>
-            <BlockLoader mode={2} />
+            <BlockLoader mode={5} />
             <h1>LOGS</h1>
           </div>
           <ThemeSwitcher />
@@ -393,11 +393,13 @@ export default function LogsPage() {
                     </Button>
                   </PopoverTrigger>
                   <PopoverContent
-                    className="w-80 p-0 rounded-none"
+                    className="p-0 rounded-none"
                     style={{
                       border: '1px solid rgb(var(--border))',
                       backgroundColor: 'rgb(var(--background-start))',
                       boxShadow: 'none',
+                      width: 'auto',
+                      minWidth: '350px',
                     }}
                     align="end"
                   >
