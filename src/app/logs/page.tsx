@@ -404,6 +404,7 @@ export default function LogsPage() {
                       boxShadow: 'none',
                       width: 'auto',
                       minWidth: '350px',
+                      zIndex: 200,
                     }}
                     align="end"
                   >

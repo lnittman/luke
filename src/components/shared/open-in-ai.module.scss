@@ -2,8 +2,8 @@
   display: flex;
   align-items: center;
   justify-content: center;
-  width: 2.5rem;
-  height: 2.5rem;
+  width: 2rem;
+  height: 2rem;
   background: none;
   border: 1px solid rgb(var(--border));
   color: rgb(var(--text-primary));
@@ -11,6 +11,11 @@
   transition: all 150ms ease-out;
   font-family: var(--font-mono);
   padding: 0;
+
+  svg {
+    width: 0.875rem;
+    height: 0.875rem;
+  }
 
   &:hover {
     background: rgb(var(--surface-1));
@@ -23,9 +28,10 @@
   background: rgb(var(--surface-1));
   border: 1px solid rgb(var(--border));
   padding: 0;
-  min-width: 200px;
+  min-width: 220px;
   border-radius: 0;
   box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+  z-index: 200 !important;
 }
 
 .button {
@@ -71,33 +77,29 @@
 
 .providerGrid {
   display: flex;
-  flex-direction: column;
-  gap: 0;
+  align-items: center;
+  justify-content: flex-end;
+  gap: 0.5rem;
+  padding: 0.75rem 1rem;
 }
 
 .providerButton {
-  width: 100%;
   display: flex;
   align-items: center;
-  gap: 0.75rem;
+  justify-content: center;
+  width: 2rem;
+  height: 2rem;
   background: none;
-  border: none;
-  border-bottom: 1px solid rgb(var(--border));
+  border: 1px solid rgb(var(--border));
   color: rgb(var(--text-secondary));
   cursor: pointer;
-  font-family: var(--font-mono);
-  font-size: 0.875rem;
-  padding: 0.75rem 1rem;
+  padding: 0;
   transition: none;
-  text-align: left;
-
-  &:last-child {
-    border-bottom: none;
-  }
 
   &:hover {
     background: rgb(var(--surface-2));
     color: rgb(var(--text-primary));
+    border-color: rgb(var(--accent-1));
   }
 }
 
@@ -109,4 +111,15 @@
   justify-content: center;
   width: 1rem;
   height: 1rem;
+}
+
+.tooltip {
+  background: rgb(var(--surface-1));
+  border: 1px solid rgb(var(--border));
+  color: rgb(var(--text-primary));
+  font-family: var(--font-mono);
+  font-size: 0.75rem;
+  padding: 0.25rem 0.5rem;
+  border-radius: 0;
+  z-index: 300;
 }

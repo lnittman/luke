@@ -10,6 +10,12 @@ import {
   PopoverContent,
   PopoverTrigger,
 } from '@/components/ui/popover'
+import {
+  Tooltip,
+  TooltipContent,
+  TooltipProvider,
+  TooltipTrigger,
+} from '@/components/ui/tooltip'
 import styles from './open-in-ai.module.scss'
 
 const AI_PROVIDERS = [
@@ -62,43 +68,50 @@ export function OpenInAI() {
   }
 
   return (
-    <Popover open={open} onOpenChange={setOpen}>
-      <PopoverTrigger asChild>
-        <button className={styles.trigger} aria-label="Open in AI">
-          <Sparkles className={styles.icon} />
-        </button>
-      </PopoverTrigger>
-      <PopoverContent align="end" className={styles.popover}>
-        <button className={styles.button} onClick={handleCopyMarkdown}>
-          <Copy className={styles.icon} />
-          {copied ? 'Copied!' : 'Copy as Markdown'}
-        </button>
+    <TooltipProvider>
+      <Popover open={open} onOpenChange={setOpen}>
+        <PopoverTrigger asChild>
+          <button className={styles.trigger} aria-label="Open in AI">
+            <Sparkles />
+          </button>
+        </PopoverTrigger>
+        <PopoverContent align="end" className={styles.popover}>
+          <button className={styles.button} onClick={handleCopyMarkdown}>
+            <Copy className={styles.icon} />
+            {copied ? 'Copied!' : 'Copy as Markdown'}
+          </button>
 
-        <button className={styles.button} onClick={handleViewMarkdown}>
-          <FileText className={styles.icon} />
-          View as Markdown
-        </button>
+          <button className={styles.button} onClick={handleViewMarkdown}>
+            <FileText className={styles.icon} />
+            View as Markdown
+          </button>
 
-        <div className={styles.divider} />
+          <div className={styles.divider} />
 
-        <div className={styles.label}>Open in:</div>
+          <div className={styles.label}>Open in:</div>
 
-        <div className={styles.providerGrid}>
-          {AI_PROVIDERS.map((provider) => {
-            const Icon = provider.icon
-            return (
-              <button
-                key={provider.name}
-                className={styles.providerButton}
-                onClick={() => handleOpenInProvider(provider)}
-              >
-                <Icon className={styles.icon} size={16} />
-                {provider.name}
-              </button>
-            )
-          })}
-        </div>
-      </PopoverContent>
-    </Popover>
+          <div className={styles.providerGrid}>
+            {AI_PROVIDERS.map((provider) => {
+              const Icon = provider.icon
+              return (
+                <Tooltip key={provider.name}>
+                  <TooltipTrigger asChild>
+                    <button
+                      className={styles.providerButton}
+                      onClick={() => handleOpenInProvider(provider)}
+                    >
+                      <Icon size={16} />
+                    </button>
+                  </TooltipTrigger>
+                  <TooltipContent className={styles.tooltip}>
+                    {provider.name}
+                  </TooltipContent>
+                </Tooltip>
+              )
+            })}
+          </div>
+        </PopoverContent>
+      </Popover>
+    </TooltipProvider>
   )
 }
