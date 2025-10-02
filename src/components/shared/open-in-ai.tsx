@@ -96,15 +96,15 @@ export function OpenInAI() {
     const md = getPageMarkdown()
     const pageName = pathname === '/' ? 'home' : pathname.split('/').filter(Boolean).join(' / ')
 
-    const prompt = `I'd like your help understanding this page from my website.
+    const prompt = `Here's a page from Luke Nittmann's personal website (lukenittmann.com).
 
 Page: ${pageName}
 
-Here's the content in markdown:
+Content:
 
 ${md}
 
-Please provide a concise summary of what this page communicates and any suggestions for improvement.`
+Please help me understand what this page is about and what Luke is communicating here.`
 
     await navigator.clipboard.writeText(prompt)
     window.open(provider.url, '_blank')
