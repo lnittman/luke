@@ -70,10 +70,10 @@ export default function Process() {
                 session, navigable with vim keybindings.
               </p>
               <p>
-                i can jump between files, terminals, and agent chats
-                without leaving vim. yank code from one chat/file, paste into another.
-                jump tmux windows to a different project, yank a pattern, bring it back.
-                agent CLIs can refer to external directories on disk.
+                i can jump between files, terminals, and agent chats without
+                leaving vim. yank code from one chat/file, paste into another.
+                jump tmux windows to a different project, yank a pattern, bring
+                it back. agent CLIs can refer to external directories on disk.
               </p>
               <p>
                 i also use{' '}
@@ -241,8 +241,10 @@ claude → generates fix tasks for codex`}
                 >
                   Ref MCP
                 </a>{' '}
-                — searches docs across web and private sources. handy for
-                pulling API docs without breaking flow.
+                — searches docs across web and private sources. i use this
+                throughout development whenever i need official context. their
+                private knowledge base features work well—you can add private
+                repos and the agent can reference them.
               </p>
               <p>faster loop, faster shipping.</p>
 
@@ -267,9 +269,9 @@ claude → generates fix tasks for codex`}
                 >
                   {`development flywheel
 
-   ┌─────────────┐
-   │    WRITE    │
-   │   feature   │
+   ┌─────────────┐     ref MCP
+   │    WRITE    │ ◄── official context
+   │   feature   │     when needed
    └──────┬──────┘
           │
           ▼
@@ -285,10 +287,10 @@ claude → generates fix tasks for codex`}
    └──────┬──────┘     frontend deploy
           │
           ▼
-   ┌─────────────┐     ref MCP
-   │   VERIFY    │ ◄── docs lookup
-   │   working   │
-   └──────┬──────┘
+   ┌─────────────┐     playwright MCP
+   │   VERIFY    │ ◄── UI checks
+   │   working   │     vercel MCP
+   └──────┬──────┘     deployment status
           │
           └──────► iterate faster`}
                 </pre>
@@ -301,34 +303,33 @@ claude → generates fix tasks for codex`}
             <div className={styles.column}>
               <h2>PATTERNS</h2>
               <p>
-                having cross-repo context matters. i can see multiple projects
-                in tmux windows and yank/paste between them. the filesystem
-                becomes a library of working patterns.
+                having cross-repo context matters. i can always see multiple projects in tmux windows and yank/paste
+                between them. the filesystem becomes a library of working patterns.
+                be as organized as you need.
+                form a working mental model around your ~/Developer directory.
               </p>
               <p>
-                need auth? switch to a project that has it, yank the code, paste
-                into the new project, adapt. same with API clients, hooks,
-                component patterns, configs. everything is already working
-                somewhere.
+                when you need auth: find a reference project that has it, yank relevant context, paste
+                into the new project, adapt. same with API clients, hooks, components, styles, config.
+                everything is already working somewhere.
               </p>
               <p>
-                agents with MCP make this better. "implement auth like
-                project-a" and the agent reads that code, understands the
-                pattern, replicates it. this works because i use the same tools
-                across projects—same state management, same API patterns, same
-                composition strategies.
+                "implement auth like project-a" - the agent reads project-a, understands the
+                pattern, replicates it for the current context. this works well when using the same tools
+                across projects—same state management, same API patterns, same composition strategies.
+                products must have differentiators but many 'features' are boilerplate / common.
               </p>
               <p>
-                each pattern gets reused. you're not learning "how to implement
-                X" repeatedly—you're building a workflow around writing good
-                prompts. energy goes into prompts, not memorizing
-                implementation.
+                patterns can be reused. avoid the trap of 'learning' how to implement
+                XYZ repeatedly—build a workflow around writing good prompts.
+                energy goes into prompts, not memorizing implementation.
+                implementation always informs the prompt.
               </p>
               <p>
-                something i've noticed: if you capture the pattern behind
-                something silly that inspires you, that toolset can make
-                something meaningful later. patterns from experiments become
-                building blocks.
+                if you capture the pattern behind something silly that inspires you,
+                that toolset can make for something meaningful later on.
+                patterns from experiments become building blocks.
+                random ideas are very important, *not* a waste of time.
               </p>
 
               {/* Visual panel: pattern flow */}
