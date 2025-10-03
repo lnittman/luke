@@ -36,23 +36,8 @@ export function OpenInAI() {
   const [copied, setCopied] = useState(false)
   const pathname = usePathname()
 
-  const openAllAccordions = async () => {
-    const closedAccordions = document.querySelectorAll('button[aria-expanded="false"]')
-
-    closedAccordions.forEach(button => {
-      if (button instanceof HTMLElement) {
-        button.click()
-      }
-    })
-
-    // Wait for React state updates and DOM to render
-    if (closedAccordions.length > 0) {
-      await new Promise(resolve => setTimeout(resolve, 50))
-    }
-  }
-
   const getPageMarkdown = () => {
-    // Get the main content area - look for innerViewport first, then content
+    // Get the main content area
     const innerViewport = document.querySelector('[class*="innerViewport"]')
     const content = innerViewport || document.querySelector('main') || document.body
 
@@ -64,19 +49,36 @@ export function OpenInAI() {
     clone.querySelectorAll('nav').forEach(el => el.remove())
     clone.querySelectorAll('button').forEach(el => el.remove())
 
-    // Remove the page header (not headers inside content)
-    const pageHeader = document.querySelector('[class*="header"]')
-    if (pageHeader) {
-      const headerClone = clone.querySelector('[class*="header"]')
-      if (headerClone) headerClone.remove()
-    }
+    // Remove page header
+    const headerClone = clone.querySelector('[class*="header"]')
+    if (headerClone) headerClone.remove()
 
-    // Remove the page footer (not footers inside content)
-    const pageFooter = document.querySelector('[class*="footer"]')
-    if (pageFooter) {
-      const footerClone = clone.querySelector('[class*="footer"]')
-      if (footerClone) footerClone.remove()
-    }
+    // Remove page footer
+    const footerClone = clone.querySelector('[class*="footer"]')
+    if (footerClone) footerClone.remove()
+
+    // Handle accordions - convert visible sections to headings
+    const accordions = clone.querySelectorAll('[class*="accordion"]')
+    const closedSections: string[] = []
+
+    accordions.forEach(accordion => {
+      const title = accordion.querySelector('[class*="title"]')?.textContent || ''
+      const contentDiv = accordion.querySelector('[class*="content"]')
+
+      if (contentDiv) {
+        // Accordion is open - include it with heading
+        const replacement = document.createElement('div')
+        const heading = document.createElement('h2')
+        heading.textContent = title
+        replacement.appendChild(heading)
+        replacement.appendChild(contentDiv.cloneNode(true) as Node)
+        accordion.replaceWith(replacement)
+      } else {
+        // Accordion is closed - track it and remove
+        closedSections.push(title)
+        accordion.remove()
+      }
+    })
 
     const turndownService = new TurndownService({
       headingStyle: 'atx',
@@ -84,19 +86,24 @@ export function OpenInAI() {
       emDelimiter: '_',
     })
 
-    return turndownService.turndown(clone.innerHTML)
+    let markdown = turndownService.turndown(clone.innerHTML)
+
+    // Add note about closed sections if any
+    if (closedSections.length > 0) {
+      markdown += '\n\n---\n\n*Note: The following sections were closed and not included: ' + closedSections.join(', ') + '*'
+    }
+
+    return markdown
   }
 
   const handleCopyMarkdown = async () => {
-    await openAllAccordions()
     const md = getPageMarkdown()
     await navigator.clipboard.writeText(md)
     setCopied(true)
     setTimeout(() => setCopied(false), 2000)
   }
 
-  const handleViewMarkdown = async () => {
-    await openAllAccordions()
+  const handleViewMarkdown = () => {
     const md = getPageMarkdown()
 
     // Create a new window/tab with clean markdown display
@@ -122,7 +129,6 @@ export function OpenInAI() {
   }
 
   const handleOpenInProvider = async (provider: typeof AI_PROVIDERS[0]) => {
-    await openAllAccordions()
     const md = getPageMarkdown()
     const pageName = pathname === '/' ? 'home' : pathname.split('/').filter(Boolean).join(' / ')
 
