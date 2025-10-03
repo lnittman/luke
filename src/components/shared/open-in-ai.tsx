@@ -36,6 +36,21 @@ export function OpenInAI() {
   const [copied, setCopied] = useState(false)
   const pathname = usePathname()
 
+  const openAllAccordions = async () => {
+    const closedAccordions = document.querySelectorAll('button[aria-expanded="false"]')
+
+    closedAccordions.forEach(button => {
+      if (button instanceof HTMLElement) {
+        button.click()
+      }
+    })
+
+    // Wait for React state updates and DOM to render
+    if (closedAccordions.length > 0) {
+      await new Promise(resolve => setTimeout(resolve, 50))
+    }
+  }
+
   const getPageMarkdown = () => {
     // Get the main content area - look for innerViewport first, then content
     const innerViewport = document.querySelector('[class*="innerViewport"]')
@@ -48,8 +63,20 @@ export function OpenInAI() {
     clone.querySelectorAll('[class*="loader"]').forEach(el => el.remove())
     clone.querySelectorAll('nav').forEach(el => el.remove())
     clone.querySelectorAll('button').forEach(el => el.remove())
-    clone.querySelectorAll('header').forEach(el => el.remove())
-    clone.querySelectorAll('footer').forEach(el => el.remove())
+
+    // Remove the page header (not headers inside content)
+    const pageHeader = document.querySelector('[class*="header"]')
+    if (pageHeader) {
+      const headerClone = clone.querySelector('[class*="header"]')
+      if (headerClone) headerClone.remove()
+    }
+
+    // Remove the page footer (not footers inside content)
+    const pageFooter = document.querySelector('[class*="footer"]')
+    if (pageFooter) {
+      const footerClone = clone.querySelector('[class*="footer"]')
+      if (footerClone) footerClone.remove()
+    }
 
     const turndownService = new TurndownService({
       headingStyle: 'atx',
@@ -61,13 +88,15 @@ export function OpenInAI() {
   }
 
   const handleCopyMarkdown = async () => {
+    await openAllAccordions()
     const md = getPageMarkdown()
     await navigator.clipboard.writeText(md)
     setCopied(true)
     setTimeout(() => setCopied(false), 2000)
   }
 
-  const handleViewMarkdown = () => {
+  const handleViewMarkdown = async () => {
+    await openAllAccordions()
     const md = getPageMarkdown()
 
     // Create a new window/tab with clean markdown display
@@ -93,6 +122,7 @@ export function OpenInAI() {
   }
 
   const handleOpenInProvider = async (provider: typeof AI_PROVIDERS[0]) => {
+    await openAllAccordions()
     const md = getPageMarkdown()
     const pageName = pathname === '/' ? 'home' : pathname.split('/').filter(Boolean).join(' / ')
 
