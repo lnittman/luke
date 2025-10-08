@@ -65,8 +65,19 @@ Write a bespoke 2-3 sentence narrative about what Luke accomplished in this batc
         stopWhen: stepCountIs(15) // Allow up to 15 steps for multi-step tool calling
       });
 
+      // Debug: log the entire result structure
+      console.log(`[RepoAnalyzer] Batch ${index + 1} result:`, JSON.stringify({
+        text: result.text?.substring(0, 100),
+        textLength: result.text?.length,
+        stepsCount: result.steps?.length,
+        finishReason: result.finishReason,
+        toolCallsCount: result.toolCalls?.length,
+        toolResultsCount: result.toolResults?.length,
+        lastStepText: result.steps?.[result.steps.length - 1]?.text?.substring(0, 100)
+      }, null, 2));
+
       // Extract final text - could be in result.text or last step
-      const finalText = result.text || '';
+      const finalText = result.text || result.steps?.[result.steps.length - 1]?.text || '';
 
       console.log(`[RepoAnalyzer] Batch ${index + 1} analysis (${result.steps?.length || 0} steps):`, finalText.substring(0, 200));
       batchAnalyses.push(finalText);
