@@ -2,7 +2,7 @@ import { internalAction } from "../_generated/server";
 import { v } from "convex/values";
 import {
   makeRepoAnalyzerAgent,
-  makeActivitySummarizerAgent,
+  makePatternDetectorAgent,
   makeCommitAnalyzerAgent
 } from "./index";
 import { createGlobalAnalysisAgent } from "./global";
@@ -10,6 +10,7 @@ import { globalAnalysisSchema } from "./schema";
 import { internal } from "../_generated/api";
 import { z } from "zod";
 import { retrier } from "../index";
+import { stepCountIs } from "ai";
 
 // Analyze a single repository with its commits
 export const analyzeRepository = internalAction({
@@ -36,31 +37,39 @@ export const analyzeRepository = internalAction({
     // Create a thread for this repository analysis
     const { thread } = await agent.createThread(ctx as any, {});
 
-    // Analyze commits in batches to avoid overwhelming the agent
+    // Analyze commits in batches with deep inspection
     const batchAnalyses = [];
     for (const [index, batch] of commitBatches.entries()) {
-      const prompt = `
-You are analyzing repository ${repository}. This is batch ${index + 1}/${commitBatches.length} for ${date}.
+      const [owner, repo] = repository.split('/');
+      const prompt = `Analyze Luke's work in ${repository} on ${date}. Batch ${index + 1}/${commitBatches.length}.
 
-Tool discipline:
-- For each commit, call fetchCommitDetailsTool({ owner, repo, sha }) to retrieve files and change stats (no patch text). Use owner="${repository.split('/')[0]}", repo="${repository.split('/')[1]}".
-- If a pull request seems related, call getPullRequestFilesTool({ owner, repo, number }) to inspect changed files (no patches). Do not guess.
+CRITICAL: You MUST use fetchCommitDetailsTool for each commit to see actual file changes.
 
-Synthesize this batch: major changes, architectural implications, risks, progress signals. Keep it concise.
-
-Commits:
+Commits to analyze:
 ${batch.map(c => `- ${c.sha.substring(0, 7)}: ${c.message}`).join('\n')}
 
-${pullRequests.length > 0 ? `Related Pull Requests:\n${pullRequests.map((pr: any) => `- #${pr.number}: ${pr.title} (${pr.state})`).join('\n')}` : ''}
+${pullRequests.length > 0 ? `Related PRs:\n${pullRequests.map((pr: any) => `- #${pr.number}: ${pr.title}`).join('\n')}` : ''}
 
-${issues.length > 0 ? `Related Issues:\n${issues.map((issue: any) => `- #${issue.number}: ${issue.title} (${issue.state})`).join('\n')}` : ''}
-`;
+${issues.length > 0 ? `Related issues:\n${issues.map((issue: any) => `- #${issue.number}: ${issue.title}`).join('\n')}` : ''}
+
+Instructions:
+1. Call fetchCommitDetailsTool({ owner: "${owner}", repo: "${repo}", sha: "COMMIT_SHA" }) for EACH commit above
+2. Analyze what Luke actually built/changed (files, lines, patterns)
+3. Identify technical decisions and architectural choices
+4. Note any risks, quality concerns, or interesting patterns
+
+Write a bespoke 2-3 sentence narrative about what Luke accomplished in this batch. Be specific about the actual work, not generic. Reference file types, architectural changes, or technical decisions when relevant.`;
 
       const result = await thread.generateText({
-        prompt: `${prompt}\n\nOutput constraints:\n- Keep the narrative under 700 characters.\n- Do not include code or diffs.\n- Focus on concrete, high-signal observations only.`
+        prompt,
+        stopWhen: stepCountIs(15) // Allow up to 15 steps for multi-step tool calling
       });
 
-      batchAnalyses.push(result.text);
+      // Extract final text - could be in result.text or last step
+      const finalText = result.text || '';
+
+      console.log(`[RepoAnalyzer] Batch ${index + 1} analysis (${result.steps?.length || 0} steps):`, finalText.substring(0, 200));
+      batchAnalyses.push(finalText);
     }
 
     // Generate final repository summary using Action Retrier + Action Cache wrapper
@@ -86,6 +95,7 @@ ${issues.length > 0 ? `Related Issues:\n${issues.map((issue: any) => `- #${issue
           technicalHighlights: [],
           concerns: [],
           nextSteps: [],
+          threadId: thread.threadId, // Include threadId for observability even in fallback
           messageCount: batchAnalyses.length + 1
         } as any;
     }
@@ -101,14 +111,13 @@ export const detectCrossRepoPatterns = internalAction({
   handler: async (ctx, { repoAnalyses, date }) => {
     console.log(`[PatternDetector] Analyzing patterns across ${repoAnalyses.length} repositories`);
 
-    // Create activity summarizer agent for pattern detection
-    const agent = await makeActivitySummarizerAgent(ctx);
+    // Use tool-less agent for JSON generation (generateObject doesn't support tools)
+    const agent = await makePatternDetectorAgent(ctx);
 
     // Create a thread for pattern detection
     const { thread } = await agent.createThread(ctx as any, {});
 
-    const prompt = `
-Analyze activity patterns across ${repoAnalyses.length} repositories on ${date}.
+    const prompt = `Analyze development patterns across ${repoAnalyses.length} repositories on ${date}.
 
 Repository summaries:
 ${repoAnalyses.map(r => `
@@ -119,39 +128,60 @@ ${r.repository}:
 - Concerns: ${r.concerns?.join(', ') || 'none'}
 `).join('\n')}
 
-Identify:
-1. Cross-repository patterns and themes
-2. Technology stack trends
-3. Development methodology patterns
-4. Areas of focus vs areas neglected
-5. Overall productivity indicators
+Generate a JSON object identifying:
+- patterns: array of 0-5 cross-repository patterns observed
+- themes: array of 0-5 technical themes (e.g., "API development", "testing")
+- stackTrends: array of 0-3 technology trends
+- methodologyInsights: array of 0-3 process observations
+- balanceAssessment: brief text describing work distribution
 
-Return JSON:
+Return ONLY valid JSON. No markdown formatting, no explanations outside the JSON.
+
+Example format:
 {
-  "patterns": ["pattern descriptions"],
-  "themes": ["technical themes"],
-  "stackTrends": ["technology trends"],
-  "methodologyInsights": ["process observations"],
-  "balanceAssessment": "how work is distributed"
-}
-`;
+  "patterns": ["pattern 1", "pattern 2"],
+  "themes": ["theme 1"],
+  "stackTrends": [],
+  "methodologyInsights": [],
+  "balanceAssessment": "work focused on repo X"
+}`;
 
     const PatternSchema = z.object({
       patterns: z.array(z.string()),
       themes: z.array(z.string()),
-      stackTrends: z.array(z.string()).optional().default([]),
-      methodologyInsights: z.array(z.string()).optional().default([]),
-      balanceAssessment: z.string().optional().default("")
-    });
-    const result = await thread.generateObject({
-      prompt,
-      schema: PatternSchema
+      stackTrends: z.array(z.string()),
+      methodologyInsights: z.array(z.string()),
+      balanceAssessment: z.string()
     });
 
-    return {
-      ...result.object,
-      threadId: thread.threadId
-    };
+    try {
+      // Use no-schema mode to avoid Azure strict validation issues
+      const result = await thread.generateObject({
+        prompt,
+        output: "no-schema" as any
+      });
+
+      // Manually validate with Zod and provide defaults
+      const obj = result.object as any;
+      const validated = PatternSchema.parse({
+        patterns: obj?.patterns || [],
+        themes: obj?.themes || [],
+        stackTrends: obj?.stackTrends || [],
+        methodologyInsights: obj?.methodologyInsights || [],
+        balanceAssessment: obj?.balanceAssessment || ""
+      });
+
+      return {
+        ...validated,
+        threadId: thread.threadId
+      };
+    } catch (error) {
+      console.error(`[detectCrossRepoPatterns] Failed:`, error);
+      // Try to get raw response for debugging
+      const textResult = await thread.generateText({ prompt }).catch(() => ({ text: '' }));
+      console.error(`[detectCrossRepoPatterns] Raw AI response:`, textResult.text?.substring(0, 500));
+      throw error;
+    }
   }
 });
 
