@@ -1,6 +1,6 @@
 import { mutation } from "../../_generated/server";
 import { v } from "convex/values";
-import { api } from "../../_generated/api";
+import { internal } from "../../_generated/api";
 
 export const storeAnalysis = mutation({
   args: {
@@ -75,10 +75,10 @@ export const runDailyAnalysisOnce = mutation({
   handler: async (ctx, { date }): Promise<{ scheduledId: string }> => {
     // Schedule the action that will start the workflow
     // Using internal API reference with correct path format
-    const i = api as any;
+    const i = internal as any;
     await ctx.scheduler.runAfter(
-      0, 
-      i.agents.actions.triggerDailyWorkflow, 
+      0,
+      i.agents.actions.triggerDailyWorkflow,
       { date }
     );
     return { scheduledId: date };

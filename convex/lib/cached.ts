@@ -1,6 +1,6 @@
 import { internalAction } from "../_generated/server";
 import { v } from "convex/values";
-import { repoSummaryCache, synthesisCache } from "./llmCache";
+import { repoSummaryCache, synthesisCache } from "../agents/llmCache";
 
 export const cachedGenerateRepoSummary: any = internalAction({
   args: {

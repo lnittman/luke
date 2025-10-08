@@ -34,7 +34,7 @@ function LogDetailContent() {
   }, [log])
 
   const events = useQuery(
-    api.workflows.queries.listEvents,
+    api.workflows.events.listEvents,
     workflowId ? { workflowId } : 'skip'
   ) as any[] | undefined
 

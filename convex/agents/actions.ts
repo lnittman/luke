@@ -1,9 +1,9 @@
 import { action, internalAction } from "../_generated/server";
 import { v } from "convex/values";
-import { createGlobalAnalysisAgent } from "./definitions/globalAnalysis";
+import { createGlobalAnalysisAgent } from "./global";
 // No embedded fallback — instructions must be present in settings
 import { internal } from "../_generated/api";
-import { globalAnalysisSchema } from "./analysisSchema";
+import { globalAnalysisSchema } from "./schema";
 import { workflow } from "../index";
 
 type Analysis = {
@@ -51,7 +51,7 @@ export const generateAnalysis = action({
   handler: async (_ctx, input): Promise<Analysis> => {
     // Load from Convex settings; if missing, fail gracefully (no embedded fallback)
     const i = internal as any;
-    const instructions = await _ctx.runQuery(i.settings.queries.getByKey, {
+    const instructions = await _ctx.runQuery(i["app/settings/queries"].getByKey, {
       key: "agents/globalAnalysis",
     });
     if (!instructions) {
@@ -114,7 +114,7 @@ export const triggerDailyWorkflow = internalAction({
     const workflowId: string = await workflow.start(
       ctx,
       // Switch to the agentic workflow for fine-grained processing
-      internal.workflows.definitions.agenticDailyAnalysis.agenticDailyAnalysis,
+      internal.workflows.daily.agenticDailyAnalysis,
       { date: targetDate, workflowId: trackingId }
     );
     return { workflowId };

@@ -1,18 +1,18 @@
-import { action } from "../_generated/server";
+import { internalAction } from "../_generated/server";
 import { v } from "convex/values";
-import { 
-  makeRepoAnalyzerAgent, 
+import {
+  makeRepoAnalyzerAgent,
   makeActivitySummarizerAgent,
-  makeCommitAnalyzerAgent 
-} from "./definitions/githubAgents";
-import { createGlobalAnalysisAgent } from "./definitions/globalAnalysis";
-import { globalAnalysisSchema } from "./analysisSchema";
+  makeCommitAnalyzerAgent
+} from "./index";
+import { createGlobalAnalysisAgent } from "./global";
+import { globalAnalysisSchema } from "./schema";
 import { internal } from "../_generated/api";
 import { z } from "zod";
 import { retrier } from "../index";
 
 // Analyze a single repository with its commits
-export const analyzeRepository = action({
+export const analyzeRepository = internalAction({
   args: {
     repository: v.string(),
     commitBatches: v.array(v.array(v.object({
@@ -29,13 +29,13 @@ export const analyzeRepository = action({
   },
   handler: async (ctx, { repository, commitBatches, date, pullRequests, issues }) => {
     console.log(`[RepoAnalyzer] Analyzing ${repository} with ${commitBatches.flat().length} commits`);
-    
+
     // Create a repository analyzer agent
     const agent = await makeRepoAnalyzerAgent(ctx);
-    
+
     // Create a thread for this repository analysis
     const { thread } = await agent.createThread(ctx as any, {});
-    
+
     // Analyze commits in batches to avoid overwhelming the agent
     const batchAnalyses = [];
     for (const [index, batch] of commitBatches.entries()) {
@@ -43,7 +43,7 @@ export const analyzeRepository = action({
 You are analyzing repository ${repository}. This is batch ${index + 1}/${commitBatches.length} for ${date}.
 
 Tool discipline:
-- For each commit, call fetchCommitDetailsTool({ owner, repo, sha }) to retrieve files and change stats (no patch text). Use owner=\"${repository.split('/')[0]}\", repo=\"${repository.split('/')[1]}\".
+- For each commit, call fetchCommitDetailsTool({ owner, repo, sha }) to retrieve files and change stats (no patch text). Use owner="${repository.split('/')[0]}", repo="${repository.split('/')[1]}".
 - If a pull request seems related, call getPullRequestFilesTool({ owner, repo, number }) to inspect changed files (no patches). Do not guess.
 
 Synthesize this batch: major changes, architectural implications, risks, progress signals. Keep it concise.
@@ -55,14 +55,14 @@ ${pullRequests.length > 0 ? `Related Pull Requests:\n${pullRequests.map((pr: any
 
 ${issues.length > 0 ? `Related Issues:\n${issues.map((issue: any) => `- #${issue.number}: ${issue.title} (${issue.state})`).join('\n')}` : ''}
 `;
-      
+
       const result = await thread.generateText({
         prompt: `${prompt}\n\nOutput constraints:\n- Keep the narrative under 700 characters.\n- Do not include code or diffs.\n- Focus on concrete, high-signal observations only.`
       });
-      
+
       batchAnalyses.push(result.text);
     }
-    
+
     // Generate final repository summary using Action Retrier + Action Cache wrapper
     try {
       const runId = await retrier.run(
@@ -93,20 +93,20 @@ ${issues.length > 0 ? `Related Issues:\n${issues.map((issue: any) => `- #${issue
 });
 
 // Detect patterns across repositories
-export const detectCrossRepoPatterns = action({
+export const detectCrossRepoPatterns = internalAction({
   args: {
     repoAnalyses: v.array(v.any()),
     date: v.string()
   },
   handler: async (ctx, { repoAnalyses, date }) => {
     console.log(`[PatternDetector] Analyzing patterns across ${repoAnalyses.length} repositories`);
-    
+
     // Create activity summarizer agent for pattern detection
     const agent = await makeActivitySummarizerAgent(ctx);
-    
+
     // Create a thread for pattern detection
     const { thread } = await agent.createThread(ctx as any, {});
-    
+
     const prompt = `
 Analyze activity patterns across ${repoAnalyses.length} repositories on ${date}.
 
@@ -135,7 +135,7 @@ Return JSON:
   "balanceAssessment": "how work is distributed"
 }
 `;
-    
+
     const PatternSchema = z.object({
       patterns: z.array(z.string()),
       themes: z.array(z.string()),
@@ -147,7 +147,7 @@ Return JSON:
       prompt,
       schema: PatternSchema
     });
-    
+
     return {
       ...result.object,
       threadId: thread.threadId
@@ -156,7 +156,7 @@ Return JSON:
 });
 
 // Generate final global synthesis
-export const generateGlobalSynthesis = action({
+export const generateGlobalSynthesis = internalAction({
   args: {
     date: v.string(),
     repoAnalyses: v.array(v.any()),
@@ -169,22 +169,22 @@ export const generateGlobalSynthesis = action({
   },
   handler: async (ctx, { date, repoAnalyses, patterns, stats }) => {
     console.log(`[GlobalSynthesis] Creating final synthesis for ${date}`);
-    
+
     // Load instructions from settings or use default
     const i = internal as any;
-    const instructions = await ctx.runQuery(i.settings.queries.getByKey, {
+    const instructions = await ctx.runQuery(i["app/settings/queries"].getByKey, {
       key: "agents/globalAnalysis",
     });
     if (!instructions) {
       throw new Error("Missing settings: agents/globalAnalysis. Seed or set instructions before running synthesis.");
     }
-    
+
     // Create global analysis agent
     const agent = createGlobalAnalysisAgent(instructions as string, process.env.OPENROUTER_API_KEY);
-    
+
     // Create thread for global synthesis
     const { thread } = await agent.createThread(ctx as any, {});
-    
+
     const prompt = `
 Create a daily development log for ${date} that is concise in narrative (aim 1-3 short paragraphs) but rich in structured metadata.
 
@@ -217,7 +217,7 @@ Requirements:
 
 Return ONLY JSON matching the provided schema. No additional prose.
 `;
-    
+
     // Primary: structured generation with Action Retrier + Action Cache wrapper
     try {
       const runId = await retrier.run(
@@ -267,6 +267,7 @@ Return ONLY JSON matching the provided schema. No additional prose.
     }
   }
 });
+
 async function awaitRetrierResult(ctx: any, runId: string) {
   // Poll retrier status until completion; small backoff
   for (let i = 0; i < 60; i++) {

@@ -1,5 +1,5 @@
 import { Agent } from "@convex-dev/agent";
-import { components } from "../../_generated/api";
+import { components } from "../_generated/api";
 import { createOpenRouter } from "@openrouter/ai-sdk-provider";
 
 export function createGlobalAnalysisAgent(instructions: string, apiKey?: string) {
@@ -7,9 +7,9 @@ export function createGlobalAnalysisAgent(instructions: string, apiKey?: string)
   const openrouter = createOpenRouter({
     apiKey: apiKey || process.env.OPENROUTER_API_KEY || "",
   });
-  
+
   const model = openrouter("anthropic/claude-sonnet-4");
-  
+
   return new Agent(components.agent, {
     name: "Global Analysis Agent",
     languageModel: model,

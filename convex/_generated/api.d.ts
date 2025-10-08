@@ -9,16 +9,15 @@
  */
 
 import type * as agents_actions from "../agents/actions.js";
-import type * as agents_agentAnalysis from "../agents/agentAnalysis.js";
-import type * as agents_analysisSchema from "../agents/analysisSchema.js";
-import type * as agents_cached from "../agents/cached.js";
-import type * as agents_definitions_codeAnalysisAgents from "../agents/definitions/codeAnalysisAgents.js";
-import type * as agents_definitions_githubAgents from "../agents/definitions/githubAgents.js";
-import type * as agents_definitions_globalAnalysis from "../agents/definitions/globalAnalysis.js";
-import type * as agents_definitions_repositoryAnalysis from "../agents/definitions/repositoryAnalysis.js";
+import type * as agents_activity from "../agents/activity.js";
+import type * as agents_analysis from "../agents/analysis.js";
+import type * as agents_commit from "../agents/commit.js";
+import type * as agents_global from "../agents/global.js";
+import type * as agents_index from "../agents/index.js";
 import type * as agents_instructions from "../agents/instructions.js";
 import type * as agents_llm from "../agents/llm.js";
 import type * as agents_llmCache from "../agents/llmCache.js";
+import type * as agents_repository from "../agents/repository.js";
 import type * as agents_tools_codeReview from "../agents/tools/codeReview.js";
 import type * as agents_tools_github from "../agents/tools/github.js";
 import type * as app_github_actions from "../app/github/actions.js";
@@ -30,12 +29,11 @@ import type * as app_settings_queries from "../app/settings/queries.js";
 import type * as crons from "../crons.js";
 import type * as http from "../http.js";
 import type * as index from "../index.js";
+import type * as lib_cached from "../lib/cached.js";
 import type * as syncFromProduction from "../syncFromProduction.js";
-import type * as workflows_definitions_agenticDailyAnalysis from "../workflows/definitions/agenticDailyAnalysis.js";
-import type * as workflows_definitions_dailyAnalysis from "../workflows/definitions/dailyAnalysis.js";
-import type * as workflows_definitions_workflowStatus from "../workflows/definitions/workflowStatus.js";
-import type * as workflows_mutations from "../workflows/mutations.js";
-import type * as workflows_queries from "../workflows/queries.js";
+import type * as workflows_daily from "../workflows/daily.js";
+import type * as workflows_events from "../workflows/events.js";
+import type * as workflows_index from "../workflows/index.js";
 
 import type {
   ApiFromModules,
@@ -53,16 +51,15 @@ import type {
  */
 declare const fullApi: ApiFromModules<{
   "agents/actions": typeof agents_actions;
-  "agents/agentAnalysis": typeof agents_agentAnalysis;
-  "agents/analysisSchema": typeof agents_analysisSchema;
-  "agents/cached": typeof agents_cached;
-  "agents/definitions/codeAnalysisAgents": typeof agents_definitions_codeAnalysisAgents;
-  "agents/definitions/githubAgents": typeof agents_definitions_githubAgents;
-  "agents/definitions/globalAnalysis": typeof agents_definitions_globalAnalysis;
-  "agents/definitions/repositoryAnalysis": typeof agents_definitions_repositoryAnalysis;
+  "agents/activity": typeof agents_activity;
+  "agents/analysis": typeof agents_analysis;
+  "agents/commit": typeof agents_commit;
+  "agents/global": typeof agents_global;
+  "agents/index": typeof agents_index;
   "agents/instructions": typeof agents_instructions;
   "agents/llm": typeof agents_llm;
   "agents/llmCache": typeof agents_llmCache;
+  "agents/repository": typeof agents_repository;
   "agents/tools/codeReview": typeof agents_tools_codeReview;
   "agents/tools/github": typeof agents_tools_github;
   "app/github/actions": typeof app_github_actions;
@@ -74,12 +71,11 @@ declare const fullApi: ApiFromModules<{
   crons: typeof crons;
   http: typeof http;
   index: typeof index;
+  "lib/cached": typeof lib_cached;
   syncFromProduction: typeof syncFromProduction;
-  "workflows/definitions/agenticDailyAnalysis": typeof workflows_definitions_agenticDailyAnalysis;
-  "workflows/definitions/dailyAnalysis": typeof workflows_definitions_dailyAnalysis;
-  "workflows/definitions/workflowStatus": typeof workflows_definitions_workflowStatus;
-  "workflows/mutations": typeof workflows_mutations;
-  "workflows/queries": typeof workflows_queries;
+  "workflows/daily": typeof workflows_daily;
+  "workflows/events": typeof workflows_events;
+  "workflows/index": typeof workflows_index;
 }>;
 declare const fullApiWithMounts: typeof fullApi;
 

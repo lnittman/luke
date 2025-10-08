@@ -4,7 +4,7 @@ import { ActionCache } from "@convex-dev/action-cache";
 export const repoSummaryCache: any = new ActionCache(
   components.actionCache,
   {
-    action: (internal as any)["functions/internal/llm"].generateRepoSummary,
+    action: (internal as any).agents.llm.generateRepoSummary,
     name: "repoSummary-v1",
     ttl: 24 * 60 * 60 * 1000,
   } as any,
@@ -13,7 +13,7 @@ export const repoSummaryCache: any = new ActionCache(
 export const synthesisCache: any = new ActionCache(
   components.actionCache,
   {
-    action: (internal as any)["functions/internal/llm"].generateGlobalSynthesis,
+    action: (internal as any).agents.llm.generateGlobalSynthesis,
     name: "globalSynthesis-v1",
     ttl: 24 * 60 * 60 * 1000,
   } as any,
