@@ -26,9 +26,20 @@ export async function makeRepoAnalyzerAgent(ctx: any) {
   const instructions = await loadRequired(ctx, "agents/repoAnalyzer");
   return new Agent(components.agent, {
     name: "Repository Analyzer",
-    languageModel: openrouter("anthropic/claude-sonnet-4"),
+    languageModel: openrouter("anthropic/claude-3.5-sonnet"),
     // Give repo analyzer autonomy to inspect diffs, mirroring `gh` workflows
     tools: { fetchRepoInfoTool, fetchCommitDetailsTool, listPullRequestsTool, getPullRequestFilesTool },
+    instructions,
+  });
+}
+
+// Create a separate agent WITHOUT tools for JSON generation
+export async function makeRepoSummarizerAgent(ctx: any) {
+  const instructions = await loadRequired(ctx, "agents/repoAnalyzer");
+  return new Agent(components.agent, {
+    name: "Repository Summarizer",
+    languageModel: openrouter("anthropic/claude-3.5-sonnet"),
+    // NO TOOLS - this agent only synthesizes pre-analyzed data into JSON
     instructions,
   });
 }

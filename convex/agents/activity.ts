@@ -26,8 +26,19 @@ export async function makeActivitySummarizerAgent(ctx: any) {
   const instructions = await loadRequired(ctx, "agents/activitySummarizer");
   return new Agent(components.agent, {
     name: "Activity Summarizer",
-    languageModel: openrouter("anthropic/claude-sonnet-4"),
+    languageModel: openrouter("anthropic/claude-3.5-sonnet"),
     tools: { fetchUserActivityTool, fetchRepoInfoTool, listPullRequestsTool, listIssuesTool },
+    instructions,
+  });
+}
+
+// Create a separate agent WITHOUT tools for pattern detection JSON generation
+export async function makePatternDetectorAgent(ctx: any) {
+  const instructions = await loadRequired(ctx, "agents/activitySummarizer");
+  return new Agent(components.agent, {
+    name: "Pattern Detector",
+    languageModel: openrouter("anthropic/claude-3.5-sonnet"),
+    // NO TOOLS - this agent only synthesizes pre-analyzed repo summaries into patterns
     instructions,
   });
 }
