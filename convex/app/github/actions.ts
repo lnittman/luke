@@ -42,9 +42,9 @@ export const fetchDailyActivity = action({
           const payload: any = e.payload;
           const repoName = e.repo.name;
 
-          // CRITICAL: Filter out work repos - only include personal repos
-          if (repoName.startsWith('SubstrateLabs/')) {
-            console.log(`[GitHub] FILTERED OUT work repo: ${repoName}`);
+          // CRITICAL: ONLY include lnittman/* personal repos - filter ALL others
+          if (!repoName.startsWith('lnittman/')) {
+            console.log(`[GitHub] FILTERED OUT non-personal repo: ${repoName}`);
             continue;
           }
 
@@ -65,7 +65,7 @@ export const fetchDailyActivity = action({
       }
 
       const pullRequests = dayEvents
-        .filter((e) => e.type === "PullRequestEvent" && !e.repo.name.startsWith('SubstrateLabs/'))
+        .filter((e) => e.type === "PullRequestEvent" && e.repo.name.startsWith('lnittman/'))
         .map((e) => {
           const payload: any = e.payload;
           return {
@@ -78,7 +78,7 @@ export const fetchDailyActivity = action({
         });
 
       const issues = dayEvents
-        .filter((e) => e.type === "IssuesEvent" && !e.repo.name.startsWith('SubstrateLabs/'))
+        .filter((e) => e.type === "IssuesEvent" && e.repo.name.startsWith('lnittman/'))
         .map((e) => {
           const payload: any = e.payload;
           return {
