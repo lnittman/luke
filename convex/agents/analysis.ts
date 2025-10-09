@@ -84,32 +84,30 @@ export const analyzeRepository = internalAction({
     }
 
     // Generate final repository summary using Action Retrier + Action Cache wrapper
-    try {
-      const runId = await retrier.run(
-        ctx as any,
-        (internal as any).lib.cached.cachedGenerateRepoSummary,
-        { repository, date, batchAnalyses, pullRequests, issues }
-      );
-      const res = await awaitRetrierResult(ctx as any, runId);
-      if (res.type === "completed" && (res as any).result.type === "success") {
-        return (res as any).result.returnValue as any;
-      }
-      throw new Error(`Repo summary run failed: ${JSON.stringify(res)}`);
-    } catch (err) {
-        console.warn(`[RepoAnalyzer] Fallback summary for ${repository}:`, err);
-        const commitCount = commitBatches.flat().length;
-        return {
-          repository,
-          commitCount,
-          mainFocus: 'updates and fixes',
-          progress: `landed ${commitCount} commits`,
-          technicalHighlights: [],
-          concerns: [],
-          nextSteps: [],
-          threadId: thread.threadId, // Include threadId for observability even in fallback
-          messageCount: batchAnalyses.length + 1
-        } as any;
+    console.log(`[RepoAnalyzer] Starting repo summary generation for ${repository}`);
+    console.log(`[RepoAnalyzer] Batch analyses count: ${batchAnalyses.length}`);
+    console.log(`[RepoAnalyzer] First batch preview:`, batchAnalyses[0]?.substring(0, 200));
+
+    const runId = await retrier.run(
+      ctx as any,
+      (internal as any).lib.cached.cachedGenerateRepoSummary,
+      { repository, date, batchAnalyses, pullRequests, issues }
+    );
+    console.log(`[RepoAnalyzer] Retrier run ID: ${runId}`);
+
+    const res = await awaitRetrierResult(ctx as any, runId);
+    console.log(`[RepoAnalyzer] Retrier result type: ${res.type}`);
+    console.log(`[RepoAnalyzer] Retrier full result:`, JSON.stringify(res, null, 2));
+
+    if (res.type === "completed" && (res as any).result.type === "success") {
+      console.log(`[RepoAnalyzer] SUCCESS: Repo summary generated for ${repository}`);
+      return (res as any).result.returnValue as any;
     }
+
+    // NO FALLBACK - let the error bubble up so we can fix the root cause
+    const errorMsg = `Repo summary generation failed for ${repository}: ${JSON.stringify(res)}`;
+    console.error(`[RepoAnalyzer] ERROR: ${errorMsg}`);
+    throw new Error(errorMsg);
   }
 });
 
@@ -245,52 +243,30 @@ Return ONLY JSON matching the provided schema. No additional prose.
 `;
 
     // Primary: structured generation with Action Retrier + Action Cache wrapper
-    try {
-      const runId = await retrier.run(
-        ctx as any,
-        (internal as any).lib.cached.cachedGenerateGlobalSynthesis,
-        { date, repoAnalyses, patterns, stats }
-      );
-      const res = await awaitRetrierResult(ctx as any, runId);
-      if (res.type === "completed" && (res as any).result.type === "success") {
-        return (res as any).result.returnValue as any;
-      }
-      throw new Error(`Synthesis run failed: ${JSON.stringify(res)}`);
-    } catch (err) {
-        // Fallback: build a minimal but valid object and validate
-        console.warn("[GlobalSynthesis] Structured generation failed, using fallback:", err);
-        const primaryRepoSummaries = (repoAnalyses || []).map((r: any) => ({
-          repository: r.repository,
-          commitCount: Number(r.commitCount || 0),
-          mainFocus: String(r.mainFocus || "Updates"),
-          progress: String(r.progress || "Progress recorded"),
-        }));
-        const highlights: string[] = [];
-        for (const r of primaryRepoSummaries.slice(0, 8)) {
-          highlights.push(`${r.repository}: ${r.commitCount} commits — ${r.mainFocus}`);
-        }
-        const productivityScore = Math.max(1, Math.min(10, Math.round((stats.totalCommits || 0) / 10)));
-        const fallback = {
-          date,
-          title: `Daily work • ${stats.totalCommits} commits across ${stats.totalRepos} repos`,
-          haiku: undefined,
-          narrative: `Worked across ${stats.totalRepos} repositories with ${stats.totalCommits} commits. Key repos show momentum with meaningful progress. Cross-repo themes were identified to guide next steps.`,
-          highlights,
-          repoSummaries: primaryRepoSummaries,
-          crossRepoPatterns: (patterns?.patterns as string[]) || [],
-          technicalThemes: (patterns?.themes as string[]) || [],
-          suggestions: [],
-          metrics: {
-            totalCommits: stats.totalCommits || 0,
-            totalRepos: stats.totalRepos || 0,
-            primaryLanguages: [],
-            codeQualityTrend: "stable" as const,
-            productivityScore,
-          },
-        };
-        const parsed = (globalAnalysisSchema as any).parse(fallback);
-        return { ...parsed, threadId: thread.threadId };
+    console.log(`[GlobalSynthesis] Starting synthesis for ${date}`);
+    console.log(`[GlobalSynthesis] Repo analyses count: ${repoAnalyses.length}`);
+    console.log(`[GlobalSynthesis] Stats:`, JSON.stringify(stats, null, 2));
+
+    const runId = await retrier.run(
+      ctx as any,
+      (internal as any).lib.cached.cachedGenerateGlobalSynthesis,
+      { date, repoAnalyses, patterns, stats }
+    );
+    console.log(`[GlobalSynthesis] Retrier run ID: ${runId}`);
+
+    const res = await awaitRetrierResult(ctx as any, runId);
+    console.log(`[GlobalSynthesis] Retrier result type: ${res.type}`);
+    console.log(`[GlobalSynthesis] Retrier full result:`, JSON.stringify(res, null, 2));
+
+    if (res.type === "completed" && (res as any).result.type === "success") {
+      console.log(`[GlobalSynthesis] SUCCESS: Global synthesis generated for ${date}`);
+      return (res as any).result.returnValue as any;
     }
+
+    // NO FALLBACK - let the error bubble up so we can fix the root cause
+    const errorMsg = `Global synthesis generation failed for ${date}: ${JSON.stringify(res)}`;
+    console.error(`[GlobalSynthesis] ERROR: ${errorMsg}`);
+    throw new Error(errorMsg);
   }
 });
 
