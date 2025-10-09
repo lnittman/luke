@@ -53,14 +53,34 @@ export const agenticDailyAnalysis = workflow.define({
 
       const activity = await step.runAction(api["app/github/actions"].fetchDailyActivity, { date });
 
-      // Group commits by repository
+      console.log(`[Workflow ${wfId}] Total commits fetched: ${activity.commits?.length || 0}`);
+      if (activity.commits && activity.commits.length > 0) {
+        console.log(`[Workflow ${wfId}] First commit repository field:`, activity.commits[0].repository);
+        console.log(`[Workflow ${wfId}] First commit full object:`, JSON.stringify(activity.commits[0], null, 2));
+      }
+
+      // Group commits by repository - filter to only Luke's personal repos
       const commitsByRepo = new Map<string, any[]>();
+      let filteredCount = 0;
       for (const commit of activity.commits || []) {
+        console.log(`[Workflow ${wfId}] Processing commit: repo="${commit.repository}", starts with SubstrateLabs? ${commit.repository.startsWith('SubstrateLabs/')}`);
+
+        // Skip work repos - only analyze personal projects
+        if (commit.repository.startsWith('SubstrateLabs/')) {
+          console.log(`[Workflow ${wfId}] FILTERED OUT: ${commit.repository}`);
+          filteredCount++;
+          continue;
+        }
+
+        console.log(`[Workflow ${wfId}] KEEPING: ${commit.repository}`);
         if (!commitsByRepo.has(commit.repository)) {
           commitsByRepo.set(commit.repository, []);
         }
         commitsByRepo.get(commit.repository)!.push(commit);
       }
+
+      console.log(`[Workflow ${wfId}] Filter summary: ${filteredCount} commits filtered, ${commitsByRepo.size} repos kept`);
+      console.log(`[Workflow ${wfId}] Repos to analyze:`, Array.from(commitsByRepo.keys()));
 
       await step.runMutation(api["workflows/events"].logWorkflowEvent, {
         workflowId: wfId,
