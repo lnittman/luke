@@ -1,4 +1,4 @@
-import { Agent } from "@convex-dev/agent";
+import { Agent, stepCountIs } from "@convex-dev/agent";
 import { components, internal } from "../_generated/api";
 import { createOpenRouter } from "@openrouter/ai-sdk-provider";
 import {
@@ -30,6 +30,7 @@ export async function makeRepoAnalyzerAgent(ctx: any) {
     // Give repo analyzer autonomy to inspect diffs, mirroring `gh` workflows
     tools: { fetchRepoInfoTool, fetchCommitDetailsTool, listPullRequestsTool, getPullRequestFilesTool },
     instructions,
+    stopWhen: stepCountIs(15), // Allow up to 15 steps for multi-step tool calling
   });
 }
 

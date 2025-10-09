@@ -10,7 +10,6 @@ import { globalAnalysisSchema } from "./schema";
 import { internal } from "../_generated/api";
 import { z } from "zod";
 import { retrier } from "../index";
-import { stepCountIs } from "ai";
 
 // Analyze a single repository with its commits
 export const analyzeRepository = internalAction({
@@ -39,6 +38,8 @@ export const analyzeRepository = internalAction({
 
     // Analyze commits in batches with deep inspection
     const batchAnalyses = [];
+    const threadId = thread.threadId;
+
     for (const [index, batch] of commitBatches.entries()) {
       const [owner, repo] = repository.split('/');
       const prompt = `Analyze Luke's work in ${repository} on ${date}. Batch ${index + 1}/${commitBatches.length}.
@@ -60,10 +61,13 @@ Instructions:
 
 Write a bespoke 2-3 sentence narrative about what Luke accomplished in this batch. Be specific about the actual work, not generic. Reference file types, architectural changes, or technical decisions when relevant.`;
 
-      const result = await thread.generateText({
-        prompt,
-        stopWhen: stepCountIs(15) // Allow up to 15 steps for multi-step tool calling
+      // Use Kumori pattern: save message first, then generate with promptMessageId
+      const saved = await agent.saveMessage(ctx as any, {
+        threadId,
+        message: { role: 'user', content: prompt }
       });
+
+      const result = await agent.generateText(ctx as any, { threadId }, { promptMessageId: saved.messageId });
 
       // Debug: log the entire result structure
       console.log(`[RepoAnalyzer] Batch ${index + 1} result:`, JSON.stringify({
@@ -76,8 +80,8 @@ Write a bespoke 2-3 sentence narrative about what Luke accomplished in this batc
         lastStepText: result.steps?.[result.steps.length - 1]?.text?.substring(0, 100)
       }, null, 2));
 
-      // Extract final text - could be in result.text or last step
-      const finalText = result.text || result.steps?.[result.steps.length - 1]?.text || '';
+      // Extract final text
+      const finalText = result.text || '';
 
       console.log(`[RepoAnalyzer] Batch ${index + 1} analysis (${result.steps?.length || 0} steps):`, finalText.substring(0, 200));
       batchAnalyses.push(finalText);
