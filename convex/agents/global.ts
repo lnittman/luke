@@ -11,9 +11,14 @@ export function createGlobalAnalysisAgent(instructions: string, apiKey?: string)
   // Use Claude Sonnet 3.5 for reliable tool calling and structured output
   const model = openrouter("anthropic/claude-3.5-sonnet");
 
+  // Override instructions to explicitly prevent tool calling
+  const noToolInstructions = `${instructions}
+
+CRITICAL: DO NOT call any tools. DO NOT use function_calls or invoke tags. All data has already been collected. Your job is ONLY to synthesize the provided information into JSON format.`;
+
   return new Agent(components.agent, {
     name: "Global Analysis Agent",
     languageModel: model,
-    instructions,
+    instructions: noToolInstructions,
   });
 }

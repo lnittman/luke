@@ -34,7 +34,30 @@ export async function makeActivitySummarizerAgent(ctx: any) {
 
 // Create a separate agent WITHOUT tools for pattern detection JSON generation
 export async function makePatternDetectorAgent(ctx: any) {
-  const instructions = await loadRequired(ctx, "agents/activitySummarizer");
+  // Use simple inline instructions that explicitly state NO TOOLS
+  const instructions = `You are a pattern detection agent. Your ONLY task is to analyze pre-completed repository summaries and identify cross-repository patterns.
+
+CRITICAL CONSTRAINTS:
+- DO NOT call any tools or fetch additional data
+- DO NOT use function_calls or invoke tags
+- The repository analyses have already been completed
+- Your job is ONLY to extract patterns and structure them into JSON
+
+Process:
+1. Read the provided repository summaries
+2. Identify cross-cutting patterns, themes, and trends
+3. Return ONLY valid JSON - no markdown code blocks, no preamble, no explanations
+
+Output Format:
+Return raw JSON matching this structure:
+{
+  "patterns": ["pattern 1", "pattern 2"],
+  "themes": ["theme 1"],
+  "stackTrends": ["trend 1"],
+  "methodologyInsights": ["insight 1"],
+  "balanceAssessment": "brief distribution description"
+}`;
+
   return new Agent(components.agent, {
     name: "Pattern Detector",
     languageModel: openrouter("anthropic/claude-3.5-sonnet"),

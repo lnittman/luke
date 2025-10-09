@@ -1,8 +1,8 @@
 // Agent creators
 export { createGlobalAnalysisAgent } from "./global";
-export { makeRepoAnalyzerAgent } from "./repository";
+export { makeRepoAnalyzerAgent, makeRepoSummarizerAgent } from "./repository";
 export { makeCommitAnalyzerAgent } from "./commit";
-export { makeActivitySummarizerAgent } from "./activity";
+export { makeActivitySummarizerAgent, makePatternDetectorAgent } from "./activity";
 
 // Analysis actions
 export { analyzeRepository, detectCrossRepoPatterns, generateGlobalSynthesis } from "./analysis";
