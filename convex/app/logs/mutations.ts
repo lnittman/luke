@@ -94,3 +94,16 @@ export const deleteById = mutation({
     return { deleted: true };
   },
 });
+
+export const deleteAll = mutation({
+  args: {},
+  handler: async (ctx) => {
+    const all = await ctx.db.query("logs").collect();
+    let deleted = 0;
+    for (const doc of all) {
+      await ctx.db.delete(doc._id);
+      deleted++;
+    }
+    return { deleted };
+  },
+});
