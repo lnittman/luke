@@ -82,16 +82,19 @@ export const agenticDailyAnalysis = workflow.define({
       console.log(`[Workflow ${wfId}] Filter summary: ${filteredCount} commits filtered, ${commitsByRepo.size} repos kept`);
       console.log(`[Workflow ${wfId}] Repos to analyze:`, Array.from(commitsByRepo.keys()));
 
+      // Calculate filtered stats (only from personal repos, not work repos)
+      const filteredStats = {
+        totalCommits: Array.from(commitsByRepo.values()).reduce((sum, commits) => sum + commits.length, 0),
+        totalRepos: commitsByRepo.size,
+        repositories: Array.from(commitsByRepo.keys())
+      };
+
       await step.runMutation(api["workflows/events"].logWorkflowEvent, {
         workflowId: wfId,
         event: {
           type: "step_completed",
           step: "fetch_github_activity",
-          details: {
-            totalCommits: activity.commits?.length || 0,
-            totalRepos: commitsByRepo.size,
-            repositories: Array.from(commitsByRepo.keys())
-          },
+          details: filteredStats,
           timestamp: getTimestamp(),
         },
       });
@@ -247,11 +250,7 @@ export const agenticDailyAnalysis = workflow.define({
           date,
           repoAnalyses: compactRepoSummaries,
           patterns,
-          stats: {
-            totalCommits: activity.totalCommits,
-            totalRepos: activity.totalRepos,
-            repositories: activity.repositories
-          }
+          stats: filteredStats
         }
       );
 
@@ -294,11 +293,7 @@ export const agenticDailyAnalysis = workflow.define({
       const result = await step.runMutation(api["app/logs/mutations"].storeAnalysis, {
         ...synthOut,
         rawData: {
-          stats: {
-            totalCommits: activity.totalCommits,
-            totalRepos: activity.totalRepos,
-            repositories: activity.repositories,
-          },
+          stats: filteredStats,
           repoSummaries: compactRepoSummaries,
           patterns: { patterns: patterns.patterns || [], themes: patterns.themes || [] },
           workflowId: wfId,
