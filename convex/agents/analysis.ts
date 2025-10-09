@@ -10,6 +10,7 @@ import { globalAnalysisSchema } from "./schema";
 import { internal } from "../_generated/api";
 import { z } from "zod";
 import { retrier } from "../index";
+import { batchAnalysisPrompt, patternDetectionPrompt } from "./prompts";
 
 // Analyze a single repository with its commits
 export const analyzeRepository = internalAction({
@@ -42,24 +43,19 @@ export const analyzeRepository = internalAction({
 
     for (const [index, batch] of commitBatches.entries()) {
       const [owner, repo] = repository.split('/');
-      const prompt = `Analyze Luke's work in ${repository} on ${date}. Batch ${index + 1}/${commitBatches.length}.
 
-CRITICAL: You MUST use fetchCommitDetailsTool for each commit to see actual file changes.
-
-Commits to analyze:
-${batch.map(c => `- ${c.sha.substring(0, 7)}: ${c.message}`).join('\n')}
-
-${pullRequests.length > 0 ? `Related PRs:\n${pullRequests.map((pr: any) => `- #${pr.number}: ${pr.title}`).join('\n')}` : ''}
-
-${issues.length > 0 ? `Related issues:\n${issues.map((issue: any) => `- #${issue.number}: ${issue.title}`).join('\n')}` : ''}
-
-Instructions:
-1. Call fetchCommitDetailsTool({ owner: "${owner}", repo: "${repo}", sha: "COMMIT_SHA" }) for EACH commit above
-2. Analyze what Luke actually built/changed (files, lines, patterns)
-3. Identify technical decisions and architectural choices
-4. Note any risks, quality concerns, or interesting patterns
-
-Write a bespoke 2-3 sentence narrative about what Luke accomplished in this batch. Be specific about the actual work, not generic. Reference file types, architectural changes, or technical decisions when relevant.`;
+      // Use structured XML prompt
+      const prompt = batchAnalysisPrompt({
+        repository,
+        date,
+        batchIndex: index,
+        totalBatches: commitBatches.length,
+        commits: batch,
+        pullRequests,
+        issues,
+        owner,
+        repo
+      });
 
       // Use Kumori pattern: save message first, then generate with promptMessageId
       const saved = await agent.saveMessage(ctx as any, {
@@ -132,34 +128,8 @@ export const detectCrossRepoPatterns = internalAction({
     // Create a thread for pattern detection
     const { thread } = await agent.createThread(ctx as any, {});
 
-    const prompt = `Analyze development patterns across ${repoAnalyses.length} repositories on ${date}.
-
-Repository summaries:
-${repoAnalyses.map(r => `
-${r.repository}:
-- Focus: ${r.mainFocus}
-- Progress: ${r.progress}
-- Highlights: ${r.technicalHighlights?.join(', ') || 'none'}
-- Concerns: ${r.concerns?.join(', ') || 'none'}
-`).join('\n')}
-
-Generate a JSON object identifying:
-- patterns: array of 0-5 cross-repository patterns observed
-- themes: array of 0-5 technical themes (e.g., "API development", "testing")
-- stackTrends: array of 0-3 technology trends
-- methodologyInsights: array of 0-3 process observations
-- balanceAssessment: brief text describing work distribution
-
-Return ONLY valid JSON. No markdown formatting, no explanations outside the JSON.
-
-Example format:
-{
-  "patterns": ["pattern 1", "pattern 2"],
-  "themes": ["theme 1"],
-  "stackTrends": [],
-  "methodologyInsights": [],
-  "balanceAssessment": "work focused on repo X"
-}`;
+    // Use structured XML prompt
+    const prompt = patternDetectionPrompt({ date, repoAnalyses });
 
     const PatternSchema = z.object({
       patterns: z.array(z.string()),

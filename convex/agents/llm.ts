@@ -6,6 +6,7 @@ import { internal } from "../_generated/api";
 import { repoSummaryCache, synthesisCache } from "./llmCache";
 import { z } from "zod";
 import { globalAnalysisSchema } from "./schema";
+import { repoSummaryPrompt, globalSynthesisPrompt } from "./prompts";
 
 // Compute-only action: generates a repository summary object (no caching here)
 export const generateRepoSummary = internalAction({
@@ -25,25 +26,13 @@ export const generateRepoSummary = internalAction({
     // Calculate commit count from batch analyses
     const commitCount = batchAnalyses.length * 10; // approximate based on batch size
 
-    const summaryPrompt = `IMPORTANT: The analysis is complete. DO NOT call any tools or fetch additional data. Simply summarize the provided narratives into JSON.
-
-Repository: ${repository}
-Date: ${date}
-Commit Count: ${commitCount}
-
-Completed batch analyses (already inspected commits, PRs, and issues):
-${batchAnalyses.join('\n\n---\n\n')}
-
-Your task: Synthesize these narratives into a JSON object with:
-- repository: "${repository}"
-- commitCount: ${commitCount}
-- mainFocus: brief description of main work focus (1 sentence)
-- progress: what was accomplished (1 sentence)
-- technicalHighlights: array of 2-5 key technical achievements
-- concerns: array of 0-3 potential issues or risks identified
-- nextSteps: array of 0-3 suggested next actions
-
-CRITICAL: Return ONLY valid JSON. No markdown code blocks, no preamble, no explanations. Just the raw JSON object.`;
+    // Use structured XML prompt
+    const summaryPrompt = repoSummaryPrompt({
+      repository,
+      date,
+      commitCount,
+      batchAnalyses
+    });
 
     const RepoSummarySchema = z.object({
       repository: z.string(),
@@ -99,27 +88,13 @@ export const generateGlobalSynthesis = internalAction({
     const { thread } = await agent.createThread(ctx as any, {});
     const threadId = thread.threadId;
 
-    const prompt = `IMPORTANT: All analysis is complete. DO NOT call any tools or fetch additional data. Simply synthesize the provided data into JSON.
-
-Create a daily development log for ${date} that is concise in narrative (aim 1-3 short paragraphs) but rich in structured metadata.
-
-Statistics:
-- Total commits: ${stats.totalCommits}
-- Repositories: ${stats.repositories.join(', ')}
-
-Repository summaries (key metadata only):
-${repoAnalyses.map((r: any) => `
-${r.repository} (${r.commitCount} commits):
-- Focus: ${r.mainFocus}
-- Progress: ${r.progress}
-- Highlights: ${Array.isArray(r.technicalHighlights) && r.technicalHighlights.length ? r.technicalHighlights.join(', ') : 'none'}`).join('\n')}
-
-Cross-Repository:
-- Patterns: ${patterns?.patterns?.join(', ') || 'none'}
-- Themes: ${patterns?.themes?.join(', ') || 'none'}
-- Balance: ${patterns?.balanceAssessment || 'not assessed'}
-
-CRITICAL: Return ONLY valid JSON matching the GlobalAnalysis schema. No markdown code blocks, no preamble, no explanations. Just the raw JSON object.`;
+    // Use structured XML prompt
+    const prompt = globalSynthesisPrompt({
+      date,
+      repoAnalyses,
+      patterns,
+      stats
+    });
 
     // Use Kumori pattern: saveMessage then generateText
     const saved = await agent.saveMessage(ctx as any, {
