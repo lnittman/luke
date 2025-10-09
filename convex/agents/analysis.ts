@@ -170,20 +170,34 @@ Example format:
     });
 
     try {
-      // Use no-schema mode to avoid Azure strict validation issues
-      const result = await thread.generateObject({
-        prompt,
-        output: "no-schema" as any
+      // Use Kumori pattern: saveMessage then generateText
+      const threadId = thread.threadId;
+      const saved = await agent.saveMessage(ctx as any, {
+        threadId,
+        message: { role: 'user', content: prompt }
       });
 
+      const result = await agent.generateText(ctx as any, { threadId }, { promptMessageId: saved.messageId });
+      const text = (result.text ?? "").toString().trim();
+
+      // Parse JSON from text response (Kumori pattern)
+      let parsed;
+      try {
+        // Remove markdown code blocks if present
+        const cleaned = text.replace(/^```json\n?/g, '').replace(/\n?```$/g, '').trim();
+        parsed = JSON.parse(cleaned);
+      } catch (e) {
+        console.error('[detectCrossRepoPatterns] Failed to parse JSON:', text.substring(0, 500));
+        throw new Error(`Failed to parse JSON from AI response: ${e}`);
+      }
+
       // Manually validate with Zod and provide defaults
-      const obj = result.object as any;
       const validated = PatternSchema.parse({
-        patterns: obj?.patterns || [],
-        themes: obj?.themes || [],
-        stackTrends: obj?.stackTrends || [],
-        methodologyInsights: obj?.methodologyInsights || [],
-        balanceAssessment: obj?.balanceAssessment || ""
+        patterns: parsed?.patterns || [],
+        themes: parsed?.themes || [],
+        stackTrends: parsed?.stackTrends || [],
+        methodologyInsights: parsed?.methodologyInsights || [],
+        balanceAssessment: parsed?.balanceAssessment || ""
       });
 
       return {
@@ -192,9 +206,6 @@ Example format:
       };
     } catch (error) {
       console.error(`[detectCrossRepoPatterns] Failed:`, error);
-      // Try to get raw response for debugging
-      const textResult = await thread.generateText({ prompt }).catch(() => ({ text: '' }));
-      console.error(`[detectCrossRepoPatterns] Raw AI response:`, textResult.text?.substring(0, 500));
       throw error;
     }
   }
