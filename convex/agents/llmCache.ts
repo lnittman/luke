@@ -5,7 +5,7 @@ export const repoSummaryCache: any = new ActionCache(
   components.actionCache,
   {
     action: (internal as any).agents.llm.generateRepoSummary,
-    name: "repoSummary-v2", // Bumped to invalidate caches with SubstrateLabs repos
+    name: "repoSummary-v3", // v3: Updated suggestions schema
     ttl: 24 * 60 * 60 * 1000,
   } as any,
 );
@@ -14,7 +14,7 @@ export const synthesisCache: any = new ActionCache(
   components.actionCache,
   {
     action: (internal as any).agents.llm.generateGlobalSynthesis,
-    name: "globalSynthesis-v2", // Bumped to invalidate caches with SubstrateLabs repos
+    name: "globalSynthesis-v3", // v3: Updated suggestions schema and prompt
     ttl: 24 * 60 * 60 * 1000,
   } as any,
 );
