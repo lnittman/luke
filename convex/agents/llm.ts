@@ -116,6 +116,14 @@ export const generateGlobalSynthesis = internalAction({
       throw new Error(`Failed to parse JSON from AI response: ${e}`);
     }
 
+    // Clean up incomplete suggestions before validation
+    if (parsed.suggestions && Array.isArray(parsed.suggestions)) {
+      parsed.suggestions = parsed.suggestions.filter((s: any) =>
+        s && typeof s.id === 'string' && typeof s.title === 'string' &&
+        typeof s.category === 'string' && typeof s.priority === 'string'
+      );
+    }
+
     // Manually validate with Zod
     const validated = (globalAnalysisSchema as any).parse(parsed);
 

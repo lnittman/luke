@@ -14,7 +14,7 @@ export const synthesisCache: any = new ActionCache(
   components.actionCache,
   {
     action: (internal as any).agents.llm.generateGlobalSynthesis,
-    name: "globalSynthesis-v5", // v5: Allow suggestions but enforce complete objects or empty array
+    name: "globalSynthesis-v6", // v6: Filter incomplete suggestions during post-processing
     ttl: 24 * 60 * 60 * 1000,
   } as any,
 );
