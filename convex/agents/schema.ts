@@ -16,23 +16,14 @@ export const globalAnalysisSchema = z.object({
   ),
   crossRepoPatterns: z.array(z.string()),
   technicalThemes: z.array(z.string()),
-  suggestions: z
-    .array(
-      z.object({
-        id: z.string(),
-        title: z.string(),
-        category: z.string(),
-        priority: z.string(),
-        estimatedEffort: z.string().optional(),
-        rationale: z.string().optional(),
-        dependencies: z.array(z.string()).optional(),
-        prompt: z.string().optional(),
-        contextFiles: z.array(z.string()).optional(),
-        relatedCommits: z.array(z.string()).optional(),
-      })
-    )
-    .optional()
-    .default([]),
+  suggestions: z.array(
+    z.object({
+      id: z.string(),
+      title: z.string(),
+      category: z.string(),
+      priority: z.string(),
+    })
+  ).optional().default([]),
   metrics: z.object({
     totalCommits: z.number(),
     totalRepos: z.number(),

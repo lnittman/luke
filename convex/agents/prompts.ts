@@ -240,8 +240,8 @@ Create a comprehensive daily log with these components:
 4. **repoSummaries**: Array of objects with { repository, commitCount, mainFocus, progress }
 5. **crossRepoPatterns**: Array of cross-repository patterns identified
 6. **technicalThemes**: Array of technical themes from patterns
-7. **suggestions**: Actionable, prioritized recommendations for next steps (array)
-8. **metrics**: Object with totalCommits, totalRepos, primaryLanguages (array), codeQualityTrend ("improving" | "stable" | "needs-attention"), productivityScore (1-10)
+7. **suggestions**: Optional array of actionable recommendations. Can be empty [] if no suggestions. If included, each suggestion MUST have: id, title, category, priority (all required, no incomplete objects)
+8. **metrics**: Object with totalCommits, totalRepos, primaryLanguages (array), codeQualityTrend ("improving" | "stable" | "declining"), productivityScore (1-10)
 9. **haiku**: Optional haiku capturing the essence of the day's work (string or undefined)
 
 Make the narrative engaging and specific to the actual work done. Reference real technical details from the repository summaries.
@@ -250,6 +250,6 @@ Make the narrative engaging and specific to the actual work done. Reference real
 <formatting>
 Return ONLY valid JSON matching the GlobalAnalysis schema. No markdown code blocks, no preamble, no explanations. Just the raw JSON object.
 
-The JSON must include all required fields: date, title, narrative, highlights, repoSummaries, crossRepoPatterns, technicalThemes, suggestions, metrics.
+CRITICAL: The suggestions array can be empty [], but if you include ANY suggestions, each one MUST have all required fields: id, title, category, priority. No incomplete suggestion objects are allowed.
 </formatting>`;
 }

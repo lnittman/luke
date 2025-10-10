@@ -5,7 +5,6 @@ import { Octokit } from "@octokit/rest";
 export const fetchDailyActivity = action({
   args: { date: v.string() }, // YYYY-MM-DD
   handler: async (_ctx, { date }) => {
-    console.log(`[TEST] fetchDailyActivity called for date: ${date} - VERSION 999`);
     const octokit = new Octokit({ auth: process.env.GITHUB_PAT });
 
     const dateObj = new Date(date);
