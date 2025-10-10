@@ -5,6 +5,7 @@ import { useQuery } from 'convex/react'
 import { api } from '../../../../convex/_generated/api'
 import { DefaultLayout } from '@/components/shared/default-layout'
 import { FooterNavigation } from '@/components/shared/footer-navigation'
+import { OpenInAI } from '@/components/shared/open-in-ai'
 import styles from '@/components/shared/root.module.scss'
 import Link from 'next/link'
 import { useParams, useRouter } from 'next/navigation'
@@ -393,7 +394,10 @@ export default function LogDetailPage() {
               <LogHeader />
             </Suspense>
           </div>
-          <ThemeSwitcher />
+          <div style={{ display: 'flex', alignItems: 'center', gap: '0.5rem' }}>
+            <OpenInAI />
+            <ThemeSwitcher />
+          </div>
         </div>
       </div>
 

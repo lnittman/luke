@@ -6,6 +6,7 @@ import { api } from '../../../convex/_generated/api'
 import { BlockLoader } from '@/components/shared/block-loader'
 import { DefaultLayout } from '@/components/shared/default-layout'
 import { FooterNavigation } from '@/components/shared/footer-navigation'
+import { OpenInAI } from '@/components/shared/open-in-ai'
 import styles from '@/components/shared/root.module.scss'
 import { ThemeSwitcher } from '@/components/shared/theme-switcher'
 import { ArtsyAscii } from '@/components/shared/artsy-ascii'
@@ -98,6 +99,7 @@ export default function LogsPage() {
             <h1>LOGS</h1>
           </div>
           <div style={{ display: 'flex', alignItems: 'center', gap: '0.5rem' }}>
+            <OpenInAI />
             <ThemeSwitcher />
           </div>
         </div>

@@ -7,6 +7,7 @@ import { AsciiEngine } from '@/lib/ascii'
 import { generateAsciiArt } from './actions'
 import { BlockLoader } from '@/components/shared/block-loader'
 import { DefaultLayout } from '@/components/shared/default-layout'
+import { OpenInAI } from '@/components/shared/open-in-ai'
 import { ThemeSwitcher } from '@/components/shared/theme-switcher'
 import { useIsMobile } from '@/hooks/use-is-mobile'
 import styles from '@/components/shared/root.module.scss'
@@ -126,7 +127,10 @@ export default function AsciiPage() {
             <BlockLoader mode={8} />
             <h1>ASCII</h1>
           </div>
-          <ThemeSwitcher />
+          <div style={{ display: 'flex', alignItems: 'center', gap: '0.5rem' }}>
+            <OpenInAI />
+            <ThemeSwitcher />
+          </div>
         </div>
       </div>
 

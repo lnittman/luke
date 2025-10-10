@@ -17,6 +17,7 @@ import type * as agents_index from "../agents/index.js";
 import type * as agents_instructions from "../agents/instructions.js";
 import type * as agents_llm from "../agents/llm.js";
 import type * as agents_llmCache from "../agents/llmCache.js";
+import type * as agents_prompts from "../agents/prompts.js";
 import type * as agents_repository from "../agents/repository.js";
 import type * as agents_tools_codeReview from "../agents/tools/codeReview.js";
 import type * as agents_tools_github from "../agents/tools/github.js";
@@ -59,6 +60,7 @@ declare const fullApi: ApiFromModules<{
   "agents/instructions": typeof agents_instructions;
   "agents/llm": typeof agents_llm;
   "agents/llmCache": typeof agents_llmCache;
+  "agents/prompts": typeof agents_prompts;
   "agents/repository": typeof agents_repository;
   "agents/tools/codeReview": typeof agents_tools_codeReview;
   "agents/tools/github": typeof agents_tools_github;

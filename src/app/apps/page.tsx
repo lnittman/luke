@@ -2,6 +2,7 @@ import { ProjectAccordion } from '@/components/app/projects/project-accordion'
 import { BlockLoader } from '@/components/shared/block-loader'
 import { DefaultLayout } from '@/components/shared/default-layout'
 import { FooterNavigation } from '@/components/shared/footer-navigation'
+import { OpenInAI } from '@/components/shared/open-in-ai'
 import styles from '@/components/shared/root.module.scss'
 import { ThemeSwitcher } from '@/components/shared/theme-switcher'
 import { PROJECTS } from '@/constants/projects'
@@ -25,7 +26,10 @@ export default function Projects() {
             <BlockLoader mode={3} />
             <h1>APPS</h1>
           </div>
-          <ThemeSwitcher />
+          <div style={{ display: 'flex', alignItems: 'center', gap: '0.5rem' }}>
+            <OpenInAI />
+            <ThemeSwitcher />
+          </div>
         </div>
       </div>
 

@@ -37,46 +37,46 @@ export function OpenInAI() {
   const pathname = usePathname()
 
   const getPageMarkdown = () => {
-    // Get the main content area
+    // Store original accordion states
+    const accordionButtons = Array.from(document.querySelectorAll('[class*="accordion"] button[aria-expanded]'))
+    const originalStates = accordionButtons.map(btn => btn.getAttribute('aria-expanded') === 'true')
+
+    // Open all accordions temporarily by clicking closed ones
+    accordionButtons.forEach((btn, idx) => {
+      if (!originalStates[idx]) {
+        (btn as HTMLButtonElement).click()
+      }
+    })
+
+    // Get content after opening (synchronous - React will have updated the DOM)
     const innerViewport = document.querySelector('[class*="innerViewport"]')
     const content = innerViewport || document.querySelector('main') || document.body
-
-    // Clone the content to avoid modifying the DOM
     const clone = content.cloneNode(true) as HTMLElement
 
-    // Remove non-content elements (loaders, navigation, etc)
+    // Remove non-content elements
     clone.querySelectorAll('[class*="loader"]').forEach(el => el.remove())
     clone.querySelectorAll('nav').forEach(el => el.remove())
     clone.querySelectorAll('button').forEach(el => el.remove())
 
-    // Remove page header
     const headerClone = clone.querySelector('[class*="header"]')
     if (headerClone) headerClone.remove()
 
-    // Remove page footer
     const footerClone = clone.querySelector('[class*="footer"]')
     if (footerClone) footerClone.remove()
 
-    // Handle accordions - convert visible sections to headings
+    // Convert accordions to headings
     const accordions = clone.querySelectorAll('[class*="accordion"]')
-    const closedSections: string[] = []
-
     accordions.forEach(accordion => {
       const title = accordion.querySelector('[class*="title"]')?.textContent || ''
       const contentDiv = accordion.querySelector('[class*="content"]')
 
       if (contentDiv) {
-        // Accordion is open - include it with heading
         const replacement = document.createElement('div')
         const heading = document.createElement('h2')
         heading.textContent = title
         replacement.appendChild(heading)
         replacement.appendChild(contentDiv.cloneNode(true) as Node)
         accordion.replaceWith(replacement)
-      } else {
-        // Accordion is closed - track it and remove
-        closedSections.push(title)
-        accordion.remove()
       }
     })
 
@@ -86,12 +86,14 @@ export function OpenInAI() {
       emDelimiter: '_',
     })
 
-    let markdown = turndownService.turndown(clone.innerHTML)
+    const markdown = turndownService.turndown(clone.innerHTML)
 
-    // Add note about closed sections if any
-    if (closedSections.length > 0) {
-      markdown += '\n\n---\n\n*Note: The following sections were closed and not included: ' + closedSections.join(', ') + '*'
-    }
+    // Restore original accordion states
+    accordionButtons.forEach((btn, idx) => {
+      if (!originalStates[idx]) {
+        (btn as HTMLButtonElement).click()
+      }
+    })
 
     return markdown
   }
@@ -132,7 +134,14 @@ export function OpenInAI() {
     const md = getPageMarkdown()
     const pageName = pathname === '/' ? 'home' : pathname.split('/').filter(Boolean).join(' / ')
 
-    const prompt = `Here's a page from Luke Nittmann's personal website (lukenittmann.com).
+    const prompt = `You are helping someone learn about Luke Nittmann, a software engineer and product builder.
+
+Below is content from the "${pageName}" page of Luke's personal website (lukenittmann.com). Your task is to:
+
+1. Explain what this page reveals about Luke - his background, skills, interests, philosophy, and approach to building software
+2. Highlight key insights about how Luke works, thinks, and builds products
+3. If technical patterns or tools are mentioned, explain what they tell us about Luke's development style
+4. Make this engaging and conversational - help the reader understand who Luke is through the content
 
 Page: ${pageName}
 
@@ -140,22 +149,16 @@ Content:
 
 ${md}
 
-Please help me understand what this page is about and what Luke is communicating here.`
+---
 
-    // Build URL with query parameters based on provider
-    let url = provider.baseUrl
+Based on the content above, tell me about Luke Nittmann. What stands out about his approach, experience, and perspective?`
 
-    if (provider.name === 'ChatGPT') {
-      // ChatGPT uses q parameter for pre-filled prompt
-      const params = new URLSearchParams({ q: prompt })
-      url = `${provider.baseUrl}?${params.toString()}`
-    } else if (provider.name === 'Claude') {
-      // Claude AI doesn't support URL parameters for prefilled prompts
-      // Copy to clipboard as fallback
-      await navigator.clipboard.writeText(prompt)
-    }
+    // Copy prompt to clipboard first (since URLs have length limits)
+    await navigator.clipboard.writeText(prompt)
 
-    window.open(url, '_blank')
+    // Open the AI provider (prompt is in clipboard, ready to paste)
+    window.open(provider.baseUrl, '_blank')
+
     setOpen(false)
   }
 
@@ -194,7 +197,7 @@ Please help me understand what this page is about and what Luke is communicating
                       </button>
                     </TooltipTrigger>
                     <TooltipContent className={styles.tooltip}>
-                      {provider.name}
+                      {provider.name} (copies prompt)
                     </TooltipContent>
                   </Tooltip>
                 )
