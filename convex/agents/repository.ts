@@ -26,7 +26,7 @@ export async function makeRepoAnalyzerAgent(ctx: any) {
   const instructions = await loadRequired(ctx, "agents/repoAnalyzer");
   return new Agent(components.agent, {
     name: "Repository Analyzer",
-    languageModel: openrouter("anthropic/claude-3.5-sonnet"),
+    languageModel: openrouter("openai/gpt-5"),
     // Give repo analyzer autonomy to inspect diffs, mirroring `gh` workflows
     tools: { fetchRepoInfoTool, fetchCommitDetailsTool, listPullRequestsTool, getPullRequestFilesTool },
     instructions,
@@ -64,7 +64,7 @@ Return raw JSON matching this structure:
 
   return new Agent(components.agent, {
     name: "Repository Summarizer",
-    languageModel: openrouter("anthropic/claude-3.5-sonnet"),
+    languageModel: openrouter("openai/gpt-5"),
     // NO TOOLS - this agent only synthesizes pre-analyzed data into JSON
     instructions,
   });

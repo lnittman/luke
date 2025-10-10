@@ -26,7 +26,7 @@ export async function makeActivitySummarizerAgent(ctx: any) {
   const instructions = await loadRequired(ctx, "agents/activitySummarizer");
   return new Agent(components.agent, {
     name: "Activity Summarizer",
-    languageModel: openrouter("anthropic/claude-3.5-sonnet"),
+    languageModel: openrouter("openai/gpt-5"),
     tools: { fetchUserActivityTool, fetchRepoInfoTool, listPullRequestsTool, listIssuesTool },
     instructions,
   });
@@ -60,7 +60,7 @@ Return raw JSON matching this structure:
 
   return new Agent(components.agent, {
     name: "Pattern Detector",
-    languageModel: openrouter("anthropic/claude-3.5-sonnet"),
+    languageModel: openrouter("openai/gpt-5"),
     // NO TOOLS - this agent only synthesizes pre-analyzed repo summaries into patterns
     instructions,
   });

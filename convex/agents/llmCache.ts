@@ -5,7 +5,7 @@ export const repoSummaryCache: any = new ActionCache(
   components.actionCache,
   {
     action: (internal as any).agents.llm.generateRepoSummary,
-    name: "repoSummary-v3", // v3: Updated suggestions schema
+    name: "repoSummary-v4-gpt5", // v4: Switched to GPT-5
     ttl: 24 * 60 * 60 * 1000,
   } as any,
 );
@@ -14,7 +14,7 @@ export const synthesisCache: any = new ActionCache(
   components.actionCache,
   {
     action: (internal as any).agents.llm.generateGlobalSynthesis,
-    name: "globalSynthesis-v6", // v6: Filter incomplete suggestions during post-processing
+    name: "globalSynthesis-v7-gpt5", // v7: Switched to GPT-5
     ttl: 24 * 60 * 60 * 1000,
   } as any,
 );

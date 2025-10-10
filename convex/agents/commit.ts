@@ -23,7 +23,7 @@ export async function makeCommitAnalyzerAgent(ctx: any) {
   const instructions = await loadRequired(ctx, "agents/commitAnalyzer");
   return new Agent(components.agent, {
     name: "Commit Analyzer",
-    languageModel: openrouter("anthropic/claude-sonnet-4"),
+    languageModel: openrouter("openai/gpt-5"),
     tools: { fetchCommitDetailsTool, getPullRequestFilesTool },
     instructions,
   });

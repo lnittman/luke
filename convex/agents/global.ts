@@ -8,8 +8,8 @@ export function createGlobalAnalysisAgent(instructions: string, apiKey?: string)
     apiKey: apiKey || process.env.OPENROUTER_API_KEY || "",
   });
 
-  // Use Claude Sonnet 3.5 for reliable tool calling and structured output
-  const model = openrouter("anthropic/claude-3.5-sonnet");
+  // Use GPT-5 for global synthesis
+  const model = openrouter("openai/gpt-5");
 
   // Override instructions to explicitly prevent tool calling
   const noToolInstructions = `${instructions}
